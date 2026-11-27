@@ -480,7 +480,14 @@ describe('Scan and receive', () => {
       await user.click(screen.getByRole('button', { name: 'Cancel' }));
       await act(async () => { unlock(); await invalidation; });
       expect(vaultData.size).toBe(0);
-      finish(); await waitFor(() => expect(screen.getByText(/Cancelled\./)).toBeTruthy());
+      finish(); await waitFor(() => {
+        const scanRegion = within(screen.getByRole('region', { name: 'Scan and receive' }));
+        expect(scanRegion.getByText(/^Cancelled\. \d+ announcements checked\./)).toBeTruthy();
+        expect(screen.getByText('Cancelled. The scan stopped before completing.', {
+          selector: '[role="status"][aria-live="polite"][aria-atomic="true"]'
+        })).toBeTruthy();
+        expect(screen.queryByText('Scan finished.', { selector: '[role="status"]' })).toBeNull();
+      });
     } finally { unlock(); finish(); runner.mockRestore(); }
   });
 
@@ -688,7 +695,14 @@ describe('Scan and receive', () => {
     await waitFor(() => { expect((cancel as HTMLButtonElement).disabled).toBe(false); });
     await user.click(cancel);
     release();
-    await waitFor(() => { expect(screen.getByText(/Cancelled\./)).toBeTruthy(); });
+    await waitFor(() => {
+      const scanRegion = within(screen.getByRole('region', { name: 'Scan and receive' }));
+      expect(scanRegion.getByText(/^Cancelled\. \d+ announcements checked\./)).toBeTruthy();
+      expect(screen.getByText('Cancelled. The scan stopped before completing.', {
+        selector: '[role="status"][aria-live="polite"][aria-atomic="true"]'
+      })).toBeTruthy();
+      expect(screen.queryByText('Scan finished.', { selector: '[role="status"]' })).toBeNull();
+    });
     expect(worker.terminated).toBe(true);
     expect(worker.received.some((m) => m.type === 'cancel')).toBe(true);
   });
