@@ -154,7 +154,7 @@
   }
 
   function openFrame(el, url) {
-    // One checkout at a time: the dialog is modal, and a second one could be paid beside the first.
+    // One dialog at a time: it is modal, and a second one could be paid beside the first.
     // Asking the element itself keeps the button usable if the merchant page removed the dialog.
     if (openOverlay !== null && openOverlay.isConnected) return;
     var n = nonce();
@@ -195,8 +195,10 @@
       window.clearInterval(hello);
       window.removeEventListener('message', onMessage);
       document.removeEventListener('keydown', onKey);
+      // Return focus only from a dialog that was still on the page: a removed one must not pull focus from a newer one.
+      var shown = overlay.isConnected;
       if (overlay.parentNode) overlay.parentNode.removeChild(overlay);
-      el.focus();
+      if (shown) el.focus();
     }
     function onKey(e) {
       if (e.key === 'Escape') teardown();
