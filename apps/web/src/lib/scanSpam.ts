@@ -142,6 +142,7 @@ export async function estimateSimilarTransfers(o: { readonly client: RpcClient; 
   const high = o.amount * 5n;
   let count = 0;
   let seen = 0;
+  const positions = new Set<string>();
   try {
     let requests = 0;
     for (let next = from; next <= o.head; next += range) {
@@ -155,6 +156,10 @@ export async function estimateSimilarTransfers(o: { readonly client: RpcClient; 
         if (log.address.toLowerCase() !== o.token.toLowerCase()) return { status: 'unknown', reason: 'error' };
         const block = BigInt(log.blockNumber);
         if (block < next || block > to) return { status: 'unknown', reason: 'error' };
+        // A block position holds one log: an identical or conflicting repeat would inflate the estimate.
+        const position = `${block.toString()}:${BigInt(log.logIndex).toString()}`;
+        if (positions.has(position)) return { status: 'unknown', reason: 'error' };
+        positions.add(position);
         if (log.topics.length !== 3 || log.topics[0]?.toLowerCase() !== TRANSFER_TOPIC || !WORD_HEX.test(log.data)) continue;
         const value = BigInt(log.data) * 4n;
         if (value >= low && value <= high) count++;

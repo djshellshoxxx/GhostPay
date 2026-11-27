@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 import { ChainAdapterError } from './errors.js';
 import { FAKE, SEPOLIA, payment, recipient } from './fixtures.testutil.js';
 import { ANNOUNCEMENT_TOPIC, fetchAnnouncements, isLogLimitError, isLogSizeError, MAX_PLAUSIBLE_HEAD, validateAnnouncementLog, type ScanCursor } from './logs.js';
-import { createClient, type RpcClient, type RpcLog } from './rpc.js';
+import { createClient, RpcHttpError, type RpcClient, type RpcLog } from './rpc.js';
 import { FakeRpcError, fakeTransport, noSleep } from './rpc.testutil.js';
 import type { Hex } from './types.js';
 
@@ -262,6 +262,27 @@ describe('fetchAnnouncements', () => {
     expect(first.announcements.map((a) => a.blockNumber)).toEqual([1n]);
     expect(first.routerOnlyBlocks).toBeUndefined();
     await expect(fetchWith(c, first.cursor, { router: FAKE.router })).rejects.toThrow(`RPC_FAILURE: json-rpc error ${String(code)}`);
+  });
+  it('classifies HTTP 413, which some providers send for an eth_getLogs range limit, as a size limit', () => {
+    const rpc = (detail: string): ChainAdapterError => new ChainAdapterError('RPC_FAILURE', detail);
+    expect(isLogLimitError(rpc('http status 413'))).toBe(true);
+    expect(isLogSizeError(rpc('http status 413'))).toBe(true);
+    for (const status of [400, 429, 500, 4130]) expect(isLogLimitError(rpc(`http status ${String(status)}`))).toBe(false);
+  });
+  it('narrows the block range when the provider refuses it with HTTP 413 and still finds the payment', async () => {
+    const chain = mkChain({ logs: [mkLog({}, 5, 0)] });
+    const c = await client(chain, {
+      eth_getLogs: (p) => {
+        const f = p[0] as { fromBlock: string; toBlock: string };
+        const from = BigInt(f.fromBlock);
+        const to = BigInt(f.toBlock);
+        if (to - from + 1n > 3n) throw new RpcHttpError(413);
+        return chain.logs.filter((l) => BigInt(l.blockNumber) >= from && BigInt(l.blockNumber) <= to);
+      },
+    });
+    const r = await fetchWith(c, { nextBlock: 0n });
+    expect(r.announcements.map((a) => a.blockNumber)).toEqual([5n]);
+    expect(r).toMatchObject({ truncated: false, cursor: { nextBlock: 21n } });
   });
   it('classifies provider limits by code, also when the message carries provider detail (L4-01)', () => {
     const rpc = (detail: string): ChainAdapterError => new ChainAdapterError('RPC_FAILURE', detail);

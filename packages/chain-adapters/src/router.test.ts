@@ -73,6 +73,11 @@ describe('buildPaymentTx happy paths', () => {
     assertPreviewMatchesCalldata(b.preview, b.tx);
     expect(buildPaymentTx(input({ buffer: { bufferWei: 7n } })).preview.maxBufferWei).toBe(7n);
   });
+  it('decode refuses a buffer above its own cap, which the router always reverts (BufferTooLarge)', () => {
+    const b = buffer(); // msg.value 5, cap 10
+    expect(() => decodePaymentCalldata({ ...b.tx, value: 11n }, 11155111)).toThrow(/PREVIEW_MISMATCH: buffer above its cap/);
+    expect(decodePaymentCalldata({ ...b.tx, value: 10n }, 11155111).value).toBe(10n);
+  });
   it('payNative: gross is msg.value, native metadata', () => {
     const b = native();
     expect(b.tx.value).toBe(10n ** 18n);
