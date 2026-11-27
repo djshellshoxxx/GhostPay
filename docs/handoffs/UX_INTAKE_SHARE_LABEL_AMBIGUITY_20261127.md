@@ -33,3 +33,11 @@ The committed Vitest regression mirrors the assertion harness but was not run wi
 ## Integration gates
 
 Leave draft until fresh exact-head hosted CI, applicable native browser verification, independent review, refreshed ownership and main composition checks, and legitimate integration-lease ownership all pass. Never override the active P14 integration owner. No auto-merge, force-push or release.
+
+
+## Hosted rerun and current-main qualification checkpoint — 2026-11-27 UTC
+
+- Previously qualified head `5b75ee82ecabc1c82434e0030a7417e0454e1b17`: all five hosted workflows passed, including 27/27 primary CI jobs after the failed full-browser setup was rerun unchanged ([CI 45939871734](https://github.com/djshellshoxxx/GhostPay/actions/runs/45939871734)). Full and lean E2E jobs both succeeded. Independent native package review remains pinned to that head; no new local test execution is claimed.
+- Incorporated main `0415d887878ee318bbfca57b3678c332598a32a3` (12 commits ahead of original merge base). Reverse comparison lists no overlap outside additive ownership metadata; main's production parser blob matches the original base. Preserve both parents, the full main registry and exact previously tested production/test blobs. No production change in this reconciliation.
+- Open inventory: 156 PRs in partitioned search; 12 competing recent file inventories explicitly refreshed with no owned parser/test/handoff overlap. Exhaustive refresh exceeded connector limits; do not treat subset as final ownership clearance. Generation 67 explicitly released at lock commit `3643783a70c104d68f18f6e34b2e3e8695920d43`; not acquired here.
+- Remain draft pending new exact-head CI, independent final composition review and refreshed ownership/legitimate integration lease. The separate pre-existing checksum warning loss remains tracked in comment 7210544377; do not change this repair to address it. All ten exclusions remain binding.

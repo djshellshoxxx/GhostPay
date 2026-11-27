@@ -417,22 +417,104 @@ describe('PRIV-06: caughtUp is only true for a scan that reached the head with n
     expect(store.save).not.toHaveBeenCalled();
   });
 
-  it('when the second provider lags behind, caughtUp stops at ITS head and the lag is reported in the result', async () => {
-    // Pinned behaviour: ScanProgress.caughtUp means "reached the lower of the two heads"; the lag itself is only in the
-    // result's `secondaryLag` (Scan.tsx shows it as a note). A caller that reads caughtUp alone would overstate coverage.
+  it.each([HEAD - 1, HEAD - small.finalityDepth, 11_000])('a second provider at block %i stops the scan without claiming the primary head was reached', async (secondaryHead) => {
     const f = fixture();
     const store = spyStore();
     const primary = chainWith(HEAD, f.logs);
-    const secondaryInner = chainWith(HEAD, f.logs);
-    const secondary: MockRpc = { ...secondaryInner, blockNumber: () => Promise.resolve(11_000n), getBlock: (n) => (n > 11_000n ? Promise.resolve(null) : secondaryInner.getBlock(n)) };
-    const out = await attempt(f, { client: primary, secondaryClient: secondary, checkpoints: store.store });
+    const secondaryInner = chainWith(secondaryHead, f.logs);
+    const secondary: MockRpc = { ...secondaryInner, getBlock: (n) => (n > BigInt(secondaryHead) ? Promise.resolve(null) : secondaryInner.getBlock(n)) };
+    // Four pages bound this fixture even if the terminal break is accidentally changed to depend on caughtUp.
+    const out = await attempt(f, { client: primary, secondaryClient: secondary, checkpoints: store.store, maxPages: 4 });
+    expect(out.error).toBeUndefined();
     expect(out.result?.discrepancies).toEqual([]);
-    expect(out.result?.cursor.nextBlock).toBe(11_001n);
-    expect(out.progress.at(-1)).toMatchObject({ nextBlock: 11_001n, caughtUp: true });
-    expect(out.result?.secondaryLag).toEqual({ secondaryHead: 11_000n, head: BigInt(HEAD) });
-    // The primary was never asked past the secondary's head, and the last saved anchor is at that head too.
-    expect(Math.max(...windowsOf(primary).map((w) => Number(w.to)))).toBe(11_000);
-    expect(store.history.at(-1)).toEqual(cursorAt(11_001 - 10));
+    expect(out.result?.cursor.nextBlock).toBe(BigInt(secondaryHead) + 1n);
+    expect(idsOf(out.result?.matches ?? [])).toEqual(f.truth);
+    expect(idsOf(out.matches)).toEqual(f.truth);
+    expect(out.result?.secondaryLag).toEqual(HEAD - secondaryHead > small.finalityDepth
+      ? { secondaryHead: BigInt(secondaryHead), head: BigInt(HEAD) } : undefined);
+    // Preserve the lower fetch boundary and finality replay tail even though the completion label is now false.
+    const windows = windowsOf(primary);
+    expect(Math.max(...windows.map((w) => Number(w.to)))).toBe(secondaryHead);
+    expect(windows).toEqual(Array.from({ length: Math.ceil((secondaryHead + 1) / 100) }, (_, i) => ({
+      from: BigInt(i * 100), to: BigInt(Math.min(i * 100 + 99, secondaryHead)),
+    })));
+    const tail = cursorAt(secondaryHead + 1 - small.finalityDepth);
+    expect(store.history.at(-1)).toEqual(tail);
+    expect(savedCalls(store)).toEqual([P1, P2, tail]);
+    expect(store.clear).not.toHaveBeenCalled();
+    expect(out.progress.map((p) => [p.nextBlock, p.caughtUp])).toEqual([
+      [5000n, false], [10_000n, false], [BigInt(secondaryHead) + 1n, false],
+    ]);
+    expectHonestCaughtUp(out.progress, HEAD);
+  });
+
+  it.each([HEAD, HEAD + 1])('reports caughtUp at the primary head when the second provider is at block %i', async (secondaryHead) => {
+    const f = fixture();
+    const store = spyStore();
+    const primary = chainWith(HEAD, f.logs);
+    const out = await attempt(f, {
+      client: primary, secondaryClient: chainWith(secondaryHead, f.logs), checkpoints: store.store, maxPages: 4,
+    });
+    expect(out.error).toBeUndefined();
+    expect(out.result?.discrepancies).toEqual([]);
+    expect(out.result?.secondaryLag).toBeUndefined();
+    expect(out.result?.cursor).toEqual(cursorAt(HEAD + 1));
+    expect(idsOf(out.result?.matches ?? [])).toEqual(f.truth);
+    expect(out.result?.matches.every((match) => match.receipt === 'verified')).toBe(true);
+    expect(savedCalls(store)).toEqual([P1, P2, P3]);
+    expect(store.clear).not.toHaveBeenCalled();
+    expect(windowsOf(primary)).toHaveLength(121);
+    expect(windowsOf(primary).at(-1)?.to).toBe(BigInt(HEAD));
+    expect(out.progress.map((p) => [p.nextBlock, p.caughtUp])).toEqual([[5000n, false], [10_000n, false], [12_001n, true]]);
+    expectHonestCaughtUp(out.progress, HEAD);
+  });
+
+  it('resumes a lagged scan from its replay tail, verifies retained evidence and discovers the remaining payment', async () => {
+    const f = fixture();
+    const later = f.mine(11_500);
+    const laterId = `${later.log.blockHash}:${Number(BigInt(later.log.logIndex)) + 100}`;
+    const full = { ...f, logs: [...f.logs, later.log], truth: [...f.truth, laterId] };
+    const store = spyStore();
+    const primary = chainWith(HEAD, full.logs);
+    const secondaryInner = chainWith(11_000, full.logs);
+    const secondary: MockRpc = { ...secondaryInner, getBlock: (n) => (n > 11_000n ? Promise.resolve(null) : secondaryInner.getBlock(n)) };
+    const first = await attempt(full, { client: primary, secondaryClient: secondary, checkpoints: store.store, maxPages: 4 });
+    expect(first.error).toBeUndefined();
+    expect(first.result?.discrepancies).toEqual([]);
+    expect(first.result?.secondaryLag).toEqual({ secondaryHead: 11_000n, head: BigInt(HEAD) });
+    expect(first.result?.cursor).toEqual(cursorAt(11_001));
+    expect(idsOf(first.result?.matches ?? [])).toEqual(f.truth);
+    // The providers disagree about this tip payment's finality; retain its claim until both can verify it.
+    expect(first.result?.matches.at(-1)?.receipt).toBe('claimed');
+    expect(windowsOf(primary)).toHaveLength(111);
+    expect(windowsOf(primary).at(-1)?.to).toBe(11_000n);
+    const resumeAt = store.load(CHAIN_ID, KEY)!;
+    expect(resumeAt).toEqual(cursorAt(10_991));
+    expect(savedCalls(store)).toEqual([P1, P2, resumeAt]);
+
+    const recoveredPrimary = chainWith(HEAD, full.logs);
+    const second = await attempt(full, {
+      client: recoveredPrimary, secondaryClient: chainWith(HEAD, full.logs), cursor: resumeAt,
+      checkpoints: store.store, maxPages: 2,
+    });
+    expect(second.error).toBeUndefined();
+    expect(second.result?.discrepancies).toEqual([]);
+    expect(second.result?.secondaryLag).toBeUndefined();
+    expect(second.result?.cursor).toEqual(cursorAt(HEAD + 1));
+    expect(idsOf(second.result?.matches ?? [])).toEqual([f.truth.at(-1), laterId]);
+    expect(second.result?.matches.every((match) => match.receipt === 'verified')).toBe(true);
+    expect(windowsOf(recoveredPrimary)).toEqual(Array.from({ length: 11 }, (_, i) => ({
+      from: 10_991n + BigInt(i * 100), to: BigInt(Math.min(10_991 + i * 100 + 99, HEAD)),
+    })));
+    expect(savedCalls(store)).toEqual([P1, P2, resumeAt, P3]);
+    expect(store.clear).not.toHaveBeenCalled();
+    const recovered = new Map(first.matches.map((match) => [match.announcement.id, match] as const));
+    for (const match of second.matches) recovered.set(match.announcement.id, match);
+    expect(idsOf([...recovered.values()])).toEqual(full.truth);
+    expect([...recovered.values()].every((match) => match.receipt === 'verified')).toBe(true);
+    expect(second.progress.map((p) => [p.nextBlock, p.caughtUp])).toEqual([[12_001n, true]]);
+    expectHonestCaughtUp(second.progress, HEAD);
+    expect(first.progress.map((p) => [p.nextBlock, p.caughtUp])).toEqual([[5000n, false], [10_000n, false], [11_001n, false]]);
   });
 });
 
