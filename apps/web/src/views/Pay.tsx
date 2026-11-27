@@ -1314,6 +1314,8 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
   // Pins only label the signer, never block. An invoice held open (see heldPins) is not opened again for newer pins, so
   // its label follows the pins saved now.
   const signer = trustView(parsed, app.settings.pinnedSigners);
+  // A blocked invoice (expired, say) gets no chain check that would replace the offline notice once the browser is back.
+  const staleOffline = online && review.blockers.length > 0 && typeof ctxError === 'object' && ctxError.key === 'pay.offlineCheck';
   const warnings = walletWarnings(wallets ?? [], t);
   const ready = phase === 'ready' || phase === 'prepared' || phase === 'busy' || phase === 'submitted' || phase === 'done';
   const alreadyRequested = requestedInvoice === parsed.invoice;
@@ -1345,7 +1347,7 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
           </ul>
         </Notice>
       )}
-      {ctxError !== undefined && (
+      {ctxError !== undefined && !staleOffline && (
         <Notice kind="error">
           {displayMessage(ctxError, t)}{' '}
           {online && phase === 'review' && review.blockers.length === 0 &&

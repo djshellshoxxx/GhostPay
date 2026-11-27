@@ -103,6 +103,22 @@ describe('Pay: a connection loss fails closed and recovers only on an explicit r
     expect(screen.queryByText(/Chain verification is unavailable while offline/)).toBeNull();
   });
 
+  // A blocked invoice offers no chain check, so nothing else would ever remove the notice.
+  it('drops the offline notice on reconnect from an expired invoice that was opened offline', async () => {
+    const { fragment } = await makeParsed({ token: 'native', tokenAmount: '0.5' });
+    online = false;
+    setHash(fragment);
+    renderApp(makeServices({ loadManifest: loaded(84532), nowMs: () => (NOW + 48 * 3600) * 1000 }));
+    expect(await screen.findByText('Chain verification is unavailable while offline. Reconnect and check again.')).toBeTruthy();
+    connectivity(true);
+    expect(screen.queryByText(/Chain verification is unavailable while offline/)).toBeNull();
+    expect(screen.getByText('This invoice has expired.')).toBeTruthy();
+    expect(continueButton().disabled).toBe(true);
+    // Still true while offline: the notice comes back with the next connection loss.
+    connectivity(false);
+    expect(screen.getByText('Chain verification is unavailable while offline. Reconnect and check again.')).toBeTruthy();
+  });
+
   it('discards a chain verification that was in flight when the connection dropped', async () => {
     let release: (() => void) | undefined;
     const { fragment } = await makeParsed({ token: 'native', tokenAmount: '0.5' });
