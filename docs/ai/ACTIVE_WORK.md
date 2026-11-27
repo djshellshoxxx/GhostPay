@@ -1,4 +1,4 @@
-# Audit fixes F1-F4, F6, F7 (permit clock, router buffer, HTTP 413 scan, sweep destination, embed focus) — 2026-11-27 UTC
+# Audit fixes F1-F4, F6, F7, F9 (permit clock, router buffer, HTTP 413 scan, sweep destination, embed focus, transfer estimate) — 2026-11-27 UTC
 
 Worker: local Claude Code maintenance/audit session on the existing merged branch
 `claude/a11y-reflow-checkvisibility-20261126` (fast-forwarded to main `3c324239`; no new branch). Owned paths:
@@ -6,8 +6,9 @@ Worker: local Claude Code maintenance/audit session on the existing merged branc
 `packages/tx-review/src/{review,types}.ts`, `review.test.ts`, `DEVIATIONS.md` item 4;
 `apps/web/public/ghostpay-embed-v2.js` (`openFrame`) and `apps/web/src/embedV2.test.ts`;
 `packages/chain-adapters/src/{router,logs}.ts` and their tests; one comment in
-`packages/invoice-schema/src/passphrase.ts`; this entry. F2, F3 and F7 are the same changes already carried by draft
-#728, which stays open and untouched. Not claimed: refusing the fee recipient inside tx-review (the web check already
+`packages/invoice-schema/src/passphrase.ts`; `apps/web/src/lib/scanSpam.ts` (`estimateSimilarTransfers` only) and its
+test; this entry. F9 is the duplicate-record defect recorded in review on #696 and #728. F2, F3 and F7 are the same
+changes already carried by draft #728, which stays open and untouched. Not claimed: refusing the fee recipient inside tx-review (the web check already
 refuses it), F5, F8. Acceptance: each new regression fails without its fix and passes with it; hosted CI green on the
 exact head; merge under the integration lock.
 
