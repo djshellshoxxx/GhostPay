@@ -77,7 +77,7 @@ async function scan(indexed: readonly Record<string, unknown>[], onChain: readon
   const client = createIndexerScanClient(rpc([]), { chain, announcer: FAKE_ANNOUNCER, router: FAKE_ROUTER, baseUrl: 'https://indexer.example.org', fetchImpl: indexer(indexed), windowBlocks: 1000 });
   const result = await runScan({
     chain, manifest, client, secondaryClient: rpc(onChain.map(log)), cursor: { nextBlock: 0n },
-    spendingPublicKeyHex: hexOf(keys.spendingPublicKey), keyId: checkpointKeyId('02aa', '03bb'),
+    spendingPublicKeyHex: hexOf(keys.spendingPublicKey).slice(2), keyId: checkpointKeyId('02aa', '03bb'),
     viewingKey: unsafeRevealSecret(keys.viewingSecret).slice(), createWorker: () => new InlineWorker(), signal: new AbortController().signal, checkpoints,
   });
   return { result, saved, kinds: result.discrepancies.map((d) => d.kind) };

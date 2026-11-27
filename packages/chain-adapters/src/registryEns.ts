@@ -37,7 +37,8 @@ export async function resolveRegistryRegistrant(client: Pick<RpcClient, 'chainId
   if (input.startsWith('0x') && !input.includes('.')) {
     return { registrant: buildLookupCall(input).preview.registrant! };
   }
-  if (input.length === 0 || input.length > 1024 || !input.includes('.')) {
+  // A whole address used as a label is more likely a mistyped address than a name, and anyone can register one.
+  if (input.length === 0 || input.length > 1024 || !input.includes('.') || input.split('.').some((label) => /^0x[0-9a-f]{40}$/i.test(label))) {
     return fail('INVALID_INPUT', 'enter a wallet address or ENS name');
   }
   let name: string;

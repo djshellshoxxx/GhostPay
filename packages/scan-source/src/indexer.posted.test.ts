@@ -10,8 +10,8 @@ const REQ = { chainId: 31337, fromBlock: 1200n, toBlock: 1700n } as const;
 const fetch = (extraRaw: unknown[], head: Head = headOf()) =>
   createIndexerSource({ chainId: 31337, baseUrl: 'https://i.example.org', transport: fakeIndexer({ extraRaw }), secondSource: fakeSecond(head) }).fetch(REQ);
 
-const emptyKey = { ...rawAnn(1300, 9), ephemeralPublicKey: '0x' };
-const longMetadata = { ...rawAnn(1290, 9), metadata: `0x${'AB'.repeat(4097)}` };
+const emptyKey: Record<string, unknown> = { ...rawAnn(1300, 9), ephemeralPublicKey: '0x' };
+const longMetadata: Record<string, unknown> = { ...rawAnn(1290, 9), metadata: `0x${'AB'.repeat(4097)}` };
 
 describe('indexer records anyone can post', () => {
   it('are absent from a clean answer', async () => {
@@ -21,11 +21,11 @@ describe('indexer records anyone can post', () => {
   it('are returned apart, in chain order, with their own bytes', async () => {
     const r = await fetch([emptyKey, longMetadata]);
     expect(r.posted?.map((a) => [a.blockNumber, a.logIndex, a.ephemeralPublicKey, a.metadata.length])).toEqual([
-      [1290n, 9, longMetadata.ephemeralPublicKey, 2 + 2 * 4097],
+      [1290n, 9, longMetadata['ephemeralPublicKey'], 2 + 2 * 4097],
       [1300n, 9, '0x', 4],
     ]);
     expect(r.posted?.[0]?.metadata).toBe(`0x${'ab'.repeat(4097)}`);
-    expect(r.posted?.[1]?.id).toBe(`${String(emptyKey.blockHash)}:9`);
+    expect(r.posted?.[1]?.id).toBe(`${String(emptyKey['blockHash'])}:9`);
     expect(r.announcements).toEqual((await fetch([])).announcements);
     expect(r.rejected).toBeUndefined();
     expect(r.skipped).toBe(2);
