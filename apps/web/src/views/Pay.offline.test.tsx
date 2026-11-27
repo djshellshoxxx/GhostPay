@@ -1,12 +1,12 @@
 // @vitest-environment jsdom
-import { act, screen, waitFor } from '@testing-library/react';
+import { act, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { clearSession } from '../lib/session';
 import { SETTINGS_KEY } from '../lib/settings';
 import type { Services } from '../lib/services';
 import type { WalletInfo } from '../lib/wallet';
-import { makeParsed } from '../test/invoiceFixtures';
+import { makeParsed, NOW } from '../test/invoiceFixtures';
 import { backedManifest, withManifestChain } from '../test/manifestChain';
 import { MockWallet } from '../test/mockWallet';
 import { mockRpc } from '../test/mockRpc';
@@ -88,6 +88,19 @@ describe('Pay: a connection loss fails closed and recovers only on an explicit r
     await user.click(screen.getByRole('button', { name: 'Retry chain verification' }));
     await waitFor(() => { expect(continueButton().disabled).toBe(false); });
     expect(wallet.sent).toBeUndefined();
+  });
+
+  it('does not carry an offline notice from the input screen to an invoice opened after reconnecting', async () => {
+    const { fragment } = await makeParsed({ token: 'native', tokenAmount: '0.5' });
+    // Expired when opened, so no chain check runs that would replace an older notice.
+    renderApp(makeServices({ loadManifest: loaded(84532), nowMs: () => (NOW + 48 * 3600) * 1000 }));
+    const user = userEvent.setup();
+    await user.click(within(screen.getByRole('navigation', { name: 'Main' })).getByRole('button', { name: /^Pay$/ }));
+    connectivity(false);
+    connectivity(true);
+    act(() => { setHash(fragment); window.dispatchEvent(new HashChangeEvent('hashchange')); });
+    expect(await screen.findByText('This invoice has expired.')).toBeTruthy();
+    expect(screen.queryByText(/Chain verification is unavailable while offline/)).toBeNull();
   });
 
   it('discards a chain verification that was in flight when the connection dropped', async () => {
