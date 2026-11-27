@@ -23,7 +23,8 @@ const STOPPED_SAMPLES = {
   F13: ['src/features/fiat-conversion/quoteTerms.ts', '../../packages/ux-fiat/dist/index.js', 'src/lib/offramp/provider.ts'],
   F14: ['src/features/future/multichain-routing/route.ts', '../../packages/multi-chain-router/src/index.ts'],
   P07: ['src/features/device-sync/pair.ts', 'src/lib/encrypted-device-sync.ts'],
-  FUTURE: ['src/features/future/ghostproof/review.ts'],
+  FUTURE: ['src/features/future/ghostproof/review.ts', '../../packages/confidential-amounts/src/future/p13/units.ts',
+    '../../node_modules/@ghostpay/confidential-amounts/dist/future/p13/index.js', '../../packages/hygiene/dist/future/linkability/x.js'],
 };
 
 /** Core modules the owner retained as shared privacy, payment and recovery functionality: never flagged. */
@@ -82,7 +83,8 @@ test('camelCase, compound and directory spellings of stopped products are caught
 test('patterns are anchored at path segments, not substrings of core names', () => {
   for (const sample of ['src/lib/idbStore.ts', 'src/i18n/catalog.ts', 'src/lib/positions.ts', 'src/lib/tooltip.ts',
     'src/lib/offset.ts', '../../node_modules/viem/_esm/errors/chain.js', '../../packages/chain-adapters/dist/config/chains.js',
-    'src/lib/multipart.ts', 'src/views/Settings.tsx']) {
+    'src/lib/multipart.ts', 'src/views/Settings.tsx', '../../packages/confidential-amounts/dist/index.js',
+    '../../packages/ux-vault/src/futureProof.ts', '../../packages/future-tools/src/index.ts']) {
     assert.equal(stoppedProductForModule(sample), undefined, sample);
   }
 });

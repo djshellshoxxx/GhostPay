@@ -5042,6 +5042,35 @@ required; no new local test run or browser execution is claimed.
 - Acceptance: record exact pins, remaining-difference analysis, actual local and hosted evidence for composition #698 `c2427b6f657b8ffd2c595ddb9dd47420480aa239` on main `019d5d18`, and the precise remaining integration steps. No runtime, test, threshold, dependency, workflow, contract or deployment change.
 - Result (2026-11-26): the coordinator merged #697 (`045ac2d3`) and #698 (`e1d0eb0f`) under lock generation 42. Resulting main tree `3dc2d13377e22fe12a1664559c7af6c5f381b257` is identical to the composition verified here; no source difference or defect remains. Main push CI on `e1d0eb0f` was still queued when first read; it later concluded success (run 45769417481, 07:35 UTC).
 
+
+## Privacy preview retention on page return — 2026-11-26 (9d8f)
+
+- Worker: ChatGPT coordinator `/root`, session `9d8f35d3c02b`; branch
+  `finish/privacy-preview-resume-20261126-9d8f`.
+- Base: current main `601f20955b435eede448c6d82d8315705d7e381d`.
+- Continue the merged #676/#681 presentation-only portion of #287 item 4:
+  recheck opted-in invoice/proof preview expiry and reconcile saved preferences
+  on page-history restoration, visibility changes and frozen-page resume.
+- Owns: `apps/web/src/lib/useInvoicePreviewRetention.ts`,
+  `apps/web/src/components/MetadataRetentionControls.tsx`, their focused tests,
+  `apps/web/src/components/PaymentProofQr.retention.test.tsx`,
+  `apps/web/src/views/CreateInvoice.retention.test.tsx`, a separate bounded
+  browser acceptance test if needed, `docs/specs/19-local-metadata-retention.md`,
+  this additive entry and `docs/handoffs/PRIVACY_PREVIEW_RESUME_20261126.md`.
+- Overlap checked against current main and open #696/#717/#718/#719/#722 file lists;
+  none owns these runtime files. Original #676 claim records its completed merge.
+- Acceptance: first supported lifecycle event rechecks expiry without a timer
+  tick; before-deadline and default-off previews remain; fresh saved policy is
+  used after missed storage events; invoice/proof scopes remain independent;
+  stale approvals and replaced previews cannot affect successors; event
+  listeners are removed on unmount; recovery/financial records and exports
+  remain intact. Deterministic synthetic regressions must fail before the
+  repair and pass afterward, followed by relevant typecheck/lint/build and
+  independent review.
+- Persistent vault timestamp retention and vault-format migration remain
+  deferred. No contract, dependency, wallet/network, active-worker branch,
+  privacy-profile activation, release-gate or deployment changes.
+
 ## Orphaned-branch consolidation worker: scan checkpoint store refuses suspended sessions — 2026-11-26 (Claude session 01KtKj8j9nvFsJc4iTJPUGGm)
 
 - Worker: orphaned-branch consolidation worker, branch `nodata/clever-meitner-6a8eg0`, base main `601f20955b435eede448c6d82d8315705d7e381d`.
@@ -5130,6 +5159,34 @@ required; no new local test run or browser execution is claimed.
 - Acceptance: mutation checks turn both tests red (unconditional `setRelayer` in the import apply path fails the Settings test; `revealViewingKey` bypassing suspension fails the new idle-lock case); the web test files pass; affected typecheck, lint and tests pass; hosted CI green on the exact head; the integration lock is acquired immediately before merge.
 
 
+# GP-BUG — invoice link accepts browser-invalid ASCII IDN hosts (2026-11-26 UTC)
+
+Worker: sequential bug-only coordinator; branch `automation/20261126T2118Z/bug/invoice-link-invalid-host`; base `6e4d2b69cb3f280c7843ace8a059f4fe1ed49ec1`. Owned paths: `packages/payment-uri/src/invoice-link.ts`, new `packages/payment-uri/src/invoice-link.invalid-host.test.ts`, additive claim here, new `docs/handoffs/INVOICE_LINK_INVALID_HOST_20261126.md`. All 151 enumerated open PR changed-file inventories inspected with no overlap in these source/test paths; historical #670 merged. Main and newest PR list refreshed before branch creation. Acceptance: reject invalid punycode hosts via local URL parser, retain valid IDNs, ordinary hosts, default/nondefault port, allowlist and dev IPv4 behavior; no network requests, authentication, feature, dependency, contract, payment, fund, deployment or archived product change. Source-matched standalone Node 22/TS 5.8 baseline 8/12, candidate 12/12. Regression commit precedes production repair; full hosted CI and independent review required; integration lease generation 55 released, not acquired. Native full checkout unavailable (DNS failure).
+
+
+# GP-BUG — #732 exact-head reconciliation (2026-11-26 UTC)
+
+Worker: sequential bug-only coordinator; same owned branch `automation/20261126T2118Z/bug/invoice-link-invalid-host`. Main `b044dd452a932d3446c6155bf97e977b707c4c00`, prior head `0b2649c42bec9617c05965efcc91e3067358d4a2`; current main source blob matches original base; preserve exact regression and production blobs. Prior 151-PR inventory refreshed for all four open PRs updated since 21:18 UTC (#735, #380, #732, #726), no other source overlap; fresh full census attempted but connector call limit prevented completion. Prior five hosted workflows passed at prior head; no independent submitted review. Generation 57 lease released, not acquired. Keep draft, fresh CI and independent review required; no main merge.
+
+
+## BUG-ONLY — exact-payment tolerance validation (2026-11-26 UTC)
+
+Worker: sequential ChatGPT bug-repair coordinator; branch `automation/20261126T1728Z/bug/exact-payment-tolerance`; base `601f20955b435eede448c6d82d8315705d7e381d`. Own only `packages/ux-flow/src/reconcile.ts` (`classifyAmount`), new `packages/ux-flow/src/reconcile.exact-tolerance.test.ts`, this additive claim and `docs/handoffs/UX_FLOW_EXACT_TOLERANCE_20261126.md`. All 170 enumerated open PR changed-file inventories checked for reconcile paths; no overlap. #220 is merged and explicitly excludes this finding from its claim. Ordinary payment reconciliation only, no stopped product or proof authorization changes. Source-derived Node/TypeScript probe: 5 exact-payment invalid-tolerance cases fail, 13 neighboring cases pass. Acceptance: regression committed first, reject invalid tolerance for exact and non-exact amounts with BAD_TOLERANCE, retain exact bigint math and valid classifications; independent review, fresh hosted exact-head CI and legitimate lease required before merge. Lease generation 48 held by `claude-newghostpay-7d`; no takeover or merge. No full local checkout or browser test claimed.
+
+
+## BUG-ONLY — exact supported locale extension negotiation (2026-11-26 UTC)
+
+Worker: ChatGPT bug-repair round, sequential coordinator; no independent verifier. Branch `automation/20261126/bug/i18n-exact-extension-negotiation`, base `194e225cc115f894650b2e9ef3390854241e4143`. Own only `packages/i18n/src/negotiate.ts`, new `packages/i18n/src/negotiate.extensions.test.ts`, this additive claim, and `docs/handoffs/I18N_EXACT_EXTENSION_NEGOTIATION_20261126.md`.
+
+Observed: `negotiateLocale` drops extensions before comparing the exact canonical supported tag; it can select a different locale or mislabel a truncated match as exact. Exact source blobs matched, standalone Node 22/TypeScript 5.8.3 probes 10/14 baseline and 14/14 candidate, strict compilation passed. Acceptance: regression first; exact match before existing truncations, correct `how`, preserve preference order, fallbackChain/truncations, duplicate-q fix, invalid/default behavior and 32 cap. No new feature, dependency, release or payment/contract/network interaction. Historical same-source PR #506 merged; all 203 open PR changed-file lists inspected for negotiate/bcp47 paths, no conflict found, latest PR inventory unchanged before branch creation. Main lease generation 44 released at inspection, not acquired. Keep draft pending independent review and exact-head hosted CI, applicable browser and refreshed ownership. Direct Pages impact unverified.
+
+## Defensive repair train #724 + #732 + #726 + #713 + #715 — 2026-11-27 UTC (newghostpay-67 worker W2)
+
+- Branch: carrier `finish/privacy-preview-resume-20261126-9d8f` (#724). Base main `3f7fcd0a7042eef0f03f1b513bb65f1037998c07`.
+- Composed exact heads: #724 `0d083443fedf397765c5fcd712fb495771e351b3`, #732 `8fc4c2f5ee072b59948dce0ba72e254de6b435cd`, #726 `8e90e154c8e85188202d0425e68bd4e43d22bba2`, #713 `1d9a6b053e98ddb196304e608b23b2d52437dff7`, #715 `1fcadbff48c0840b2ca9ea291f5d849e38a969bd` (merged last; `--no-ff` merges; ACTIVE_WORK conflicts keep both sides).
+- Owns only the composition, this entry and any defect repair found in review. Donor branches are untouched.
+- Acceptance: AI source review of the four runtime diffs and the #715 build-guard diff; all PR checks green on the exact head. No merge into main, no integration lock, no deployment.
+
 # BUG — Share-target payment label ambiguity (2026-11-27 UTC)
 
 Worker: sequential bug-only coordinator; branch `automation/20261127T0420Z/bug/share-payment-label-ambiguity`; base `3c9fc0ab518b8a308716dc87cc860424118718eb`. Owned paths: `packages/ux-intake/src/deeplink.ts`, new `packages/ux-intake/src/deeplink.share-ambiguity.test.ts`, additive claim here and new `docs/handoffs/UX_INTAKE_SHARE_LABEL_AMBIGUITY_20261127.md`.
@@ -5140,3 +5197,8 @@ All 155 open PR file inventories examined at discovery; none includes either own
 
 Worker: sequential bug-only coordinator; branch `automation/20261127T0824Z/bug/share-checksum-warning`; base `1b07cd7b0614a342cc2d1b2ea0238a952957eadb`. Own only `packages/ux-intake/src/deeplink.ts`, new `packages/ux-intake/src/deeplink.share-checksum.test.ts`, this additive claim and new `docs/handoffs/UX_INTAKE_SHARE_CHECKSUM_WARNING_20261127.md`. Prior #748 ownership released in comment 7213490605 after merge. All 156 open file inventories inspected before #748 integration; immediately after merge the partitioned 155-open-PR list is exactly the same minus #748, with no competing parser or new test owner. Preserve all other source and claims.
 Observed: existing duplicate map overwrites an unverified-checksum diagnostic when a later equivalent input has no warning. Independent native verification comment 7210306424 reproduced the pre-existing defect; current main parser and address blobs verified locally in bounded extraction (Git SHA-1 recomputed) with 13/19 baseline vs 19/19 proposed map-loop cases. Acceptance: raw and payment URI duplicate warnings preserved regardless of input order, unflagged duplicates stay unflagged, canonical destination, amount/label identity, safe display and fragment warnings unchanged. Regression-first commit, minimal fix, fresh hosted CI and separate review required. Native checkout DNS blocked; no native test claim. Generation 68 released; no merge authorization until all gates pass. No stopped-feature, dependency, network, fund or release changes.
+
+## Integration of repair train #724 — 2026-11-27 UTC (local coordinator newghostpay-e3)
+
+- Branch: carrier `finish/privacy-preview-resume-20261126-9d8f` (#724), successor to the newghostpay-67 W2 claim (no longer running). Merged main `a7f9abf80f2c9aee9b7d130a9bbc3af1b8131053`; only conflict was this file, both sides kept.
+- Owns only the composition, this entry and any repair needed by hosted CI on the exact head. Acceptance: all PR checks green on the exact head, merge under the integration lock, resulting-main checks green.
