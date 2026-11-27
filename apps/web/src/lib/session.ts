@@ -14,12 +14,14 @@ import { hexToBytes } from '@noble/hashes/utils.js';
 import { signerPublicKeyHex } from '@ghostpay/invoice-schema';
 import { decryptKeystore, encryptKeystore, type KeystoreOptions } from './keystore';
 import { UserFacingError } from './errors';
+import { purgeInvoiceDrafts } from './invoiceDraftSlots';
 
 /**
  * In-memory seller key holder. The three private scalars are held as `SecretBox` values (closure/WeakMap storage, not
  * `Uint8Array` subtypes), so spread, `structuredClone`/`postMessage`, `Array.from` and `slice` of the stored value see no
  * key bytes (audit S3-08). Code that needs a scalar borrows a temporary `SecretScalar` through `withSessionSecrets`,
- * which wipes it afterwards. Nothing here touches web storage. React state only ever receives the public summary.
+ * which wipes it afterwards. Nothing here stores anything in web storage; clearing the keys only removes the opt-in invoice
+ * drafts from tab storage ({@link clearSession}). React state only ever receives the public summary.
  */
 export interface SessionPublic {
   readonly metaAddress: string;
@@ -525,7 +527,11 @@ export async function verifyDownloadedBackup(text: string, passphrase: string, s
   updateCustody(guard, (c) => ({ ...c, external: 'verified' }));
 }
 
-/** Best-effort wipe and forget. */
+/**
+ * Best-effort wipe and forget. An explicit clear (`notify`, the default) also removes this tab's opt-in encrypted invoice
+ * drafts, which have no timer of their own and need no keys to find. Replacing keys (`install` passes `false`) leaves them: a
+ * reload, an import of the same keys and a resume of the draft is the documented flow. A suspension keeps them as well.
+ */
 export function clearSession(notify = true): void {
   sessionRevision++;
   suspended = false;
@@ -538,7 +544,10 @@ export function clearSession(notify = true): void {
   current = undefined;
   publicSummary = undefined;
   setCustody(undefined, false);
-  if (notify) emit();
+  if (notify) {
+    purgeInvoiceDrafts();
+    emit();
+  }
 }
 
 /** Encrypted backup text. Raw keys exist only for the duration of the call. */

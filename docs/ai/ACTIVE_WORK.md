@@ -18,6 +18,96 @@ head; independent review before any merge.
 
 ---
 
+# Consolidation stack 2 (#728): repair-train merge, replacement status, qualification port (2026-11-27 UTC)
+
+Worker: newghostpay-e3 worker W1; existing branch `claude/consolidation-stack-20261126`, previous head `298257fd`.
+Merges repair train #724 head `8a519272` (contains main `a7f9abf8`). Owned paths: `resolveReplacements` in
+`apps/web/src/lib/attemptStatus.ts` with its test; ported from donor `nodata/beautiful-heisenberg-25ikdy` (#751,
+read-only): `invoiceDraft*`, `useInvoiceDraft*`, the draft purge in `session.ts`, the draft hint and cover label in the
+four locales, `privacyWording.test.ts`, the two label matches in `Settings.test.tsx`, `docs/pages/README.md`,
+`docs/research/privacy-rpc-call-graph.md`, `docs/user/privacy-limits.md`, the draft, offline-checkout, scan and
+log-paging fuzz tests, the `decodePaymentCalldata` re-encode guard in `packages/chain-adapters/src/router.ts` with its
+fuzz test, `walletDisclosure.callsites.test.ts`; cover cases in `scanClient.checkpoint.test.ts`; this entry. Not taken:
+#665, #742 and the ERC-20 suites. Acceptance: each fix has a regression test that fails without it; all PR checks green
+at the exact head; no gate, dependency, contract or activation change; merge stays with the integration-lock holder.
+Review follow-up on `9222e597` (findings N1-N5): connection-loss handling in `apps/web/src/views/Pay.tsx`, a
+wallet-request notification on `grantApproval` in `apps/web/src/lib/payExec.ts`, and `Pay.offline.test.tsx`,
+`Pay.offlineHandoff.test.tsx` and `Pay.offline.fuzz.test.tsx`. Journal, post-broadcast and terminal behaviour unchanged.
+
+# Consolidation stack 2: current-main merge and payment lifecycle fixes (2026-11-27 UTC)
+
+Worker: newghostpay-67 worker W1; existing branch `claude/consolidation-stack-20261126` (#728), main `3f7fcd0a` merged.
+Owned paths: the terminal-invoice and connection-loss handling in `apps/web/src/views/Pay.tsx` with new
+`Pay.offlineRevocation.test.tsx`, `resolveReplacements` in `apps/web/src/lib/attemptStatus.ts` with its test, the
+cover/ownership cases appended to `apps/web/src/lib/scanClient.checkpoint.test.ts`, and this entry. Not claimed: #744
+(it carries the `scanSpam.ts` estimate fix; merged after it lands). Acceptance: each fix has a regression test that fails
+without it; all PR checks green at the exact head; no gate, dependency, contract or activation change.
+
+# Consolidation stack 2: #696, #717 and audit fixes F2, F3, F7 (2026-11-26 UTC)
+
+Worker: newghostpay-4e (coordinator); existing branch `claude/consolidation-stack-20261126`, base `c7c6349c` (#718).
+Stacks reviewed heads #696 `1b097132` and #717 `367a3b30` plus the independently reviewed source-audit patches F2, F3 and
+F7. Hand resolutions are limited to `apps/web/src/AppShell.tsx` (masking wrapper kept, offline notice added),
+`apps/web/src/i18n/securityKeys.ts` (both key groups kept) and this registry. No new branch, dependency, contract,
+deployment or gate change. Acceptance: full hosted CI and independent re-review at the exact head.
+
+# Offline-aware checkout and opt-in encrypted invoice drafts, successor of #604/#591 (2026-11-26 UTC)
+
+Worker: ghostpay-78 worker; branch `claude/offline-drafts-successor-20261126` from main `194e225c`. Donors (left open,
+untouched): #604 `finish/offline-completion-20261124` `2f2c282e`, #591 `codex/offline-interrupted-invoice` `49862e2d`.
+Their receipt-binding half is already on main via #635 and is not ported. Owned paths: `apps/web/src/lib/browserOnline.ts`,
+`apps/web/src/lib/invoiceDraft{,.test}.ts`, `apps/web/src/lib/useInvoiceDraft{,.test}.ts(x)`, the offline handling in
+`apps/web/src/views/Pay.tsx` and its tests, the offline notice in `apps/web/src/AppShell.tsx`, the draft controls in
+`apps/web/src/views/CreateInvoice.tsx` (inside `InvoiceForm`), `apps/web/e2e/offline-session.spec.ts`, the offline notes
+in `docs/pages/README.md`, additive `app.offline`, `pay.offlineCheck`, `pay.retryCheck` and `create.draft.*` keys in the
+four locales and `apps/web/src/i18n/securityKeys.ts`, this entry.
+Continued by newghostpay-4e/features2 after that worker's machine crashed: also the interrupted wallet request cases in
+`apps/web/e2e/flows.spec.ts`; merged with current main. #710 (separate worker) also edits `Pay.tsx` and is not included.
+Acceptance: offline checkout fails closed and recovers only through an explicit retry; drafts are opt-in, tab-local,
+encrypted under the loaded seller's viewing key, strictly validated, refused for a chain or token the build does not
+offer or money terms the form would change (kept rather than converted), never store passphrases and never resurrect memo or line
+descriptions for a minimal-metadata draft; returned wallet hashes and unknown outcomes survive a connection loss; no new
+workspace dependency; hosted CI green at the exact head.
+
+# Cover lookups (#696): merge of main `e7e98109` and review follow-up — newghostpay-4e/features2 (2026-11-26 UTC)
+
+Worker: newghostpay-4e/features2, successor after a machine crash. Branch `claude/w-match-cover-20261125`, head
+`cb119fa1` merged with main `e7e98109` (#624, docs only; the sole conflict was this file, resolved as a union).
+Owned paths: the #696 entries below and this entry. Acceptance: independent review (worker "reviewer2") addressed,
+hosted CI green at the exact head.
+
+# Cover lookups (#696): integration and review follow-up (2026-11-26 UTC)
+
+Worker: newghostpay-7d/features, successor of the cut-off ghostpay-78 worker below. Branch
+`claude/w-match-cover-20261125`; its main `194e225c` merge `bb03c9a9` verified (only ACTIVE_WORK conflicted; catalogs
+and `securityKeys.ts` complete) and pushed. Owned paths: the ghostpay-78 entry below and this entry.
+Acceptance: independent review (worker "reviewer") addressed, current main merged, hosted CI green at the exact head.
+
+# Cover lookups (#696): third independent review and finish (2026-11-26 UTC)
+
+Worker: ghostpay-78 worker, continuing `newghostpay-77`'s parked branch `claude/w-match-cover-20261125`; base main
+`194e225c` merged (ACTIVE_WORK union). Owned paths: the #696 files (`apps/web/src/lib/matchCover.ts`, the cover hunks of
+`scanClient.ts`, `scanSpam.ts`, `Settings.tsx`, `Scan.tsx`, their tests, the three `scanLanes` catalog keys) and this
+entry. Acceptance: independent security/correctness review of cover v3 against the security invariants (opt-in, fail
+closed on unreadable settings, derived-key cleanup, no new egress, honest limits, route guard and #691 revocation, no
+anonymity wording); confirmed defects fixed with failing-then-passing tests; hosted CI green at the exact head.
+
+# Cover lookups (#696): successor work after the second review (2026-11-26 UTC)
+
+Worker: Claude Code session `newghostpay-77`, continuing `newghostpay-ae`'s parked branch `claude/w-match-cover-20261125`
+(confirmed unclaimed by peers); main `e1d0eb0f` merged. Owned paths: the #696 files below plus `Scan.tsx`'s route guard
+and the unreadable state of the scan-lane store. The second independent review rejected v2; design v3 and its limits:
+`docs/handoffs/MATCH_COVER_20261125.md`. Acceptance: the review's findings fixed or disclosed, regression tests that
+fail without them, a third independent review, hosted CI green on the exact head.
+
+# Cover lookups for matched router payments (owner-approved, opt-in) — 2026-11-25 UTC
+
+Worker: Claude Code session `newghostpay-ae`. Branch `claude/w-match-cover-20261125`, base main `1bea3df3`. The owner approved this slice in this session (new capability, off by default). W3 (ghostpay-backup-60) confirmed it is outside W3/P14 scope; ghostpay-42 informed.
+Problem: verifying a matched router payment sends receipt and transaction lookups that no non-matching announcement gets, so the RPC (and a second RPC) learn which announcements matched (docs/research/privacy-rpc-call-graph.md items 2-3).
+Owned paths: new `apps/web/src/lib/matchCover.ts` (+ tests), the per-page verification loop and an optional `matchCover` parameter in `apps/web/src/lib/scanClient.ts`, `matchCover` in `apps/web/src/lib/scanSpam.ts` scan-lane settings, the checkbox in `Settings.tsx`, the parameter and disclosure line in `Scan.tsx`, three `scanLanes`/`settings.scanLanes` catalog keys, an optional passthrough in `src/test/disclosureHarness.ts`, `src/lib/scanDisclosure.cover.test.ts`, the privacy-limits paragraph, call-graph Phase 8 note, this entry and a handoff.
+Not owned: `packages/chain-adapters` verification (unchanged), checkpoint/reorg logic, anything in #575/#546/#625/#653 beyond the loop hunk.
+Acceptance: off by default and byte-identical behaviour when off; real verification and its order unchanged; decoys through the same verification path on both providers with results discarded; deterministic decoys per payment and window from a viewing-key-derived secret; measured request shapes; truthful disclosure of what remains visible; full hosted CI; independent review.
+
 # Audit fixes F1-F4, F6, F7, F9 (permit clock, router buffer, HTTP 413 scan, sweep destination, embed focus, transfer estimate) — 2026-11-27 UTC
 
 Worker: local Claude Code maintenance/audit session on the existing merged branch

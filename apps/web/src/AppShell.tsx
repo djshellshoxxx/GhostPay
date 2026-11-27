@@ -28,6 +28,7 @@ import { ErrorBoundary } from './components/ErrorBoundary';
 import { BrowserChecks } from './components/BrowserChecks';
 import { CopiedBackupNotice } from './components/SecretBackup';
 import { notifyAppLock } from './lib/appLock';
+import { useBrowserOnline } from './lib/browserOnline';
 
 /** How often the idle lock compares the wall clock with the last activity, for devices whose timers paused in sleep (GP-PAGES-04). */
 export const IDLE_CHECK_MS = 20_000;
@@ -97,6 +98,7 @@ function ViewSwitch(props: { readonly view: ViewId; readonly extraViews: ExtraVi
 
 export function AppShell(props: AppShellProps): ReactNode {
   const profile = props.profile ?? 'full';
+  const online = useBrowserOnline();
   const extraViews = props.extraViews ?? {};
   const order = profile === 'lean' ? props.order.filter((id) => CORE_ORDER.includes(id)) : props.order;
   const services = useServices();
@@ -448,6 +450,7 @@ export function AppShell(props: AppShellProps): ReactNode {
       </header>
       <main id="main" tabIndex={-1} ref={main}>
         <SensitiveContent>{!suspended && props.mainPrelude}</SensitiveContent>
+        {!online && <Notice kind="warn">{t('app.offline')}</Notice>}
         {suspended && <Notice kind="warn" title={t('app.idle.suspended.title')}>{t('app.idle.suspended.body')}</Notice>}
         {session !== undefined && backup?.backedUp === true && backup.verified === false && (
           <Notice kind="warn" title={t('app.backup.unverified.title')}>
