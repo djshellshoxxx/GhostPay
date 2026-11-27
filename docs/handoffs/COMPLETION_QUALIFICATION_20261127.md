@@ -91,10 +91,19 @@ Mutation checks: production code temporarily broken, tests went red, restored (4
 | EMB-1 | medium | #744 head `214c1287` carried a red embed test: a removed dialog's late handshake timeout still opened a popup | fixed here; the #744 owner fixed it equivalently as `60ce3508` |
 | FUZZ-D1 | low | `decodePaymentCalldata` threw a viem range error, not a typed `PREVIEW_MISMATCH`, for a permit `v` word wider than uint8 | fixed with a failing-first regression |
 | PHC-D1 | low | Draft slot was named from public keys (meta-address, signer key), so storage access confirmed "this profile holds a draft for seller X" | fixed: slot is `v3`, HKDF of the viewing key; `v2` slots are ignored and deleted |
+| PHC-D3 | low (review of `a052086d`) | The draft write committed in a later promise reaction than the codec's session check, so an explicit key clear between them recreated the purged draft (reproduced with the real codec: red before, green after) | fixed: `draftPurgeEpoch()` is captured at save start and rechecked immediately before `sessionStorage.setItem` (no await between); a purge ends the opt-in and reports `off`. Tests: clear between check and commit, clear while sealing, clear making the codec refuse, key replacement (old ciphertext stays in the old seller's slot, new slot untouched), navigation durability |
 | PHC-D2 | low | Drafts had no clear on explicit key clearing, and the hint did not say memo and line text are kept | fixed: explicit clear and idle key wipe remove drafts; hint rewritten in four locales |
 | PHC-S1 | info | Cover label "Hide which payments matched..." overstated the hint | softened in en, es, ja, ar |
 | PHC-S2/S3 | low/info | Decoy lookup amplification and the 1000-entry `routerOnlyBlocks` cap were undisclosed | documented in `docs/user/privacy-limits.md` (no code change) |
 | GUARD-1 | test hygiene | `walletDisclosure.callsites` scanned `erc20Flow.testutil.ts` as production | guard now excludes `*.testutil.*` and gains a case that fails if any non-test source imports one (static, side-effect and dynamic probes verified) |
+
+### v2 draft format disposition
+
+The v2 slot (`ghostpay.invoice-draft.v2.`) exists only on the #717/#728 branches. `git log origin/main -S'ghostpay.invoice-draft'`
+over `apps/web/src` is empty, and the Pages workflow publishes `main` only (`workflow_dispatch` with `deploy`). So no published
+beta wrote v2 data. This is a deliberate break of an unreleased format; v2 records are deleted without being read, and
+`v1` and unrelated records are never touched. Not checked here: the GitHub Pages deployment history itself. The owner should
+confirm no preview build of those branches was published before treating this as closed.
 
 ## Open findings (not repaired; need an owner or lead decision)
 

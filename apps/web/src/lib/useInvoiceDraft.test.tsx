@@ -216,3 +216,79 @@ it('does not offer a draft when the keys are suspended while a write from a left
   expect(sessionStorage.getItem(slot)).toBe('late ciphertext');
   expect(result.current.status).toBe('off');
 });
+
+// Commit boundary (review of the Phase C repair). The codec checks the session before it returns ciphertext, but the hook
+// stores it in a later promise reaction. A clear in between must not bring the removed draft back.
+it('does not recreate a draft that an explicit clear removed between the codec session check and the commit', async () => {
+  const session = generateWaivedSession();
+  const slot = codec.draftSlot(session);
+  const real = codec.sealDraft;
+  vi.spyOn(codec, 'sealDraft').mockImplementation(async (s, draft) => {
+    const raw = await real(s, draft); // the codec's own session check has passed here
+    clearSession(true); // purges every draft and the keys, before the hook's write continuation runs
+    return raw;
+  });
+  const { result } = renderHook(() => useInvoiceDraft(session, 84532, CHAINS, FULL));
+  act(() => { result.current.save(); });
+  await waitFor(() => { expect(result.current.status).toBe('off'); });
+  expect(sessionStorage.getItem(slot)).toBeNull();
+  expect(sessionStorage.length).toBe(0);
+  act(() => { result.current.change({ memo: 'typed after the clear' }); });
+  expect(codec.sealDraft).toHaveBeenCalledTimes(1); // the clear ended the opt-in: no further write starts
+});
+
+it('stores nothing and ends the opt-in when the keys are cleared while the seal is still pending', async () => {
+  const session = generateWaivedSession();
+  const slot = codec.draftSlot(session);
+  const pending: ((sealed: string) => void)[] = [];
+  vi.spyOn(codec, 'sealDraft').mockImplementation(() => new Promise(resolve => pending.push(resolve)));
+  const { result } = renderHook(() => useInvoiceDraft(session, 84532, CHAINS, FULL));
+  act(() => { result.current.save(); });
+  act(() => { clearSession(true); });
+  await act(async () => { pending[0]!('ciphertext sealed before the clear'); await Promise.resolve(); await Promise.resolve(); });
+  expect(sessionStorage.getItem(slot)).toBeNull();
+  expect(result.current.status).toBe('off');
+});
+
+it('reports off, not a failed save, when the clear makes the codec refuse the write', async () => {
+  const session = generateWaivedSession();
+  const real = codec.sealDraft;
+  vi.spyOn(codec, 'sealDraft').mockImplementation(async (s, draft) => {
+    clearSession(true); // keys gone before the codec's check: it throws
+    return real(s, draft);
+  });
+  const { result } = renderHook(() => useInvoiceDraft(session, 84532, CHAINS, FULL));
+  act(() => { result.current.save(); });
+  await waitFor(() => { expect(result.current.status).toBe('off'); });
+  expect(sessionStorage.length).toBe(0);
+});
+
+it('replacing the keys between the codec check and the commit never writes into the new seller\'s slot', async () => {
+  const first = generateWaivedSession();
+  const firstSlot = codec.draftSlot(first);
+  const real = codec.sealDraft;
+  let second: ReturnType<typeof generateWaivedSession> | undefined;
+  vi.spyOn(codec, 'sealDraft').mockImplementation(async (s, draft) => {
+    const raw = await real(s, draft);
+    second = generateWaivedSession(); // another seller replaces the loaded keys (no explicit clear)
+    return raw;
+  });
+  const { result } = renderHook(() => useInvoiceDraft(first, 84532, CHAINS, FULL));
+  act(() => { result.current.save(); });
+  await waitFor(() => { expect(result.current.status).toBe('saved'); });
+  const secondSlot = codec.draftSlot(second!);
+  expect(secondSlot).not.toBe(firstSlot);
+  expect(sessionStorage.getItem(secondSlot)).toBeNull();
+  // The record is the first seller's ciphertext under the first seller's slot: the new keys cannot open it.
+  await expect(codec.openDraft(firstSlot, sessionStorage.getItem(firstSlot)!)).rejects.toThrow();
+});
+
+it('a view left mid-write still commits the sealed draft for the same seller (navigation durability)', async () => {
+  const session = generateWaivedSession();
+  const slot = codec.draftSlot(session);
+  const { result, unmount } = renderHook(() => useInvoiceDraft(session, 84532, CHAINS, FULL));
+  act(() => { result.current.change({ memo: 'kept across navigation' }); result.current.save(); });
+  unmount();
+  await waitFor(() => { expect(sessionStorage.getItem(slot)).not.toBeNull(); });
+  expect(await codec.openDraft(slot, sessionStorage.getItem(slot)!)).toMatchObject({ memo: 'kept across navigation' });
+});
