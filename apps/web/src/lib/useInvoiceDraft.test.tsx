@@ -1,8 +1,9 @@
 // @vitest-environment jsdom
 import { act, renderHook, waitFor } from '@testing-library/react';
 import { afterEach, beforeEach, expect, it, vi } from 'vitest';
+import { checkpointKeyId } from '@ghostpay/ux-vault/portable';
 import * as codec from './invoiceDraft';
-import { clearSession } from './session';
+import { clearSession, suspendSession } from './session';
 import { generateWaivedSession } from '../test/keys';
 import { useInvoiceDraft } from './useInvoiceDraft';
 import { tokenChoices } from './invoiceCreate';
@@ -171,4 +172,47 @@ it('refuses a draft for a chain or token this build does not offer, keeping the 
     expect(sessionStorage.getItem(slot)).toBe(raw);
     unmount();
   }
+});
+
+it('ignores and deletes a legacy v2 slot named from the public keys instead of offering it', async () => {
+  const session = generateWaivedSession();
+  const legacy = `ghostpay.invoice-draft.v2.${checkpointKeyId(session.metaAddress, session.signerPublicKey)}`;
+  sessionStorage.setItem(legacy, `${'a'.repeat(32)}.AAAA`);
+  const { result } = renderHook(() => useInvoiceDraft(session, 84532, CHAINS, FULL));
+  await waitFor(() => { expect(sessionStorage.getItem(legacy)).toBeNull(); });
+  expect(result.current.status).toBe('off');
+  // The current record is unaffected by that sweep, and a legacy record is never read or migrated.
+  act(() => { result.current.save(); });
+  await waitFor(() => { expect(result.current.status).toBe('saved'); });
+  expect(sessionStorage.getItem(codec.draftSlot(session))).not.toBeNull();
+  expect(sessionStorage.getItem(legacy)).toBeNull();
+});
+
+it('reports no readable draft, without throwing, while the seller keys are suspended', async () => {
+  const session = generateWaivedSession();
+  const slot = codec.draftSlot(session);
+  const raw = await codec.sealDraft(slot, codec.blankDraft(84532));
+  sessionStorage.setItem(slot, raw);
+  suspendSession();
+  const { result } = renderHook(() => useInvoiceDraft(session, 84532, CHAINS, FULL));
+  await act(async () => { await Promise.resolve(); });
+  expect(result.current.status).toBe('off');
+  // The ciphertext is kept: it is the seller's until they remove it, but nothing can name or open it without the keys.
+  expect(sessionStorage.getItem(slot)).toBe(raw);
+});
+
+it('does not offer a draft when the keys are suspended while a write from a left view was still in flight', async () => {
+  const session = generateWaivedSession();
+  const slot = codec.draftSlot(session);
+  const pending: ((sealed: string) => void)[] = [];
+  vi.spyOn(codec, 'sealDraft').mockImplementation(() => new Promise(resolve => pending.push(resolve)));
+  const first = renderHook(() => useInvoiceDraft(session, 84532, CHAINS, FULL));
+  act(() => { first.result.current.save(); });
+  first.unmount();
+  const { result } = renderHook(() => useInvoiceDraft(session, 84532, CHAINS, FULL));
+  expect(result.current.status).toBe('opening');
+  suspendSession();
+  await act(async () => { pending[0]!('late ciphertext'); await Promise.resolve(); await Promise.resolve(); });
+  expect(sessionStorage.getItem(slot)).toBe('late ciphertext');
+  expect(result.current.status).toBe('off');
 });
