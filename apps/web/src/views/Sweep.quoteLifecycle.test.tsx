@@ -521,7 +521,26 @@ const REPLACED = [
   ['the relayer', { relayerUrl: 'https://other-relayer.test' }],
 ] as const;
 
+/** What `mount` shows is what is saved, so a later save differs from it only where the patch does. */
+function savedBeforeOpening(): void {
+  window.localStorage.setItem(SETTINGS_KEY, JSON.stringify({ ...DEFAULT_SETTINGS, relayerUrl: 'https://relay.test', rpcUrls: { [String(CHAIN)]: 'https://rpc.test/' } }));
+}
+
+describe('Sweep after another tab replaced only the relayer', () => {
+  beforeEach(savedBeforeOpening);
+
+  it('still reads the balance, which asks no relayer anything', async () => {
+    const m = mount();
+    otherTabSaves(m, { relayerUrl: 'https://other-relayer.test' });
+    fireEvent.click(screen.getByRole('button', { name: READ }));
+    expect(await screen.findByText('5 USDC')).toBeTruthy();
+    expect(m.requests).toEqual([]);
+  });
+});
+
 describe.each(REPLACED)('Sweep after another tab replaced %s', (_name, patch) => {
+  beforeEach(savedBeforeOpening);
+
   it('asks no relayer for a quote', async () => {
     const m = mount();
     await ready(m);

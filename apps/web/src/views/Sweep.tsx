@@ -23,11 +23,8 @@ import { MAX_OTHER_HASHES, SweepJournalUnavailableError } from '../lib/sweepAtte
 import { SOURCE_TRANSLATOR, useI18nOptional } from '../i18n/context';
 import type { MessageKey } from '../i18n/catalog';
 
-/** The saved RPCs, relayer and scan privacy settings, as stored. Another tab can change them while this page is open. */
-const savedRoute = (): string => {
-  const saved = loadSettings();
-  return JSON.stringify([saved.rpcUrls, saved.relayerUrl, loadScanPrivacy(browserStorage())]);
-};
+/** The saved RPCs and scan privacy settings, as stored. Another tab can change them while this page is open. */
+const savedRoute = (): string => JSON.stringify([loadSettings().rpcUrls, loadScanPrivacy(browserStorage())]);
 
 const ATTEMPT_TITLES: Partial<Record<string, MessageKey>> = {
   'unknown-after-handoff': 'sweep.attempt.unknown',
@@ -63,8 +60,9 @@ function SweepPanel(): ReactNode {
   const [routeAtOpen] = useState(savedRoute);
   const routeCurrent = (): boolean => savedRoute() === routeAtOpen;
   // Quotes and signatures go only where this page was opened to send them, also before this tab hears of a change.
+  const [relayerAtOpen] = useState(() => loadSettings().relayerUrl);
   const assertRouteCurrent = (): void => {
-    if (!routeCurrent()) throw new UserFacingError({ key: 'sweep.routeChanged' });
+    if (!routeCurrent() || loadSettings().relayerUrl !== relayerAtOpen) throw new UserFacingError({ key: 'sweep.routeChanged' });
   };
   const balanceOperation = useRef(0);
   // `asked`: this review context has had a read request (so an empty balance means "unknown", not "not read yet");
