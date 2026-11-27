@@ -65,6 +65,16 @@ describe('indexer records the web client cannot use', () => {
     expect(saved).toEqual([]);
   });
 
+  it.each([
+    ['an empty ephemeral key', { ephemeralPublicKey: '0x' }],
+    ['empty metadata', { metadata: '0x' }],
+    ['oversized metadata', { metadata: `0x${'ab'.repeat(4097)}` }],
+    ['a scheme id beyond 64 bits', { schemeId: '18446744073709551616' }],
+  ])('answers past %s, which anyone can post', async (_name, over) => {
+    const logs = await client([record(1300), record(1400, over)]).getLogs(query);
+    expect(logs.map((l) => Number(BigInt(l.blockNumber)))).toEqual([1300]);
+  });
+
   it('still answers when the indexer is ahead of the RPC and the extra records lie beyond its head', async () => {
     const logs = await client([record(1300), record(1900)], 1500).getLogs({ ...query, toBlock: 1500n });
     expect(logs.map((l) => Number(BigInt(l.blockNumber)))).toEqual([1300]);

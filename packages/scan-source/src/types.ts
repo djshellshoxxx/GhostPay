@@ -46,9 +46,9 @@ export interface FetchResult {
   /** Records dropped for failing validation (never surfaced to UI state). */
   readonly skipped: number;
   /**
-   * Present when above zero: the skipped records that should have been usable, because they may sit in the requested range
-   * at or below the observed head. Each could be an announcement missing from this result. Only the indexer source
-   * reports it.
+   * Present when above zero: skipped records that cannot be placed or read, or that contradict the answer, and may sit in
+   * the requested range at or below the observed head. Each could be an announcement missing from this result. What
+   * anyone can post to the announcer is not counted. Only the indexer source reports it.
    */
   readonly rejected?: number;
 }

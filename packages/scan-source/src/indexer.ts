@@ -1,7 +1,7 @@
 import { ScanSourceError, requireArg } from './errors.js';
 import { assertTestnetChainId } from './guard.js';
 import type { FetchRequest, FetchResult, Head, HeadSource, Hex, HttpTransport, PublicLogSource } from './types.js';
-import { claimedPlace, normalizeSet, parseAnnouncement, setHash } from './validate.js';
+import { claimedPlace, normalizeSet, parseAnnouncement, postedBytesPlace, setHash } from './validate.js';
 import { padWindow } from './window.js';
 
 /** Options for {@link createIndexerSource}. */
@@ -56,7 +56,8 @@ function parseHeaders(raw: unknown): Header[] {
  * checks the parent-hash chain is contiguous and complete, and cross-checks the window's first and last block
  * hash and every announcement block hash against `secondSource` (NP-S-7, AT-NP-15). A gap, or a block
  * hash the second source does not confirm, is an error. A record that fails validation or contradicts its header is
- * skipped, and also counted in `rejected` when it may belong to the requested range.
+ * skipped. It is also counted in `rejected` when it may belong to the requested range, unless it is something anyone can
+ * post to the announcer: another scheme, or (under its header's hash) key or metadata bytes of a length not accepted.
  *
  * @security The request carries only chain id, padded window and page size: no key, view tag, address or meta
  * address (NP-S-2). Hides: which announcements are yours (matching is local). Does NOT hide: your IP unless the
@@ -133,7 +134,7 @@ export function createIndexerSource(o: IndexerSourceOptions): PublicLogSource {
 
       const parsed = [];
       let skipped = 0;
-      // Unusable records of this scheme that may belong to the requested, observed range (an unreadable block may).
+      // Records of this scheme that cannot be placed or read and may belong to the requested, observed range.
       let rejected = 0;
       const requested = (n: bigint | undefined): boolean => n === undefined || (n >= req.fromBlock && n <= req.toBlock && n <= expectedTo);
       const contents = new Map<string, string>();
@@ -142,6 +143,9 @@ export function createIndexerSource(o: IndexerSourceOptions): PublicLogSource {
         if (a === undefined || byNumber.get(a.blockNumber) !== a.blockHash) {
           skipped++;
           const claim = claimedPlace(raw);
+          // Anyone can post another scheme's event, or bytes of a length not accepted: neither may hold a scan back.
+          const posted = a === undefined ? postedBytesPlace(raw, scheme) : undefined;
+          if (posted !== undefined && byNumber.get(posted.blockNumber) === posted.blockHash) continue;
           if ((claim.schemeId === undefined || claim.schemeId === scheme) && requested(claim.blockNumber)) rejected++;
           continue;
         }
