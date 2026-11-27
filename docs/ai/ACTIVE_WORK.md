@@ -22,6 +22,11 @@ extraction annotation only; additive `scan.done.indexerCaveat` in `apps/web/loca
 Runtime/catalog worker owns only the runtime/key files; unit worker owns only the new component test;
 browser worker owns only the new E2E test. Each uses a separate worktree; the coordinator alone integrates.
 
+Integration repair: the coordinator also owns only the two existing global Cancelled assertion sites
+in `apps/web/src/views/Scan.test.tsx` (three cases). Fresh #720/#724/#728 source/claim/comment review
+confirms these queries and their safety cases are unclaimed; #720's manifest tests remain untouched.
+Scope them to the visible outcome and correct live announcement, preserving every existing safety check.
+
 Acceptance: append an honest announcement-omission caveat using the plan captured for that run
 (`plan.indexerUrl`), with the same non-sensitive text in the accessible completion announcement.
 Retain the existing outcome/counts, cancelled/limit/error semantics, evidence status, checkpoints,
