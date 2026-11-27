@@ -1,3 +1,23 @@
+# Defensive fixes W2-1 to W2-3, sweep destination, embed popup, F8 — 2026-11-27 UTC
+
+Worker: local Claude Code worker W2 on the existing merged branch `claude/journal-fuzz-20261126`, fast-forwarded to
+`8a519272` (repair train #724, which holds main `a7f9abf8`); no new branch. Draft PR only: no merge, no integration lock.
+
+Owned paths: `apps/web/src/{AppShell.tsx,state.tsx}`, `lib/{settings,sweep}.ts`, `lib/scanClient.ts` (reorg clears
+only), `lib/scanPrivacy.ts` (indexer adapter only), `views/{Pay,Settings,Sweep}.tsx`, their new or extended tests,
+`i18n/securityKeys.ts`; three new keys in `apps/web/locales/*.json`; `apps/web/public/ghostpay-embed-v2.js` (click
+guard) and `embedV2.test.ts`; `packages/scan-source/src/{indexer,types,validate}.ts`;
+`packages/tx-review/src/{review,types}.ts`, `review.test.ts`, `DEVIATIONS.md` item 4;
+`packages/ux-vault/src/tag-archive-portable.ts` (`derive` only) and its new memory test; this entry.
+
+Overlap: draft #728 also changes `AppShell.tsx`, `Pay.tsx`, `Settings.tsx`, `scanClient.ts`, `securityKeys.ts`, the
+locale catalogs and this file; whichever lands second resolves them and keeps both behaviours. The settings-sync shape
+comes from draft #251, which is left untouched; its network-authorization feature is not taken. Not claimed: F5, the
+embed focus trap. Acceptance: each regression fails without its fix and passes with it; hosted CI green on the exact
+head; independent review before any merge.
+
+---
+
 # Audit fixes F1-F4, F6, F7, F9 (permit clock, router buffer, HTTP 413 scan, sweep destination, embed focus, transfer estimate) — 2026-11-27 UTC
 
 Worker: local Claude Code maintenance/audit session on the existing merged branch
