@@ -115,7 +115,7 @@ make match-time or position-bearing requests uniform.
 ## Phase 8: privacy improvement candidates
 
 **Implemented after this analysis (owner-approved, opt-in, off by default): cover lookups for matched router payments.**
-With `matchCover` (Settings: "Hide which payments matched among other payments' lookups"), every scan page also
+With `matchCover` (Settings: "Blur which payments matched among other lookups"), every scan page also
 verifies the other router payments a keyed rule selects (about half), whether or not anything matched, through the same
 `verifyClaimedPayment` call, in chain order, on both providers; their results are discarded and the real verification
 is unchanged. Selection is per announcement (an HMAC, keyed from the viewing key, of its transaction hash, ephemeral

@@ -100,8 +100,8 @@ and [seller privacy](seller-privacy.md).
   hands a request to your wallet, its **Review wallet disclosure** dialog says the same.
 - **Which announcement was yours.** Checking a matched router payment asks your RPC (and the second RPC, if set) for
   that payment's block, receipt and transaction. By default no other announcement gets these lookups, so the provider
-  can tell which public announcement matched your keys and how many did. The opt-in **Hide which payments matched
-  among other payments' lookups** setting (Settings, scan lanes) makes every scan also check about half of the other
+  can tell which public announcement matched your keys and how many did. The opt-in **Blur which payments matched
+  among other lookups** setting (Settings, scan lanes) makes every scan also check about half of the other
   router payments in supported tokens that it reads, whether or not any payment matched, the same way and in chain
   order, and discard their results; your payments are verified exactly as before. Which others are checked is decided
   by a key derived from your viewing key and by each announcement's content, so a rescan, a resumed scan or a scan
@@ -122,6 +122,11 @@ and [seller privacy](seller-privacy.md).
   - a decoy that fails its check (for example a smart-wallet payment) is followed by fewer requests than a payment that
     passes, and is not sent to the second RPC;
   - cover is drawn only from router payments in supported tokens, so with few of them there is little or none;
+  - a third party who posts many cheap router payments in supported tokens can increase the number of extra RPC lookups
+    a cover-enabled scan makes, which is a cost of turning the setting on;
+  - the list of blocks that were read for router payments only because announcer spam exceeded a response cap
+    (`routerOnlyBlocks`, shown after a scan) is capped at 1000 entries, so the list can be incomplete on a very noisy
+    scan;
   - the provider still sees when you scanned, how far back and your IP address.
   It costs many more RPC requests, in proportion to how busy the chain is, and a provider's rate limit can then be
   reached sooner. A scan stops if this setting changes while it runs, and does not start while the saved scan lane
