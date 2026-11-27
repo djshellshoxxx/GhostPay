@@ -390,6 +390,72 @@ describe('ghostpay-embed-v2.js iframe mode', () => {
     expect(h.opened).toHaveLength(1);
   });
 
+  // jsdom does not enforce `inert`; these pin which elements carry it. Browsers keep focus out of such elements.
+  const BEHIND = '<main id="m"><a href="#x">shop link</a></main><aside id="a" inert></aside>';
+  const settled = (): Promise<void> => new Promise<void>((resolve) => { setTimeout(resolve, 0); });
+  const inert = (doc: Document): string[] => Array.from(doc.body.children).filter((c) => c.hasAttribute('inert')).map((c) => (c.id === '' ? c.tagName : c.id));
+  const closeButton = (doc: Document): HTMLButtonElement => doc.querySelector<HTMLButtonElement>('[role="dialog"] button')!;
+
+  it('makes the rest of the page inert while the dialog is open, and on close releases only what it made inert', async () => {
+    const h = await page(`data-invoice="${GOOD}" data-mode="iframe"`, BEHIND);
+    const doc = h.dom.window.document;
+    h.btn.click();
+    expect(inert(doc)).toEqual(['DIV', 'm', 'a', 'SCRIPT']);
+    expect(doc.querySelector('[role="dialog"]')!.hasAttribute('inert')).toBe(false);
+    closeButton(doc).click();
+    expect(inert(doc)).toEqual(['a']);
+    expect(doc.activeElement).toBe(h.btn);
+  });
+
+  it('releases the page before the popup fallback', async () => {
+    const h = await page(`data-invoice="${GOOD}" data-mode="iframe"`, BEHIND);
+    h.btn.click();
+    h.timers[0]!();
+    expect(inert(h.dom.window.document)).toEqual(['a']);
+    expect(h.opened).toHaveLength(1);
+  });
+
+  it.each([
+    ['removes the dialog', (doc: Document): void => { doc.querySelector('[role="dialog"]')!.remove(); }],
+    // The old body keeps its children, so only the change to the root element shows the dialog is gone.
+    ['replaces the body', (doc: Document): void => { doc.documentElement.replaceChild(doc.createElement('body'), doc.body); }],
+  ])('releases the page when the shop page %s', async (_name, withdraw) => {
+    const h = await page(`data-invoice="${GOOD}" data-mode="iframe"`, BEHIND);
+    const doc = h.dom.window.document;
+    const behind = doc.getElementById('m')!;
+    h.btn.click();
+    expect(behind.hasAttribute('inert')).toBe(true);
+    withdraw(doc);
+    await settled();
+    expect(behind.hasAttribute('inert')).toBe(false);
+  });
+
+  it('keeps the page inert for a dialog opened right after the shop page removed the last one', async () => {
+    const h = await page(`data-invoice="${GOOD}" data-mode="iframe"`, BEHIND);
+    const doc = h.dom.window.document;
+    h.btn.click();
+    doc.querySelector('[role="dialog"]')!.remove();
+    h.btn.click(); // before the removal has been observed
+    await settled();
+    h.timers[0]!(); // the withdrawn checkout's late timeout releases nothing of the new one
+    expect(inert(doc)).toEqual(['DIV', 'm', 'a', 'SCRIPT']);
+    closeButton(doc).click();
+    expect(inert(doc)).toEqual(['a']);
+  });
+
+  it('writes the completion again on close, since an inert page announces nothing', async () => {
+    const { h, nonce } = await framed();
+    h.send({ t: 'gp:init', n: nonce, v: 1, data: {} });
+    h.send(done(nonce));
+    const status = h.dom.window.document.querySelector('[data-ghostpay-status]')!;
+    const writes: unknown[] = [];
+    new h.dom.window.MutationObserver((records) => writes.push(...records)).observe(status, { childList: true });
+    closeButton(h.dom.window.document).click();
+    await settled();
+    expect(writes.length).toBeGreaterThan(0);
+    expect(status.textContent).toBe(`Payment submitted. Transaction ${TX}`);
+  });
+
   it('keeps popup buttons usable after the shop page removed the dialog', async () => {
     const h = await page(`data-invoice="${GOOD}" data-mode="iframe"`, `<button id="p" data-ghostpay data-invoice="${GOOD}"></button>`);
     const doc = h.dom.window.document;
