@@ -1160,6 +1160,7 @@ export const SECURITY_KEY_GROUPS = {
     'settings.lock.keysHint',
     'settings.pins.hint',
     'settings.storageUnavailable',
+    'settings.changedElsewhere',
     'settings.error.pins',
     'settings.exchange.description',
     // My-devices transfer: what leaves the device, what is applied, and every trust-changing consent.
@@ -1272,6 +1273,7 @@ export const SECURITY_KEY_GROUPS = {
     'sweep.balanceRead.settingsChanged',
     'sweep.balanceNotRead',
     'sweep.reviewChanged',
+    'sweep.routeChanged',
   ],
   sellerKeyLossAndRecovery: [
     'sellerKeys.wipeUnverified.title',

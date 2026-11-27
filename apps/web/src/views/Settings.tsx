@@ -19,6 +19,13 @@ import { useApp } from '../state';
 import { LanguagePicker } from '../i18n/LanguagePicker';
 import { SOURCE_TRANSLATOR, useI18nOptional } from '../i18n/context';
 
+/** `typed`, with each chain whose saved value went from `before` to `after` showing the new one. */
+function followMap(typed: Readonly<Record<string, string>>, before: Readonly<Record<string, string>>, after: Readonly<Record<string, string>>): Record<string, string> {
+  const out = { ...typed };
+  for (const chain of Object.keys({ ...before, ...after })) if (before[chain] !== after[chain]) out[chain] = after[chain] ?? '';
+  return out;
+}
+
 export function Settings(): ReactNode {
   const app = useApp();
   const services = useServices();
@@ -42,6 +49,32 @@ export function Settings(): ReactNode {
   const mounted = useRef(true);
 
   useEffect(() => { mounted.current = true; return () => { mounted.current = false; }; }, []);
+
+  // The saved values this form last followed. Another tab's save is shown wherever it changed one, so that saving this
+  // form cannot put the old value back; fields it did not change keep what was typed.
+  const followed = useRef(s);
+  useEffect(() => {
+    const before = followed.current;
+    if (before === s) return;
+    followed.current = s;
+    let changed = false;
+    const follow = <K extends keyof SettingsData>(key: K, show: (value: SettingsData[K]) => void): void => {
+      if (JSON.stringify(before[key]) === JSON.stringify(s[key])) return;
+      changed = true;
+      show(s[key]);
+    };
+    follow('rpcUrls', (to) => { setRpc((typed) => followMap(typed, before.rpcUrls, to)); });
+    follow('rpcUrlsSecondary', (to) => { setRpc2((typed) => followMap(typed, before.rpcUrlsSecondary, to)); });
+    follow('relayerUrl', setRelayer);
+    follow('delayMinSec', setMinSec);
+    follow('delayMaxSec', setMaxSec);
+    follow('lockTimeoutMin', setLock);
+    follow('theme', setTheme);
+    follow('invoiceLinkClipboardDelaySec', setClipboardDelaySec);
+    follow('autoClearFragment', setAutoClear);
+    follow('pinnedSigners', (to) => { setPins(to.join('\n')); });
+    if (changed) setMessage({ kind: 'warn', text: { key: 'settings.changedElsewhere' } });
+  }, [s]);
 
   const invalidateTest = (chainId: number): void => {
     testRevision.current.set(chainId, (testRevision.current.get(chainId) ?? 0) + 1);
@@ -76,6 +109,7 @@ export function Settings(): ReactNode {
         lockTimeoutMin: lock, theme, autoClearFragment: autoClear, invoiceLinkClipboardDelaySec: clipboardDelaySec, pinnedSigners,
       };
       const saved = app.updateSettings(next);
+      followed.current = next;
       setMessage(saved ? { kind: 'ok', text: { key: 'settings.saved' } } : { kind: 'warn', text: { key: 'settings.storageUnavailable' } });
       app.announce(t('settings.announce'));
     } catch (err) {
@@ -185,6 +219,7 @@ export function Settings(): ReactNode {
       <ScanPrivacySection />
       <SettingsExchangeSection onApplied={(next, applied) => {
         // Only the form fields of applied sections follow the import; other unsaved edits stay as typed.
+        followed.current = next;
         if (applied.preferences === true) { setMinSec(next.delayMinSec); setMaxSec(next.delayMaxSec); setLock(next.lockTimeoutMin); setTheme(next.theme); setAutoClear(next.autoClearFragment); }
         if (applied.rpcUrls === true) setRpc({ ...next.rpcUrls });
         if (applied.rpcUrlsSecondary === true) setRpc2({ ...next.rpcUrlsSecondary });

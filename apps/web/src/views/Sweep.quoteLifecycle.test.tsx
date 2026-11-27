@@ -8,7 +8,7 @@ import { MemoryKeyVaultStore, setKeyVaultStoreForTests } from '../lib/keyVault';
 import type { ScanMatch } from '../lib/scanClient';
 import { clearSession, generateSession, suspendSession } from '../lib/session';
 import { ServicesContext, type Services } from '../lib/services';
-import { DEFAULT_SETTINGS } from '../lib/settings';
+import { DEFAULT_SETTINGS, SETTINGS_KEY } from '../lib/settings';
 import * as sweepLib from '../lib/sweep';
 import { SWEEP_JOURNAL_KEY } from '../lib/sweepAttemptJournal';
 import { AppContext, beginSweepAttempt, getSweepAttempt, resetSweepAttemptsForTests, type AppState } from '../state';
@@ -508,5 +508,63 @@ describe('Sweep review-change messaging and read availability', () => {
       await settle();
     }
     expect(getSweepAttempt(CHAIN, OWNER)).toMatchObject({ chainId: CHAIN, owner: OWNER, order: ORDER, status: 'submitted', expectedHash: HASH });
+  });
+});
+
+/** Storage written by another tab whose notification has not reached this one yet. */
+function otherTabSaves(m: ReturnType<typeof mount>, patch: Partial<typeof DEFAULT_SETTINGS>): void {
+  window.localStorage.setItem(SETTINGS_KEY, JSON.stringify({ ...m.app().settings, ...patch }));
+}
+const REFUSED = /Nothing was sent: the RPC, relayer or scan privacy settings changed in another tab/;
+const REPLACED = [
+  ['the RPC', { rpcUrls: { [String(CHAIN)]: 'https://other-rpc.test/' } }],
+  ['the relayer', { relayerUrl: 'https://other-relayer.test' }],
+] as const;
+
+describe.each(REPLACED)('Sweep after another tab replaced %s', (_name, patch) => {
+  it('asks no relayer for a quote', async () => {
+    const m = mount();
+    await ready(m);
+    const reads = m.rpcCalls();
+    otherTabSaves(m, patch);
+    fireEvent.click(screen.getByRole('button', { name: QUOTE }));
+    expect((await screen.findByRole('alert')).textContent).toMatch(REFUSED);
+    expect(m.requests).toEqual([]);
+    expect(m.rpcCalls()).toBe(reads);
+  });
+
+  it('signs no relayed order', async () => {
+    const m = mount();
+    await reviewedQuote(m);
+    const submitted = vi.spyOn(sweepLib, 'relayedSweep');
+    otherTabSaves(m, patch);
+    fireEvent.click(screen.getByRole('button', { name: SIGN }));
+    expect((await screen.findByRole('alert')).textContent).toMatch(REFUSED);
+    expect(submitted).not.toHaveBeenCalled();
+  });
+
+  it.each([false, true])('signs no direct sweep (replacement: %s)', async (resign) => {
+    const m = mount();
+    await reviewedDirect(m, resign);
+    const submitted = vi.spyOn(sweepLib, 'directSweep');
+    const reads = m.rpcCalls();
+    otherTabSaves(m, patch);
+    fireEvent.click(screen.getByRole('button', { name: resign ? RESIGN : DIRECT }));
+    expect((await screen.findByRole('alert')).textContent).toMatch(REFUSED);
+    expect(submitted).not.toHaveBeenCalled();
+    expect(m.rpcCalls()).toBe(reads);
+  });
+
+  it('hands off no direct sweep when the change lands while signing', async () => {
+    const m = mount();
+    await reviewedDirect(m, false);
+    vi.spyOn(sweepLib, 'directSweep').mockImplementation((input) => {
+      otherTabSaves(m, patch);
+      input.onBeforeHandoff?.(directAttempt(input));
+      return Promise.resolve(directResult(input));
+    });
+    fireEvent.click(screen.getByRole('button', { name: DIRECT }));
+    expect((await screen.findByRole('alert')).textContent).toMatch(REFUSED);
+    expect(getSweepAttempt(CHAIN, OWNER)).toBeUndefined();
   });
 });
