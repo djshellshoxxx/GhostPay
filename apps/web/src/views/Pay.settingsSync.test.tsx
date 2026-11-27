@@ -226,22 +226,26 @@ describe('Pay: settings saved by another tab', () => {
   });
 
   it('does not open the invoice again after a revocation during which pins were saved', async () => {
-    const gate = deferred();
-    const t = await toPreparedToken(async (nth) => {
-      if (nth === 2) throw Object.assign(new Error('user rejected'), { code: 4001 });
-      if (nth === 3) await gate.wait;
-    });
+    const approving = deferred();
+    const revoking = deferred();
+    const t = await toPreparedToken(async (nth) => { await (nth === 1 ? approving : revoking).wait; });
     await t.user.click(screen.getByRole('button', { name: APPROVE }));
+    await waitFor(() => { expect(t.sends()).toBe(1); });
+    // A change saved while the approval is asked refuses the payment before the wallet hears of it: only an allowance is
+    // left. (Once a payment was requested, checkout keeps its context whatever is revoked.)
+    otherTabSaves({ theme: 'light' });
+    approving.release();
     const revoke = (): HTMLButtonElement => screen.getByRole<HTMLButtonElement>('button', { name: 'Revoke approval' });
-    await waitFor(() => { expect(t.sends()).toBe(2); expect(revoke().disabled).toBe(false); });
+    await waitFor(() => { expect(revoke().disabled).toBe(false); });
     await t.user.click(revoke());
-    await waitFor(() => { expect(t.sends()).toBe(3); });
+    await waitFor(() => { expect(t.sends()).toBe(2); });
     otherTabSaves(PINS);
-    gate.release();
-    await settle();
+    revoking.release();
     await toWallet(t.user);
     expect(await screen.findByRole('button', { name: 'Prepare payment' })).toBeTruthy();
     expect(screen.queryByRole('button', { name: /Connect Mock Wallet/ })).toBeNull();
+    expect(screen.queryByRole('button', { name: 'Revoke approval' })).toBeNull();
+    expect(t.sends()).toBe(2);
   });
 
   it('opens the next invoice with the pins saved while the last one kept its own', async () => {
