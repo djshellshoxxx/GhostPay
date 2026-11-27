@@ -25,22 +25,13 @@ function escapeHostile(s: string): string {
   return result;
 }
 
-function capUnicodeText(s: string): string {
-  if (s.length <= MAX) return s;
-  let end = 0;
-  for (const ch of s) {
-    if (end + ch.length > MAX) break;
-    end += ch.length;
-  }
-  return s.slice(0, end);
-}
-
 /**
  * Prepares untrusted invoice text (memo, line-item descriptions) for display (audit S3-12).
  *
- * @remarks Clean text passes through NFC-normalised, with a visible marker on tokens that mix Latin with Cyrillic or
- * Greek letters. Text containing bidi controls, zero-width/invisible, tag, private-use or control characters is shown
- * with each such character replaced by a visible code-point marker, so it can neither reorder nor hide anything.
+ * @remarks Each line is checked on its own: a memo may hold line feeds, the one control the invoice schema allows. A
+ * clean line passes through NFC-normalised, with a visible marker on tokens that mix Latin with Cyrillic or Greek
+ * letters. A line containing bidi controls, zero-width/invisible, tag, private-use or control characters is shown with
+ * each such character replaced by a visible code-point marker, so it can neither reorder nor hide anything.
  * Overlong text is truncated. React escaping already prevents markup injection; this closes visual spoofing.
  *
  * @param s Untrusted text.
@@ -56,9 +47,18 @@ export function safeText(s: string): SafeText {
       clipped = clipped.slice(0, -1);
     }
   }
-  const r = sanitizeDisplayText(clipped);
-  if (!isReason(r)) return { text: capUnicodeText(r.text), flagged: r.mixedScript || s.length > MAX };
-  return { text: escapeHostile(clipped.normalize('NFC')), flagged: true };
+  let flagged = s.length > MAX;
+  const lines = clipped.split('\n').map((line) => {
+    const r = sanitizeDisplayText(line);
+    if (!isReason(r)) {
+      flagged ||= r.mixedScript;
+      return r.text;
+    }
+    flagged = true;
+    return line.normalize('NFC');
+  });
+  // Marks what a refused line holds and applies the output cap; a clean line has nothing to mark.
+  return { text: escapeHostile(lines.join('\n')), flagged };
 }
 
 /** Fixed-format digest of the seller meta-address for comparing out of band (display aid, 80 bits). */
