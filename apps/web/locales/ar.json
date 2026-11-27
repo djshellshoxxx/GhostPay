@@ -899,6 +899,7 @@
     "scan.routerOnly": "{single, select, yes {احتوت الكتلة {list}} other {احتوت الكتل {list}}} على إعلانات أكثر مما يمكن أن تحمله استجابة RPC واحدة (على الأرجح بريد إعلانات مزعج). تم فحص الدفعات المنشورة عبر موجّه GhostPay هناك، لكن تم تخطي الإعلانات التي لم ينشرها موجّه GhostPay، لذلك لن تظهر في القائمة دفعة مباشرة في {single, select, yes {تلك الكتلة} other {تلك الكتل}}.",
     "scan.routerOnly.more": "{shown} و{count} أخرى",
     "scan.done.finished": "اكتمل. تم فحص {scanned} إعلاناً، والعثور على {found} دفعة.",
+    "scan.done.indexerCaveat": "قد يُسقط المفهرس بعض الإعلانات حتى عندما تتطابق تجزئات الكتل. قد لا تتضمن هذه النتائج جميع المدفوعات.",
     "scan.done.limit": "توقف عند حد الأمان. تم فحص {scanned} إعلاناً، والعثور على {found} دفعة.",
     "scan.done.cancelled": "تم الإلغاء. تم فحص {scanned} إعلاناً.",
     "scan.done.cancelledEarly": "تم الإلغاء. توقف المسح قبل اكتماله.",
