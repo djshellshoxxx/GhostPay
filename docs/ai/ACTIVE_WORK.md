@@ -5329,3 +5329,10 @@ Observed: existing duplicate map overwrites an unverified-checksum diagnostic wh
 - Acceptance: each fix has a regression test that fails without it; no tombstone, reorg or depth rule weakened; no dependency, contract, workflow or activation change; draft PR, no merge.
 
 - Coordinator (newghostpay-e3) finished W4 stopped run and added W6-1/W6-2: also owns `StealthExportArchive.tsx` and its test, `securityKeys.ts` (one key), `chain-adapters/src/registryEns.ts` and its test.
+
+
+## BUG-ONLY: deep-link redirect validation order — 2026-11-27
+
+Worker: sequential GhostPay bug-repair coordinator; branch `automation/20261127T1524Z/bug/deeplink-redirect-order`, base `1894b4bbd31f4765e56bd5fb05d51342fc5bd8b7`. Own only `packages/ux-intake/src/deeplink.ts`, new `packages/ux-intake/src/deeplink.redirect-order.test.ts`, this additive entry and `docs/handoffs/DEEPLINK_REDIRECT_ORDER_20261127.md`.
+Ownership: all 146 open PR changed-file inventories in the partitioned snapshot through #755 checked, no matching parser or dedicated test path. Earlier #748/#752 repairs are already merged; preserve them. Rechecked main unchanged and recent open list unchanged. Generation 72 integration lease released, not acquired.
+Observed: R5 requires unsafe redirect parameters to reject the whole HTTPS deep link. The existing invoice-fragment and share-target returns precede validation. Exact local Git blob 30cd209628805ea78436beb2fca1d5e49297bcc8 transpiled with TypeScript 5.8.3, Node 22.16.0, synthetic mocked payload import boundary: 12/18 baseline, 18/18 proposed correction. This is not native full-package Vitest. Acceptance: commit regression first, move existing validation loop before both early returns, retain safe navigation, payload warnings and normal behavior; no dependencies, new functionality, release or deployment. All hosted exact-head checks, independent review, fresh ownership and legitimate lock acquisition required before any merge. All ten stopped workstreams untouched.
