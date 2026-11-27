@@ -10,6 +10,9 @@ log-paging fuzz tests, the `decodePaymentCalldata` re-encode guard in `packages/
 fuzz test, `walletDisclosure.callsites.test.ts`; cover cases in `scanClient.checkpoint.test.ts`; this entry. Not taken:
 #665, #742 and the ERC-20 suites. Acceptance: each fix has a regression test that fails without it; all PR checks green
 at the exact head; no gate, dependency, contract or activation change; merge stays with the integration-lock holder.
+Review follow-up on `9222e597` (findings N1-N5): connection-loss handling in `apps/web/src/views/Pay.tsx`, a
+wallet-request notification on `grantApproval` in `apps/web/src/lib/payExec.ts`, and `Pay.offline.test.tsx`,
+`Pay.offlineHandoff.test.tsx` and `Pay.offline.fuzz.test.tsx`. Journal, post-broadcast and terminal behaviour unchanged.
 
 # Consolidation stack 2: current-main merge and payment lifecycle fixes (2026-11-27 UTC)
 
