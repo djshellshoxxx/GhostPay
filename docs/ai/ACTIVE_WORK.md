@@ -9,7 +9,9 @@ ported from #569 `c30283d2` where main's #708 design applies, a disposition reco
 narrow repair only if a ported case shows a real gap. Also the #355 follow-up (PR comments 7202320570, 7204906392):
 the quick-hide focus regressions ported to `apps/web/src/components/WalletDisclosure.quickHide.test.tsx` and the
 masked focus fallback in `DisclosureDialog` of `apps/web/src/components/WalletDisclosure.tsx`. Not claimed: #569's branch (kept), `privacyMode.tsx` design changes,
-REV-I6, QA-I1, LATE-M1, IDLE-M1. Acceptance: LATE-L1 regression red on main and green with the fix; an unlinked candidate
+REV-I6, QA-I1, IDLE-M1. LATE-M1 stays claimed by this worker: the owner approved a presence marker (2026-11-27); the first
+fix (`a530f96a`) was held by review 7215494772 for cross-tab serialization and reverted from #742 (`98d99a4f`); a
+redo with per-scope coordination follows in its own PR. Acceptance: LATE-L1 regression red on main and green with the fix; an unlinked candidate
 that was never verified (indirect router call, always `claimed`) is never replayed, so it cannot pin every later
 checkpoint; affected typecheck, lint and tests; hosted CI on the exact head; independent review; merge only under the
 integration lock.

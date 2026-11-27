@@ -94,8 +94,10 @@ One entry per milestone. Evidence: [REGRESSION_RESULTS.md](REGRESSION_RESULTS.md
     Pay kept the previous wallet's receipt file after a wallet change, and a quick hide that cancelled a wallet review
     left focus on the page heading or `<body>` instead of the privacy control.
 - **Current status of the earlier follow-up list:** REV-I5 fixed by #739; RCPT-L1/L2 fixed by #690 (see REMAINING_WORK);
-  LATE-L1 fixed in #742 (pending merge). Still open: LATE-M1 (needs an owner decision on a vault-presence marker), REV-I6,
-  QA-I1, IDLE-M1 and GP-PAGES-01 (owner decisions).
+  LATE-L1 fixed in #742 (pending merge). Still open: LATE-M1 (owner approved a presence marker on 2026-11-27; the
+  first fix was held in review for cross-tab serialization and reverted from #742; a redo follows in its own PR), REV-I6,
+  QA-I1, IDLE-M1 and GP-PAGES-01 (owner decisions). Product decision for #742 (qualification FUZZ-D3): whether to bound the
+  LATE-L1 replay pin for an unlinked candidate that never re-verifies.
 - **Next steps:** hosted CI and an independent review of #742's exact head, then a merge under the integration lock.
   #569 and #355 can close once #742 lands (their branches are kept).
 - **Environment notes:** this container's proxy also refused `github.com` release downloads and
