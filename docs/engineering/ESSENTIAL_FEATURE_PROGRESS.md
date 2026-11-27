@@ -42,8 +42,11 @@ One entry per milestone. Evidence: [REGRESSION_RESULTS.md](REGRESSION_RESULTS.md
 
 ## Peer milestones (another Claude session, same owner)
 
-- M2 P0-KEYS (branch `claude/nifty-bohr-5ra2ap`) and M4-DORM371 (`claude/nifty-bohr-5ra2ap-dormant-371`). Evidence goes in
-  `docs/engineering/milestones/` on those branches.
+- M2 P0-KEYS: on `main` via #539 and #707 (merged by #718, `c7c6349c`); evidence
+  [`milestones/M2-P0-KEYS.md`](milestones/M2-P0-KEYS.md).
+- M4-DORM371 (#621, landing #371's dormant F04/F05/F10 base): held under
+  [STOP_WORK_20261125](../ai/STOP_WORK_20261125.md); not merged. Evidence stays on
+  `claude/nifty-bohr-5ra2ap-dormant-371` (`docs/engineering/milestones/M4-DORM371.md`).
 
 ## M1 status update (2026-11-24)
 

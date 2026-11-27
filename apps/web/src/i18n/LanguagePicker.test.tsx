@@ -52,7 +52,9 @@ describe('native language picker', () => {
     browserLanguages.mockReturnValue(['ar']);
     fireEvent(window, new Event('languagechange'));
     expect(await screen.findByRole('combobox', { name: 'اللغة' })).toBe(select);
-    expect(document.documentElement.lang).toBe('ar');
+    // <html lang/dir> follow in a passive effect after the commit that shows the new label: wait for it (it raced on a
+    // loaded runner, the same way as the explicit-list case below).
+    await waitFor(() => { expect(document.documentElement.lang).toBe('ar'); });
     expect(document.documentElement.dir).toBe('rtl');
     expect(localStorage.getItem(LOCALE_STORAGE_KEY)).toBeNull();
 
@@ -62,12 +64,12 @@ describe('native language picker', () => {
     fireEvent(window, new Event('languagechange'));
     expect(select.value).toBe('es');
     expect(select.getAttribute('aria-busy')).toBe('false');
-    expect(document.documentElement.lang).toBe('es');
+    await waitFor(() => { expect(document.documentElement.lang).toBe('es'); });
     expect(document.documentElement.dir).toBe('ltr');
 
     await user.selectOptions(select, 'auto');
     expect(await screen.findByRole('combobox', { name: '言語' })).toBe(select);
-    expect(document.documentElement.lang).toBe('ja');
+    await waitFor(() => { expect(document.documentElement.lang).toBe('ja'); });
     expect(localStorage.getItem(LOCALE_STORAGE_KEY)).toBeNull();
   });
 

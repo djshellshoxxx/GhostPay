@@ -68,6 +68,8 @@ export const SECURITY_KEY_GROUPS = {
     'app.checks.digest.unavailable',
     'app.checks.storage.fail',
     'app.checks.storage.unavailable',
+    'app.checks.indexeddb.fail',
+    'app.checks.indexeddb.unavailable',
   ],
   // #287 item 4: retention of on-screen invoice and payment-proof previews (consent, scope and preserved records).
   metadataRetention: [
@@ -2207,6 +2209,7 @@ export const NEUTRAL_KEY_LIST = [
   'app.checks.secure',
   'app.checks.digest',
   'app.checks.storage',
+  'app.checks.indexeddb',
   'app.checks.pass',
   'app.checks.unavailable',
   'app.checks.fail',
