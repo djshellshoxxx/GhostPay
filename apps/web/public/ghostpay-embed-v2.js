@@ -42,6 +42,7 @@
   var PROFILE_RE = /^[A-Za-z0-9_-]+$/;
   var script = document.currentScript;
   var appOrigin = '';
+  var openOverlay = null;
   try {
     appOrigin = script && script.src ? new URL(script.src).origin : '';
   } catch (e) {
@@ -153,6 +154,9 @@
   }
 
   function openFrame(el, url) {
+    // One checkout at a time: the dialog is modal, and a second one could be paid beside the first.
+    // Asking the element itself keeps the button usable if the merchant page removed the dialog.
+    if (openOverlay !== null && openOverlay.isConnected) return;
     var n = nonce();
     var overlay = document.createElement('div');
     var frame = document.createElement('iframe');
@@ -192,6 +196,7 @@
       window.removeEventListener('message', onMessage);
       document.removeEventListener('keydown', onKey);
       if (overlay.parentNode) overlay.parentNode.removeChild(overlay);
+      el.focus();
     }
     function onKey(e) {
       if (e.key === 'Escape') teardown();
@@ -259,6 +264,8 @@
     frame.setAttribute('src', url);
     overlay.appendChild(frame);
     document.body.appendChild(overlay);
+    openOverlay = overlay;
+    close.focus();
   }
 
   function setup(el) {
