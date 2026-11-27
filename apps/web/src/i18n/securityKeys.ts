@@ -637,6 +637,8 @@ export const SECURITY_KEY_GROUPS = {
     'error.relayerClient.theRelayerReturnedAnInvalidExpiry',
     'error.relayerClient.theRelayerReturnedAnInvalidQuoteToken',
     'error.relayerClient.theRelayerReturnedAnInvalidTransactionHash',
+    'error.relayerClient.theRelayerRefusedTheRequest',
+    'error.relayerClient.theRelayerRefusedTheRequestWithCode',
     'error.qrPayload.thisQRDoesNotContainASupportedPublicMetaAddress',
     'error.pay.noRPCIsConfiguredForThisChain',
     'error.pay.thisPaymentIsBlockedResolveTheItemsInTheReview',

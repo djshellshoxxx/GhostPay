@@ -248,6 +248,53 @@ describe('Pay: settings saved by another tab', () => {
     expect(t.sends()).toBe(2);
   });
 
+  /** The signer key the open invoice's signature label names, with that label's claim about pinning. */
+  function signerLabel(): { readonly key: string; readonly pinned: boolean } {
+    const found = /Signature matches key ([0-9a-f]{66}) \((pinned by you|not pinned)\)/.exec(document.body.textContent ?? '');
+    return { key: found?.[1] ?? '', pinned: found?.[2] === 'pinned by you' };
+  }
+
+  it.each([
+    ['a payment was submitted', false],
+    ['the requested invoice was closed by a wallet change', true],
+  ] as const)('labels the held invoice by the pins saved now, without opening it again, after %s', async (_name, closed) => {
+    const wallet = new EventWallet();
+    const { user } = await toPrepared(wallet);
+    await user.click(screen.getByRole('button', { name: SEND }));
+    await screen.findByRole('heading', { name: 'Submitted' });
+    if (closed) {
+      act(() => { wallet.emit('accountsChanged'); });
+      await screen.findByText(ALREADY);
+    }
+    const { key, pinned } = signerLabel();
+    expect(key).not.toBe('');
+    expect(pinned).toBe(false);
+    for (const now of [true, false]) {
+      otherTabSaves(now ? { pinnedSigners: [key] } : {});
+      await settle();
+      expect(signerLabel()).toEqual({ key, pinned: now });
+      if (closed) expect(screen.getByText(ALREADY)).toBeTruthy();
+      else expect(document.body.textContent).toContain(HASH);
+      expect(screen.queryByRole('button', { name: 'Continue' })).toBeNull();
+      expect(screen.queryByRole('button', { name: SEND })).toBeNull();
+    }
+    expect(readAttempts().filter((attempt) => attempt.hash === HASH)).toHaveLength(1);
+  });
+
+  it('keeps an unanswered approval on screen while the signer label follows the pins', async () => {
+    const t = await toPreparedToken(() => Promise.reject(new Error('lost')));
+    await t.user.click(screen.getByRole('button', { name: APPROVE }));
+    await waitFor(() => { expect(document.body.textContent).toMatch(UNKNOWN); });
+    const { key } = signerLabel();
+    for (const now of [true, false]) {
+      otherTabSaves(now ? { pinnedSigners: [key] } : {});
+      await settle();
+      expect(signerLabel()).toEqual({ key, pinned: now });
+      expect(document.body.textContent).toMatch(UNKNOWN);
+    }
+    expect(t.sends()).toBe(1);
+  });
+
   it('opens the next invoice with the pins saved while the last one kept its own', async () => {
     const next = await makeParsed({ token: 'native', tokenAmount: '0.4' });
     const { user } = await toPrepared(new MockWallet());

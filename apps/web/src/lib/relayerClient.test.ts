@@ -2,7 +2,8 @@ import { describe, expect, it } from 'vitest';
 import { readdirSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { userMessage } from './errors';
+import { SECURITY_KEYS } from '../i18n/securityKeys';
+import { captureUserMessage, userMessage } from './errors';
 import { RELAYER_PRE_BROADCAST_CODES, RelayerRefusedError, requestQuote, submitSweep, type FetchFn, type SweepSubmission } from './relayerClient';
 
 const TOKEN = '0x036CbD53842c5426634e7929541eC2318f3dCF7e';
@@ -52,6 +53,16 @@ describe('requestQuote', () => {
     }
     await expect(requestQuote('https://relay.test', Q, () => Promise.resolve(json({ error: 'Has Spaces!' }, 422)))).rejects.toThrow('HTTP 422.');
     await expect(requestQuote('https://relay.test', Q, () => Promise.resolve(new Response('<html>', { status: 500 })))).rejects.toThrow('HTTP 500.');
+  });
+  it.each([
+    ['a class', json({ error: { code: 'quote_expired' } }, 422), 'error.relayerClient.theRelayerRefusedTheRequestWithCode', { status: '422', code: 'quote_expired' }],
+    ['no class', new Response('<html>', { status: 502 }), 'error.relayerClient.theRelayerRefusedTheRequest', { status: '502' }],
+  ] as const)('carries a translatable refusal with %s, built from the status and the allowed class only', async (_n, response, key, values) => {
+    const failure: unknown = await requestQuote('https://relay.test', Q, () => Promise.resolve(response)).catch((e: unknown) => e);
+    expect(captureUserMessage(failure)).toEqual({ key, values });
+    expect(SECURITY_KEYS.has(key)).toBe(true);
+    const translated = (id: string, args?: unknown): string => `<${id}> ${JSON.stringify(args)}`;
+    expect(userMessage(failure, translated)).toBe(`<${key}> ${JSON.stringify(values)}`);
   });
   it('reads the class from the relayer envelope { error: { code } }', async () => {
     await expect(requestQuote('https://relay.test', Q, () => Promise.resolve(json({ error: { code: 'quote_expired' } }, 410)))).rejects.toThrow('HTTP 410 (quote_expired).');

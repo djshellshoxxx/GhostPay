@@ -1,4 +1,4 @@
-import { isReason, sanitizeDisplayText, metaAddressFingerprint } from '@ghostpay/address-safety';
+import { isReason, sanitizeDisplayText, metaAddressFingerprint, MIXED_SCRIPT_MARKER } from '@ghostpay/address-safety';
 
 /** Result of {@link safeText}. */
 export interface SafeText {
@@ -11,6 +11,10 @@ export interface SafeText {
 const HOSTILE = /[\p{Bidi_Control}\p{Default_Ignorable_Code_Point}\p{Co}\p{Cc}\p{Cs}\u{E0000}-\u{E007F}]/u;
 const KEEP = new Set(['\n', '\t']);
 const MAX = 4096;
+// U+FEFF counts as white space in a pattern, but it is invisible and must not split a word.
+const WORD = /[\S\uFEFF]+/gu;
+const LATIN = /\p{Script=Latin}/u;
+const LOOKALIKE_SCRIPT = /[\p{Script=Cyrillic}\p{Script=Greek}]/u;
 
 function escapeHostile(s: string): string {
   let result = '';
@@ -29,9 +33,9 @@ function escapeHostile(s: string): string {
  * Prepares untrusted invoice text (memo, line-item descriptions) for display (audit S3-12).
  *
  * @remarks Each line is checked on its own: a memo may hold line feeds, the one control the invoice schema allows. A
- * clean line passes through NFC-normalised, with a visible marker on tokens that mix Latin with Cyrillic or Greek
- * letters. A line containing bidi controls, zero-width/invisible, tag, private-use or control characters is shown with
- * each such character replaced by a visible code-point marker, so it can neither reorder nor hide anything.
+ * line passes through NFC-normalised, with a visible marker on tokens that mix Latin with Cyrillic or Greek letters. A
+ * line containing bidi controls, zero-width/invisible, tag, private-use or control characters is also shown with each
+ * such character replaced by a visible code-point marker, so it can neither reorder nor hide anything.
  * Overlong text is truncated. React escaping already prevents markup injection; this closes visual spoofing.
  *
  * @param s Untrusted text.
@@ -55,7 +59,8 @@ export function safeText(s: string): SafeText {
       return r.text;
     }
     flagged = true;
-    return line.normalize('NFC');
+    // A refused line keeps the sanitiser's marker on words that mix alphabets. A hidden character never ends a word.
+    return line.normalize('NFC').replace(WORD, (word) => (LATIN.test(word) && LOOKALIKE_SCRIPT.test(word) ? MIXED_SCRIPT_MARKER + word : word));
   });
   // Marks what a refused line holds and applies the output cap; a clean line has nothing to mark.
   return { text: escapeHostile(lines.join('\n')), flagged };

@@ -208,6 +208,15 @@ export async function runScan(p: ScanParams): Promise<{ readonly matches: readon
   let progressed: ((scanned: number) => void) | undefined;
   const timeoutMs = p.replyTimeoutMs ?? 60_000;
   const ABORTED = new Error('scan cancelled');
+  // A fetch reads one block per announcement block, one at a time: a stopped run sends none of the remaining ones.
+  const assertRunning = (): void => { if (p.signal.aborted) throw ABORTED; };
+  const fetchClient: RpcClient = {
+    chainId: p.client.chainId,
+    request: async (method, params) => { assertRunning(); return p.client.request(method, params); },
+    blockNumber: async () => { assertRunning(); return p.client.blockNumber(); },
+    getBlock: async (n) => { assertRunning(); return p.client.getBlock(n); },
+    getLogs: async (f) => { assertRunning(); return p.client.getLogs(f); },
+  };
   // Settles on a reply, a worker error, the reply timeout, or Cancel: a hung worker can never block the caller.
   const wait = (register: (resolve: (m: FromWorker) => void) => void): Promise<FromWorker> =>
     new Promise<FromWorker>((resolve, reject) => {
@@ -333,10 +342,12 @@ export async function runScan(p: ScanParams): Promise<{ readonly matches: readon
         if (p.signal.aborted) break;
       }
       const res = await fetchAnnouncements({
-        chain: p.chain, client: p.client, announcer: p.manifest.announcer, router: p.manifest.router, cursor,
+        chain: p.chain, client: fetchClient, announcer: p.manifest.announcer, router: p.manifest.router, cursor,
         ...(secondaryHead === undefined ? {} : { toBlock: secondaryHead }),
       }).catch(async (cause: unknown) => {
-        if (!p.signal.aborted && p.onUnresolvedEvidence !== undefined) {
+        // A read refused or dropped because the run was stopped is the cancellation itself, not a provider failure.
+        if (p.signal.aborted) throw ABORTED;
+        if (p.onUnresolvedEvidence !== undefined) {
           let from = cursor.nextBlock;
           if (cursor.last !== undefined) {
             // A missing checkpoint header is inconclusive. A reachable lower tip can still revoke depth.

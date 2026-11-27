@@ -1964,6 +1964,8 @@
     "error.relayerClient.theRelayerReturnedAnInvalidExpiry": "リレイヤーが無効な有効期限を返しました。",
     "error.relayerClient.theRelayerReturnedAnInvalidQuoteToken": "リレイヤーが無効な見積もりトークンを返しました。",
     "error.relayerClient.theRelayerReturnedAnInvalidTransactionHash": "リレイヤーが無効なトランザクションハッシュを返しました。",
+    "error.relayerClient.theRelayerRefusedTheRequest": "リレイヤーがリクエストを拒否しました: HTTP {status}。",
+    "error.relayerClient.theRelayerRefusedTheRequestWithCode": "リレイヤーがリクエストを拒否しました: HTTP {status}（{code}）。",
     "error.qrPayload.thisQRDoesNotContainASupportedPublicMetaAddress": "この QR には、対応している公開メタアドレスが含まれていません。",
     "error.pay.noRPCIsConfiguredForThisChain": "このチェーンには RPC が設定されていません。",
     "error.pay.thisPaymentIsBlockedResolveTheItemsInTheReview": "この支払いはブロックされています。先に確認画面の項目を解決してください。",

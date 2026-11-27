@@ -1964,6 +1964,8 @@
     "error.relayerClient.theRelayerReturnedAnInvalidExpiry": "أعاد المُرحِّل تاريخ انتهاء غير صالح.",
     "error.relayerClient.theRelayerReturnedAnInvalidQuoteToken": "أعاد المُرحِّل رمز عرض سعر غير صالح.",
     "error.relayerClient.theRelayerReturnedAnInvalidTransactionHash": "أعاد المُرحِّل قيمة تجزئة معاملة غير صالحة.",
+    "error.relayerClient.theRelayerRefusedTheRequest": "رفض المُرحِّل الطلب: HTTP {status}.",
+    "error.relayerClient.theRelayerRefusedTheRequestWithCode": "رفض المُرحِّل الطلب: HTTP {status} ({code}).",
     "error.qrPayload.thisQRDoesNotContainASupportedPublicMetaAddress": "لا يحتوي رمز QR هذا على عنوان وصفي عام مدعوم.",
     "error.pay.noRPCIsConfiguredForThisChain": "لم يتم إعداد أي RPC لهذه السلسلة.",
     "error.pay.thisPaymentIsBlockedResolveTheItemsInTheReview": "هذه الدفعة محظورة. عالج البنود الواردة في المراجعة أولًا.",

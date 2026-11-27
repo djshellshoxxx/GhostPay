@@ -1964,6 +1964,8 @@
     "error.relayerClient.theRelayerReturnedAnInvalidExpiry": "El retransmisor devolvió una caducidad no válida.",
     "error.relayerClient.theRelayerReturnedAnInvalidQuoteToken": "El retransmisor devolvió un token de cotización no válido.",
     "error.relayerClient.theRelayerReturnedAnInvalidTransactionHash": "El retransmisor devolvió un hash de transacción no válido.",
+    "error.relayerClient.theRelayerRefusedTheRequest": "El retransmisor rechazó la solicitud: HTTP {status}.",
+    "error.relayerClient.theRelayerRefusedTheRequestWithCode": "El retransmisor rechazó la solicitud: HTTP {status} ({code}).",
     "error.qrPayload.thisQRDoesNotContainASupportedPublicMetaAddress": "Este QR no contiene una metadirección pública compatible.",
     "error.pay.noRPCIsConfiguredForThisChain": "No hay ningún RPC configurado para esta cadena.",
     "error.pay.thisPaymentIsBlockedResolveTheItemsInTheReview": "Este pago está bloqueado. Resuelve primero los puntos de la revisión.",
