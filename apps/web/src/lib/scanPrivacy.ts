@@ -658,8 +658,11 @@ export function createIndexerScanClient(inner: RpcClient, o: IndexerClientOption
       // A record that cannot be placed or read may be a payment: fail here, so the scan saves no checkpoint past it.
       if ((res.rejected ?? 0) > 0) throw new ChainAdapterError('RPC_FAILURE', 'indexer REJECTED_RECORDS in the requested range');
       const caller = f.topics[3];
-      return res.announcements
+      // What anyone can post goes to the scan's on-chain check with the rest, in chain order, so it is skipped or
+      // accepted as over an RPC and a second provider's page agrees.
+      return [...res.announcements, ...(res.posted ?? [])]
         .filter((a) => a.blockNumber >= f.fromBlock && a.blockNumber <= f.toBlock && (typeof caller !== 'string' || word(a.caller) === caller.toLowerCase()))
+        .sort((x, y) => (x.blockNumber < y.blockNumber ? -1 : x.blockNumber > y.blockNumber ? 1 : x.logIndex - y.logIndex))
         .map((a) => toRpcLog(a, o.announcer));
     },
   };

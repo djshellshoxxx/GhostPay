@@ -51,6 +51,13 @@ export interface FetchResult {
    * anyone can post to the announcer is not counted. Only the indexer source reports it.
    */
   readonly rejected?: number;
+  /**
+   * Present when non-empty: records under their block's header whose only fault is the length of the ephemeral key or
+   * metadata, which any caller of the announcer can post. Once per log, sorted, inside `coverage`, and counted in
+   * `skipped`: they are not announcements here. A caller with its own on-chain check can count them as an RPC read
+   * would. Only the indexer source reports it.
+   */
+  readonly posted?: readonly ScanAnnouncement[];
 }
 
 /** How a source's data is protected against a lying server. */

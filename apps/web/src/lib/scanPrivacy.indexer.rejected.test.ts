@@ -65,14 +65,16 @@ describe('indexer records the web client cannot use', () => {
     expect(saved).toEqual([]);
   });
 
+  // Bytes of a length not accepted are handed on for the scan's on-chain check, as an RPC would return them; another
+  // scheme is not part of the answer.
   it.each([
-    ['an empty ephemeral key', { ephemeralPublicKey: '0x' }],
-    ['empty metadata', { metadata: '0x' }],
-    ['oversized metadata', { metadata: `0x${'ab'.repeat(4097)}` }],
-    ['a scheme id beyond 64 bits', { schemeId: '18446744073709551616' }],
-  ])('answers past %s, which anyone can post', async (_name, over) => {
+    ['an empty ephemeral key', { ephemeralPublicKey: '0x' }, [1300, 1400]],
+    ['empty metadata', { metadata: '0x' }, [1300, 1400]],
+    ['oversized metadata', { metadata: `0x${'ab'.repeat(4097)}` }, [1300, 1400]],
+    ['a scheme id beyond 64 bits', { schemeId: '18446744073709551616' }, [1300]],
+  ])('answers past %s, which anyone can post', async (_name, over, blocks) => {
     const logs = await client([record(1300), record(1400, over)]).getLogs(query);
-    expect(logs.map((l) => Number(BigInt(l.blockNumber)))).toEqual([1300]);
+    expect(logs.map((l) => Number(BigInt(l.blockNumber)))).toEqual(blocks);
   });
 
   it('still answers when the indexer is ahead of the RPC and the extra records lie beyond its head', async () => {
