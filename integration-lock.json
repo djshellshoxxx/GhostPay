@@ -1,11 +1,12 @@
 {
   "format": "ghostpay-integration-lock/1",
-  "status": "held",
+  "status": "released",
   "owner": "ghostpay-bug-repair-748-20261127",
   "token": "19a4354e-0c1d-4180-afd5-aad91bb65179",
   "generation": 68,
   "base_sha": "0415d887878ee318bbfca57b3678c332598a32a3",
   "acquired_at": "2026-11-27T08:18:52.000Z",
   "heartbeat_at": "2026-11-27T08:18:52.000Z",
-  "expires_at": "2026-11-27T09:18:52.000Z"
+  "expires_at": "2026-11-27T09:18:52.000Z",
+  "released_at": "2026-11-27T08:23:21.000Z"
 }
