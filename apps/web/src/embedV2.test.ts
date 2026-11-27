@@ -340,6 +340,16 @@ describe('ghostpay-embed-v2.js iframe mode', () => {
     expect([...a.live]).toEqual([]);
   });
 
+  it('completion disarms the popup fallback even when no gp:init was seen', async () => {
+    const { h, nonce } = await framed();
+    expect(h.timers).toHaveLength(1);
+    const cleared: number[] = [];
+    (h.dom.window as unknown as { clearTimeout: (id: number) => void }).clearTimeout = (id) => { cleared.push(id); };
+    h.send(done(nonce));
+    expect(h.events).toHaveLength(1);
+    expect(cleared).toEqual([1]); // the harness numbers the one fallback timer 1
+  });
+
   it('a frame that loses its window stops the retries instead of leaving the interval running', async () => {
     const a = await armed();
     expect([...a.live]).toHaveLength(1);

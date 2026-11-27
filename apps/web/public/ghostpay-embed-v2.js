@@ -258,6 +258,8 @@
         window.removeEventListener('message', onMessage);
         settled = true;
         window.clearInterval(hello);
+        // Also without an earlier gp:init: a finished checkout must never be opened again by the popup fallback.
+        window.clearTimeout(timer);
         var detail = { status: m.data.status, chainId: m.data.chainId };
         if (m.data.txHash) detail.txHash = m.data.txHash;
         el.setAttribute('data-ghostpay-phase', m.data.status);
