@@ -83,10 +83,11 @@ export async function verifyReceipt(input: unknown, opts: VerifyOptions = {}): P
     };
   }
   // Keep the digest, date checks and asynchronous lookup on one receipt snapshot.
-  const { asset, digest: originalDigest, redacted, ...fields } = parsed.receipt;
+  const { digest: originalDigest, redacted, ...fields } = parsed.receipt;
   const r: Receipt = {
     ...fields,
-    ...(asset === undefined ? {} : { asset: { ...asset } }),
+    // Preserve an explicit undefined property for the existing canonical JSON rejection.
+    ...(fields.asset === undefined ? {} : { asset: { ...fields.asset } }),
     redacted: [...redacted],
     digest: { ...originalDigest },
   };
