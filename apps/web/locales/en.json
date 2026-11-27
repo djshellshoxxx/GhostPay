@@ -1964,6 +1964,8 @@
     "error.relayerClient.theRelayerReturnedAnInvalidExpiry": "The relayer returned an invalid expiry.",
     "error.relayerClient.theRelayerReturnedAnInvalidQuoteToken": "The relayer returned an invalid quote token.",
     "error.relayerClient.theRelayerReturnedAnInvalidTransactionHash": "The relayer returned an invalid transaction hash.",
+    "error.relayerClient.theRelayerRefusedTheRequest": "The relayer refused the request: HTTP {status}.",
+    "error.relayerClient.theRelayerRefusedTheRequestWithCode": "The relayer refused the request: HTTP {status} ({code}).",
     "error.qrPayload.thisQRDoesNotContainASupportedPublicMetaAddress": "This QR does not contain a supported public meta-address.",
     "error.pay.noRPCIsConfiguredForThisChain": "No RPC is configured for this chain.",
     "error.pay.thisPaymentIsBlockedResolveTheItemsInTheReview": "This payment is blocked. Resolve the items in the review first.",

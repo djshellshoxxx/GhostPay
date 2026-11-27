@@ -1,6 +1,6 @@
 import type { Address } from '@ghostpay/chain-adapters';
 import { getAddress, isAddress } from 'viem/utils';
-import { UserFacingError } from './errors';
+import { UserFacingError, type MessageDescriptor } from './errors';
 
 export type FetchFn = (url: string, init: RequestInit) => Promise<Response>;
 
@@ -42,7 +42,7 @@ export class RelayerRefusedError extends UserFacingError {
   /** Error class from the relayer's `{ "error": { "code" } }` envelope, if the body had one. */
   public readonly code: string | undefined;
 
-  public constructor(message: string, status: number, code?: string) {
+  public constructor(message: string | MessageDescriptor, status: number, code?: string) {
     super(message);
     this.name = 'RelayerRefusedError';
     this.status = status;
@@ -135,7 +135,10 @@ async function post(base: string, path: string, body: unknown, fetchFn: FetchFn)
     if (!res.ok) {
       // Class only; never echo the body.
       const code = errorClass(text);
-      throw new RelayerRefusedError(`The relayer refused the request: HTTP ${String(res.status)}${code === undefined ? '' : ` (${code})`}.`, res.status, code);
+      const status = String(res.status);
+      throw new RelayerRefusedError(code === undefined
+        ? { key: 'error.relayerClient.theRelayerRefusedTheRequest', values: { status } }
+        : { key: 'error.relayerClient.theRelayerRefusedTheRequestWithCode', values: { status, code } }, res.status, code);
     }
     try {
       return JSON.parse(text);
@@ -198,4 +201,4 @@ export async function submitSweep(base: string, s: SweepSubmission, fetchFn: Fet
   return h.toLowerCase();
 }
 
-// i18n-use: error.relayerClient.theRelayerResponseWasTooLargeAndWasIgnored error.relayerClient.theRelayerReturnedAnInvalidResponse error.relayerClient.couldNotReachTheRelayer error.relayerClient.theRelayerReturnedAnInvalidFee error.relayerClient.theRelayerReturnedAnInvalidFeeAddress error.relayerClient.theRelayerReturnedAnInvalidExpiry error.relayerClient.theRelayerReturnedAnInvalidQuoteToken error.relayerClient.theRelayerReturnedAnInvalidTransactionHash
+// i18n-use: error.relayerClient.theRelayerResponseWasTooLargeAndWasIgnored error.relayerClient.theRelayerReturnedAnInvalidResponse error.relayerClient.couldNotReachTheRelayer error.relayerClient.theRelayerReturnedAnInvalidFee error.relayerClient.theRelayerReturnedAnInvalidFeeAddress error.relayerClient.theRelayerReturnedAnInvalidExpiry error.relayerClient.theRelayerReturnedAnInvalidQuoteToken error.relayerClient.theRelayerReturnedAnInvalidTransactionHash error.relayerClient.theRelayerRefusedTheRequest error.relayerClient.theRelayerRefusedTheRequestWithCode
