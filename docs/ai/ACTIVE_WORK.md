@@ -3,7 +3,9 @@
 Worker: Claude session 01Tj2YczQ3YKPiCBh2nFurEc; branch `claude/loving-brown-v8dlp6` (base main `6bc97fde`, #738).
 Owned paths, LATE-L1: the replay condition in `observeInvoicePayments` of `packages/ux-vault/src/reconciliation-portable.ts`
 (no change to quarantine, matching, records or the vault format), new cases in
-`apps/web/src/lib/reconciliationVault.invoices.test.ts`, the LATE-L1 row of `docs/engineering/SECURITY_FINDINGS.md`.
+`apps/web/src/lib/reconciliationVault.invoices.test.ts`, the LATE-L1 row of `docs/engineering/SECURITY_FINDINGS.md`,
+and `apps/web/src/lib/reconciliationVault.replay.fuzz.test.ts` (ported from #751 `a27d7b80`; test model repaired per
+review 7221525657).
 Owned paths, #569 follow-up (PR comment 7202318339): new masking regressions under `apps/web/src` and `apps/web/e2e`
 ported from #569 `c30283d2` where main's #708 design applies, a disposition record for each of the six cases, and a
 narrow repair only if a ported case shows a real gap. Also the #355 follow-up (PR comments 7202320570, 7204906392):
