@@ -1,4 +1,5 @@
 import type { Address, Hex } from '@ghostpay/chain-adapters';
+import { parseStrictJson } from '@ghostpay/invoice-schema';
 import { UserFacingError } from './errors';
 import type { RelayedOrderRef, SweepLock, SweepLockStatus } from './sweep';
 
@@ -126,7 +127,7 @@ export function readSweepAttempts(storage: SweepJournalStorage): readonly SweepL
   if (raw === null) return [];
   if (raw.length > MAX_BYTES) throw new SweepJournalUnavailableError();
   let data: unknown;
-  try { data = JSON.parse(raw) as unknown; } catch { throw new SweepJournalUnavailableError(); }
+  try { data = parseStrictJson(raw); } catch { throw new SweepJournalUnavailableError(); }
   if (!Array.isArray(data) || data.length > MAX_SWEEP_ATTEMPTS) throw new SweepJournalUnavailableError();
   const out: SweepLock[] = [];
   const keys = new Set<string>();
