@@ -65,7 +65,7 @@ describe('Pay: payer proof of a completed payment', () => {
 
     // The page re-evaluates expiry every five seconds; run that tick after the clock moved.
     now += 5_000;
-    const ticks = intervals.mock.calls.filter(([, delay]) => delay === 5_000).map(([callback]) => callback as () => void);
+    const ticks = intervals.mock.calls.filter(([, delay]) => delay === 5_000).map(([callback]) => callback);
     expect(ticks.length).toBeGreaterThan(0);
     act(() => { for (const tick of ticks) tick(); });
 
