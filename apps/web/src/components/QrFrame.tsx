@@ -193,8 +193,10 @@ export function QrFrame(props: QrFrameProps): ReactNode {
     if (!large) return;
     const opener = openerRef.current;
     closeRef.current?.focus();
+    // A privacy mask takes the open dialog out of the document without unmounting it; its trap must not hold the page.
+    const detached = (): boolean => dialogRef.current?.isConnected !== true;
     const onKey = (e: KeyboardEvent): void => {
-      if (e.defaultPrevented) return;
+      if (e.defaultPrevented || detached()) return;
       if (e.key === 'Escape') {
         e.preventDefault();
         setLargeFor(undefined);
@@ -214,7 +216,9 @@ export function QrFrame(props: QrFrameProps): ReactNode {
       }
     };
     const onFocus = (e: FocusEvent): void => {
-      if (e.target instanceof Node && !dialogRef.current?.contains(e.target)) closeRef.current?.focus();
+      // The mask moves focus to its neutral control just before it detaches the dialog: do not pull it back.
+      if (detached() || !(e.target instanceof Element) || e.target.closest('[data-privacy-safe-control]') !== null) return;
+      if (!dialogRef.current?.contains(e.target)) closeRef.current?.focus();
     };
     document.addEventListener('keydown', onKey);
     document.addEventListener('focusin', onFocus);

@@ -339,6 +339,25 @@ describe('idle lock revokes session authority before retaining or disposing keys
     await expect(session.verifyCredentialForCurrentSession(text, PASS, 'keystore')).rejects.toThrow(/locked after inactivity/);
   });
 
+  it('does not grant spending or raw-key access to a retained copy even with a valid vault credential', async () => {
+    session.generateSession();
+    const text = await session.exportKeystore(PASS, COST);
+    const store = new MemoryKeyVaultStore();
+    await store.putIfEmpty(text, session.captureSessionGuard());
+    const verifiedBeforeExpiry = await session.verifyVaultForCurrentSession(text, PASS);
+    mount();
+    await expire();
+    expect(session.isSessionSuspended()).toBe(true);
+    expect(verifiedBeforeExpiry).toThrow(/changed during this action/);
+    await expect(authorizeEncryptedVault(PASS, store)).rejects.toThrow(/locked after inactivity/);
+    await expect(session.verifyVaultForCurrentSession(text, PASS)).rejects.toThrow(/locked after inactivity/);
+    const rawAccess = vi.fn((): undefined => undefined);
+    expect(() => session.withSessionSecrets(rawAccess)).toThrow(/locked after inactivity/);
+    expect(rawAccess).not.toHaveBeenCalled();
+    expect(() => session.revealViewingKey()).toThrow(/locked after inactivity/);
+    expect(session.isSessionSuspended()).toBe(true);
+  });
+
   it('invalidates a pending encrypted-vault save before it can persist after idle', async () => {
     session.generateSession();
     mount();

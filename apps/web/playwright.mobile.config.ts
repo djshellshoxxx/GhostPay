@@ -6,12 +6,13 @@ import base from './playwright.config';
 function mobile(name: string, device: string, browserName: 'chromium' | 'webkit') {
   const descriptor = devices[device];
   if (descriptor === undefined) throw new Error(`Missing mobile device descriptor: ${device}`);
-  const testMatch = [/devices\.spec\.ts$/, /devices-mobile-workflows\.spec\.ts$/, /devices-mobile-restore\.spec\.ts$/, /flows\.spec\.ts$/];
+  const testMatch = [/devices\.spec\.ts$/, /devices-mobile-workflows\.spec\.ts$/, /devices-mobile-restore\.spec\.ts$/, /flows\.spec\.ts$/, /browser-checks\.spec\.ts$/];
   if (browserName === 'chromium') testMatch.push(/qr-camera\.spec\.ts$/);
   return {
     name,
     testMatch,
-    grep: [/devices[^/]*\.spec\.ts/, /virtual camera: /, /pays a native invoice:/, /refuses a changed wallet account/, /refuses when the wallet mutates/],
+    // The browser self-check spec runs whole: its probes (secure context, WebCrypto, storage, IndexedDB) differ per engine.
+    grep: [/devices[^/]*\.spec\.ts/, /browser-checks\.spec\.ts/, /virtual camera: /, /pays a native invoice:/, /refuses a changed wallet account/, /refuses when the wallet mutates/],
     use: {
       ...descriptor,
       browserName,

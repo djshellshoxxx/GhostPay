@@ -148,7 +148,8 @@ export function parseTemplates(raw: unknown): Result<readonly PaymentTemplate[]>
       !Number.isSafeInteger(c) ||
       !Number.isSafeInteger(u) ||
       c < 0 ||
-      u < c
+      u < c ||
+      u > 8_640_000_000_000_000
     ) {
       return err('bad_time', 'invalid template timestamps');
     }
