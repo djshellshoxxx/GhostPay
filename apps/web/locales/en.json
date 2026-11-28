@@ -5,6 +5,7 @@
     "note": "Source catalog. Keys marked in docs/design/i18n.md as new were added to demonstrate plurals and number formatting."
   },
   "messages": {
+    "app.pagesOriginMismatch": "Payments are disabled because this site does not match the approved hosting origin. Open the approved GhostPay site to use a wallet.",
     "app.offline": "Your browser is offline. Keep this tab open to create invoice links and review invoices. Checking payments needs a connection to your RPC.",
     "pay.offlineCheck": "Chain verification is unavailable while offline. Reconnect and check again.",
     "pay.retryCheck": "Retry chain verification",
@@ -336,8 +337,8 @@
     "sellerKeys.registryHint": "Publishing your meta-address to the ERC-6538 registry would publicly associate it with your wallet address. Publishing is optional and has its own page.",
     "sellerKeys.openRegistry": "Open public registry page",
     "backupGate.title": "Back up these seller keys first",
-    "backupGate.body": "Invoices and the meta-address invite payments that only these keys can sweep, and the keys exist only in this tab. If it closes or the browser crashes before you back them up, those payments are lost for good.",
-    "backupGate.signerOnly.body": "Payments stay sweepable with the spending and viewing keys you imported, but invoices are signed with an invoice-signing key that exists only in this tab. If it closes, reloads or crashes before you back them up, nothing can be signed with that key again, not even receipts for the invoices it signed.",
+    "backupGate.body": "Invoices and the meta-address invite payments that only these keys can sweep, and the keys exist only in this tab. If it closes or the browser crashes before you back them up, those payments are lost for good. Without a vault passphrase, the idle lock still lets anyone using this unlocked device make an encrypted copy with a passphrase of their choice. Lock your device before stepping away.",
+    "backupGate.signerOnly.body": "Payments stay sweepable with the spending and viewing keys you imported, but invoices are signed with an invoice-signing key that exists only in this tab. If it closes, reloads or crashes before you back them up, nothing can be signed with that key again, not even receipts for the invoices it signed. Without a vault passphrase, the idle lock still lets anyone using this unlocked device make an encrypted copy with a passphrase of their choice. Lock your device before stepping away.",
     "backupGate.waiverLabel": "To continue without a backup, type: {phrase}",
     "backupGate.waiverPhrase": "continue without backup",
     "backupGate.waive": "Continue without a backup",
@@ -2636,7 +2637,7 @@
     "retention.proof.expired": "The payment proof preview closed under your retention setting. Show it again at any time; receipt copy and download remain available.",
     "retention.settings.where": "To close previews now, use the preview button on the page that shows them: Create invoice or Pay.",
     "app.idle.suspended.title": "Session locked after inactivity",
-    "app.idle.suspended.body": "Protected operations are locked. Any seller keys still in this tab are retained only for encrypted backup and verification. Save an encrypted browser vault and unlock it, or download and verify a keystore, choose Wipe keys from memory, then import that keystore. These actions use the existing passphrase checks. Anyone with access to this tab can still use this recovery path.",
+    "app.idle.suspended.body": "Protected operations are locked. If these seller keys have no existing vault passphrase, anyone at the unlocked keyboard can export these keys under a passphrase they choose and restore them elsewhere. Lock your device when you step away. To recover your keys, save and unlock an encrypted browser vault, or download and verify a keystore before wiping and importing it. Keys tied to a vault still require its passphrase.",
     "error.session.lockedBackupOnly": "The session is locked after inactivity. Back up or verify the retained seller keys, then load them again to continue.",
     "app.idle.keptUnconfirmed": "Local tags locked after inactivity. Seller keys are retained because a recoverable copy could not be confirmed.",
     "app.idle.keptSigner": "Local tags locked after inactivity. Seller keys stay loaded because the invoice-signing key has no backup."
