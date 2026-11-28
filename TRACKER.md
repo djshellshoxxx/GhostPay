@@ -82,3 +82,10 @@ push, created by PRIMARY 2026-11-28T02:08Z). Integration lock: `origin/automatio
   ownership not released, so not taken.
 - For owners: #726's fix is already on main via #724 (merge 34ba63a2) but the PR is open; #614 (held) has no remaining
   unique code; STOP_WORK says #636 is closed but it is open on GitHub.
+
+## Dependency audit (2026-11-28 ~02:50Z, `npm audit` at b890a766)
+
+15 low-severity advisories, all in the dev-only Hardhat/ethers v5/elliptic chain used by the non-shipped
+`packages/confidential-contracts` test harness (GHSA-848j-6mx2-7j84 elliptic). No runtime/shipped dependency affected.
+The only fix is a semver-major Hardhat 3 migration of that research package: out of beta scope, not taken. Recorded as
+deferred (owner decision), not a release blocker for the static web client.
