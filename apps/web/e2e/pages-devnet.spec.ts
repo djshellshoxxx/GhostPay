@@ -72,6 +72,21 @@ async function openPayer(context: BrowserContext, account: Address): Promise<{ p
   return { page, wallet };
 }
 
+/** A synthetic interrupted payment makes the recovery panel available on an otherwise fresh profile. */
+async function openWalletHistoryFixture(page: Page, account: Address): Promise<Locator> {
+  await page.addInitScript((owner) => {
+    localStorage.setItem('ghostpay.wallet-attempts.v1', JSON.stringify([{
+      id: '00000000-0000-4000-8000-000000000001', key: '0x' + 'aa'.repeat(32), chainId: 84532,
+      account: owner.toLowerCase(), kind: 'payment', createdAt: 1, status: 'unknown',
+    }]));
+  }, account);
+  await openSite(page);
+  await nav(page).getByRole('button', { name: 'Pay', exact: true }).click();
+  const attempts = page.getByRole('region', { name: 'Wallet attempt journal' });
+  await expect(attempts).toBeVisible();
+  return attempts;
+}
+
 async function recoverWalletHistory(page: Page, walletName: string): Promise<void> {
   const attempts = page.getByRole('region', { name: 'Wallet attempt journal' });
   const shown = await shownWalletDisclosures(page);
@@ -861,9 +876,8 @@ test.describe('GitHub Pages artifact: refusals', () => {
     const context = await newContext(browser, baseURL, net, { presetRpc: false });
     try {
       const { page, wallet } = await openPayer(context, ACCOUNTS.rejectPayer);
-      wallet.chainOverride = '0x14a34'; // The wallet reports Base Sepolia. No chain or transaction is needed here.
-      await openSite(page);
-      await nav(page).getByRole('button', { name: 'Pay', exact: true }).click();
+      await openWalletHistoryFixture(page, wallet.account);
+      wallet.chainOverride = '0x14a34'; // Mock Base Sepolia without contacting a chain.
       await recoverWalletHistory(page, wallet.name);
       await expect.poll(() => wallet.requests).toContain('eth_requestAccounts');
       expect(wallet.sends).toHaveLength(0);
@@ -879,10 +893,8 @@ test.describe('GitHub Pages artifact: refusals', () => {
     const context = await newContext(browser, copy.href, net, { presetRpc: false });
     try {
       const { page, wallet } = await openPayer(context, ACCOUNTS.rejectPayer);
-      await openSite(page);
+      const attempts = await openWalletHistoryFixture(page, wallet.account);
       await expect(page.getByText(/Payments are disabled because this site does not match the approved hosting origin/)).toBeVisible();
-      await nav(page).getByRole('button', { name: 'Pay', exact: true }).click();
-      const attempts = page.getByRole('region', { name: 'Wallet attempt journal' });
       await attempts.getByLabel('Network for wallet history').selectOption('84532');
       await attempts.getByRole('button', { name: 'Find wallet for history' }).click();
       await attempts.getByRole('button', { name: `Connect ${wallet.name}`, exact: true }).click();
