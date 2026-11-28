@@ -7,9 +7,25 @@ import { FULL, ctx, sel } from './x.testutil.js';
 
 type V = Partial<Record<OptionId, string>>;
 const without = (...c: Capability[]): ReadonlySet<Capability> => new Set([...FULL].filter((x) => !c.includes(x)));
+// Rule kinds as profiles.md section 8 (R-01..R-40) and DEVIATIONS.md (R-41..R-46) state them. Written out here, not read
+// from RULES, so a conflict demoted to a warning (or the reverse) in the data is caught.
+const KIND_OF: Readonly<Record<string, 'conflict' | 'requires' | 'warn' | 'moot'>> = {
+  'R-01': 'conflict', 'R-02': 'conflict', 'R-03': 'conflict', 'R-04': 'requires', 'R-05': 'conflict', 'R-06': 'requires',
+  'R-07': 'conflict', 'R-08': 'warn', 'R-09': 'conflict', 'R-10': 'conflict', 'R-11': 'conflict', 'R-12': 'conflict',
+  'R-13': 'conflict', 'R-14': 'conflict', 'R-15': 'moot', 'R-16': 'conflict', 'R-17': 'conflict', 'R-18': 'conflict',
+  'R-19': 'moot', 'R-20': 'conflict', 'R-21': 'requires', 'R-22': 'conflict', 'R-23': 'requires', 'R-24': 'warn',
+  'R-25': 'warn', 'R-26': 'requires', 'R-27': 'warn', 'R-28': 'conflict', 'R-29': 'conflict', 'R-30': 'requires',
+  'R-31': 'warn', 'R-32': 'warn', 'R-33': 'warn', 'R-34': 'conflict', 'R-35': 'requires', 'R-36': 'conflict',
+  'R-37': 'requires', 'R-38': 'warn', 'R-39': 'requires', 'R-40': 'warn', 'R-41': 'requires', 'R-42': 'requires',
+  'R-43': 'requires', 'R-44': 'requires', 'R-45': 'requires', 'R-46': 'warn',
+};
+// A rule must fire in the bucket its kind demands: conflicts and requirements block, warnings and moot notes only inform.
+// (Looking in both buckets would let a conflict demoted to a warning pass unnoticed.)
 const fires = (id: RuleId, v: V, c: Context, acks: Parameters<typeof sel>[1] = []): boolean => {
   const ev = evaluate(sel(v, acks), c);
-  return [...ev.blocking, ...ev.warnings].some((i) => i.ruleId === id);
+  const kind = KIND_OF[id];
+  const bucket = kind === 'conflict' || kind === 'requires' ? ev.blocking : ev.warnings;
+  return bucket.some((i) => i.ruleId === id);
 };
 
 interface Case {
@@ -85,6 +101,9 @@ describe('rules R-01..R-46: positive and negative', () => {
   it('R-04 case 1: with ack no issue at all', () => {
     const ev = evaluate(sel({ 'sweep.hops': '1' }, ['privacy.ack.hopsWeak']), ctx({ asset: 'erc20-permit' }));
     expect(ev.blocking.some((b) => b.code === 'E_ACK_MISSING')).toBe(false);
+  });
+  it('every rule has the kind the spec states (severity cannot drift)', () => {
+    expect(Object.fromEntries(RULES.map((r) => [r.id, r.kind]))).toEqual(KIND_OF);
   });
   it('rule keys are listed; no orphan warning keys', () => {
     for (const r of RULES) expect([...WARNING_KEYS, ...ERROR_KEYS] as string[]).toContain(r.key);

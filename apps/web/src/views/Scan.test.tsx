@@ -94,6 +94,32 @@ describe('Scan and receive', () => {
     expect((await screen.findByRole('alert')).textContent).toMatch(/Payments are disabled on this chain/);
   });
 
+  it('PRIV-06 F1: a checkpoint another tab writes during scan setup is kept; the resumed run still lists its payments', async () => {
+    const pub = generateSession();
+    const keyId = checkpointKeyId(pub.spendingPublicKey, pub.viewingPublicKey);
+    window.localStorage.setItem(SETTINGS_KEY, JSON.stringify({ rpcUrls: { '84532': 'https://rpc.test' } }));
+    const mine = makeLog({ announcer: FAKE_ANNOUNCER, metaAddress: pub.metaAddress, block: 120, index: 0, caller: FAKE_ROUTER, amount: 2_500_000n });
+    const rpc = chainWithLogs(84532, 500, [mine.log]);
+    const checkpoints = memoryCheckpoints();
+    checkpoints.save(84532, keyId, { nextBlock: 100n });
+    // Another tab advances the shared checkpoint after this view rendered it, while this tab awaits its scan setup.
+    const foreign = { nextBlock: 450n };
+    let armed = false;
+    const user = await openScan(makeServices({ loadManifest: loaded, checkpoints, createScanWorker: () => new InlineWorker(), createRpc: () => {
+      if (armed) { armed = false; checkpoints.save(84532, keyId, foreign); }
+      return Promise.resolve(withManifestChain(rpc));
+    } }));
+    const resume = screen.getByLabelText<HTMLInputElement>('Resume from checkpoint');
+    if (!resume.checked) await user.click(resume);
+    armed = true;
+    await user.click(screen.getByRole('button', { name: 'Start scan' }));
+    expect(await screen.findByText('Payments found')).toBeTruthy();
+    expect(screen.getByText(mine.stealthAddress)).toBeTruthy();
+    await waitFor(() => { expect(screen.getByText(/Finished\./)).toBeTruthy(); });
+    expect(armed).toBe(false);
+    expect(checkpoints.load(84532, keyId)).toEqual(foreign);
+  });
+
   it('requires a numeric start block', async () => {
     generateSession();
     window.localStorage.setItem(SETTINGS_KEY, JSON.stringify({ rpcUrls: { '84532': 'https://rpc.test' } }));
@@ -266,6 +292,57 @@ describe('Scan and receive', () => {
     expect([...vaultData.values()][0]).not.toContain(txHash);
   });
 
+  it('refuses a late-payment recheck after the saved RPC changes, without contacting the old route', async () => {
+    const pub = generateSession();
+    window.localStorage.setItem(SETTINGS_KEY, JSON.stringify({ rpcUrls: { '84532': 'https://rpc.test' } }));
+    const mine = makeLog({ announcer: FAKE_ANNOUNCER, metaAddress: pub.metaAddress, block: 120, index: 1, caller: FAKE_ROUTER, amount: 2_500_000n });
+    const txHash = `0x${'a'.repeat(64)}`;
+    const announcement = { ...mine.log, transactionHash: txHash };
+    const payer = '0x2222222222222222222222222222222222222222' as Address;
+    const [ephemeral, metadata] = decodeAbiParameters([{ type: 'bytes' }, { type: 'bytes' }], announcement.data as Hex);
+    const parsed = parseMetadata(metadata);
+    if (parsed.kind !== 'erc20') throw new Error('ERC20 fixture required');
+    const token = '0x036cbd53842c5426634e7929541ec2318f3dcf7e';
+    const transfer = {
+      address: token, topics: [TRANSFER_TOPIC, topicAddress(payer), announcement.topics?.[2] ?? '0x'],
+      data: `0x${2_500_000n.toString(16).padStart(64, '0')}`, blockNumber: announcement.blockNumber,
+      blockHash: announcement.blockHash, transactionHash: txHash, logIndex: '0x0',
+    };
+    const blockTime = Math.floor(Date.now() / 1000) - 3600;
+    const chain = chainWithLogs(84532, 500, [announcement], (method, params) => {
+      if (method === 'eth_getLogs' && (params[0] as { address?: string }).address?.toLowerCase() === token) return [transfer];
+      const common = { to: FAKE_ROUTER, from: payer, blockHash: announcement.blockHash, blockNumber: announcement.blockNumber };
+      if (method === 'eth_getTransactionReceipt') return { ...common, status: '0x1', transactionHash: txHash, logs: [transfer, announcement] };
+      if (method === 'eth_getTransactionByHash') return { ...common, hash: txHash, value: '0x0', input: encodeFunctionData({ abi: ghostPayRouterAbi, functionName: 'payERC20', args: [parsed.token, mine.stealthAddress as Address, grossForNet(parsed.netAmount), parsed.netAmount, 9999999999n, ephemeral, metadata] }) };
+      return undefined;
+    });
+    // Canonical headers carry block time, so the late payment is decided by chain time rather than scan time.
+    const rpc: typeof chain = { ...chain, getBlock: async (n) => {
+      const block = await chain.getBlock(n);
+      return block === null ? null : { ...block, timestamp: BigInt(blockTime) + (n - 120n) * 2n };
+    } };
+    const { createCurrentReconciliationVault } = await import('../lib/reconciliationVault');
+    const keyId = checkpointKeyId(pub.spendingPublicKey, pub.viewingPublicKey);
+    await (await createCurrentReconciliationVault(84532, keyId)).registerInvoice({
+      version: 1, invoiceDigest: `0x${'b'.repeat(64)}`, nonce: 'c'.repeat(32), chainId: 84532, asset: token,
+      expectedNetMinorUnits: parsed.netAmount.toString(), createdAt: blockTime - 600, expiresAt: blockTime - 1, registeredAt: Date.now(),
+    });
+    const user = await openScan(makeServices({ loadManifest: loaded, createRpc: () => Promise.resolve(withManifestChain(rpc)), createScanWorker: () => new InlineWorker() }));
+    await user.type(screen.getByLabelText('Start block'), '100');
+    await user.click(screen.getByRole('button', { name: 'Start scan' }));
+    expect(await screen.findByText('Seller-signed receipt')).toBeTruthy();
+    await user.click(screen.getByRole('button', { name: 'Unlock encrypted reconciliation vault' }));
+    const accept = await screen.findByRole('button', { name: 'Accept late payment for this invoice' });
+
+    window.localStorage.setItem(SETTINGS_KEY, JSON.stringify({ rpcUrls: { '84532': 'https://replacement.test' } }));
+    const before = rpc.calls.length;
+    await user.click(accept);
+    expect(await screen.findByText(/The RPC could not reverify this payment/)).toBeTruthy();
+    expect(rpc.calls.slice(before).map((call) => call.method)).not.toContain('eth_getTransactionReceipt');
+    const saved = await (await createCurrentReconciliationVault(84532, keyId)).read();
+    expect(saved.some((record) => record.lateAcceptedAt !== undefined || record.invoiceDigest !== undefined)).toBe(false);
+  });
+
   it('does not offer another key set\'s checkpoint (WEB-APP-04)', async () => {
     const pub = generateSession();
     window.localStorage.setItem(SETTINGS_KEY, JSON.stringify({ rpcUrls: { '84532': 'https://rpc.test' } }));
@@ -403,7 +480,14 @@ describe('Scan and receive', () => {
       await user.click(screen.getByRole('button', { name: 'Cancel' }));
       await act(async () => { unlock(); await invalidation; });
       expect(vaultData.size).toBe(0);
-      finish(); await waitFor(() => expect(screen.getByText(/Cancelled\./)).toBeTruthy());
+      finish(); await waitFor(() => {
+        const scanRegion = within(screen.getByRole('region', { name: 'Scan and receive' }));
+        expect(scanRegion.getByText(/^Cancelled\. \d+ announcements checked\./)).toBeTruthy();
+        expect(screen.getByText('Cancelled. The scan stopped before completing.', {
+          selector: '[role="status"][aria-live="polite"][aria-atomic="true"]'
+        })).toBeTruthy();
+        expect(screen.queryByText('Scan finished.', { selector: '[role="status"]' })).toBeNull();
+      });
     } finally { unlock(); finish(); runner.mockRestore(); }
   });
 
@@ -519,7 +603,7 @@ describe('Scan and receive', () => {
     } finally { runner.mockRestore(); }
   });
 
-  it('opens only the viewing key for scanning and tags, never the full key set (L1-07)', async () => {
+  it('opens only the viewing key for scanning, encrypted reconciliation and tags (L1-07)', async () => {
     const pub = generateSession();
     window.localStorage.setItem(SETTINGS_KEY, JSON.stringify({ rpcUrls: { '84532': 'https://rpc.test' } }));
     const mine = makeLog({ announcer: FAKE_ANNOUNCER, metaAddress: pub.metaAddress, block: 120, index: 0, caller: FAKE_ROUTER });
@@ -536,7 +620,8 @@ describe('Scan and receive', () => {
       expect(await screen.findByLabelText(/Client tag/)).toBeTruthy();
       expect(opened).not.toHaveBeenCalled();
       expect(openedAsync).not.toHaveBeenCalled();
-      expect(viewing).toHaveBeenCalledTimes(2);
+      // The scan worker, reconciliation vault and tag vault each need a viewing key copy.
+      expect(viewing).toHaveBeenCalledTimes(3);
     } finally { opened.mockRestore(); openedAsync.mockRestore(); viewing.mockRestore(); }
   });
 
@@ -610,7 +695,14 @@ describe('Scan and receive', () => {
     await waitFor(() => { expect((cancel as HTMLButtonElement).disabled).toBe(false); });
     await user.click(cancel);
     release();
-    await waitFor(() => { expect(screen.getByText(/Cancelled\./)).toBeTruthy(); });
+    await waitFor(() => {
+      const scanRegion = within(screen.getByRole('region', { name: 'Scan and receive' }));
+      expect(scanRegion.getByText(/^Cancelled\. \d+ announcements checked\./)).toBeTruthy();
+      expect(screen.getByText('Cancelled. The scan stopped before completing.', {
+        selector: '[role="status"][aria-live="polite"][aria-atomic="true"]'
+      })).toBeTruthy();
+      expect(screen.queryByText('Scan finished.', { selector: '[role="status"]' })).toBeNull();
+    });
     expect(worker.terminated).toBe(true);
     expect(worker.received.some((m) => m.type === 'cancel')).toBe(true);
   });

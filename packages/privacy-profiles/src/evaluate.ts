@@ -4,6 +4,8 @@
  * @security Chain guard: any non-default option on a chain outside the testnet list is blocking (R-01).
  */
 import { OPTION_CATALOGUE } from './catalogue.js';
+import { deepFreeze } from './freeze.js';
+import { isRecord, normalizeContext, normalizeSelection } from './input.js';
 import { RULES } from './rules.js';
 import {
   ACK_KEYS,
@@ -11,6 +13,7 @@ import {
 import { OPTION_IDS, TESTNET_BTC_NETWORKS, TESTNET_CHAIN_IDS } from './types.js';
 import type {
   AckKey,
+  Capability,
   Context,
   ErrorKey,
   Evaluation,
@@ -21,6 +24,7 @@ import type {
   OptionId,
   Pred,
   RuleDef,
+  RuleId,
   Selection,
   StrengthClass,
   TrustParty,
@@ -38,6 +42,15 @@ interface State {
 const RELAY_LIKE: ReadonlySet<TrustParty> = new Set<TrustParty>([
   'sweep-relayer', 'payer-sponsor', 'bundler', 'pool-relayer', 'railgun-broadcaster', 'zama-decrypt-relayer', 'payjoin-directory',
 ]);
+/** The self-test capability each network profile option needs before it may leave `direct` (R-29, NP-T-5). */
+export const SELFTEST_CAP: Readonly<Partial<Record<OptionId, Capability>>> = deepFreeze({
+  'net.rpcProfile': 'selftest-ok:rpc',
+  'net.relayerProfile': 'selftest-ok:relayer',
+});
+/** Leak id `honestLabel` reports when it was not given an evaluation: everything may still be visible. */
+export const UNKNOWN_EVALUATION: LeakKey = 'profiles:unknown-evaluation';
+const INVALID_SELECTION: ErrorKey = 'privacy.err.invalidSelection';
+const INVALID_CONTEXT: ErrorKey = 'privacy.err.invalidContext';
 const NOT_SELECTABLE: ErrorKey = 'privacy.err.notSelectable';
 const UNKNOWN_VALUE: ErrorKey = 'privacy.err.unknownValue';
 const WRONG_ASSET: ErrorKey = 'privacy.err.wrongAsset';
@@ -46,10 +59,11 @@ const has = (o: object, k: string): boolean => Object.prototype.hasOwnProperty.c
 
 /** Definition of the chosen value, if the option has it. */
 export function valueDef(id: OptionId, value: string): ValueDef | undefined {
-  return OPTION_CATALOGUE[id].values.find((v) => v.value === value);
+  return has(OPTION_CATALOGUE, id) ? OPTION_CATALOGUE[id].values.find((v) => v.value === value) : undefined;
 }
 
-function inScope(def: OptionDef, ctx: Context): boolean {
+/** True when an option is evaluated for the context's action (the settings view covers every option). */
+export function inScope(def: OptionDef, ctx: Context): boolean {
   return ctx.action === 'settings' || def.actions.includes(ctx.action);
 }
 
@@ -99,10 +113,11 @@ function scanOptions(name: string, st: State): OptionId[] {
       case 'env':
         if (def.group === 'network' && vd.env && !vd.env.includes(st.ctx.env)) out.push(id);
         break;
-      case 'selftest':
-        if (id === 'net.rpcProfile' && !st.ctx.capabilities.has('selftest-ok:rpc')) out.push(id);
-        if (id === 'net.relayerProfile' && !st.ctx.capabilities.has('selftest-ok:relayer')) out.push(id);
+      case 'selftest': {
+        const needed = SELFTEST_CAP[id];
+        if (needed !== undefined && !st.ctx.capabilities.has(needed)) out.push(id);
         break;
+      }
       case 'relay-direct':
         if (direct && applies && trustOf(id, vd, st).some((t) => RELAY_LIKE.has(t))) out.push(id);
         break;
@@ -152,14 +167,24 @@ function cmpIssue(a: Issue, b: Issue): number {
 }
 
 /**
- * Evaluates a selection against a context.
- * @security Never throws; unknown options or values in `sel` become blocking issues and fall back to defaults.
+ * Evaluates a selection against a context. The result is deeply frozen.
+ * @security Never throws. Unknown options or values in `sel` become blocking issues and fall back to defaults.
+ * A malformed selection or context (wrong runtime type, unknown action, env or asset, non-integer chain id, capabilities
+ * that are not a Set) is blocking and is replaced by its most restrictive form, so it can only block, never allow.
  */
-export function evaluate(sel: Selection, ctx: Context): Evaluation {
+export function evaluate(selIn: Selection, ctxIn: Context): Evaluation {
+  return deepFreeze(run(selIn, ctxIn).evaluation);
+}
+
+function run(selIn: Selection, ctxIn: Context): { readonly evaluation: Evaluation; readonly applied: AppliedValue[] } {
+  const { selection: sel, problems: selProblems } = normalizeSelection(selIn);
+  const { context: ctx, problems: ctxProblems } = normalizeContext(ctxIn);
   const issues: Issue[] = [];
+  if (selProblems.length > 0) issues.push({ code: 'E_INVALID_SELECTION', key: INVALID_SELECTION, options: [] });
+  if (ctxProblems.length > 0) issues.push({ code: 'E_INVALID_CONTEXT', key: INVALID_CONTEXT, options: [] });
   const vals = {} as Record<OptionId, string>;
   const active = {} as Record<OptionId, boolean>;
-  const rawValues: Readonly<Record<string, unknown>> = typeof sel.values === 'object' && sel.values !== null ? sel.values : {};
+  const rawValues: Readonly<Record<string, unknown>> = sel.values;
   for (const k of Object.keys(rawValues)) {
     if (!(OPTION_IDS as readonly string[]).includes(k)) issues.push({ code: 'E_UNKNOWN_VALUE', key: UNKNOWN_VALUE, options: [] });
   }
@@ -205,6 +230,7 @@ export function evaluate(sel: Selection, ctx: Context): Evaluation {
     });
   }
 
+  const applied: AppliedValue[] = [];
   const trust: TrustParty[] = [];
   const hides: LeakKey[] = [];
   const dnh: LeakKey[] = [];
@@ -238,7 +264,9 @@ export function evaluate(sel: Selection, ctx: Context): Evaluation {
       if (w !== 'privacy.warn.testnetOnly') issues.push({ code: 'W_VALUE', key: w, options: [id] });
     }
     for (const a of vd.acks) acksNeeded.set(a, [...(acksNeeded.get(a) ?? []), id]);
-    trust.push(...trustOf(id, vd, st));
+    const effectiveTrust = trustOf(id, vd, st);
+    applied.push({ option: id, value, def: vd, trust: effectiveTrust });
+    trust.push(...effectiveTrust);
     hides.push(...vd.hides);
     dnh.push(...vd.doesNotHide);
     strength.push(vd.strength);
@@ -261,7 +289,7 @@ export function evaluate(sel: Selection, ctx: Context): Evaluation {
   }
   dedup.sort(cmpIssue);
   const blocking = dedup.filter((i) => i.code.startsWith('E_'));
-  return {
+  const evaluation: Evaluation = {
     ok: blocking.length === 0,
     blocking,
     warnings: dedup.filter((i) => i.code.startsWith('W_')),
@@ -273,35 +301,87 @@ export function evaluate(sel: Selection, ctx: Context): Evaluation {
     strength: uniqSorted(strength),
     specCopyKeys: uniqSorted(copy),
   };
+  return { evaluation, applied };
+}
+
+/** Same as {@link evaluate} without freezing the result; used inside loops that discard it. */
+export function evaluateRaw(selIn: Selection, ctxIn: Context): Evaluation {
+  return run(selIn, ctxIn).evaluation;
+}
+
+/** A non-default value that is in scope for the action and active, with its catalogue definition. */
+export interface AppliedValue {
+  readonly option: OptionId;
+  readonly value: string;
+  readonly def: ValueDef;
+  /** Parties this value relies on, including the pool submitter the default `poolSubmit=relayer` implies. */
+  readonly trust: readonly TrustParty[];
+}
+
+/**
+ * The evaluation together with the values that actually take effect (non-default, in scope, active), in catalogue order.
+ * Consent and capability claims are derived from exactly this list, so they cannot disagree with `trust` and `acks`.
+ */
+export function evaluateWithApplied(selIn: Selection, ctxIn: Context): { readonly evaluation: Evaluation; readonly applied: readonly AppliedValue[] } {
+  const { evaluation, applied } = run(selIn, ctxIn);
+  return deepFreeze({ evaluation, applied });
+}
+
+/**
+ * Capabilities the `then` clause of a `requires` rule still needs, given the effective values and context: a missing
+ * capability counts when it sits in an unsatisfied `all`, or in an `any` where no alternative holds. Anything that is not a
+ * capability test (an option value, an environment) cannot be met by adding a capability and contributes nothing.
+ */
+export function unmetCapabilities(ruleId: RuleId, effective: Readonly<Record<OptionId, string>>, ctxIn: Context): readonly Capability[] {
+  const rule = RULES.find((r) => r.id === ruleId);
+  if (!rule || rule.kind !== 'requires' || !rule.then) return [];
+  const { context: ctx } = normalizeContext(ctxIn);
+  const st: State = { sel: { preset: 'custom', values: {}, acks: [] }, ctx, vals: { ...effective }, active: {} as Record<OptionId, boolean> };
+  const need = (p: Pred): Capability[] => {
+    if ('cap' in p) return ctx.capabilities.has(p.cap) ? [] : [p.cap];
+    if ('all' in p) return p.all.flatMap(need);
+    if ('any' in p) return p.any.some((q) => evalPred(q, st)) ? [] : p.any.flatMap(need);
+    return [];
+  };
+  return [...new Set(need(rule.then))].sort();
 }
 
 /** Adds one extra blocking issue to an evaluation (used by option setters). */
 export function withIssue(ev: Evaluation, issue: Issue): Evaluation {
   const blocking = [...ev.blocking, issue].sort(cmpIssue);
-  return { ...ev, ok: false, blocking };
+  return deepFreeze({ ...ev, ok: false, blocking });
 }
 
 /**
  * Honest explanation rows: every option in scope with its effective value and definition, so the UI can render
  * trust parties, warnings and method-owned copy keys.
  */
-export function explain(sel: Selection, ctx: Context): readonly { option: OptionId; value: string; def: ValueDef }[] {
-  const ev = evaluate(sel, ctx);
+export function explain(selIn: Selection, ctxIn: Context): readonly { option: OptionId; value: string; def: ValueDef }[] {
+  const ev = evaluate(selIn, ctxIn);
+  const { context: ctx } = normalizeContext(ctxIn);
   const out: { option: OptionId; value: string; def: ValueDef }[] = [];
   for (const id of OPTION_IDS) {
     if (!inScope(OPTION_CATALOGUE[id], ctx)) continue;
     const def = valueDef(id, ev.effective[id]);
     if (def) out.push({ option: id, value: ev.effective[id], def });
   }
-  return out;
+  return deepFreeze(out);
 }
 
 /** Honest label keys for an evaluation: fixed headline, trust parties and what stays visible. Never prose. */
 export function honestLabel(ev: Evaluation): { readonly headline: WarningKey; readonly trusts: readonly TrustParty[]; readonly stillVisible: readonly LeakKey[]; readonly warnings: readonly WarningKey[] } {
-  return {
+  // Total on garbage: anything that is not an evaluation gives the headline and an explicit unknown marker in
+  // `stillVisible`, never an empty list (which for a real label means "nothing beyond the default stays visible").
+  const list = (x: unknown): unknown[] => (Array.isArray(x) ? x : []);
+  const rec: Record<string, unknown> = isRecord(ev) ? ev : {};
+  if (!Array.isArray(rec['trust']) || !Array.isArray(rec['doesNotHide']) || !Array.isArray(rec['warnings'])) {
+    return deepFreeze({ headline: 'privacy.warn.noAnonymity', trusts: [], stillVisible: [UNKNOWN_EVALUATION], warnings: [] });
+  }
+  const keys = list(rec['warnings']).flatMap((w) => (isRecord(w) && typeof w['key'] === 'string' ? [w['key'] as WarningKey] : []));
+  return deepFreeze({
     headline: 'privacy.warn.noAnonymity',
-    trusts: ev.trust,
-    stillVisible: ev.doesNotHide,
-    warnings: uniqSorted(ev.warnings.map((w) => w.key as WarningKey)),
-  };
+    trusts: list(rec['trust']).filter((t): t is TrustParty => typeof t === 'string'),
+    stillVisible: list(rec['doesNotHide']).filter((l): l is LeakKey => typeof l === 'string'),
+    warnings: uniqSorted(keys),
+  });
 }

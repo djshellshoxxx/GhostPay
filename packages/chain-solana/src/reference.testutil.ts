@@ -104,9 +104,13 @@ const sha = (alg: 'sha256' | 'sha512', ...parts: Uint8Array[]): Uint8Array => {
   return new Uint8Array(h.digest());
 };
 export const refSha512 = (...parts: Uint8Array[]): Uint8Array => sha('sha512', ...parts);
-const tagged = (tag: string, ...parts: Uint8Array[]): Uint8Array => {
-  const t = new TextEncoder().encode(tag);
-  return refSha512(Uint8Array.of(t.length), t, ...parts);
+/** ADR-0017 `dst(label) = u8(len(tag)) || tag`, tag = "GhostPay/solana-stealth/v1/" + label. */
+const dst = (label: string): Uint8Array => {
+  const t = new TextEncoder().encode('GhostPay/solana-stealth/v1/' + label);
+  const out = new Uint8Array(t.length + 1);
+  out[0] = t.length;
+  out.set(t, 1);
+  return out;
 };
 
 const ALPHABET = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz';
@@ -125,47 +129,46 @@ export function refBase58(b: Uint8Array): string {
   return s;
 }
 
-export function refBase58check(payload: Uint8Array): string {
-  const c = sha('sha256', sha('sha256', payload)).subarray(0, 4);
-  const all = new Uint8Array(payload.length + 4);
+/** ADR-0017 meta-address text: `st:sol:` + base58(0x01 || cluster || S || V || SHA-256(dst("checksum") || payload)[0..4]). */
+export function refMetaAddress(S: Uint8Array, V: Uint8Array, clusterByte: number): string {
+  const payload = new Uint8Array(66);
+  payload[0] = 1;
+  payload[1] = clusterByte;
+  payload.set(S, 2);
+  payload.set(V, 34);
+  const all = new Uint8Array(70);
   all.set(payload);
-  all.set(c, payload.length);
-  return refBase58(all);
+  all.set(sha('sha256', dst('checksum'), payload).subarray(0, 4), 66);
+  return 'st:sol:' + refBase58(all);
 }
 
-/** Full scheme from scalars, as specified in DEVIATIONS.md / solana-impl.md. */
+/** Full scheme from scalars, as specified in ADR-0017 section 3 (devnet meta-address, cluster byte 1). */
 export function refDerive(s: bigint, v: bigint, r: bigint) {
   const S = refEncode(refMul(s));
-  const Vp = refMul(v);
-  const V = refEncode(Vp);
+  const V = refEncode(refMul(v));
   const R = refEncode(refMul(r));
-  const K = refEncode(refMul(8n, refMul(r, refDecode(V))));
-  const Krecv = refEncode(refMul(8n, refMul(v, refDecode(R))));
-  const h = leInt(tagged('GhostPay/solana-stealth/v1/tweak', K, R, S)) % REF_L;
-  const viewTag = tagged('GhostPay/solana-stealth/v1/view-tag', K)[0] as number;
+  const Z = refEncode(refMul(r, refDecode(V)));
+  const Zrecv = refEncode(refMul(v, refDecode(R)));
+  const h = leInt(sha('sha512', dst('shared'), R, Z, S)) % REF_L;
+  const viewTag = sha('sha256', dst('view-tag'), R, Z)[0] as number;
   const Pt = refEncode(add(refDecode(S), refMul(h)));
   const x = (s + h) % REF_L;
-  const meta = new Uint8Array(65);
-  meta[0] = 1;
-  meta.set(S, 1);
-  meta.set(V, 33);
-  const ann = new Uint8Array(34);
-  ann[0] = 1;
-  ann.set(R, 1);
-  ann[33] = viewTag;
+  const memoBody = new Uint8Array(33);
+  memoBody.set(R);
+  memoBody[32] = viewTag;
   return {
     S,
     V,
     R,
-    K,
-    Krecv,
+    Z,
+    Zrecv,
     h,
     viewTag,
     P: Pt,
     x,
     xB: refEncode(refMul(x)),
-    meta: 'gpsol:' + refBase58check(meta),
-    memo: 'gpst1:' + Buffer.from(ann).toString('base64url'),
+    meta: refMetaAddress(S, V, 1),
+    memo: 'gpst1:' + refBase58(memoBody),
     address: refBase58(Pt),
   };
 }

@@ -9,16 +9,28 @@ export {
   parsePrimeOrderPoint,
   type PrimeOrderPoint,
 } from './point.js';
-export { TAG_NONCE_PREFIX, TAG_TWEAK, TAG_VIEW_TAG, taggedSha512 } from './hash.js';
+export {
+  DOMAIN,
+  TAG_CHECKSUM,
+  TAG_NONCE_PREFIX,
+  TAG_SHARED,
+  TAG_VIEW_TAG,
+  taggedSha256,
+  taggedSha512,
+} from './hash.js';
 export {
   decodeMetaAddress,
   encodeMetaAddress,
   generateStealthKeys,
+  LEGACY_META_ADDRESS_PREFIX,
   META_ADDRESS_PREFIX,
   META_ADDRESS_VERSION,
   publicKeyOf,
+  SOLANA_CLUSTER_BYTES,
   stealthKeysFromSecrets,
+  type SolanaCluster,
   type SolanaMetaAddress,
+  type SolanaMetaKeys,
   type SolanaStealthKeys,
 } from './keys.js';
 export {

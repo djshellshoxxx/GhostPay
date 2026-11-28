@@ -191,15 +191,105 @@ function mergeRecords(existing: readonly WalletAttempt[], incoming: readonly Wal
   if (merged.length > MAX_ATTEMPTS) return fail();
   return merged;
 }
+interface ReturnedAttempt {
+  readonly record: WalletAttempt;
+  readonly retryAccess: JournalAccess;
+  inFlight: Promise<void> | undefined;
+}
+// The stable backing store owns this fallback, never an ephemeral IndexedDB staging store or a route component.
+// No expiry or lock cleanup: a returned hash remains evidence even after its originating view loses authority.
+const returnedAttempts = new WeakMap<AttemptStorage, Map<string, ReturnedAttempt>>();
+function notifyAttempts(): void {
+  if (typeof window !== 'undefined') window.dispatchEvent(new Event(ATTEMPT_JOURNAL_EVENT));
+}
+// Closing the tab loses an unsaved returned hash. Ask before unload on every route, without revealing which account
+// or transaction it belongs to: the browser shows only its generic leave-page prompt.
+let unloadGuarded = false;
+function guardUnload(event: BeforeUnloadEvent): void {
+  event.preventDefault();
+  event.returnValue = true;
+}
+function syncUnloadGuard(): void {
+  if (typeof window === 'undefined') return;
+  let pending: boolean;
+  try {
+    const store = browserAttemptStorage();
+    pending = store !== undefined && (returnedAttempts.get(store)?.size ?? 0) > 0;
+  } catch { pending = false; } // Without browser storage no browser-store outcome can be retained.
+  if (pending === unloadGuarded) return;
+  // Best effort: an embedding without event targets loses only the prompt, never the retained hash or its write.
+  try {
+    if (pending) window.addEventListener('beforeunload', guardUnload);
+    else window.removeEventListener('beforeunload', guardUnload);
+    unloadGuarded = pending;
+  } catch { /* The in-page unsaved notice still states the open-tab limitation. */ }
+}
+/** Hashes awaiting a complete durable write; usable for owner-scoped recovery even when the durable read fails. */
+export function readReturnedAttempts(storage?: AttemptStorage): readonly WalletAttempt[] {
+  const store = storage ?? browserAttemptStorage();
+  return store === undefined ? [] : [...(returnedAttempts.get(store)?.values() ?? [])].map((entry) => entry.record);
+}
+function persistReturnedAttempt(storage: AttemptStorage, key: string, entry: ReturnedAttempt, access: JournalAccess): Promise<void> {
+  if (entry.inFlight !== undefined) return entry.inFlight;
+  // Publish the in-flight promise before invoking a lock manager or notifying subscribers, including reentrant ones.
+  const pending = Promise.resolve().then(async () => {
+    let committed = false;
+    await withAttemptJournal((store) => { finishAttempt(entry.record, entry.record.hash!, store); }, { ...access, unboundedWait: true }, () => { committed = true; });
+    if (!committed) return fail();
+    if (returnedAttempts.get(storage)?.get(key) === entry) returnedAttempts.get(storage)?.delete(key);
+    syncUnloadGuard();
+    notifyAttempts();
+  }).finally(() => { entry.inFlight = undefined; });
+  entry.inFlight = pending;
+  return pending;
+}
+/**
+ * Retain a returned outcome before attempting persistence. Resolve only after the entire lock/IndexedDB/mirror write,
+ * not after a staging-store mutation. The wallet caller may stop waiting while this promise continues recording.
+ */
+export function finishReturnedAttempt(
+  attempt: WalletAttempt, hash: string, access: JournalAccess = {}, storage = access.storage ?? browserAttemptStorage(),
+): Promise<void> {
+  if (storage === undefined || typeof hash !== 'string') return Promise.reject(new UserFacingError({ key: 'error.duplicateAttemptJournal.theWalletAttemptJournalIsUnavailableOrInvalidNoNew' }));
+  const record: WalletAttempt = Object.freeze({ ...attempt, status: 'submitted', hash: hash.toLowerCase() });
+  if (!validAttempt(record)) return Promise.reject(new UserFacingError({ key: 'error.duplicateAttemptJournal.theWalletAttemptJournalIsUnavailableOrInvalidNoNew' }));
+  const entries = returnedAttempts.get(storage) ?? new Map<string, ReturnedAttempt>();
+  returnedAttempts.set(storage, entries);
+  // Preserve conflicting outcomes as well: merging them must refuse rather than silently overwrite either hash.
+  const key = JSON.stringify([record.id, record.hash, record.key, record.chainId, record.account, record.kind, record.createdAt, record.txDigest]);
+  const entry = entries.get(key) ?? {
+    record,
+    // A later retry is outside the caller's original lock, even if its initial write was already inside that lock.
+    retryAccess: Object.freeze({ ...access, lockHeld: false, unboundedWait: true }),
+    inFlight: undefined,
+  };
+  entries.set(key, entry);
+  syncUnloadGuard();
+  const pending = persistReturnedAttempt(storage, key, entry, access);
+  notifyAttempts();
+  return pending;
+}
+/** Retry existing returned outcomes through the same cross-tab merge path; never sends a wallet or RPC request. */
+export async function retryReturnedAttempts(storage?: AttemptStorage): Promise<void> {
+  const store = storage ?? browserAttemptStorage();
+  if (store === undefined) return;
+  // Settle every write before reporting: an early rejection would end the caller's retry while others still run.
+  const results = await Promise.allSettled([...(returnedAttempts.get(store)?.entries() ?? [])].map(([key, entry]) =>
+    persistReturnedAttempt(store, key, entry, entry.retryAccess)));
+  const failed = results.find((result) => result.status === 'rejected');
+  if (failed !== undefined) throw failed.reason;
+}
+
 /**
  * Every record of the journal. Without an explicit store, the durable store plus any not yet migrated legacy records of
  * this tab, so a pre-send check never misses one. Read-only: writes go through {@link withAttemptJournal}.
  */
 export function readAttempts(storage?: AttemptStorage): readonly WalletAttempt[] {
-  if (storage !== undefined) return readStore(storage);
-  const durable = readStore(browserAttemptStorage() ?? fail());
+  if (storage !== undefined) return mergeRecords(readStore(storage), readReturnedAttempts(storage));
+  const store = browserAttemptStorage() ?? fail();
+  const durable = readStore(store);
   const legacy = legacyAttemptStorage();
-  return legacy === undefined ? durable : mergeRecords(durable, readStore(legacy));
+  return mergeRecords(legacy === undefined ? durable : mergeRecords(durable, readStore(legacy)), readReturnedAttempts(store));
 }
 function storedRaw(storage: AttemptStorage): string | null {
   try { return storage.getItem(ATTEMPT_JOURNAL_KEY); } catch { return fail(); }
@@ -240,7 +330,7 @@ async function updateBrowserJournal<T>(
       // committed before this snapshot existed) still blocks its action and keeps its hash (QA-4). A record cleared in
       // another process within the mirror's propagation delay can reappear; that only blocks a send until cleared again.
       const committed = saved === undefined ? parseRaw(local) : mergeRecords(parseRaw(saved), parseRaw(local));
-      let raw = JSON.stringify(mergeRecords(committed, parseRaw(old)));
+      let raw = JSON.stringify(mergeRecords(mergeRecords(committed, parseRaw(old)), readReturnedAttempts(storage)));
       const staged: AttemptStorage = {
         getItem: () => raw,
         setItem: (_key, value) => { raw = value; },
@@ -318,7 +408,8 @@ export function finishAttempt(attempt: WalletAttempt, hash: string, storage?: At
   if (typeof hash !== 'string') return fail();
   const next = { ...attempt, status: 'submitted' as const, hash: hash.toLowerCase() };
   if (!validAttempt(next)) return fail();
-  const records = readAttempts(store);
+  // An in-memory outcome is evidence, not proof of a successful write to this persistent/staged store.
+  const records = readStore(store);
   const previous = records.find((a) => a.id === attempt.id);
   if (previous !== undefined) {
     // A returned wallet hash must never overwrite the hash of a recorded submission.
@@ -337,6 +428,12 @@ export function finishAttempt(attempt: WalletAttempt, hash: string, storage?: At
 export function clearAttempt(key: string, confirmed: boolean, storage?: AttemptStorage): void {
   if (!confirmed) throw new UserFacingError({ key: 'error.duplicateAttemptJournal.explicitConfirmationIsRequiredToClearAWalletAttempt' });
   const store = requiredStorage(storage);
+  // A returned hash still awaiting its durable write lives only in memory, keyed by the stable store; every later read and
+  // write merges it back. Clearing it would report success and then restore the record, so refuse until it is saved.
+  const stable = store === stagedStorage ? browserAttemptStorage() : store;
+  if (stable !== undefined && readReturnedAttempts(stable).some((a) => a.id === key || a.key === key)) {
+    throw new UserFacingError({ key: 'error.duplicateAttemptJournal.returnedHashStillSaving' });
+  }
   write(readAttempts(store).filter((a) => a.id !== key && a.key !== key), store);
 }
 /**

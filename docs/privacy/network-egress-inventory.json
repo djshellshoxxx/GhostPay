@@ -238,6 +238,52 @@
       "status": "baseline-source-reviewed"
     },
     {
+      "id": "evm-payment-recovery-export",
+      "flows": [
+        "single-payment-key-export",
+        "payment-key-archive"
+      ],
+      "sourcePaths": [
+        "apps/web/src/views/Scan.tsx",
+        "apps/web/src/components/StealthExportPayment.tsx",
+        "apps/web/src/components/StealthExportArchive.tsx",
+        "apps/web/src/lib/paymentKeyExport.ts",
+        "apps/web/src/lib/keyVault.ts",
+        "packages/chain-adapters/src/rpc.ts"
+      ],
+      "symbols": [
+        "exportEncryptedPayment",
+        "exportRawPrivateKey",
+        "exportPaymentArchive",
+        "assertPlainAccount",
+        "distinctPayments"
+      ],
+      "trigger": "The seller requests an encrypted or raw payment key, or confirms an encrypted archive of the discovered payments.",
+      "destination": "The selected primary scan RPC receives eth_getCode(address, \"latest\") for each distinct selected stealth address.",
+      "transport": "json-rpc-http",
+      "sensitiveData": [
+        "selected stealth addresses",
+        "request timing and connection metadata that can link addresses to the client and to each other"
+      ],
+      "automatic": false,
+      "authorization": "The export requires the loaded seller’s vault credential or matching keystore and passphrase. Raw export also requires a second confirmation. Viewing results or exporting the public record sends zero export RPC requests.",
+      "privatePath": "Uses the verified scan route for this chain. A seller can choose a trusted scan RPC. Private keys, passphrases and exported files stay local.",
+      "failureBehavior": "A missing route, mismatched chain, nonempty code or failed code check blocks export. Each logical lookup may generate additional transport attempts on retry. A later failure cannot retract addresses already disclosed.",
+      "profile": [
+        "full",
+        "lean"
+      ],
+      "ownership": "Shared payment recovery and scan privacy.",
+      "status": "Source reviewed on b890a76603b924829fdbe2b4fb2c5626f0cf4e36.",
+      "testPaths": [
+        "apps/web/src/components/StealthExportPayment.test.tsx",
+        "apps/web/src/components/StealthExportArchive.test.tsx",
+        "apps/web/src/views/Scan.stealthExport.test.tsx",
+        "apps/web/src/lib/paymentKeyExport.test.ts",
+        "apps/web/src/lib/paymentKeyExport.recovery.test.ts"
+      ]
+    },
+    {
       "id": "evm-scan-bulk",
       "flows": [
         "evm-scan"
@@ -912,13 +958,13 @@
       "id": "btc-match-proof",
       "flows": [
         "bitcoin-scan",
-        "matched-output-validation",
-        "sweep-preflight"
+        "matched-output-validation"
       ],
       "sourcePaths": [
         "apps/web/src/features/btc/esplora.ts",
         "apps/web/src/features/btc/scan.ts",
-        "apps/web/src/features/btc/oracleSource.ts"
+        "apps/web/src/features/btc/oracleSource.ts",
+        "apps/web/src/features/btc/inclusion.ts"
       ],
       "symbols": [
         "rawTransaction",
@@ -926,7 +972,7 @@
         "isUnspent"
       ],
       "trigger": "A matched output is validated or refreshed.",
-      "destination": "Esplora /tx/<txid>/hex, /merkle-proof and /outspend/<vout>.",
+      "destination": "Esplora /tx/<txid>/hex, /merkle-proof and /outspend/<vout>, each only after the consent described under authorization.",
       "transport": "http-get",
       "sensitiveData": [
         "exact matched transaction IDs",
@@ -934,8 +980,8 @@
         "ownership interest"
       ],
       "automatic": true,
-      "authorization": "Automatic within an explicitly started scan or spend validation.",
-      "privatePath": "Uses injected Services.fetchFn. Baseline defaultServices forwards to browser fetch without a global selected-private-path policy. Browser or OS routing remains external. Own-node operation limits the observer set; public matched-output queries still reveal what is checked to that source.",
+      "authorization": "Opt-in only. The per-outpoint /outspend check runs only when the user enables the provider spent check; /hex and /merkle-proof reads run only in light-oracle mode after explicit consent. By default confirmed spends are derived locally from scanned block inputs and no outpoint is sent. Addressed by FC-05a (#656).",
+      "privatePath": "Uses injected Services.fetchFn. Baseline defaultServices forwards to browser fetch without a global selected-private-path policy. Browser or OS routing remains external. Own-node operation limits the observer set; when consented, matched-output queries still reveal what is checked to that source.",
       "failureBehavior": "Invalid proof/spentness stops qualification; do not describe these reads as unlinkable or silently switch endpoint.",
       "profile": [
         "full"
@@ -1030,13 +1076,11 @@
         "apps/web/src/features/btc/esplora.ts"
       ],
       "symbols": [
-        "feeRate",
-        "isUnspent",
         "broadcast",
         "signSweep"
       ],
       "trigger": "User requests review/sign/broadcast of selected outputs.",
-      "destination": "Selected Esplora /fee-estimates, outspend/proof paths and POST /tx.",
+      "destination": "Selected Esplora POST /tx only (the fee rate is entered by the user). Spent and proof reads happen only in a scan the user explicitly consented to, not as part of sweep review.",
       "transport": "http-get-and-post",
       "sensitiveData": [
         "chosen inputs",
@@ -1046,7 +1090,7 @@
         "network timing"
       ],
       "automatic": true,
-      "authorization": "Explicit review/sign/broadcast with dependent validation requests.",
+      "authorization": "Explicit review/sign/broadcast.",
       "privatePath": "Uses injected Services.fetchFn. Baseline defaultServices forwards to browser fetch without a global selected-private-path policy. Browser or OS routing remains external. Existing selected node remains the only broadcast target; public-chain input consolidation remains visible.",
       "failureBehavior": "No automatic second endpoint or retry of an ambiguous broadcast found; keep input/fee/signature checks.",
       "profile": [
@@ -1210,7 +1254,7 @@
         "clearSession",
         "notifyAppLock"
       ],
-      "trigger": "User generates/imports/unlocks/exports local key material or idle lock fires.",
+      "trigger": "The seller generates, imports, unlocks or backs up the seller keystore, or the idle lock fires. Payment-specific recovery export is recorded under evm-payment-recovery-export.",
       "destination": "None; local memory/files/encrypted persistence.",
       "transport": "none",
       "sensitiveData": [],

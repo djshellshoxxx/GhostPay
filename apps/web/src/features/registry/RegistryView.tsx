@@ -1,5 +1,7 @@
 import { buildLookupCall, buildRegisterKeysCall, ERC6538_REGISTRY_ADDRESS, lookupMetaAddress, resolveRegistryRegistrant, verifyRegistry, type RegistryCall } from '@ghostpay/chain-adapters';
+import { useWalletDisclosure } from '../../components/WalletDisclosure';
 import { useEffect, useRef, useState, type ReactNode } from 'react';
+import { BroadcastReference } from '../../components/BroadcastReference';
 import { CopyButton, Field, Mono, Notice } from '../../components/Common';
 import { displayMessage, captureUserMessage, UserFacingError, type DisplayMessage } from '../../lib/errors';
 import { useServices } from '../../lib/services';
@@ -8,6 +10,7 @@ import { useApp } from '../../state';
 import { SOURCE_TRANSLATOR, useI18nOptional } from '../../i18n/context';
 import { buildClearRegistryCall } from '../../lib/registry';
 import { captureSessionGuard } from '../../lib/session';
+import { scopeWalletRpc, useWalletPrivacy } from '../../lib/useWalletPrivacy';
 import { WalletAttempts } from '../../components/WalletAttempts';
 import { CameraImporter } from '../../components/CameraImporter';
 import { parsePublicMetaQr } from '../../lib/qrPayload';
@@ -51,6 +54,7 @@ function CallPreview(props: { readonly call: RegistryCall; readonly chainName: s
 /** ERC-6538 registry: publish your meta-address (explicit consent) and look up a payee's meta-address. */
 export function RegistryView(): ReactNode {
   const app = useApp();
+  const walletDisclosure = useWalletDisclosure();
   const services = useServices();
   const i18n = useI18nOptional();
   const t = i18n?.t ?? SOURCE_TRANSLATOR.t;
@@ -65,7 +69,7 @@ export function RegistryView(): ReactNode {
   const [reviewed, setReviewed] = useState<RegistryCall | undefined>(undefined);
   const [reviewAction, setReviewAction] = useState<'publish' | 'clear' | undefined>(undefined);
   const [busy, setBusy] = useState(false);
-  const [pub, setPub] = useState<Msg | undefined>(undefined);
+  const [pub, setPub] = useState<(Msg & { readonly reference?: string }) | undefined>(undefined);
   const [who, setWho] = useState('');
   const [found, setFound] = useState<{ readonly meta: string | undefined; readonly call: RegistryCall; readonly name?: string } | undefined>(undefined);
   const [look, setLook] = useState<Msg | undefined>(undefined);
@@ -97,15 +101,33 @@ export function RegistryView(): ReactNode {
     return () => { mounted.current = false; };
   }, []);
   useEffect(() => { setConsent(false); }, [chainId, app.session]);
-  const captureAuthority = (): (() => void) => {
+  const walletPrivacy = useWalletPrivacy(wallet, () => {
+    lookupVersion.current++;
+    setWallet(undefined);
+    setWallets(undefined);
+    setWho('');
+    setScanEpoch((revision) => revision + 1);
+    setReviewed(undefined);
+    setReviewAction(undefined);
+    setPub(undefined);
+    setFound(undefined);
+    setLook(undefined);
+    setScannedMeta(undefined);
+    setScanError(undefined);
+    app.announce('');
+  });
+  /** `bindSettings: false` checks only that the view an operation started in is still open, to say how it ended. */
+  const captureAuthority = (bindSettings = true): (() => void) => {
     const expected = latest.current;
+    const privacyScope = walletPrivacy.capture();
     const guardSession = captureSessionGuard();
     return () => {
+      privacyScope.assertCurrent();
       guardSession();
       const current = latest.current;
       if (!mounted.current || !current.consent || current.chainId !== expected.chainId || current.session !== expected.session ||
           current.metaAddress !== expected.metaAddress || current.wallet !== expected.wallet || current.reviewed !== expected.reviewed ||
-          current.reviewAction !== expected.reviewAction || current.settings !== expected.settings) {
+          current.reviewAction !== expected.reviewAction || (bindSettings && current.settings !== expected.settings)) {
         throw new UserFacingError({ key: 'registry.sessionChanged' });
       }
     };
@@ -113,35 +135,50 @@ export function RegistryView(): ReactNode {
 
   const rpcFor = async (): Promise<NonNullable<Awaited<ReturnType<typeof app.getRpc>>>> => {
     if (chainId === undefined) throw new Error('chain');
+    const scope = walletPrivacy.capture();
     const rpc = await app.getRpc(chainId);
+    scope.assertCurrent();
     if (rpc === undefined) throw new Error('rpc');
-    return rpc;
+    return scopeWalletRpc(rpc, scope);
   };
   const rpcMissing = (e: unknown): boolean => e instanceof Error && e.message === 'rpc';
   const noRpc: Msg = { kind: 'error', text: { key: 'registry.noRpc' } };
 
   const onDiscover = (): void => {
     setPub(undefined);
-    void services.discoverWallets().then(setWallets, () => {
+    let scope;
+    try { scope = walletPrivacy.begin(); } catch { return; }
+    void services.discoverWallets().then((foundWallets) => {
+      try { scope.assertCurrent(); } catch { return; }
+      setWallets(foundWallets);
+    }, () => {
+      try { scope.assertCurrent(); } catch { return; }
       setWallets([]);
     });
   };
 
   const onConnect = (w: WalletInfo): void => {
     if (chainId === undefined || !consent || metaAddress === undefined || busyRef.current) return;
-    const guard = captureAuthority();
+    let scope;
+    let authority;
+    let sameView;
+    try { scope = walletPrivacy.begin(); authority = captureAuthority(); sameView = captureAuthority(false); } catch { return; }
+    const guard = (): void => { scope.assertCurrent(); authority(); };
+    // Settings saved meanwhile (here by another tab) end the connection too, and the view says so.
+    const report = (e: unknown): void => {
+      try { scope.assertCurrent(); sameView(); } catch { return; }
+      setPub({ kind: 'error', text: captureUserMessage(e) });
+    };
     setPub({ kind: 'ok', text: { key: 'registry.waiting' } });
-    connectWallet(w, chainId).then(
+    // The same authority guard ends an open review (and the connection) when the session, chain or view changes.
+    connectWallet(w, chainId, guard, scope.signal, { disclosure: walletDisclosure }).then(
       (connected) => {
-        try { guard(); } catch { return; }
+        try { guard(); } catch (e) { report(e); return; }
         setWallet(connected);
         setPub(undefined);
         app.announce(tRef.current('registry.walletConnected'));
       },
-      (e: unknown) => {
-        try { guard(); } catch { return; }
-        setPub({ kind: 'error', text: captureUserMessage(e) });
-      },
+      report,
     );
   };
 
@@ -172,6 +209,8 @@ export function RegistryView(): ReactNode {
   const onPublish = (): void => {
     if (wallet === undefined || reviewed === undefined || reviewAction === undefined || chainId === undefined || metaAddress === undefined || !consent || busyRef.current) return;
     const guard = captureAuthority();
+    // A returned hash, or why nothing was asked, is still shown after settings saved meanwhile stop the operation.
+    const sameView = captureAuthority(false);
     busyRef.current = true;
     setBusy(true);
     void (async () => {
@@ -206,12 +245,11 @@ export function RegistryView(): ReactNode {
         app.announce(displayMessage({ key: 'registry.announceSubmitted', values: { what: { key: reviewAction === 'publish' ? 'registry.what.registration' : 'registry.what.clear' } } }, tRef.current));
       } catch (e) {
         if (e instanceof WalletBroadcastError) returnedHash = e.hash;
-        if (!mounted.current) return;
+        try { sameView(); } catch { return; }
         if (returnedHash !== undefined) {
-          setPub({ kind: 'warn', text: { key: 'registry.walletReturned', values: { hash: returnedHash } } });
+          setPub({ kind: 'warn', text: { key: 'registry.walletReturned' }, reference: returnedHash });
           return;
         }
-        try { guard(); } catch { return; }
         setPub(rpcMissing(e) ? noRpc : { kind: 'error', text: captureUserMessage(e) });
       } finally {
         busyRef.current = false;
@@ -253,7 +291,7 @@ export function RegistryView(): ReactNode {
   return (
     <section aria-labelledby="reg-h">
       <h2 id="reg-h">{t('registry.title')}</h2>
-      <WalletAttempts getRpc={app.getRpc} />
+      <WalletAttempts wallet={wallet} getRpc={app.getRpc} />
       <p className="hint">
         {t('registry.canonical')} <Mono>{ERC6538_REGISTRY_ADDRESS}</Mono>{t('registry.canonicalTail')}
       </p>
@@ -311,6 +349,7 @@ export function RegistryView(): ReactNode {
         </BackupGate>
       )}
       {pub !== undefined && <Notice kind={pub.kind}>{displayMessage(pub.text, t)}</Notice>}
+      {pub?.reference !== undefined && <BroadcastReference key={pub.reference} reference={pub.reference} />}
 
       <section className="panel" aria-label={t('registry.qrReviewLabel')}>
         <h3>{t('registry.qrHeadingH3')}</h3>

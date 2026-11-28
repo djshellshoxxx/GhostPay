@@ -1,0 +1,8 @@
+Listing tests:
+  [desktop] › payment-request-file.spec.ts:74:3 › request file retains the exact plain invoice without implicit effects
+  [desktop] › payment-request-file.spec.ts:74:3 › request file retains the exact bearer-encrypted invoice without implicit effects
+  [desktop] › payment-request-file.spec.ts:102:1 › passphrase request stays closed until the existing unlock flow succeeds
+  [desktop] › payment-request-file.spec.ts:132:1 › invalid replacement files clear a prior preview and the identical valid file can be retried
+  [desktop] › payment-request-file.spec.ts:157:1 › successive request files open their own signed terms without a page refresh
+  [desktop] › payment-request-file.spec.ts:190:1 › a corrupted signed amount remains untrusted and cannot enable payment
+Total: 6 tests in 1 file

@@ -1,0 +1,15 @@
+{
+  "command": [
+    "npm",
+    "run",
+    "test",
+    "--workspace",
+    "@ghostpay/invoice-schema",
+    "--",
+    "--maxWorkers=1",
+    "--coverage.reportsDirectory=/tmp/ghostpay-f03-full-package-coverage"
+  ],
+  "exit_code": 124,
+  "elapsed_seconds": 180.01,
+  "node_options": "--max-old-space-size=1024"
+}

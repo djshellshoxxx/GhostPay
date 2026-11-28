@@ -32,15 +32,74 @@ One entry per milestone. Evidence: [REGRESSION_RESULTS.md](REGRESSION_RESULTS.md
 - **Not covered:** a different browser, profile or device; a private window; the opt-in embedded-iframe checkout
   (`VITE_EMBED_IFRAME`), whose storage and locks are partitioned from a top-level tab; site data cleared by the user; a
   payment made outside GhostPay. These are documented in the privacy docs and the user guide.
-- **Status:** implementation complete on branch. Full web gates and anvil browser suite: see REGRESSION_RESULTS.
-  Merge pending exact-head hosted CI.
+- **Status:** merged into `main` as `c8e131c1` on 2026-11-24 (see the status update below). Full web gates and anvil
+  browser suite: see REGRESSION_RESULTS.
 
-## M3 — P1-LATE seller late-payment and reorg-safe invoice status (next)
+## M3 — P1-LATE seller late-payment and reorg-safe invoice status (merged via #635)
 
 - Scope and gaps pinned in [ESSENTIAL_FEATURE_MATRIX.md](ESSENTIAL_FEATURE_MATRIX.md) §P1-LATE. It starts after #500
   merges, because both touch `apps/web/locales/*`.
 
 ## Peer milestones (another Claude session, same owner)
 
-- M2 P0-KEYS (branch `claude/nifty-bohr-5ra2ap`) and M4-DORM371 (`claude/nifty-bohr-5ra2ap-dormant-371`). Evidence goes in
-  `docs/engineering/milestones/` on those branches.
+- M2 P0-KEYS: on `main` via #539 and #707 (merged by #718, `c7c6349c`); evidence
+  [`milestones/M2-P0-KEYS.md`](milestones/M2-P0-KEYS.md).
+- M4-DORM371 (#621, landing #371's dormant F04/F05/F10 base): held under
+  [STOP_WORK_20261125](../ai/STOP_WORK_20261125.md); not merged. Evidence stays on
+  `claude/nifty-bohr-5ra2ap-dormant-371` (`docs/engineering/milestones/M4-DORM371.md`).
+
+## M1 status update (2026-11-24)
+
+- **Merged** into `main` as `c8e131c1` (PR #500, head `9a67daf2`), including #545 (REV-L2). See FEATURE_INTEGRATION_LOG.
+- **M3 (P1-LATE) reassigned:** the open stack #533 (`90e3fff0`) → #546 (`711168f1`) → #575 (`5a225f6c`), by another agent,
+  already implements seller late-payment and reorg invoice-credit handling in `ReconciliationLedger`/`reconciliationMatch`.
+  Per the no-rewrite rule, this session reviews and qualifies that stack instead of implementing M3 again. No M3 code was written here.
+
+## M3 status update (2026-11-26)
+
+- **Merged** into `main` as `aaa71a11` on 2026-11-25 through PR #635 (`claude/p1-late-reconciliation`, head `205f8fd7`),
+  a consolidation by another session of #533 → #546 → #575 → #599 → #625 plus #590's receipt-binding commit. The
+  `claude/keen-volta-8ctx9x` session did not write or merge it. Post-merge push CI run 45595034543 on `aaa71a11`
+  succeeded. Details:
+  [`docs/handoffs/P1_LATE_CONSOLIDATION_20261124.md`](../handoffs/P1_LATE_CONSOLIDATION_20261124.md).
+- Stack PRs on 2026-11-26: #533 shows merged; #575, #590, #599 and #625 are closed as superseded and #546 as already
+  integrated.
+
+## Session handoff — `claude-keen-volta-8ctx9x` (2026-11-26)
+
+- **Merged by this session:** #452 (with #449, #450) → `8ddb3449`; #500 (P0-JRNL, with #427→#443 and #545) → `c8e131c1`;
+  #624 (trackers) → `e7e98109`. Lock generations used: 12, 20 and 45, each acquired and released with a non-force push.
+- **Open from this session:** #716 on `claude/keen-volta-8ctx9x` fixes LATE-LM1 (a quarantined linked payment
+  released its invoice). Base `e7e98109`, head `8ec9c7e0`. Next steps: wait for hosted CI on the exact head, then acquire
+  the lock, merge, and release.
+- **Open follow-ups (not started):** LATE-M1 (scan checkpoint blocked when the reconciliation vault can't open),
+  LATE-L1 (no retry for unlinked quarantined candidates), REV-I5/REV-I6 and QA-I1 (journal edge cases), RCPT-L1/L2,
+  GP-PAGES-01 (owner decision: custom domain). Details: SECURITY_FINDINGS.md.
+- **Environment notes for a successor:** Foundry 1.8.5 tarball SHA-256 `6c66ffcc…b226` (from
+  `infra/integration/Dockerfile.runner`). The proxy blocks `binaries.soliditylang.org`; solc 0.8.28 came from the GitHub
+  release `solc-static-linux`, whose version prints commit `7893614a`, installed at `~/.svm/0.8.28/solc-0.8.28`. Anvil-backed
+  web tests need `forge build --offline` in `packages/contracts` first. Then run
+  `ANVIL_BIN=$HOME/.foundry/bin/anvil SOLC_BIN=$HOME/.svm/0.8.28/solc-0.8.28 REQUIRE_ANVIL=1 npm test -w @ghostpay/web`
+  and `npm run e2e:devnet -w @ghostpay/web`.
+
+
+## Session handoff — `claude-loving-brown-v8dlp6` (2026-11-27)
+
+- **Open from this session:** [#742](https://github.com/djshellshoxxx/GhostPay/pull/742) on `claude/loving-brown-v8dlp6`
+  (base `6bc97fde`, merged with `b8f1c2ee`). Not merged; no lock taken.
+  - LATE-L1 fixed (`f4353c2c`): the replay now also covers an unlinked candidate that lost verified evidence. A candidate
+    never verified is still not replayed (A5 liveness).
+  - #569 (`68276f80`, `ec5587a5`) and #355 (`819e842d`) test dispositions:
+    [`MASKING_569_DISPOSITIONS_20261127.md`](../handoffs/MASKING_569_DISPOSITIONS_20261127.md). Two gaps on main fixed:
+    Pay kept the previous wallet's receipt file after a wallet change, and a quick hide that cancelled a wallet review
+    left focus on the page heading or `<body>` instead of the privacy control.
+- **Current status of the earlier follow-up list:** REV-I5 fixed by #739; RCPT-L1/L2 fixed by #690 (see REMAINING_WORK);
+  LATE-L1 fixed in #742 (pending merge). Still open: LATE-M1 (owner approved a presence marker on 2026-11-27; the
+  first fix was held in review for cross-tab serialization and reverted from #742; a redo follows in its own PR), REV-I6,
+  QA-I1, IDLE-M1 and GP-PAGES-01 (owner decisions). Product decision for #742 (qualification FUZZ-D3): whether to bound the
+  LATE-L1 replay pin for an unlinked candidate that never re-verifies.
+- **Next steps:** hosted CI and an independent review of #742's exact head, then a merge under the integration lock.
+  #569 and #355 can close once #742 lands (their branches are kept).
+- **Environment notes:** this container's proxy also refused `github.com` release downloads and
+  `binaries.soliditylang.org`, so no Foundry or solc: Anvil-gated web tests were skipped locally (not passes). Hosted CI
+  covers them.

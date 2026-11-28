@@ -3,7 +3,7 @@ export type { TagPayload, TagSnapshotEntry } from '@ghostpay/ux-vault/portable';
 export const { validatePayload } = createTagArchiveApi(UserFacingError);
 import { bytesToHex, hexToBytes, utf8ToBytes } from '@noble/hashes/utils.js';
 import { UserFacingError } from './errors';
-import { captureSessionVersionGuard } from './session';
+import { captureActiveSessionVersionGuard } from './session';
 
 export interface EncryptedTagRecord {
   readonly schemaVersion: 1 | 2;
@@ -123,6 +123,20 @@ function storedPayload(raw: unknown): TagPayload {
 }
 
 export class TagVault {
+  private accessRevision = 0;
+  private readonly accessListeners = new Set<() => void>();
+  public readonly getAccessRevision = (): number => this.accessRevision;
+  public readonly subscribeAccess = (listener: () => void): (() => void) => {
+    this.accessListeners.add(listener);
+    return () => { this.accessListeners.delete(listener); };
+  };
+  private accessChanged(): void {
+    this.accessRevision++;
+    for (const listener of this.accessListeners) {
+      try { listener(); } catch { /* A presentation observer cannot interrupt key revocation. */ }
+    }
+  }
+
   private aes: CryptoKey | undefined;
   private hmac: CryptoKey | undefined;
   /** Throws once the seller keys that unlocked the vault are wiped or replaced. */
@@ -169,9 +183,9 @@ export class TagVault {
   public async unlock(viewingKey: Uint8Array): Promise<void> {
     this.lock();
     const revision = this.revision;
-    const sessionUnchanged = captureSessionVersionGuard();
-    const guard = (): void => { this.assertRevision(revision); sessionUnchanged(); };
     try {
+      const sessionUnchanged = captureActiveSessionVersionGuard();
+      const guard = (): void => { this.assertRevision(revision); sessionUnchanged(); };
       const snapshot = await this.store.getSnapshot();
       guard();
       const meta = snapshot.meta;
@@ -200,6 +214,7 @@ export class TagVault {
       this.aes = aes;
       this.hmac = hmac;
       this.sessionUnchanged = sessionUnchanged;
+      this.accessChanged();
     } finally {
       viewingKey.fill(0);
     }
@@ -211,6 +226,7 @@ export class TagVault {
     this.hmac = undefined;
     this.profileSalt = undefined;
     this.sessionUnchanged = undefined;
+    this.accessChanged();
   }
 
   private keys(): { aes: CryptoKey; hmac: CryptoKey } {

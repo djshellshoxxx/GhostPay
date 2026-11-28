@@ -6,7 +6,7 @@ Status vocabulary used below: **Open** (no fix in the tree), **In progress** (an
 
 ## 1. Scope, assets and assumptions
 
-Assets, in order of harm if lost: (1) seller spending keys (funds in every one-time address); (2) payer funds in flight; (3) seller viewing key and local tags (payment history); (4) the integrity of the addresses a payer is told to pay (router, fee recipient, one-time address); (5) invoice contents (bearer link); (6) fee revenue; (7) relayer hot-key balance and availability.
+Assets, in order of harm if lost: (1) seller spending keys (funds in every one-time address); (2) payer funds in flight; (3) seller viewing key and local tags (payment history; the viewing key plus the private key of any one one-time address yields the spending key, so a leaked or exported one-time key upgrades a viewing-key leak to asset 1; the same holds for BTC silent payments, where the scan key plus one output's private key recovers the spend key; see audit B-1 in `docs/audits/security-remediation-20261118.md`); (4) the integrity of the addresses a payer is told to pay (router, fee recipient, one-time address); (5) invoice contents (bearer link); (6) fee revenue; (7) relayer hot-key balance and availability.
 
 Assumptions (if any is false, much of this model is void): the user's browser, OS and wallet are not compromised; noble, viem and OpenZeppelin releases are authentic and correct (note: two noble majors are installed, see [THIRD_PARTY.md](../../THIRD_PARTY.md) section 1); the canonical ERC-5564 announcer is deployed at the stated address; token contracts behave per the allowlist; the host serves the released files unmodified (this is exactly what is **not** guaranteed today).
 
@@ -22,7 +22,7 @@ Trust boundaries: browser tab (keys live here) | wallet extension | static host/
 | **The payer** | The one-time address they paid, so they can follow it to wherever it is swept (D1) | Seller keys |
 | Static host / CDN | Client IP, user agent, which app assets were fetched, timing | The URL fragment, keys, invoice contents |
 | RPC provider | Client IP, queried block ranges and addresses (including a one-time address checked before sweeping, D8), submitted transactions | Viewing/spending keys (never sent), invoice contents |
-| Relayer operator | IP (hashed), owner stealth address, destination, token, amount, fee, timing; can censor or delay | Keys |
+| Relayer operator | IP address (the reference relayer hashes it for rate limits; the operator and any proxy can see it raw), owner stealth address, destination, token, amount, fee, timing; can censor or delay | Keys |
 | Wallet provider | Transaction requests, chain, addresses connected | Keys of the stealth wallet |
 | Anyone holding the invoice link | Entire invoice (bearer link) | Seller keys |
 | Anyone holding two invoices of one seller | They share a seller (stable meta-address, D3) | Keys |

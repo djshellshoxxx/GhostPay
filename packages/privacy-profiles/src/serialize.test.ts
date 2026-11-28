@@ -12,7 +12,7 @@ import { ctx, sel } from './x.testutil.js';
 
 describe('serialisation (PP-18)', () => {
   it('round-trips every preset result and the default', () => {
-    for (const id of ['standard', 'enhanced', 'maximum', 'confidential-amount'] as const) {
+    for (const id of ['standard', 'enhanced', 'shielded', 'maximum', 'confidential-amount'] as const) {
       const s = applyPreset(id, ctx()).selection;
       expect(sanitizeSelection(JSON.parse(serializeSelection(s)))).toEqual(s);
     }

@@ -6,7 +6,7 @@ A *sweep* moves the funds of a one-time address to a wallet you choose (a direct
 >
 > 1. **The payer can follow the stealth address to your destination.** The payer knows the one-time address they paid, and anyone can watch it on a block explorer. When you sweep to wallet `W`, the chain publicly shows `payer -> one-time address -> W`. If `W` is a wallet you use for other things, the payer (and everyone else) learns it is yours, and can see its balance and other incoming payments.
 > 2. **Use a fresh destination for every sweep** (for example a new address from a hardware wallet or an HD account you do not use for anything else). The app recommends a fresh destination, but it does not check whether an address has been used. Do not reuse one destination for several customers.
-> 3. **The relayer sees what you are doing.** A relayer learns the one-time address, destination, token, amount, fee, your IP address (hashed for rate limiting) and the timing, and can refuse or delay your request. It cannot change the destination or amount you signed.
+> 3. **The relayer sees what you are doing.** A relayer learns the one-time address, destination, token, amount, fee, your IP address (the reference relayer hashes it for rate limits, but the operator and any proxy in front of it can see it) and the timing, and can refuse or delay your request. It cannot change the destination or amount you signed.
 > 4. **Gasless is not unlinkable.** Using a relayer removes the need to put gas into the one-time address; it does not remove the on-chain link from one-time address to destination. Funding the one-time address with gas from your own wallet is worse: it links that wallet to the address directly.
 
 The app's current Sweep page shows a generic linkability notice; the sharper payer-follows-funds wording and a warning for destinations that already have history are being added (audit D1, in progress).
@@ -14,7 +14,7 @@ The app's current Sweep page shows a generic linkability notice; the sharper pay
 ## Steps
 
 1. In **Scan and receive**, choose a match and go to **Sweep**. Load your keys if the app asks.
-2. Confirm the chain, one-time address, asset and on-chain balance. If the balance is unknown, you need an RPC for that chain (and RPC reads of the address tell your RPC provider you care about it; see [Privacy limits](privacy-limits.md)).
+2. Confirm the chain, one-time address, asset and on-chain balance. The balance is read only when you press **Read balance from the Settings RPC**; until then it shows "not read yet". Pressing it needs an RPC for that chain, and the read tells your RPC provider you care about that address (see [Privacy limits](privacy-limits.md)). If you change the destination, balance, provider, chain, payment or fee mode while signing, no transaction or order is sent (the app may already have asked your RPC for a nonce, fee estimates and a dry run that name the old destination and amount) and you review and sign again.
 3. Enter your **destination**. Use a fresh address you control.
 4. Choose how the network fee is paid:
    - **Through the relayer:** needs a relayer URL in Settings and a token that supports ERC-2612 `permit` (for example USDC). The relayer fee is deducted from the swept amount. You get a quote showing the fee and what you receive, then sign.

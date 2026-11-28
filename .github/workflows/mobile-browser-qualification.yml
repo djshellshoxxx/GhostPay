@@ -1,0 +1,55 @@
+name: Mobile browser qualification
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - '.github/workflows/mobile-browser-qualification.yml'
+      - 'apps/web/playwright.mobile.config.ts'
+      - 'apps/web/playwright.config.ts'
+      - 'apps/web/e2e/devices*.spec.ts'
+      - 'apps/web/e2e/flows.spec.ts'
+      - 'apps/web/e2e/qr-camera.spec.ts'
+      # The browser self-check footer and its probes, qualified in each mobile engine.
+      - 'apps/web/e2e/browser-checks.spec.ts'
+      - 'apps/web/src/lib/browserChecks.ts'
+      - 'apps/web/src/components/BrowserChecks.tsx'
+      # What devices-mobile-restore runs through in each engine: its helpers and vector, the restore view and session,
+      # the camera and QR components, the keystore codec, and the lockfile that pins the browser engines.
+      - 'apps/web/e2e/helpers.ts'
+      - 'apps/web/src/views/SellerKeys.tsx'
+      - 'apps/web/src/lib/session.ts'
+      - 'apps/web/src/lib/keystore.ts'
+      - 'apps/web/src/components/CameraImporter.tsx'
+      - 'apps/web/src/components/QrFrame.tsx'
+      - 'packages/ux-vault/src/portable*.ts'
+      - 'packages/ux-vault/src/keystore-portable.ts'
+      - 'packages/ux-vault/src/keystore-portable.vectors.testutil.ts'
+      - 'test-vectors/seller-keystore-v1.json'
+      - 'package-lock.json'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: mobile-browser-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  workflows:
+    name: Phone and tablet engines (${{ matrix.profile }})
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    strategy:
+      fail-fast: false
+      matrix:
+        profile: [lean, full]
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: ./.github/actions/setup-node-libs
+      - run: ./node_modules/.bin/playwright install --with-deps chromium webkit
+      - run: npm run test:e2e -w @ghostpay/web -- --config=playwright.mobile.config.ts
+        env:
+          GHOSTPAY_LOCAL_BUILD_PROFILE: ${{ matrix.profile }}

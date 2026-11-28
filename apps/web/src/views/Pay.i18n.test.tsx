@@ -18,6 +18,10 @@ import ar from '../../locales/ar.json';
 import en from '../../locales/en.json';
 import es from '../../locales/es.json';
 import ja from '../../locales/ja.json';
+import { useAutoApprovedWalletDisclosures } from '../test/walletDisclosure';
+
+// Suites written before the wallet disclosure gate approve each real dialog as a user would.
+useAutoApprovedWalletDisclosures();
 
 beforeEach(() => {
   clearSession();
@@ -128,8 +132,12 @@ describe('Pay localization', () => {
     ['ar', ar.messages],
   ] as const)('keeps the invoice-QR scan and clear actions distinguishable in %s', (_locale, messages) => {
     const m = messages as Record<string, string>;
-    expect(m['pay.scan.summary']).toBeTruthy();
-    expect(m['pay.scan.clear']).toBeTruthy();
-    expect(m['pay.scan.summary']).not.toBe(m['pay.scan.clear']);
+    expect(m['requestFile.summary']).toBeTruthy();
+    expect(m['requestFile.clear']).toBeTruthy();
+    expect(m['requestFile.summary']).not.toBe(m['requestFile.clear']);
+    // Retired split-label keys must not linger in any catalog.
+    expect(m['pay.scan.summary']).toBeUndefined();
+    expect(m['pay.scan.clear']).toBeUndefined();
+    expect(m['requestFile.summarySuffix']).toBeUndefined();
   });
 });

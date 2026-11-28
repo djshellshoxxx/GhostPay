@@ -1,13 +1,14 @@
 #!/usr/bin/env node
 // Independent reference decoder for the spec 18 stealth key export formats
 // (docs/specs/18-stealth-keypair-export-formats.md): ghostpay-stealth-public-v1, ghostpay-stealth-keypair-v1,
-// ghostpay-stealth-master-v1 and the raw private-key text. Built only on node:crypto (scrypt, AES-256-GCM) and
+// ghostpay-stealth-master-v1 and the raw private-key text, plus the legacy seller keystore v1 (`ghostpay-keystore.json`,
+// docs/specs/18-seller-keystore-v1-format.md). Built only on node:crypto (scrypt, AES-256-GCM) and
 // @noble/curves + @noble/hashes; it imports no GhostPay package or repository source, so a successful decode proves
-// the files are recoverable without GhostPay. Every rule below is reimplemented from the format document.
+// the files are recoverable without GhostPay. Every rule below is reimplemented from the format documents.
 //
 // Usage (the passphrase is read from stdin or a no-echo prompt, never from argv or the environment):
 //   node scripts/recovery/stealth-export-recover.mjs <file> [--inspect] [--expected-chain <id>]
-//        [--scan-announcement <json>|@<path>]... [--reveal-private-keys]
+//        [--expected-meta-address <st:eth:0x...>] [--scan-announcement <json>|@<path>]... [--reveal-private-keys]
 // Exit status: 0 success, 1 refused (fixed error code on stderr), 2 usage error.
 import { createDecipheriv, scrypt } from 'node:crypto';
 import { closeSync, openSync, readSync } from 'node:fs';
@@ -22,8 +23,10 @@ export const MASTER_FORMAT = 'ghostpay-stealth-master-v1';
 export const KEYPAIR_DOMAIN = 'GhostPay.stealth-keypair.v1';
 export const MASTER_DOMAIN = 'GhostPay.stealth-master.v1';
 export const DERIVATION = 'eip5564-scheme1-adr0001';
-/** Format section 1.6: bytes of the file text, checked before JSON parsing. */
-export const LIMITS = Object.freeze({ publicRecordBytes: 4096, keypairFileBytes: 1_048_576, masterFileBytes: 8192, maxPayments: 1024 });
+/** Legacy seller keystore AAD domain (keystore format section 4). The keystore has no `format` field. */
+export const KEYSTORE_DOMAIN = 'GhostPay.keystore.v1';
+/** Format section 1.6 (keystore: keystore format section 1): bytes of the file text, checked before JSON parsing. */
+export const LIMITS = Object.freeze({ publicRecordBytes: 4096, keypairFileBytes: 1_048_576, masterFileBytes: 8192, sellerKeystoreBytes: 8192, maxPayments: 1024 });
 
 const N_ORDER = secp256k1.Point.Fn.ORDER;
 const MAX_BLOCK_NUMBER = (1n << 64n) - 1n;
@@ -33,6 +36,7 @@ const RECORD_KEYS = ['format', 'version', 'schemeId', 'chainId', 'stealthAddress
 const LOCATOR_KEYS = ['blockHash', 'blockNumber', 'logIndex'];
 const KEYPAIR_KEYS = ['format', 'version', 'scope', 'chainId', 'count', 'payments', 'kdf', 'cipher', 'ciphertext'];
 const MASTER_KEYS = ['format', 'version', 'schemeId', 'derivation', 'metaAddress', 'spendingPublicKey', 'viewingPublicKey', 'exportedAt', 'kdf', 'cipher', 'ciphertext'];
+const KEYSTORE_KEYS = ['v', 'kdf', 'kdfParams', 'cipher', 'iv', 'meta', 'ciphertext'];
 const ASCII = /^[\t\n\r\x20-\x7e]*$/;
 const TIME = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$/;
 
@@ -44,10 +48,12 @@ const MESSAGES = {
   keyDoesNotMatch: 'a private key does not control its recorded address',
   masterKeysDoNotMatch: 'the master keys do not match the header public keys',
   notOwned: 'the announcement does not belong to this master key pair',
+  sellerKeysDoNotMatch: 'the decrypted seller keys do not match the meta-address and invoice signer in the file',
   tooLarge: 'the file is larger than the format allows',
   unsupportedScheme: 'only ERC-5564 scheme 1 is supported',
   unsupportedVersion: 'this format version is not supported by this reader',
   wrongChain: 'the file is for a different chain',
+  wrongMetaAddress: 'the file belongs to a different meta-address',
   wrongPassphraseOrModified: 'wrong passphrase, or the file was modified',
 };
 
@@ -373,21 +379,23 @@ const scryptAsync = (pass, salt, N, r, p) => new Promise((ok, reject) => {
   scrypt(pass, salt, 32, { N, r, p, maxmem: 2 ** 29 }, (error, key) => (error ? reject(error) : ok(key)));
 });
 
-/** AAD = UTF-8(DOMAIN + "\n" + canonical(header)); wrong passphrase and tampering are one error by design. */
-async function openEnvelope(domain, header, ciphertextHex, passphrase) {
+/**
+ * scrypt over the NFKC passphrase, then AES-256-GCM with a 128-bit tag at the end of `sealed`. Wrong passphrase and
+ * tampering are one error by design. The caller owns and wipes the returned plaintext.
+ */
+async function openSealed(passphrase, { salt, N, r, p, iv, sealed, aad }) {
   if (typeof passphrase !== 'string') fail('wrongPassphraseOrModified');
   const pass = Buffer.from(passphrase.normalize('NFKC'), 'utf8');
   let key;
   try {
-    key = await scryptAsync(pass, Buffer.from(header.kdf.salt.slice(2), 'hex'), header.kdf.N, header.kdf.r, header.kdf.p);
+    key = await scryptAsync(pass, salt, N, r, p);
   } finally {
     wipe(pass);
   }
-  const sealed = Buffer.from(ciphertextHex.slice(2), 'hex');
   const parts = [];
   try {
-    const d = createDecipheriv('aes-256-gcm', key, Buffer.from(header.cipher.iv.slice(2), 'hex'), { authTagLength: TAG_BYTES });
-    d.setAAD(Buffer.from(`${domain}\n${canonical(header)}`, 'utf8'));
+    const d = createDecipheriv('aes-256-gcm', key, iv, { authTagLength: TAG_BYTES });
+    d.setAAD(aad);
     d.setAuthTag(sealed.subarray(sealed.length - TAG_BYTES));
     parts.push(d.update(sealed.subarray(0, sealed.length - TAG_BYTES)));
     parts.push(d.final());
@@ -397,6 +405,19 @@ async function openEnvelope(domain, header, ciphertextHex, passphrase) {
   } finally {
     wipe(key, ...parts);
   }
+}
+
+/** Spec 18 envelope (format section 3): AAD = UTF-8(DOMAIN + "\n" + canonical(header)). */
+function openEnvelope(domain, header, ciphertextHex, passphrase) {
+  return openSealed(passphrase, {
+    salt: Buffer.from(header.kdf.salt.slice(2), 'hex'),
+    N: header.kdf.N,
+    r: header.kdf.r,
+    p: header.kdf.p,
+    iv: Buffer.from(header.cipher.iv.slice(2), 'hex'),
+    sealed: Buffer.from(ciphertextHex.slice(2), 'hex'),
+    aad: Buffer.from(`${domain}\n${canonical(header)}`, 'utf8'),
+  });
 }
 
 // --- public API -----------------------------------------------------------------------------------------------------
@@ -493,6 +514,93 @@ export async function decryptMasterFile(text, passphrase) {
   }
 }
 
+// --- legacy seller keystore v1 (docs/specs/18-seller-keystore-v1-format.md) --------------------------------------
+
+/** Keystore format section 3: the only body GhostPay writes (lowercase hex, no `0x`, this key order, no whitespace). */
+const KEYSTORE_LITERALS = ['{"spendingKey":"', '","viewingKey":"', '","signingKey":"', '"}'];
+
+function bareHex(v, minBytes, maxBytes, bad) {
+  if (typeof v !== 'string' || v.length < 2 * minBytes || v.length > 2 * maxBytes || !/^(?:[0-9a-f]{2})+$/.test(v)) fail(bad);
+  return v;
+}
+
+/** Canonical `st:eth:0x` + two distinct compressed secp256k1 points in lowercase hex. */
+function metaAddressKeys(v, bad) {
+  if (typeof v !== 'string' || !/^st:eth:0x[0-9a-f]{132}$/.test(v)) fail(bad);
+  const spendingPublicKey = compressedPoint(`0x${v.slice(9, 75)}`, bad);
+  const viewingPublicKey = compressedPoint(`0x${v.slice(75)}`, bad);
+  if (spendingPublicKey === viewingPublicKey) fail(bad);
+  return { spendingPublicKey, viewingPublicKey };
+}
+
+/**
+ * Validates the complete seller keystore header (keystore format sections 1 and 2) without any KDF work. Another
+ * integer `v` is reported as unsupported and never reinterpreted. The header is bound into the AEAD, so it is
+ * authenticated only by a successful decryption.
+ */
+export function inspectSellerKeystore(text) {
+  const f = parseText(text, LIMITS.sellerKeystoreBytes);
+  if (typeof f !== 'object' || f === null || Array.isArray(f)) fail('invalidFile');
+  if (typeof f.v === 'number' && f.v !== 1) fail('unsupportedVersion');
+  exactObject(f, KEYSTORE_KEYS, 'invalidFile');
+  if (f.v !== 1 || f.kdf !== 'scrypt' || f.cipher !== 'AES-256-GCM') fail('invalidFile');
+  const k = exactObject(f.kdfParams, ['N', 'r', 'p', 'salt'], 'invalidFile');
+  const N = integer(k.N, 1 << 14, 1 << 18, 'invalidFile');
+  if ((N & (N - 1)) !== 0) fail('invalidFile');
+  const r = integer(k.r, 1, 8, 'invalidFile');
+  const p = integer(k.p, 1, 2, 'invalidFile');
+  const salt = bareHex(k.salt, 16, 64, 'invalidFile');
+  const iv = bareHex(f.iv, 12, 12, 'invalidFile');
+  const sealed = sealedLength(KEYSTORE_LITERALS);
+  const ciphertext = bareHex(f.ciphertext, sealed, sealed, 'invalidFile');
+  const m = exactObject(f.meta, ['metaAddress', 'signer'], 'invalidFile');
+  const { spendingPublicKey, viewingPublicKey } = metaAddressKeys(m.metaAddress, 'invalidFile');
+  if (typeof m.signer !== 'string' || !/^0[23][0-9a-f]{64}$/.test(m.signer)) fail('invalidFile');
+  compressedPoint(`0x${m.signer}`, 'invalidFile');
+  return {
+    header: {
+      version: 1, metaAddress: m.metaAddress, spendingPublicKey, viewingPublicKey, signer: m.signer,
+      kdf: { name: 'scrypt', N, r, p, salt }, cipher: { name: 'AES-256-GCM', iv, tagLength: 128 },
+    },
+    ciphertext,
+  };
+}
+
+/**
+ * Atomic decryption of a seller keystore: all three keys must be in range, match the meta-address and invoice signer
+ * in the file, and the signer must differ from both stealth keys. The invoice-signing key is verified and wiped here,
+ * never returned; the caller owns and wipes `spendingKey` and `viewingKey`.
+ */
+export async function decryptSellerKeystore(text, passphrase) {
+  const { header, ciphertext } = inspectSellerKeystore(text);
+  const { kdf, cipher } = header;
+  const plain = await openSealed(passphrase, {
+    salt: Buffer.from(kdf.salt, 'hex'),
+    N: kdf.N,
+    r: kdf.r,
+    p: kdf.p,
+    iv: Buffer.from(cipher.iv, 'hex'),
+    sealed: Buffer.from(ciphertext, 'hex'),
+    aad: Buffer.from(`${KEYSTORE_DOMAIN}|${header.metaAddress}|${header.signer}|${kdf.N}|${kdf.r}|${kdf.p}`, 'utf8'),
+  });
+  let keys;
+  try {
+    keys = decodeBody(plain, KEYSTORE_LITERALS);
+    if (keys === undefined || !keys.every(inRange)) fail('invalidFile');
+    const [spendingKey, viewingKey, signingKey] = keys;
+    const signer = compressedOf(signingKey);
+    if (compressedOf(spendingKey) !== header.spendingPublicKey || compressedOf(viewingKey) !== header.viewingPublicKey
+      || signer !== `0x${header.signer}` || signer === header.spendingPublicKey || signer === header.viewingPublicKey) fail('sellerKeysDoNotMatch');
+    wipe(signingKey);
+    return { header, spendingKey, viewingKey };
+  } catch (error) {
+    if (keys !== undefined) wipe(...keys);
+    throw error;
+  } finally {
+    wipe(plain);
+  }
+}
+
 /**
  * ADR-0001 scheme 1 from the master pair (format section 5): S = p_view*R, s_h = keccak256(S), view tag = s_h[0],
  * p_stealth = (p_spend + s_h) mod n. Ownership is decided only by the address comparison, so a deep-scan payment
@@ -569,43 +677,63 @@ export function parseRawPrivateKeyText(text) {
   return { chainId, stealthAddress, privateKey };
 }
 
-/** Routes a text to its parser by its claimed `format`, or by the raw-key text heading. */
+/**
+ * Routes a text to its parser by its claimed `format`, by the raw-key text heading, or, for the legacy seller keystore
+ * (which has no `format`), by its integer `v`: 1 is read, any other integer is an unsupported keystore version.
+ */
 export function detectFormat(text) {
-  if (typeof text !== 'string') return undefined;
-  if (text.startsWith(`${RAW_LINES[0]}\n`)) return 'rawPrivateKey';
-  if (text.length > LIMITS.keypairFileBytes || !ASCII.test(text)) return undefined;
+  return classify(text).kind;
+}
+
+/** `kind` as detectFormat reports it, plus `keystoreFamily` for any seller keystore version, supported or not. */
+function classify(text) {
+  const none = { kind: undefined, keystoreFamily: false };
+  if (typeof text !== 'string') return none;
+  if (text.startsWith(`${RAW_LINES[0]}\n`)) return { kind: 'rawPrivateKey', keystoreFamily: false };
+  if (text.length > LIMITS.keypairFileBytes || !ASCII.test(text)) return none;
   let v;
   try {
     v = parseStrictJson(text);
   } catch {
-    return undefined;
+    return none;
   }
-  const format = typeof v === 'object' && v !== null && !Array.isArray(v) ? v.format : undefined;
-  if (format === PUBLIC_FORMAT) return 'public';
-  if (format === KEYPAIR_FORMAT) return 'keypair';
-  if (format === MASTER_FORMAT) return 'master';
-  if (typeof format === 'string' && /^ghostpay-stealth-(?:public|keypair|master)-v[0-9]+$/.test(format)) return 'unsupported';
-  return undefined;
+  const obj = typeof v === 'object' && v !== null && !Array.isArray(v) ? v : undefined;
+  const format = obj?.format;
+  const spec18 = (kind) => ({ kind, keystoreFamily: false });
+  if (format === PUBLIC_FORMAT) return spec18('public');
+  if (format === KEYPAIR_FORMAT) return spec18('keypair');
+  if (format === MASTER_FORMAT) return spec18('master');
+  if (typeof format === 'string' && /^ghostpay-stealth-(?:public|keypair|master)-v[0-9]+$/.test(format)) return spec18('unsupported');
+  if (obj !== undefined && format === undefined && typeof obj.v === 'number') return { kind: obj.v === 1 ? 'sellerKeystore' : 'unsupported', keystoreFamily: true };
+  return none;
 }
 
 // --- CLI ------------------------------------------------------------------------------------------------------------
 
 const USAGE = `usage: node scripts/recovery/stealth-export-recover.mjs <file> [options]
-  --inspect                  validate and print public information only (incompatible with --reveal-private-keys)
+  --inspect                  validate and print public information only (incompatible with --reveal-private-keys
+                             and --scan-announcement)
   --expected-chain <id>      require this chain in a payment, public or raw-key file (also with --inspect)
-                             a master backup is chain-neutral and refuses this option
-  --scan-announcement <json> master backup only: derive the one-time address for an announcement given as JSON
-                             ({"ephemeralPublicKey","stealthAddress"[,"metadata"]}) or @<path>; repeatable
-  --reveal-private-keys      also print one-time payment private keys (never the master keys) to stdout
+                             a master backup or seller keystore is chain-neutral and refuses this option
+  --expected-meta-address <st:eth:0x...>
+                             master backup or seller keystore only: refuse a file for another meta-address,
+                             before the passphrase is read (also with --inspect). The header is authenticated only
+                             by decryption, so a match under --inspect is not proof the file belongs to you
+  --scan-announcement <json> master backup or seller keystore only: derive the one-time address for an announcement
+                             given as JSON ({"ephemeralPublicKey","stealthAddress"[,"metadata"]}) or @<path>;
+                             repeatable
+  --reveal-private-keys      also print one-time payment private keys (never master or seller keys) to stdout
 The passphrase is read from standard input, or from a no-echo prompt on a terminal. It is never accepted as an
 argument or environment variable.
 Keep payment private keys away from a holder of your private viewing key: together with the public announcement,
-they allow reconstruction of the master spending key and spending of your other discoverable scheme-1 payments.`;
+they allow reconstruction of the master spending key and spending of your other discoverable scheme-1 payments.
+The payer of a payment can do the same with that payment's key, because the payer chose its ephemeral secret:
+never send a revealed payment key to the payer (for example, as a refund). Send funds instead.`;
 
 class UsageError extends Error {}
 
 function parseArgs(argv) {
-  const opts = { file: undefined, inspect: false, reveal: false, expectedChainId: undefined, announcements: [] };
+  const opts = { file: undefined, inspect: false, reveal: false, expectedChainId: undefined, expectedMetaAddress: undefined, announcements: [] };
   for (let i = 0; i < argv.length; i++) {
     const a = argv[i];
     if (a === '--inspect') opts.inspect = true;
@@ -614,6 +742,11 @@ function parseArgs(argv) {
       const v = argv[++i];
       if (v === undefined || !/^[1-9][0-9]{0,15}$/.test(v) || !Number.isSafeInteger(Number(v))) throw new UsageError('--expected-chain needs a positive chain id');
       opts.expectedChainId = Number(v);
+    } else if (a === '--expected-meta-address') {
+      const v = argv[++i];
+      if (v === undefined || !/^st:eth:0x[0-9a-fA-F]{132}$/.test(v)) throw new UsageError('--expected-meta-address needs an st:eth:0x meta-address');
+      // Files carry the canonical lowercase form; hex case in the argument does not matter.
+      opts.expectedMetaAddress = `st:eth:0x${v.slice(9).toLowerCase()}`;
     } else if (a === '--scan-announcement') {
       const v = argv[++i];
       if (v === undefined) throw new UsageError('--scan-announcement needs a JSON value or @<path>');
@@ -624,6 +757,8 @@ function parseArgs(argv) {
     else throw new UsageError('only one file may be given');
   }
   if (opts.inspect && opts.reveal) throw new UsageError('--inspect and --reveal-private-keys cannot be used together');
+  // --inspect never decrypts, so a derivation request would otherwise be ignored while the run still succeeded.
+  if (opts.inspect && opts.announcements.length > 0) throw new UsageError('--inspect and --scan-announcement cannot be used together');
   if (opts.file === undefined) throw new UsageError('a file is required');
   return opts;
 }
@@ -700,7 +835,9 @@ async function readPassphrase(stdin, stderr) {
             reject(new UsageError('cancelled'));
             return;
           }
-          if (ch === '\u007f' || ch === '\b') pass = pass.slice(0, -1);
+          // Erase a whole code point: slicing one UTF-16 unit would leave half of an emoji in the passphrase. No
+          // RegExp here: its legacy static properties would keep the unerased passphrase reachable.
+          if (ch === '\u007f' || ch === '\b') pass = pass.slice(0, (pass.codePointAt(pass.length - 2) ?? 0) > 0xffff ? -2 : -1);
           else pass += ch;
         }
       };
@@ -715,6 +852,9 @@ async function readPassphrase(stdin, stderr) {
 
 const hex = (bytes) => `0x${bytesToHex(bytes)}`;
 const OWNERSHIP_NOTE = 'A key/address match proves key ownership only; it is not payment confirmation or finality.';
+/** EF BB BF as `readBounded` returns it (latin1). */
+const UTF8_BOM = 'ï»¿';
+const HEADER_ONLY_NOTE = 'Header only: the identity shown is not authenticated until the file is decrypted with its passphrase.';
 
 /** Runs the CLI; returns the exit status. Secrets reach `stdout` only with --reveal-private-keys. */
 export async function main(argv, { stdin = process.stdin, stdout = process.stdout, stderr = process.stderr } = {}) {
@@ -722,12 +862,30 @@ export async function main(argv, { stdin = process.stdin, stdout = process.stdou
   const secrets = [];
   try {
     opts = parseArgs(argv);
-    const text = readBounded(opts.file, LIMITS.keypairFileBytes);
+    const raw = readBounded(opts.file, LIMITS.keypairFileBytes);
+    // GhostPay reads a selected keystore with Blob.text(), which drops one leading UTF-8 byte-order mark, so a keystore
+    // re-saved by an editor that adds one still imports there. Do the same here, for any seller keystore version (so a
+    // later version is still reported as unsupported); Spec 18 files keep refusing every non-ASCII byte.
+    const text = raw.startsWith(UTF8_BOM) && classify(raw.slice(UTF8_BOM.length)).keystoreFamily ? raw.slice(UTF8_BOM.length) : raw;
     const kind = detectFormat(text);
     if (kind === 'unsupported') fail('unsupportedVersion');
     if (kind === undefined) fail('invalidFile');
     if (kind === 'master' && opts.expectedChainId !== undefined) throw new UsageError('--expected-chain cannot verify a chain-neutral master backup');
-    if (opts.announcements.length > 0 && kind !== 'master') throw new UsageError('--scan-announcement needs a master backup file');
+    if (kind === 'sellerKeystore' && opts.expectedChainId !== undefined) throw new UsageError('--expected-chain cannot verify a chain-neutral seller keystore');
+    const holdsMasterPair = kind === 'master' || kind === 'sellerKeystore';
+    if (opts.announcements.length > 0 && !holdsMasterPair) throw new UsageError('--scan-announcement needs a master backup or seller keystore file');
+    if (opts.expectedMetaAddress !== undefined && !holdsMasterPair) throw new UsageError('--expected-meta-address needs a master backup or seller keystore file');
+    /** Refuses another seller's file from its header, before any passphrase is requested. */
+    const expectMetaAddress = (metaAddress) => {
+      if (opts.expectedMetaAddress !== undefined && metaAddress !== opts.expectedMetaAddress) fail('wrongMetaAddress');
+    };
+    /** One-time keys for the given announcements; only owned keys are kept, and only printed with the flag. */
+    const derive = (pair, announcements) => announcements.map((a) => {
+      const d = deriveFromAnnouncement(pair, a);
+      if (d.privateKey !== undefined) secrets.push(d.privateKey);
+      const { privateKey, ...pub } = d;
+      return opts.reveal && privateKey !== undefined ? { ...pub, privateKey: hex(privateKey) } : pub;
+    });
     const out = { format: kind };
     if (kind === 'public') {
       out.record = parsePublicRecord(text);
@@ -761,9 +919,13 @@ export async function main(argv, { stdin = process.stdin, stdout = process.stdou
         out.verified = 'every key decrypted, is in range and controls its recorded public key and address';
         out.note = OWNERSHIP_NOTE;
       }
-    } else {
-      if (opts.inspect) out.header = inspectMasterFile(text).header;
-      else {
+    } else if (kind === 'master') {
+      const header = inspectMasterFile(text).header;
+      expectMetaAddress(header.metaAddress);
+      if (opts.inspect) {
+        out.header = header;
+        out.note = HEADER_ONLY_NOTE;
+      } else {
         const announcements = announcementsFrom(opts.announcements);
         const passphrase = await readPassphrase(stdin, stderr);
         const master = await decryptMasterFile(text, passphrase);
@@ -772,13 +934,28 @@ export async function main(argv, { stdin = process.stdin, stdout = process.stdou
         out.spendingPublicKey = master.header.spendingPublicKey;
         out.viewingPublicKey = master.header.viewingPublicKey;
         out.verified = 'both master keys decrypted, are in range and match the header public keys';
-        out.announcements = announcements.map((a) => {
-          const d = deriveFromAnnouncement(master, a);
-          if (d.privateKey !== undefined) secrets.push(d.privateKey);
-          const { privateKey, ...pub } = d;
-          return opts.reveal && privateKey !== undefined ? { ...pub, privateKey: hex(privateKey) } : pub;
-        });
+        out.announcements = derive(master, announcements);
         out.note = 'Master keys are never printed. ' + OWNERSHIP_NOTE + ' The view tag is a scan filter only.';
+      }
+    } else {
+      const header = inspectSellerKeystore(text).header;
+      expectMetaAddress(header.metaAddress);
+      if (opts.inspect) {
+        out.header = header;
+        out.note = HEADER_ONLY_NOTE;
+      } else {
+        const announcements = announcementsFrom(opts.announcements);
+        const passphrase = await readPassphrase(stdin, stderr);
+        const seller = await decryptSellerKeystore(text, passphrase);
+        secrets.push(seller.spendingKey, seller.viewingKey);
+        out.metaAddress = seller.header.metaAddress;
+        out.spendingPublicKey = seller.header.spendingPublicKey;
+        out.viewingPublicKey = seller.header.viewingPublicKey;
+        out.signer = seller.header.signer;
+        out.verified = 'all three seller keys decrypted, are in range and distinct, and match the meta-address and invoice signer in the file';
+        out.announcements = derive(seller, announcements);
+        out.note = 'Seller keys are never printed; import this file into GhostPay to restore invoice signing. ' + OWNERSHIP_NOTE
+          + ' The view tag is a scan filter only.';
       }
     }
     stdout.write(`${JSON.stringify(out, null, 2)}\n`);

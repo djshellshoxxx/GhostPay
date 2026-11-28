@@ -1,7 +1,7 @@
 import { createReconciliationApi, type ReconciliationRecord } from '@ghostpay/ux-vault/portable';
 export type { ReconciliationRecord, ReconciliationLedgerDocument } from '@ghostpay/ux-vault/portable';
-const { recordFromVerifiedMatch, MAX_RECONCILIATION_RECORDS, validateReconciliationRecord, exportReconciliationLedger, searchReconciliationRecords } = createReconciliationApi({ Error: UserFacingError });
-export { recordFromVerifiedMatch, MAX_RECONCILIATION_RECORDS, validateReconciliationRecord, exportReconciliationLedger, searchReconciliationRecords };
+const { recordFromObservedMatch, recordFromVerifiedMatch, MAX_RECONCILIATION_RECORDS, validateReconciliationRecord, exportReconciliationLedger, searchReconciliationRecords } = createReconciliationApi({ Error: UserFacingError });
+export { recordFromObservedMatch, recordFromVerifiedMatch, MAX_RECONCILIATION_RECORDS, validateReconciliationRecord, exportReconciliationLedger, searchReconciliationRecords };
 import { UserFacingError, type MessageDescriptor } from './errors';
 
 export const RECONCILIATION_LEDGER_ENABLED_KEY = 'ghostpay.reconciliation.enabled.v1';
