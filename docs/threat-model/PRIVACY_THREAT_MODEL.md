@@ -163,7 +163,7 @@ The log line is a closed schema `requestId, route, status, chainId, txHash, erro
 
 ### ADV-DEV (device thief or later local user)
 
-**Learns without any passphrase** (plaintext): RPC and relayer URLs (and any key embedded in an RPC path), pinned signer keys, which chains were scanned and how far, tab-scoped wallet-attempt entries, locale, and possibly the full invoice link from browser history. **Learns from metadata even with encrypted stores**: that a seller vault, a tag vault and a reconciliation vault exist, how many records, on which chains, when they changed. **Does not learn** (if the passphrase holds): keystore contents, tags, notes, verified-payment records.
+**Learns without any passphrase** (plaintext): RPC and relayer URLs (and any key embedded in an RPC path), pinned signer keys, which chains were scanned and how far, durable wallet-attempt entries (payer account, chain and returned hashes; see the table above), locale, and possibly the full invoice link from browser history. **Learns from metadata even with encrypted stores**: that a seller vault, a tag vault and a reconciliation vault exist, how many records, on which chains, when they changed. **Does not learn** (if the passphrase holds): keystore contents, tags, notes, verified-payment records.
 **Mitigations today**: private browser window; clear site data; keystore passphrase; auto-lock timeout. **Limits**: a live compromised session can read decrypted state.
 
 ## 7. What GhostPay does NOT protect

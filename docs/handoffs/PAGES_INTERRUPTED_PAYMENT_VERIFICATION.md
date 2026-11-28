@@ -4,7 +4,7 @@ The wallet may have submitted a transaction even if the page loses its connectio
 
 | Evidence available to checkout | What the payer can rely on |
 | --- | --- |
-| Wallet prompt started, no hash returned | Outcome unknown. The same-tab attempt journal survives a reload. |
+| Wallet prompt started, no hash returned | Outcome unknown. The attempt journal is shared by this browser's tabs (`localStorage` behind one Web Lock) and survives a reload, another tab and a browser restart. Closing a private window, clearing site data, or moving to another browser or device loses it. |
 | Hash returned, RPC unavailable | The journal retains the returned hash. Verification is incomplete. |
 | Receipt has a missing or different hash, or an invalid execution status | Verification stops. The original wallet hash remains in the journal. |
 | Matching receipt, transaction unavailable for comparison with the preview | Unconfirmed in checkout, local receipt and proof QR, for either receipt status. |
