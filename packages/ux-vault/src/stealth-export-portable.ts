@@ -168,6 +168,9 @@ const KEYPAIR_FORMAT = 'ghostpay-stealth-keypair-v1';
 
 const MASTER_FORMAT = 'ghostpay-stealth-master-v1';
 
+/** Any version of the three format families, as the reference decoder routes them (format section 9). */
+const FAMILY_FORMAT = /^ghostpay-stealth-(?:public|keypair|master)-v[0-9]+$/;
+
 /** AAD domains; a new format version gets a new domain, so a file can never be opened as another format. */
 const KEYPAIR_DOMAIN = 'GhostPay.stealth-keypair.v1';
 
@@ -819,17 +822,32 @@ function formatRawPrivateKey(record: StealthPublicRecord, secret: SecretScalar):
   }
 }
 
-/** Which stealth export a text claims to be; undefined for anything else. Bounded and never throws. */
-function detectStealthExportFormat(text: unknown): StealthExportFormat | undefined {
+/** The `format` member of a bounded, ASCII-only, strict-JSON object text; undefined for anything else. Never throws. */
+function claimedFormat(text: unknown): unknown {
   if (typeof text !== 'string' || text.length > LIMITS.keypairFileBytes || !ASCII.test(text)) return undefined;
   let value: unknown;
   try { value = parseStrictJson(text); } catch { return undefined; }
   if (typeof value !== 'object' || value === null || Array.isArray(value)) return undefined;
-  const format = (value as Record<string, unknown>)['format'];
+  return (value as Record<string, unknown>)['format'];
+}
+
+/** Which stealth export a text claims to be; undefined for anything else. Bounded and never throws. */
+function detectStealthExportFormat(text: unknown): StealthExportFormat | undefined {
+  const format = claimedFormat(text);
   if (format === PUBLIC_FORMAT) return 'public';
   if (format === KEYPAIR_FORMAT) return 'keypair';
   if (format === MASTER_FORMAT) return 'master';
   return undefined;
+}
+
+/**
+ * True when a text, under the same bounds as {@link detectStealthExportFormat}, claims another version of a spec 18
+ * export family (`ghostpay-stealth-{public,keypair,master}-v<digits>` other than the v1 identifiers; format section 9),
+ * so a reader reports an unsupported version instead of an invalid file and never reinterprets it. Never throws.
+ */
+function isUnsupportedStealthExportVersion(text: unknown): boolean {
+  const format = claimedFormat(text);
+  return typeof format === 'string' && FAMILY_FORMAT.test(format) && format !== PUBLIC_FORMAT && format !== KEYPAIR_FORMAT && format !== MASTER_FORMAT;
 }
 
   return {
@@ -853,5 +871,6 @@ function detectStealthExportFormat(text: unknown): StealthExportFormat | undefin
     decryptMasterBackup,
     formatRawPrivateKey,
     detectStealthExportFormat,
+    isUnsupportedStealthExportVersion,
   };
 }

@@ -849,6 +849,47 @@ describe('format separation, routing and diagnostics', () => {
     expect(api.detectStealthExportFormat(7)).toBeUndefined();
   });
 
+  it('recognizes another version of each export family under the detection bounds, without throwing (CR-3)', () => {
+    const claim = (format: Json, extra: { [key: string]: Json } = {}): string => pretty({ format, version: 2, ...extra });
+    for (const family of ['public', 'keypair', 'master']) {
+      for (const version of ['2', '10', '0', '01', '18446744073709551616']) {
+        const text = claim(`ghostpay-stealth-${family}-v${version}`);
+        expect(api.isUnsupportedStealthExportVersion(text), text).toBe(true);
+        expect(api.detectStealthExportFormat(text)).toBeUndefined();
+      }
+    }
+    expect(api.isUnsupportedStealthExportVersion('{"format":"ghostpay-stealth-keypair-v2"}')).toBe(true);
+    // The supported identifiers route to their parsers, which report a later `version` of v1 themselves.
+    for (const text of [V.files.public.text, V.files.single.text, V.files.archive.text, V.files.master.text]) {
+      expect(api.isUnsupportedStealthExportVersion(text)).toBe(false);
+      expect(api.isUnsupportedStealthExportVersion(pretty({ ...parse(text), version: 2 }))).toBe(false);
+    }
+    expect(code(() => api.parsePublicRecord(pretty({ ...parse(V.files.public.text), version: 2 })))).toBe('error.stealthExport.unsupportedVersion');
+    const limit = api.STEALTH_EXPORT_LIMITS.keypairFileBytes;
+    const padded = claim('ghostpay-stealth-keypair-v2', { pad: '' });
+    for (const junk of [
+      '', '{', 'null', '[]', '7', '"ghostpay-stealth-keypair-v2"', '["ghostpay-stealth-keypair-v2"]', '{"format":2}', '{"v":2}',
+      claim('ghostpay-stealth-other-v2'), claim('ghostpay-stealth-keypair-v'), claim('ghostpay-stealth-keypair-v2x'),
+      claim('ghostpay-stealth-keypair-v2 '), claim(' ghostpay-stealth-keypair-v2'), claim('GHOSTPAY-STEALTH-KEYPAIR-V2'),
+      claim('ghostpay-stealth-keypair-v-2'), claim('ghostpay-stealth-keypair-v2\n'), claim('ghostpay-stealth-keypair-2'),
+      claim('ghostpay-stealth-keypair-v1'), claim('ghostpay-keystore-v2'), claim(['ghostpay-stealth-keypair-v2']),
+      claim('ghostpay-stealth-keypair-v2', { note: '\u00e9' }),
+      '{"format":"ghostpay-stealth-keypair-v2","format":"ghostpay-stealth-keypair-v2"}',
+      '{"format":"ghostpay-stealth-keypair-v2","version":-2}',
+      '{"format":"ghostpay-stealth-keypair-v2"} {}',
+      padded.replace('"pad": ""', `"pad": "${'x'.repeat(limit - padded.length + 1)}"`),
+      '[[[[[[[[[[[[1]]]]]]]]]]]]',
+    ]) {
+      expect(api.isUnsupportedStealthExportVersion(junk), junk.slice(0, 80)).toBe(false);
+    }
+    const atLimit = padded.replace('"pad": ""', `"pad": "${'x'.repeat(limit - padded.length)}"`);
+    expect(atLimit.length).toBe(limit);
+    expect(api.isUnsupportedStealthExportVersion(atLimit)).toBe(true);
+    for (const value of [undefined, null, 7, {}, ['{"format":"ghostpay-stealth-keypair-v2"}']]) {
+      expect(api.isUnsupportedStealthExportVersion(value)).toBe(false);
+    }
+  });
+
   it('refuses a raw key that does not control the record and an invalid record', () => {
     const a1 = verified('a1');
     const a2 = verified('a2');

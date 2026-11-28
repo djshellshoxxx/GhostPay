@@ -18,6 +18,7 @@ import {
   encryptMasterBackup,
   encryptPaymentKeys,
   formatRawPrivateKey,
+  isUnsupportedStealthExportVersion,
   parsePublicRecord,
   serializePublicRecord,
   type StealthExportScope,
@@ -456,6 +457,8 @@ export async function openStealthExport(text: string, passphrase: string, option
       throw error;
     }
   }
+  // A later version of a known family (formats section 9) is reported as such, never reinterpreted or called invalid.
+  if (isUnsupportedStealthExportVersion(text)) throw new UserFacingError({ key: 'error.stealthExport.unsupportedVersion' });
   throw new UserFacingError({ key: 'error.stealthExport.invalidFile' });
 }
 

@@ -129,6 +129,7 @@ describe('stealth export properties', () => {
   it('format detection and every parser refuse arbitrary text with a public diagnostic only', () => {
     fc.assert(fc.property(fc.oneof(fc.string(), fc.json(), fc.jsonValue().map((v) => JSON.stringify({ format: 'ghostpay-stealth-keypair-v1', v }))), (text) => {
       expect(() => api.detectStealthExportFormat(text)).not.toThrow();
+      expect(() => api.isUnsupportedStealthExportVersion(text)).not.toThrow();
       for (const run of [() => api.parsePublicRecord(text), () => api.inspectPaymentKeys(text), () => api.inspectMasterBackup(text)]) {
         try { run(); } catch (error) { expect(error).toBeInstanceOf(PortableVaultError); }
       }
