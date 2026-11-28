@@ -1,0 +1,188 @@
+{
+  "base_main_sha": "aec179910c39081d820396409ff3139ff2264132",
+  "page": 2,
+  "page_size": 15,
+  "cursor_in": "MTU",
+  "cursor_out": "MzA",
+  "method": "GitHub named-ref compare; branch head SHA and semantic code review are required before integration; >=300 changed files can be truncated.",
+  "branches": [
+    {
+      "ref": "automation/20261119-c977/bug/build-profile-failclosed",
+      "ahead": 0,
+      "behind": 77,
+      "status": "behind",
+      "files_count": 0,
+      "truncated": false,
+      "non_doc_files": 0,
+      "paths": []
+    },
+    {
+      "ref": "automation/20261119T1640Z/bug/scan-privacy-partial-30d",
+      "ahead": 0,
+      "behind": 77,
+      "status": "behind",
+      "files_count": 0,
+      "truncated": false,
+      "non_doc_files": 0,
+      "paths": []
+    },
+    {
+      "ref": "automation/20261119T2243Z/bug/base64url-runtime-input",
+      "ahead": 4,
+      "behind": 81,
+      "status": "diverged",
+      "files_count": 4,
+      "truncated": false,
+      "non_doc_files": 2,
+      "paths": [
+        "docs/ai/ACTIVE_WORK.md",
+        "docs/handoffs/BASE64URL_INPUT_TYPE_20261119.md",
+        "packages/invoice-schema/src/base64url.test.ts",
+        "packages/invoice-schema/src/base64url.ts"
+      ]
+    },
+    {
+      "ref": "automation/20261119T073600Z/bug/camera-visibility",
+      "ahead": 1,
+      "behind": 118,
+      "status": "diverged",
+      "files_count": 4,
+      "truncated": false,
+      "non_doc_files": 2,
+      "paths": [
+        "apps/web/src/components/CameraImporter.tsx",
+        "apps/web/src/components/CameraImporter.visibility.test.tsx",
+        "docs/ai/ACTIVE_WORK.md",
+        "docs/handoffs/CAMERA_IMPORT_VISIBILITY_20261119.md"
+      ]
+    },
+    {
+      "ref": "automation/20261119T073600Z/coordinator/integration-lock",
+      "ahead": 2,
+      "behind": 118,
+      "status": "diverged",
+      "files_count": 19,
+      "truncated": false,
+      "non_doc_files": 2
+    },
+    {
+      "ref": "automation/20261119T083600Z/audit/merchant-clock",
+      "ahead": 0,
+      "behind": 100,
+      "status": "behind",
+      "files_count": 0,
+      "truncated": false,
+      "non_doc_files": 0,
+      "paths": []
+    },
+    {
+      "ref": "automation/20261119T083600Z/bug/json-canonical-array",
+      "ahead": 6,
+      "behind": 101,
+      "status": "diverged",
+      "files_count": 4,
+      "truncated": false,
+      "non_doc_files": 2,
+      "paths": [
+        "docs/ai/ACTIVE_WORK.md",
+        "docs/handoffs/JSON_CANONICAL_ARRAY_20261119.md",
+        "packages/invoice-schema/src/json.test.ts",
+        "packages/invoice-schema/src/json.ts"
+      ]
+    },
+    {
+      "ref": "automation/20261119T095600Z/bug/merchant-profile-clock",
+      "ahead": 4,
+      "behind": 101,
+      "status": "diverged",
+      "files_count": 4,
+      "truncated": false,
+      "non_doc_files": 2,
+      "paths": [
+        "docs/ai/ACTIVE_WORK.md",
+        "docs/handoffs/MERCHANT_PROFILE_CLOCK_20261119.md",
+        "packages/invoice-schema/src/merchantProfile.test.ts",
+        "packages/invoice-schema/src/merchantProfile.ts"
+      ]
+    },
+    {
+      "ref": "automation/20261119T104800Z/bug/jitter-expiry-rollback",
+      "ahead": 5,
+      "behind": 101,
+      "status": "diverged",
+      "files_count": 4,
+      "truncated": false,
+      "non_doc_files": 2,
+      "paths": [
+        "apps/web/src/lib/jitter.test.ts",
+        "apps/web/src/lib/jitter.ts",
+        "docs/ai/ACTIVE_WORK.md",
+        "docs/handoffs/JITTER_EXPIRY_ROLLBACK_20261119.md"
+      ]
+    },
+    {
+      "ref": "automation/20261119T124337Z/bug/qr-utf8-surrogate-guard",
+      "ahead": 0,
+      "behind": 76,
+      "status": "behind",
+      "files_count": 0,
+      "truncated": false,
+      "non_doc_files": 0,
+      "paths": []
+    },
+    {
+      "ref": "automation/20261119T183817Z/bug/merchant-pin-duplicate-json",
+      "ahead": 0,
+      "behind": 77,
+      "status": "behind",
+      "files_count": 0,
+      "truncated": false,
+      "non_doc_files": 0,
+      "paths": []
+    },
+    {
+      "ref": "automation/20261119T204728Z/bug/qr-kind-failclosed",
+      "ahead": 0,
+      "behind": 77,
+      "status": "behind",
+      "files_count": 0,
+      "truncated": false,
+      "non_doc_files": 0,
+      "paths": []
+    },
+    {
+      "ref": "automation/20261120T0035Z/coordinator/cycle-checkpoint",
+      "ahead": 6,
+      "behind": 118,
+      "status": "diverged",
+      "files_count": 70,
+      "truncated": false,
+      "non_doc_files": 2
+    },
+    {
+      "ref": "automation/20261120T0035Z/worker/qr-flag-coverage",
+      "ahead": 403,
+      "behind": 76,
+      "status": "diverged",
+      "files_count": 300,
+      "truncated": true,
+      "non_doc_files": 263
+    },
+    {
+      "ref": "automation/20261120T0035Z/worker/qr-kind-primitives",
+      "ahead": 5,
+      "behind": 77,
+      "status": "diverged",
+      "files_count": 5,
+      "truncated": false,
+      "non_doc_files": 2,
+      "paths": [
+        "apps/web/src/lib/qrKinds.test.ts",
+        "apps/web/src/lib/qrKinds.ts",
+        "docs/ai/ACTIVE_WORK.md",
+        "docs/design/qr-colors.md",
+        "docs/handoffs/QR_KIND_PRIMITIVES_20261120.md"
+      ]
+    }
+  ]
+}

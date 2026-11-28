@@ -202,6 +202,27 @@ describe('PirServer', () => {
   });
 });
 
+describe('HTTP base URL normalization', () => {
+  it('removes only terminal separators and preserves the configured path for both endpoints', async () => {
+    const requested: string[] = [];
+    const transport: PirHttpTransport = { request: (r) => {
+      requested.push(r.url);
+      return Promise.resolve({ status: 200, body: new TextEncoder().encode('{}') });
+    } };
+    for (const suffix of ['', '/', '////']) {
+      const link = createHttpLink(`https://pir.example/prefix//replica${suffix}`, 31337, transport);
+      expect(link.origin).toBe('https://pir.example/prefix//replica');
+      await link.getManifest();
+      await link.answer(new Uint8Array([1]));
+    }
+    expect(requested).toEqual(Array.from({ length: 3 }, () => [
+      'https://pir.example/prefix//replica/v1/manifest?chainId=31337',
+      'https://pir.example/prefix//replica/v1/pir',
+    ]).flat());
+  });
+
+});
+
 describe('HTTP wire (loopback only)', () => {
   const transport: PirHttpTransport = {
     async request(r) {

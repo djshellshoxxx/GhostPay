@@ -2,10 +2,12 @@
 
 This package is a **proof of concept** of dual-key ed25519 stealth payments for Solana, covering SOL and SPL tokens. It has **not been audited**. The design and threat model are in [ADR-0017](../../docs/adr/ADR-0017-solana-stealth.md).
 
-**Not interoperable with `@ghostpay/chain-solana`.** That package is a separate Solana stealth format: it uses
-`gpsol:` base58check meta-addresses and `gpst1:` + base64url memos, while this package uses `st:sol:`
-meta-addresses (with a cluster byte) and `gpst1:` + base58 memos. This package is the one imported by the web app
-(`apps/web`); the CLI imports `@ghostpay/chain-solana`. A meta-address or memo from one cannot be used with the other.
+**Interoperable with `@ghostpay/chain-solana`.** Both packages use the ADR-0017 formats: `st:sol:` meta-addresses
+(with a cluster byte and checksum) and `gpst1:` + base58 memos, and the same derivation. Shared vectors
+(`test-vectors/meta-address-sol-tron-v1.json`, `test-vectors/solana-stealth.json`) are checked from both sides by
+`packages/chain-solana/src/interop.test.ts`. This package is the one imported by the web app (`apps/web`); the CLI
+imports `@ghostpay/chain-solana`. The older `gpsol:` meta-address is rejected by `@ghostpay/chain-solana`
+with `LEGACY_META_ADDRESS`; the old base64url memo is rejected as `INVALID_ANNOUNCEMENT`. Testnet and proof of concept only.
 
 ## What it does
 

@@ -1,6 +1,6 @@
 import fc from 'fast-check';
 import { describe, expect, it } from 'vitest';
-import { normalizeSet, parseAnnouncement, setHash } from './validate.js';
+import { claimedPlace, normalizeSet, parseAnnouncement, postedRecord, setHash } from './validate.js';
 import { rawAnn } from './testutil.js';
 
 describe('parseAnnouncement', () => {
@@ -10,6 +10,59 @@ describe('parseAnnouncement', () => {
     expect(a?.stealthAddress).toBe(`0x${'ab'.repeat(20)}`);
     expect(a?.blockNumber).toBe(10n);
     expect(a?.id).toBe(`${String(rawAnn(10, 3)['blockHash'])}:3`);
+  });
+  it('drops unreadable field getters, including the optional receipt hash', () => {
+    const fields = [
+      'schemeId', 'blockNumber', 'logIndex', 'stealthAddress', 'caller',
+      'ephemeralPublicKey', 'metadata', 'blockHash', 'transactionHash',
+    ] as const;
+    for (const field of fields) {
+      const record: Record<string, unknown> = { ...rawAnn(10, 3) };
+      Object.defineProperty(record, field, {
+        get: () => { throw new Error(`unreadable ${field}`); },
+      });
+      expect(parseAnnouncement(record), field).toBeUndefined();
+    }
+  });
+  it('drops throwing and revoked proxy records without escaping the validator', () => {
+    const record = new Proxy(rawAnn(10, 3), {
+      get(target, prop, receiver): unknown {
+        if (prop === 'metadata') throw new Error('source access failed');
+        const value: unknown = Reflect.get(target, prop, receiver);
+        return value;
+      },
+    });
+    expect(parseAnnouncement(record)).toBeUndefined();
+
+    const revoked = Proxy.revocable(rawAnn(10, 3), {});
+    revoked.revoke();
+    expect(parseAnnouncement(revoked.proxy)).toBeUndefined();
+  });
+  it('reads a claimed scheme as widely as the announcer can emit it, and never throws', () => {
+    const claims: readonly (readonly [unknown, bigint | undefined])[] = [
+      [2n, 2n], [3, 3n], ['4', 4n], [(1n << 256n) - 1n, (1n << 256n) - 1n],
+      [-1, undefined], [1.5, undefined], [-1n, undefined], [1n << 256n, undefined], ['x', undefined], [null, undefined],
+    ];
+    for (const [value, scheme] of claims) expect(claimedPlace({ schemeId: value, blockNumber: '7' })).toEqual({ blockNumber: 7n, schemeId: scheme });
+    const revoked = Proxy.revocable(rawAnn(10, 3), {});
+    revoked.revoke();
+    expect(claimedPlace(revoked.proxy)).toEqual({ blockNumber: undefined, schemeId: undefined });
+    expect(postedRecord(revoked.proxy, 1n)).toBeUndefined();
+    expect(postedRecord({ ...rawAnn(10, 3), metadata: '0x' }, 1n)).toEqual({ ...parseAnnouncement(rawAnn(10, 3)), metadata: '0x' });
+  });
+  it('reads a field once and hashes the same validated snapshot', () => {
+    const record: Record<string, unknown> = { ...rawAnn(10, 3) };
+    const blockHash = record['blockHash'];
+    let reads = 0;
+    Object.defineProperty(record, 'blockHash', {
+      get() {
+        reads++;
+        if (reads !== 1) throw new Error('read again');
+        return blockHash;
+      },
+    });
+    expect(parseAnnouncement(record)?.blockHash).toBe(blockHash);
+    expect(reads).toBe(1);
   });
   it('rejects every malformed field', () => {
     const bads: Record<string, unknown>[] = [

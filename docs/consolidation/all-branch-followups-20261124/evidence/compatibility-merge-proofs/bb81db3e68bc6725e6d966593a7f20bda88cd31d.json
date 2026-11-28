@@ -1,0 +1,111 @@
+{
+  "base": "bda2af071d4b9d3c85bbe4a20da2f8edb5eabcf8",
+  "parents": [
+    "3fd5fefbf95a17d2bde6b3152d63eb57f3849636",
+    "bb81db3e68bc6725e6d966593a7f20bda88cd31d"
+  ],
+  "head": "7852931fecc8bdd2ab17e3e70813f36e502c50b0",
+  "tree": "bc51e09031d4d52a47b01596ed24ef5a8297a945",
+  "conflicts": [
+    "docs/ai/ACTIVE_WORK.md"
+  ],
+  "removed_conflict_markers": 3,
+  "both_registry_sequences_and_multiplicities_preserved": true,
+  "exact_nonshared_entries": [
+    {
+      "parent": "3fd5fefbf95a17d2bde6b3152d63eb57f3849636",
+      "path": "apps/web/e2e/https-rpc-compatibility.spec.ts",
+      "entry": "100644 blob e21f24efec4eaf8bea121adceb3f188d8c6f2521"
+    },
+    {
+      "parent": "3fd5fefbf95a17d2bde6b3152d63eb57f3849636",
+      "path": "docs/handoffs/HTTPS_RPC_COMPATIBILITY_RECOVERY_20261124.md",
+      "entry": "100644 blob 43cd9367ebd68681a2f14233e6ad6649f0d1be7e"
+    },
+    {
+      "parent": "3fd5fefbf95a17d2bde6b3152d63eb57f3849636",
+      "path": "docs/handoffs/READONLY_TOOLING_RECOVERY_20261124.md",
+      "entry": "100644 blob 182946aee0f50032e953e1c14a0a15688c58f31a"
+    },
+    {
+      "parent": "3fd5fefbf95a17d2bde6b3152d63eb57f3849636",
+      "path": "docs/handoffs/https-rpc-compatibility-recovery-20261124/QUALIFICATION.json",
+      "entry": "100644 blob f69ffe6724aa4afb3eda26d5c82610b277c52b6e"
+    },
+    {
+      "parent": "3fd5fefbf95a17d2bde6b3152d63eb57f3849636",
+      "path": "docs/handoffs/https-rpc-compatibility-recovery-20261124/run-logs.tar.gz",
+      "entry": "100644 blob 7955ed203c2b829db612df2587befda1e685776e"
+    },
+    {
+      "parent": "3fd5fefbf95a17d2bde6b3152d63eb57f3849636",
+      "path": "docs/handoffs/readonly-tooling-recovery-20261124/QUALIFICATION.json",
+      "entry": "100644 blob 63971489f71f0554ec03bf8e70b73f37be5d3b8d"
+    },
+    {
+      "parent": "3fd5fefbf95a17d2bde6b3152d63eb57f3849636",
+      "path": "docs/handoffs/readonly-tooling-recovery-20261124/run-logs.tar.gz",
+      "entry": "100644 blob 1b340fbbd7dbfcf4c607a61b25c37edd3b1f732e"
+    },
+    {
+      "parent": "3fd5fefbf95a17d2bde6b3152d63eb57f3849636",
+      "path": "docs/pages/tor-rpc-compatibility.md",
+      "entry": "100644 blob f1692ab905b527f7665c34b11a184da234b56664"
+    },
+    {
+      "parent": "3fd5fefbf95a17d2bde6b3152d63eb57f3849636",
+      "path": "scripts/audit/MYTHRIL_EVIDENCE_CONTRACT.md",
+      "entry": "100644 blob ae26340fbfcb3d45495db9743dafbbc41247040b"
+    },
+    {
+      "parent": "3fd5fefbf95a17d2bde6b3152d63eb57f3849636",
+      "path": "scripts/audit/mythril-evidence.mjs",
+      "entry": "100644 blob 32834b760e90d53b43515bf8935b81a9e2cb9762"
+    },
+    {
+      "parent": "3fd5fefbf95a17d2bde6b3152d63eb57f3849636",
+      "path": "scripts/coordination/RECONCILE_CLAIMS_INPUT_V1.md",
+      "entry": "100644 blob b2f14f5c595ec1f5d27534c844008ac1323728ec"
+    },
+    {
+      "parent": "3fd5fefbf95a17d2bde6b3152d63eb57f3849636",
+      "path": "scripts/coordination/reconcile-claims.mjs",
+      "entry": "100644 blob 2f644028be422170922728d93b0640bcc512f0bd"
+    },
+    {
+      "parent": "3fd5fefbf95a17d2bde6b3152d63eb57f3849636",
+      "path": "scripts/coordination/reconcile-claims.test.mjs",
+      "entry": "100644 blob a52b00eb5a997870bbf25700005cd120f6b111bc"
+    },
+    {
+      "parent": "3fd5fefbf95a17d2bde6b3152d63eb57f3849636",
+      "path": "scripts/tests/mythril-evidence.test.mjs",
+      "entry": "100644 blob ce1ae5f4da22f84080b369bc57c8cf7dea384193"
+    },
+    {
+      "parent": "3fd5fefbf95a17d2bde6b3152d63eb57f3849636",
+      "path": "scripts/tests/reconcile-claims.test.mjs",
+      "entry": "100644 blob 478e1aef52c3ebd788a3c08d8766a3c5aa1f818f"
+    },
+    {
+      "parent": "bb81db3e68bc6725e6d966593a7f20bda88cd31d",
+      "path": "docs/handoffs/COOKIE_DEPENDENCY_20261121.md",
+      "entry": "100644 blob f24f03dc15f0f0ce791bcbc2b28a24700d34766e"
+    },
+    {
+      "parent": "bb81db3e68bc6725e6d966593a7f20bda88cd31d",
+      "path": "package-lock.json",
+      "entry": "100644 blob 601ae674b61c086e19ba34ed2a231a22dfdebced"
+    },
+    {
+      "parent": "bb81db3e68bc6725e6d966593a7f20bda88cd31d",
+      "path": "package.json",
+      "entry": "100644 blob d4f914357d93f4b23f6a9ace8c456ac9fded77fb"
+    },
+    {
+      "parent": "bb81db3e68bc6725e6d966593a7f20bda88cd31d",
+      "path": "scripts/tests/dependency-tooling.test.mjs",
+      "entry": "100644 blob da4c6c71117b5546e7acc664d1b62106bfa6e9fa"
+    }
+  ]
+}

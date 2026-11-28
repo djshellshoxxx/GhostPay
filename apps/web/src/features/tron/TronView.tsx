@@ -2,6 +2,7 @@ import { displayMessage, type DisplayMessage } from '../../lib/errors';
 import { referencedBroadcastOutcome, TRANSACTION_PHASE_KEYS, type TransactionOutcome } from '../../lib/transactionOutcome';
 import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { decodeTronAddress, type TronRpc } from '@ghostpay/tron-adapter';
+import { BroadcastReference } from '../../components/BroadcastReference';
 import { CopyButton, Field, Mono, Notice } from '../../components/Common';
 import { CameraImporter } from '../../components/CameraImporter';
 import { PlainPaymentRequest } from '../../components/PaymentRequestQr';
@@ -100,7 +101,7 @@ export function TronView(): ReactNode {
     }
   };
 
-  /** Fresh client for the current URL, after refusing a node that reports mainnet. */
+  /** Fresh client, only after checking the selected chain against block-0 identity. */
   const connect = async (signal: AbortSignal): Promise<TronRpc> => {
     let rpc: TronRpc;
     try {
@@ -108,7 +109,7 @@ export function TronView(): ReactNode {
     } catch {
       throw new TronViewError({ key: 'tron.node.missing' });
     }
-    await checkNetwork(rpc, signal);
+    await checkNetwork(rpc, netId, signal);
     return rpc;
   };
 
@@ -267,6 +268,9 @@ export function TronView(): ReactNode {
                 <Notice kind={broadcastOutcome.phase === 'pending-confirmation' ? 'ok' : broadcastOutcome.phase === 'broadcast-attempted' ? 'info' : 'error'} title={t(TRANSACTION_PHASE_KEYS[broadcastOutcome.phase])}>
                   {displayMessage(broadcastOutcome.message, t)}
                 </Notice>
+                {broadcastOutcome.reference !== undefined && (broadcastOutcome.phase === 'broadcast-unknown' || broadcastOutcome.phase === 'verification-incomplete') && (
+                  <BroadcastReference key={broadcastOutcome.reference} reference={broadcastOutcome.reference} />
+                )}
               </div>}
 
       <div className="panel">

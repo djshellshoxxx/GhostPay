@@ -6,8 +6,18 @@ import { FAKE_ANNOUNCER, FAKE_ROUTER, fakeManifest } from '../test/fakeManifest'
 import { InlineWorker } from '../test/inlineWorker';
 import { makeLog, TOKEN_84532 } from '../test/announcements';
 import { mockRpc } from '../test/mockRpc';
-import { checkpointKeyId, localCheckpointStore, runScan, type CheckpointStore, type ScanProgress } from './scanClient';
+import { checkpointKeyId, localCheckpointStore as secretKeyedStore, runScan, type CheckpointStore, type ScanProgress } from './scanClient';
+
+/** These scanner fixtures use a fixed private key instead of the loaded seller session. */
+const localCheckpointStore = (storage: Parameters<typeof secretKeyedStore>[0]) => secretKeyedStore(storage, (_keyId, use) => {
+  const key = new Uint8Array(32).fill(7);
+  try { return use(key); } finally { key.fill(0); }
+});
 import { ReconciliationVault } from './reconciliationVault';
+import { recordFromObservedMatch } from './reconciliationLedger';
+import { summarizeInvoicePayments } from '@ghostpay/ux-vault/portable';
+import { clearSession, generateSession, importSession, subscribeSession } from './session';
+import { checkpointSlot } from './scanCursorSlot';
 import type { ToWorker } from './scannerCore';
 
 const chain = CHAINS.find((c) => c.chainId === 84532)!;
@@ -979,9 +989,9 @@ describe('localCheckpointStore', () => {
   });
   it('ignores corrupt data and tolerates missing or failing storage', () => {
     const st = mem();
-    st.setItem(`ghostpay.scan.checkpoint.v2.1.${KEY}`, 'not json');
-    st.setItem(`ghostpay.scan.checkpoint.v2.2.${KEY}`, JSON.stringify({ nextBlock: 'abc' }));
-    st.setItem(`ghostpay.scan.checkpoint.v2.3.${KEY}`, JSON.stringify({ nextBlock: '5', last: { number: 'x', hash: 'y' } }));
+    st.setItem(checkpointSlot(new Uint8Array(32).fill(7), 1, KEY), 'not json');
+    st.setItem(checkpointSlot(new Uint8Array(32).fill(7), 2, KEY), JSON.stringify({ nextBlock: 'abc' }));
+    st.setItem(checkpointSlot(new Uint8Array(32).fill(7), 3, KEY), JSON.stringify({ nextBlock: '5', last: { number: 'x', hash: 'y' } }));
     const cp = localCheckpointStore(st);
     expect(cp.load(1, KEY)).toBeUndefined();
     expect(cp.load(2, KEY)).toBeUndefined();
@@ -1518,16 +1528,21 @@ describe('two-provider replay-tail checkpoint anchor', () => {
     const map = new Map<string, string>();
     const saves: unknown[] = [];
     const store = localCheckpointStore({ getItem: (k) => map.get(k) ?? null, setItem: (k, v) => void map.set(k, v), removeItem: (k) => void map.delete(k) });
-    const recording: CheckpointStore = { ...store, save: (id, key, cursor) => { saves.push(cursor); store.save(id, key, cursor); } };
+    // Forwards `expected`: without it the save is forward-only and runScan's own rewinds below would be refused.
+    const recording: CheckpointStore = { ...store, save: (id, key, cursor, expected) => { saves.push(cursor); store.save(id, key, cursor, expected); } };
     return { map, saves, store: recording };
   };
-  async function vaultWithVerifiedRecord(s: ReturnType<typeof setup>, sellerKeyId: string) {
+  async function unlockedScanVault(s: ReturnType<typeof setup>, sellerKeyId: string) {
     const data = new Map<string, string>();
     const vault = new ReconciliationVault({
       read: (key) => Promise.resolve(data.get(key) ?? null),
       compareAndSwap: (key, expected, next, guard) => { guard(); if ((data.get(key) ?? null) !== expected) return Promise.resolve(false); data.set(key, next); return Promise.resolve(true); },
     }, { chainId: chain.chainId, sellerKeyId }, () => undefined);
     await vault.unlock(unsafeRevealSecret(s.keys.viewingSecret).slice());
+    return vault;
+  }
+  async function vaultWithVerifiedRecord(s: ReturnType<typeof setup>, sellerKeyId: string) {
+    const vault = await unlockedScanVault(s, sellerKeyId);
     const record = {
       version: 1 as const, sellerKeyId, chainId: chain.chainId, transactionHash: blockHash(999),
       blockHash: blockHash(120), blockNumber: '120', stealthAddress: `0x${'a'.repeat(40)}`, logIndex: 1,
@@ -1544,6 +1559,68 @@ describe('two-provider replay-tail checkpoint anchor', () => {
     spendingPublicKeyHex: hexOf(s.keys.spendingPublicKey), keyId,
     viewingKey: unsafeRevealSecret(s.keys.viewingSecret), createWorker: () => new InlineWorker(), signal: new AbortController().signal,
     ...extra,
+  });
+
+  it.each([
+    { initialHead: 239, lowerHead: 119, expectFinal: false }, // neither source can return the anchor
+    { initialHead: 219, lowerHead: 119, expectFinal: false }, // checkpoint parent becomes the tip
+    { initialHead: 239, lowerHead: 218, expectFinal: false }, // 99 confirmations behind the cursor
+    { initialHead: 239, lowerHead: 219, expectFinal: true },  // exactly 100 confirmations
+  ])('rechecks retained invoice credit at a lower tip of $lowerHead with a canonical anchor', async ({ initialHead, lowerHead, expectFinal }) => {
+    const s = setup();
+    const scope = { chainId: chain.chainId, sellerKeyId: KEY };
+    const vault = await unlockedScanVault(s, KEY);
+    const invoice = { version: 1 as const, chainId: chain.chainId, invoiceDigest: blockHash(42), nonce: 'a'.repeat(32),
+      asset: TOKEN_84532.toLowerCase(), expectedNetMinorUnits: '1000000', createdAt: 1000, expiresAt: 2000, registeredAt: 1 };
+    await vault.registerInvoice(invoice);
+    const checkpoints = memStore().store;
+    const rescan = async (head: number) => {
+      const clientAtHead = () => {
+        const rpc = chainWith(head, [s.mine.log]);
+        return { ...rpc, getBlock: async (height: bigint) => {
+          if (height > BigInt(head)) return null;
+          const block = await rpc.getBlock(height);
+          return block === null ? null : { ...block, timestamp: 2000n };
+        } };
+      };
+      return scan(s, KEY, { client: clientAtHead(), secondaryClient: clientAtHead(), cursor: checkpoints.load(chain.chainId, KEY) ?? { nextBlock: 0n },
+        checkpoints, onUnresolvedEvidence: (from) => vault.quarantineInvoicePayments(from), onPageMatches: async (matches, page) => {
+          await vault.observeInvoicePayments(matches.map((match) => recordFromObservedMatch(match, KEY)), undefined, page);
+          return true;
+        } });
+    };
+    const first = await rescan(initialHead);
+    expect(first.matches.map((match) => match.receipt)).toEqual(['verified']);
+    const payment = recordFromObservedMatch(first.matches[0]!, KEY);
+    await vault.confirmProposal(payment, invoice.invoiceDigest, { current: [payment], acceptLate: true });
+    const [original] = await vault.read();
+    expect(typeof original?.lateAcceptedAt).toBe('number');
+    expect(checkpoints.load(chain.chainId, KEY)?.nextBlock).toBe(BigInt(initialHead - 99));
+    const lostAnchor = lowerHead < initialHead - 100;
+    if (lostAnchor) {
+      await expect(rescan(lowerHead)).rejects.toThrow(/checkpoint block unavailable/);
+      expect(checkpoints.load(chain.chainId, KEY)?.nextBlock).toBe(BigInt(initialHead - 99));
+    } else {
+      expect((await rescan(lowerHead)).discrepancies).toEqual([]);
+    }
+    vault.lock();
+    await vault.unlock(unsafeRevealSecret(s.keys.viewingSecret).slice());
+    expect(summarizeInvoicePayments(invoice, await vault.read(), scope).kind).toBe(expectFinal ? 'equal' : 'unlinked');
+    expect(await vault.read()).toMatchObject([{ id: payment.id, lateAcceptedAt: original!.lateAcceptedAt,
+      invoiceDigest: invoice.invoiceDigest, evidenceStatus: expectFinal ? 'verified-at-scan' : 'unverified-at-scan' }]);
+    if (lostAnchor) {
+      // Once the unchanged anchor is reachable, rewind to the earlier quarantined payment.
+      expect((await rescan(269)).discrepancies).toEqual([]);
+      expect(summarizeInvoicePayments(invoice, await vault.read(), scope).kind).toBe('unlinked');
+    }
+    if (!expectFinal) expect(checkpoints.load(chain.chainId, KEY)).toEqual({
+      nextBlock: 120n, last: { number: 119n, hash: blockHash(119) },
+    });
+    expect((await rescan(269)).discrepancies).toEqual([]);
+    expect(checkpoints.load(chain.chainId, KEY)?.nextBlock).toBe(170n);
+    expect(summarizeInvoicePayments(invoice, await vault.read(), scope)).toMatchObject({ kind: 'equal', observationCount: 1 });
+    expect(await vault.read()).toEqual([original]);
+    vault.lock();
   });
 
   it('withholds a primary-only fabricated tail anchor so a truthful resume never invalidates canonical history', async () => {
@@ -1672,6 +1749,45 @@ describe('two-provider replay-tail checkpoint anchor', () => {
     expect(cp.saves).toEqual([]);
   });
 
+  it.each(['silent lock', 'different seller', 'same seller restored'] as const)('cannot persist an old scan after %s while corroboration is pending', async (change) => {
+    const s = setup();
+    const keys = {
+      spendingKeyHex: hexOf(unsafeRevealSecret(s.keys.spendingSecret)),
+      viewingKeyHex: hexOf(unsafeRevealSecret(s.keys.viewingSecret)),
+      signingKeyHex: '33'.repeat(32),
+    };
+    const pub = importSession(keys);
+    const keyId = checkpointKeyId(pub.spendingPublicKey, pub.viewingPublicKey);
+    const map = new Map<string, string>();
+    const cp = secretKeyedStore({ getItem: (k) => map.get(k) ?? null, setItem: (k, v) => { map.set(k, v); }, removeItem: (k) => { map.delete(k); } });
+    const secondary = chainWith(2500, [s.mine.log]);
+    let release!: () => void; const gate = new Promise<void>((resolve) => { release = resolve; }); let waiting = false;
+    const ctl = new AbortController();
+    // Scan.tsx aborts on session emissions, even if a clear-and-restore installs identical public keys.
+    const unsubscribe = change === 'same seller restored' ? subscribeSession(() => { ctl.abort(); }) : () => undefined;
+    const task = scan(s, keyId, {
+      client: chainWith(2500, [s.mine.log]), checkpoints: cp, signal: ctl.signal,
+      secondaryClient: { ...secondary, getBlock: async (n) => { if (n === TAIL) { waiting = true; await gate; } return secondary.getBlock(n); } },
+    });
+    try {
+      await vi.waitFor(() => expect(waiting).toBe(true));
+      if (change === 'silent lock') clearSession(false);
+      else if (change === 'different seller') generateSession();
+      else { clearSession(false); importSession(keys); }
+      expect(ctl.signal.aborted).toBe(change === 'same seller restored');
+      // The first two cases have no AbortSignal shortcut: the store must reject the no-longer-loaded identity.
+      release();
+      await task;
+      expect(map.size).toBe(0);
+      expect(cp.load(chain.chainId, keyId)).toBeUndefined();
+    } finally {
+      release();
+      await task;
+      unsubscribe();
+      clearSession(false);
+    }
+  });
+
   it('after a genuine two-provider reorg invalidates only records whose block both providers replaced (L3-F1, L1-03)', async () => {
     const s = setup();
     const sellerKeyId = checkpointKeyId(hexOf(s.keys.spendingPublicKey), hexOf(s.keys.viewingPublicKey));
@@ -1684,7 +1800,11 @@ describe('two-provider replay-tail checkpoint anchor', () => {
     // A second observation in a block the reorg replaced (old hash at height TAIL + 50).
     const replaced = (await vault.read())[0]!;
     const orphanHash = blockHash(Number(TAIL) + 50);
-    const { provenance, ...orphanBase } = { ...replaced, blockNumber: String(TAIL + 50n), blockHash: orphanHash, id: replaced.id.replace(replaced.blockHash, orphanHash) };
+    const orphanTx = blockHash(Number(TAIL) + 51);
+    const { provenance, ...orphanBase } = {
+      ...replaced, blockNumber: String(TAIL + 50n), blockHash: orphanHash, transactionHash: orphanTx,
+      id: replaced.id.replace(replaced.blockHash, orphanHash).replace(replaced.transactionHash, orphanTx),
+    };
     void provenance;
     await vault.save(orphanBase);
     const invalidated = vi.fn((from: bigint, canonical: (height: bigint) => Promise<Hex>) => vault.invalidateFrom(from, [], canonical));

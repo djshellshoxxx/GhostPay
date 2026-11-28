@@ -1,0 +1,25 @@
+{
+  "rows": 699,
+  "unique_branches": 699,
+  "exact_snapshot_refs": true,
+  "baseline_fields_preserved": true,
+  "frozen698_rows_preserved": 698,
+  "historical67_rows_preserved": 67,
+  "actual_ancestry_counts": {
+    "current_main": 351,
+    "published_core": 350,
+    "final_local": 363,
+    "final_remote_source": 367
+  },
+  "remote_and_local_tree_equal": true,
+  "core_and_main_tree_equal": true,
+  "csv_validation": "Artifact-tool authored and read back all17500 cells; independent csv.DictReader roundtrip matches all699 rows and25 columns.",
+  "tests_run": false,
+  "csv_sha256": "edca776aa9ef2b137632990644ec5ca093858ad8136d6b7fa7701f6dd4b9bd62",
+  "frozen_698_csv_and_archive_hashes_unchanged": true,
+  "remote_matches_current_main_and_local_union_on_snapshot_heads": true,
+  "whole_tooling_and_diagnostic_heads_not_marked_ancestors": true,
+  "source_pins_verified": true,
+  "preview": "Rendered A1:C7 inspected and readable",
+  "formula_error_matches": 0
+}

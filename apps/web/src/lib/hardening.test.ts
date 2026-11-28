@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { ChainAdapterError } from '@ghostpay/chain-adapters';
 import { encodeMetaAddress, parseCompressedPoint } from '@ghostpay/core-crypto';
 import { secp256k1 } from '@noble/curves/secp256k1.js';
 import { checkDeployment, deploymentProblem } from './deployment';
@@ -188,12 +189,25 @@ describe('S3-01: deployment check', () => {
     expect(seen).toBeDefined();
   });
   it('fails closed with a fixed-form reason, and reports no RPC', async () => {
-    const failing = (): Promise<never> => Promise.reject(Object.assign(new Error('DEPLOYMENT_UNVERIFIED: router code hash differs from the manifest'), { name: 'ChainAdapterError' }));
+    const detail = 'router code hash differs from the manifest';
+    const failing = (): Promise<never> => Promise.reject(new ChainAdapterError('DEPLOYMENT_UNVERIFIED', detail));
     const bad = await checkDeployment(m, rpc, undefined, failing);
-    expect(bad).toEqual({ status: 'unverified', reason: 'router code hash differs from the manifest' });
+    expect(bad).toEqual({ status: 'unverified', reason: 'the contract checks failed' });
     expect(deploymentProblem(bad)).toMatch(/Payments are disabled/);
-    const weird = await checkDeployment(m, rpc, undefined, () => Promise.reject(new Error('https://secret@rpc.example/leak')));
-    expect(JSON.stringify(weird)).not.toMatch(/secret|leak/);
+    expect(JSON.stringify(bad)).not.toContain(detail);
+    expect(deploymentProblem(bad)).not.toContain(detail);
+
+    const providerText = 'https://secret@rpc.example/leak';
+    for (const failure of [
+      Object.assign(new Error(providerText), { name: 'ChainAdapterError' }),
+      new Error(providerText),
+    ]) {
+      const weird = await checkDeployment(m, rpc, undefined, () => Promise.reject(failure));
+      expect(weird).toEqual({ status: 'unverified', reason: 'the RPC could not be read' });
+      expect(JSON.stringify(weird)).not.toContain(providerText);
+      expect(deploymentProblem(weird)).not.toContain(providerText);
+      expect(deploymentProblem(weird)).toMatch(/Payments are disabled/);
+    }
     expect(await checkDeployment(m, undefined, undefined)).toEqual({ status: 'no-rpc' });
     expect(deploymentProblem({ status: 'no-rpc' })).toMatch(/Configure an RPC/);
     expect(deploymentProblem('checking')).toMatch(/Checking/);

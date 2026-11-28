@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { ATTEMPT_JOURNAL_KEY, readAttempts, type AttemptStorage } from '../../lib/duplicateAttemptJournal';
-import { connectWallet, walletAttemptKey, type WalletSession } from '../../lib/wallet';
+import { connectWallet, sendViaWallet, walletAttemptKey, type WalletSession } from '../../lib/wallet';
 import { MockWallet } from '../../test/mockWallet';
 import { clearPolicyAction, policyActionAttempts, policyActionKey, policyAttemptStorage, sendPolicyAction, type PolicyLockManager } from './withdrawalJournal';
 import { SEPOLIA } from './fixtures.testutil';
@@ -57,6 +57,27 @@ describe('durable policy attempt journal', () => {
     expect(readAttempts(window.localStorage)).toMatchObject([{ status: 'unknown' }]);
   });
 
+  it('releases the shared journal lock so another wallet send proceeds during a policy prompt', async () => {
+    const { session, provider } = await wallet();
+    const original = provider.request.bind(provider);
+    let resolveWallet!: (value: unknown) => void;
+    let signalStarted!: () => void;
+    let sendCount = 0;
+    const walletStarted = new Promise<void>((resolve) => { signalStarted = resolve; });
+    const walletPending = new Promise<unknown>((resolve) => { resolveWallet = resolve; });
+    const requestSpy = vi.spyOn(provider, 'request').mockImplementation((args) => {
+      if (args.method === 'eth_sendTransaction' && sendCount++ === 0) { signalStarted(); return walletPending; }
+      return original(args);
+    });
+    const manager = serializedLocks();
+    const sending = sendPolicyAction({ wallet: session, prepare: () => Promise.resolve(tx), scope, assertCurrent: noOp, storage: window.localStorage, lockManager: manager });
+    await walletStarted;
+    await expect(sendViaWallet(session, { ...tx, data: '0xabcd' }, noOp, { kind: 'transaction', storage: window.localStorage, lockManager: manager })).resolves.toBe(`0x${'9'.repeat(64)}`);
+    expect(requestSpy.mock.calls.filter(([args]) => args.method === 'eth_sendTransaction')).toHaveLength(2);
+    resolveWallet(`0x${'9'.repeat(64)}`);
+    await expect(sending).resolves.toBe(`0x${'9'.repeat(64)}`);
+  });
+
   it('requires explicit outcome review to clear and serializes clearing against submissions', async () => {
     const { session } = await wallet();
     const manager = serializedLocks();
@@ -68,6 +89,25 @@ describe('durable policy attempt journal', () => {
     await clearPolicyAction(key, true, window.localStorage, manager);
     expect(readAttempts(window.localStorage)).toEqual([]);
     await expect(send()).resolves.toBe(`0x${'9'.repeat(64)}`);
+  });
+
+  it('keeps the original journal guard when options change during wallet rechecks', async () => {
+    const { session, provider } = await wallet();
+    const originalGuard = vi.fn(() => { throw new Error('Original policy guard refused'); });
+    const replacementGuard = vi.fn(noOp);
+    const options = {
+      kind: 'transaction' as const,
+      storage: window.localStorage,
+      lockManager: serializedLocks(),
+      beforeAttemptStart: originalGuard as () => void,
+    };
+    const sending = sendViaWallet(session, tx, noOp, options);
+    options.beforeAttemptStart = replacementGuard;
+    await expect(sending).rejects.toThrow('Original policy guard refused');
+    expect(originalGuard).toHaveBeenCalledTimes(1);
+    expect(replacementGuard).not.toHaveBeenCalled();
+    expect(provider.sent).toBeUndefined();
+    expect(readAttempts(window.localStorage)).toEqual([]);
   });
 
   it('refuses a lock-queued action or clear when the seller session changes', async () => {
@@ -101,6 +141,45 @@ describe('durable policy attempt journal', () => {
     const storage: AttemptStorage = { getItem: (key) => window.localStorage.getItem(key), setItem: (key, value) => { if (sent) throw new Error('full'); window.localStorage.setItem(key, value); } };
     await expect(sendPolicyAction({ wallet: session, prepare: () => Promise.resolve(tx), scope, assertCurrent: noOp, storage, lockManager: serializedLocks() })).rejects.toMatchObject({ name: 'WalletBroadcastError', hash: `0x${'9'.repeat(64)}` });
     expect(readAttempts(window.localStorage)[0]!.status).toBe('unknown');
+  });
+
+  it('passes an abort signal when waiting for the browser journal lock', async () => {
+    const { session, provider } = await wallet();
+    const original = Object.getOwnPropertyDescriptor(navigator, 'locks');
+    const expired = AbortSignal.abort(new DOMException('lock wait elapsed', 'TimeoutError'));
+    vi.spyOn(AbortSignal, 'timeout').mockReturnValue(expired);
+    const request = vi.fn((_name: string, options: LockOptions) => {
+      if (options.signal !== expired) throw new Error('Missing bounded lock request');
+      return Promise.reject(new DOMException('lock wait elapsed', 'TimeoutError'));
+    });
+    Object.defineProperty(navigator, 'locks', { configurable: true, value: { request } });
+    try {
+      await expect(sendPolicyAction({ wallet: session, prepare: () => Promise.resolve(tx), scope, assertCurrent: noOp }))
+        .rejects.toThrow(/journal is unavailable or invalid/);
+      expect(request).toHaveBeenCalledTimes(1);
+      expect(provider.sent).toBeUndefined();
+      expect(readAttempts()).toEqual([]);
+    } finally {
+      if (original === undefined) Reflect.deleteProperty(navigator, 'locks');
+      else Object.defineProperty(navigator, 'locks', original);
+    }
+  });
+
+  it('bounds the default browser begin lock but leaves returned-hash persistence queued', async () => {
+    const { session, provider } = await wallet();
+    const original = Object.getOwnPropertyDescriptor(navigator, 'locks');
+    const request = vi.fn(async (_name: string, _options: LockOptions, callback: () => Promise<unknown>) => callback());
+    Object.defineProperty(navigator, 'locks', { configurable: true, value: { request } });
+    try {
+      await expect(sendPolicyAction({ wallet: session, prepare: () => Promise.resolve(tx), scope, assertCurrent: noOp }))
+        .resolves.toBe(`0x${'9'.repeat(64)}`);
+      expect(request.mock.calls.map(([, options]) => options.signal === undefined)).toEqual([false, true]);
+      expect(readAttempts()).toMatchObject([{ status: 'submitted', hash: `0x${'9'.repeat(64)}` }]);
+      expect(provider.sent).toBeDefined();
+    } finally {
+      if (original === undefined) Reflect.deleteProperty(navigator, 'locks');
+      else Object.defineProperty(navigator, 'locks', original);
+    }
   });
 
   it('fails closed on corrupt/full/unavailable storage and missing browser locks', async () => {

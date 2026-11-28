@@ -169,7 +169,11 @@ export function createRegistry(initial: readonly Command[] = []): Registry {
       if (cmds.some((x) => x.id === c.id)) throw new PaletteError('DUPLICATE_ID');
       if (n !== undefined && detectConflicts([...cmds, c]).some((k) => k.kind !== 'duplicate-id'))
         throw new PaletteError('SHORTCUT_CONFLICT');
-      cmds.push(Object.freeze({ ...c, keywords: Object.freeze([...c.keywords]) }));
+      cmds.push(Object.freeze({
+        ...c,
+        action: Object.freeze({ ...c.action }),
+        keywords: Object.freeze([...c.keywords]),
+      }));
     },
     list: () => cmds.slice(),
     byId: (id) => cmds.find((c) => c.id === id),

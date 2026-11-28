@@ -15,6 +15,42 @@ export interface HttpRpcOptions {
 }
 
 const MAX_BODY_BYTES = 8 * 1024 * 1024;
+/** Private identity distinguishes our size refusal from an error supplied by injected transport code. */
+const RESPONSE_LIMIT_FAILURE = new TronAdapterError('INVALID_RESPONSE');
+
+function isAborted(signal: AbortSignal | undefined): boolean {
+  return signal?.aborted === true;
+}
+
+/** Cancellation is best effort; an injected stream must not delay a refusal. */
+function cancelBody(body: ReadableStream<Uint8Array> | ReadableStreamDefaultReader<Uint8Array> | null): void {
+  try {
+    void body?.cancel().catch(() => undefined);
+  } catch {
+    // An injected stream may also throw synchronously during cleanup.
+  }
+}
+
+/** Bound fetch and each stream read even when an injected implementation ignores abort. */
+function interruptible<T>(run: () => Promise<T>, signal: AbortSignal): Promise<T> {
+  return new Promise<T>((resolve, reject) => {
+    const onAbort = () => {
+      signal.removeEventListener('abort', onAbort);
+      reject(new Error('RPC request aborted'));
+    };
+    if (signal.aborted) { onAbort(); return; }
+    signal.addEventListener('abort', onAbort, { once: true });
+    try {
+      void run().then(
+        (value) => { signal.removeEventListener('abort', onAbort); resolve(value); },
+        () => { signal.removeEventListener('abort', onAbort); reject(new Error('RPC request failed')); },
+      );
+    } catch {
+      signal.removeEventListener('abort', onAbort);
+      reject(new Error('RPC request failed'));
+    }
+  });
+}
 
 /**
  * Reads the body as UTF-8 text through the byte cap, so a hostile node cannot make the tab buffer an unbounded body:
@@ -22,24 +58,27 @@ const MAX_BODY_BYTES = 8 * 1024 * 1024;
  * bytes pass it.
  * @throws {TronAdapterError} `INVALID_RESPONSE` past the cap; stream errors propagate as thrown.
  */
-async function readCapped(res: Response, max: number): Promise<string> {
+async function readCapped(res: Response, max: number, signal: AbortSignal): Promise<string> {
   if (Number(res.headers.get('content-length')) > max) {
-    await res.body?.cancel().catch(() => undefined);
-    return fail('INVALID_RESPONSE');
+    cancelBody(res.body);
+    throw RESPONSE_LIMIT_FAILURE;
   }
   if (res.body === null) return '';
   const reader = res.body.getReader();
   const chunks: Uint8Array[] = [];
   let total = 0;
-  for (;;) {
-    const { done, value } = await reader.read();
-    if (done) break;
-    total += value.byteLength;
-    if (total > max) {
-      await reader.cancel().catch(() => undefined);
-      return fail('INVALID_RESPONSE');
+  let complete = false;
+  try {
+    for (;;) {
+      const { done, value } = await interruptible(() => reader.read(), signal);
+      if (done) { complete = true; break; }
+      total += value.byteLength;
+      if (total > max) throw RESPONSE_LIMIT_FAILURE;
+      chunks.push(value);
     }
-    chunks.push(value);
+  } finally {
+    if (!complete) cancelBody(reader);
+    reader.releaseLock();
   }
   const all = new Uint8Array(total);
   let off = 0;
@@ -50,7 +89,7 @@ async function readCapped(res: Response, max: number): Promise<string> {
   return new TextDecoder().decode(all);
 }
 
-/** https only (localhost / 127.0.0.1 may use http for a local devnet). */
+/** https only (localhost / 127.0.0.1 / [::1] may use http for a local devnet). */
 export function createHttpRpc(o: HttpRpcOptions): TronRpc {
   let u: URL;
   try {
@@ -58,38 +97,56 @@ export function createHttpRpc(o: HttpRpcOptions): TronRpc {
   } catch {
     return fail('INVALID_INPUT');
   }
-  const local = u.hostname === 'localhost' || u.hostname === '127.0.0.1';
+  const local = u.hostname === 'localhost' || u.hostname === '127.0.0.1' || u.hostname === '[::1]';
   if (u.protocol !== 'https:' && !(local && u.protocol === 'http:')) return fail('INSECURE_ENDPOINT');
+  // A query or fragment would absorb the appended API path. Use apiKey for header authentication.
+  if (u.username !== '' || u.password !== '' || o.baseUrl.includes('?') || o.baseUrl.includes('#')) return fail('INVALID_INPUT');
   const f = o.fetch ?? globalThis.fetch;
   const base = u.toString().replace(/\/$/, '');
+  const timeoutMs = o.timeoutMs ?? 15_000;
+  if (!Number.isSafeInteger(timeoutMs) || timeoutMs < 0 || timeoutMs > 2_147_483_647) return fail('INVALID_INPUT');
   return {
     async post(path, body, signal) {
       if (!path.startsWith('/')) return fail('INVALID_INPUT');
-      const timeout = AbortSignal.timeout(o.timeoutMs ?? 15_000);
-      let res: Response;
+      if (isAborted(signal)) return fail('ABORTED');
+      const controller = new AbortController();
+      const abort = () => controller.abort();
+      signal?.addEventListener('abort', abort, { once: true });
+      const timer = setTimeout(abort, timeoutMs);
+      let text: string;
+      let received: Response | undefined;
       try {
-        res = await f(base + path, {
+        const payload = JSON.stringify(body);
+        const res = await interruptible(() => f(base + path, {
           method: 'POST',
           headers: {
             'content-type': 'application/json',
             accept: 'application/json',
             ...(o.apiKey === undefined ? {} : { 'TRON-PRO-API-KEY': o.apiKey }),
           },
-          body: JSON.stringify(body),
+          body: payload,
           redirect: 'error',
-          signal: signal === undefined ? timeout : AbortSignal.any([signal, timeout]),
-        });
-      } catch {
-        if (signal?.aborted === true) return fail('ABORTED');
-        return fail('TRANSPORT_FAILURE');
-      }
-      if (!res.ok) return fail('TRANSPORT_FAILURE');
-      let text: string;
-      try {
-        text = await readCapped(res, MAX_BODY_BYTES);
+          credentials: 'omit',
+          cache: 'no-store',
+          referrerPolicy: 'no-referrer',
+          signal: controller.signal,
+        }).then((value) => {
+          received = value;
+          if (controller.signal.aborted) cancelBody(value.body);
+          return value;
+        }), controller.signal);
+        if (!res.ok) { cancelBody(res.body); return fail('TRANSPORT_FAILURE'); }
+        text = await readCapped(res, MAX_BODY_BYTES, controller.signal);
+        if (controller.signal.aborted) return fail(isAborted(signal) ? 'ABORTED' : 'TRANSPORT_FAILURE');
       } catch (e) {
-        if (e instanceof TronAdapterError) throw e;
-        return fail(signal?.aborted === true ? 'ABORTED' : 'TRANSPORT_FAILURE');
+        controller.abort();
+        // Abort can race the promise continuation after fetch has supplied an unread response.
+        if (received !== undefined && !received.bodyUsed) cancelBody(received.body);
+        if (isAborted(signal)) return fail('ABORTED');
+        return fail(e === RESPONSE_LIMIT_FAILURE ? 'INVALID_RESPONSE' : 'TRANSPORT_FAILURE');
+      } finally {
+        clearTimeout(timer);
+        signal?.removeEventListener('abort', abort);
       }
       try {
         return JSON.parse(text) as unknown;
@@ -135,11 +192,13 @@ export async function getBlockRange(rpc: TronRpc, from: bigint, to: bigint, sign
   if (from < 0n || to < from || to > BigInt(Number.MAX_SAFE_INTEGER)) return fail('INVALID_INPUT');
   const resp = asRecord(await rpc.post('/wallet/getblockbylimitnext', { startNum: Number(from), endNum: Number(to) + 1 }, signal));
   const list = resp['block'];
-  if (list === undefined) return [];
-  if (!Array.isArray(list)) return fail('INVALID_RESPONSE');
-  const blocks = list.map(parseBlock).filter((b) => b.number >= from && b.number <= to);
-  for (let i = 1; i < blocks.length; i++) {
-    if ((blocks[i] as TronBlock).number <= (blocks[i - 1] as TronBlock).number) return fail('INVALID_RESPONSE');
+  if (list !== undefined && !Array.isArray(list)) return fail('INVALID_RESPONSE');
+  const blocks = ((list as unknown[] | undefined) ?? []).map(parseBlock).filter((b) => b.number >= from && b.number <= to);
+  // Completeness: the range must be contiguous and whole. A silently short answer would let the scan skip blocks
+  // (and their payments) and move on.
+  if (BigInt(blocks.length) !== to - from + 1n) return fail('INVALID_RESPONSE');
+  for (let i = 0; i < blocks.length; i++) {
+    if ((blocks[i] as TronBlock).number !== from + BigInt(i)) return fail('INVALID_RESPONSE');
   }
   return blocks;
 }

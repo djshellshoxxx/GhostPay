@@ -1,0 +1,342 @@
+{
+  "format": "ghostpay-ledger-incremental-refresh/1",
+  "observed_at": "2026-11-24T12:24:48.356061+00:00",
+  "branch": "ledger/consolidation-snapshot-20261124-0418",
+  "head": "21009fb406eb1059f6cce22c0133873aba465f57",
+  "previous_observation": "2026-11-24T11:37:20.333961+00:00",
+  "since_1137": {
+    "before": "f2b42056de2df4ebe1e0d3b93fbf495a0b6e666c",
+    "after": "21009fb406eb1059f6cce22c0133873aba465f57",
+    "uncapped": true,
+    "rename_detection": false,
+    "entry_count": 1,
+    "raw_sha256": "f24ce3aca8c9f7308a78615a1d9c34bfef55b301a5de203ccb423abdf662c9d8",
+    "documentation_only": true,
+    "entries": [
+      {
+        "path": "docs/consolidation/autonomous-20261121/semantic-overlay-20261124T1205Z.json",
+        "old_mode": "000000",
+        "new_mode": "100644",
+        "old_blob": "0000000000000000000000000000000000000000",
+        "new_blob": "84c3d0d1cb209acdb43a4b2d58d04a9e464d62c1",
+        "change": "A"
+      }
+    ]
+  },
+  "since_696_baseline": {
+    "before": "3fa89e629cac706e2cca633d8a8e1a0ec34f02a7",
+    "after": "21009fb406eb1059f6cce22c0133873aba465f57",
+    "uncapped": true,
+    "rename_detection": false,
+    "entry_count": 2,
+    "raw_sha256": "037621f3d34171d10fd77f016429fe778fa80fbd7ad11b0b873f678035adb7ce",
+    "documentation_only": true,
+    "entries": [
+      {
+        "path": "docs/consolidation/autonomous-20261121/semantic-overlay-20261124T1105Z.json",
+        "old_mode": "000000",
+        "new_mode": "100644",
+        "old_blob": "0000000000000000000000000000000000000000",
+        "new_blob": "84d4d60d2e2f193c45d95bfb8f30fcbd936636b5",
+        "change": "A"
+      },
+      {
+        "path": "docs/consolidation/autonomous-20261121/semantic-overlay-20261124T1205Z.json",
+        "old_mode": "000000",
+        "new_mode": "100644",
+        "old_blob": "0000000000000000000000000000000000000000",
+        "new_blob": "84c3d0d1cb209acdb43a4b2d58d04a9e464d62c1",
+        "change": "A"
+      }
+    ]
+  },
+  "main": "706188000c38b3dde5a3a362370a530870aa7587",
+  "all_best_merge_bases": [
+    "eb59d93cffed7848c4aac37d0e9650b87239c6da"
+  ],
+  "per_merge_base": [
+    {
+      "before": "eb59d93cffed7848c4aac37d0e9650b87239c6da",
+      "after": "21009fb406eb1059f6cce22c0133873aba465f57",
+      "uncapped": true,
+      "rename_detection": false,
+      "entry_count": 34,
+      "raw_sha256": "42f2ed5892c5945e1eb04ceb0fee27a200b46538edf4cc6467f1a55d699415c6",
+      "documentation_only": true,
+      "entries": [
+        {
+          "path": "docs/ai/ACTIVE_WORK.md",
+          "old_mode": "100644",
+          "new_mode": "100644",
+          "old_blob": "7c88f2618257fcfc8b62555343221f6813e98e65",
+          "new_blob": "01f8a50fb1ad0b111b7c4ae9140870b5a5bf60fd",
+          "change": "M"
+        },
+        {
+          "path": "docs/consolidation/autonomous-20261121/.gitignore",
+          "old_mode": "000000",
+          "new_mode": "100644",
+          "old_blob": "0000000000000000000000000000000000000000",
+          "new_blob": "2bd56991364c7f977abca0df4f747d722b0ba2cf",
+          "change": "A"
+        },
+        {
+          "path": "docs/consolidation/autonomous-20261121/ARCHIVE_MANIFEST.json",
+          "old_mode": "000000",
+          "new_mode": "100644",
+          "old_blob": "0000000000000000000000000000000000000000",
+          "new_blob": "def78971e6b426866230a7c1e9a0dc01902e85b6",
+          "change": "A"
+        },
+        {
+          "path": "docs/consolidation/autonomous-20261121/DELIVERY_MANIFEST.json",
+          "old_mode": "000000",
+          "new_mode": "100644",
+          "old_blob": "0000000000000000000000000000000000000000",
+          "new_blob": "ce3d336b873b764d5b76282fc4fd87b55ceaeac6",
+          "change": "A"
+        },
+        {
+          "path": "docs/consolidation/autonomous-20261121/EVIDENCE_NOTES.md",
+          "old_mode": "000000",
+          "new_mode": "100644",
+          "old_blob": "0000000000000000000000000000000000000000",
+          "new_blob": "cabdcc1208eb6ba0e8b7bcb10a59ca4914a7542a",
+          "change": "A"
+        },
+        {
+          "path": "docs/consolidation/autonomous-20261121/README.md",
+          "old_mode": "000000",
+          "new_mode": "100644",
+          "old_blob": "0000000000000000000000000000000000000000",
+          "new_blob": "951f4341ac7a75f603a90c4d5a8096f67690d1e3",
+          "change": "A"
+        },
+        {
+          "path": "docs/consolidation/autonomous-20261121/branch-census-current.json.gz",
+          "old_mode": "000000",
+          "new_mode": "100644",
+          "old_blob": "0000000000000000000000000000000000000000",
+          "new_blob": "b3f05275397c6ce72d4095f2f1e23cd8ce0ecf08",
+          "change": "A"
+        },
+        {
+          "path": "docs/consolidation/autonomous-20261121/branch-snapshot-20261124T0418Z.json.gz",
+          "old_mode": "000000",
+          "new_mode": "100644",
+          "old_blob": "0000000000000000000000000000000000000000",
+          "new_blob": "6862d522b233b418d433372d2f37875058faa361",
+          "change": "A"
+        },
+        {
+          "path": "docs/consolidation/autonomous-20261121/evidence-20261121-01.tar.gz",
+          "old_mode": "000000",
+          "new_mode": "100644",
+          "old_blob": "0000000000000000000000000000000000000000",
+          "new_blob": "79c05875bb6b3da89fd935e739eb4de8e515572f",
+          "change": "A"
+        },
+        {
+          "path": "docs/consolidation/autonomous-20261121/evidence-20261121-02.tar.gz",
+          "old_mode": "000000",
+          "new_mode": "100644",
+          "old_blob": "0000000000000000000000000000000000000000",
+          "new_blob": "7878ef4146d888a7de096068f22cb959696b4b39",
+          "change": "A"
+        },
+        {
+          "path": "docs/consolidation/autonomous-20261121/evidence-20261121-03.tar.gz",
+          "old_mode": "000000",
+          "new_mode": "100644",
+          "old_blob": "0000000000000000000000000000000000000000",
+          "new_blob": "7a475a4393bd5b761f16005ac15ae3a4af749549",
+          "change": "A"
+        },
+        {
+          "path": "docs/consolidation/autonomous-20261121/evidence-20261121-04.tar.gz",
+          "old_mode": "000000",
+          "new_mode": "100644",
+          "old_blob": "0000000000000000000000000000000000000000",
+          "new_blob": "0955e4c20547680ee717427fdcc1528b0930261f",
+          "change": "A"
+        },
+        {
+          "path": "docs/consolidation/autonomous-20261121/evidence-20261121-05.tar.gz",
+          "old_mode": "000000",
+          "new_mode": "100644",
+          "old_blob": "0000000000000000000000000000000000000000",
+          "new_blob": "133ed7f1b1d94ce4cdcb994e180fed04b5e44097",
+          "change": "A"
+        },
+        {
+          "path": "docs/consolidation/autonomous-20261121/evidence-20261121-06.tar.gz",
+          "old_mode": "000000",
+          "new_mode": "100644",
+          "old_blob": "0000000000000000000000000000000000000000",
+          "new_blob": "8c2474af4e0a260518590f6222d4a5817f73cc9d",
+          "change": "A"
+        },
+        {
+          "path": "docs/consolidation/autonomous-20261121/evidence-20261121-07.tar.gz",
+          "old_mode": "000000",
+          "new_mode": "100644",
+          "old_blob": "0000000000000000000000000000000000000000",
+          "new_blob": "acf956686033dfb9f25b244e67bdfab61f5737b2",
+          "change": "A"
+        },
+        {
+          "path": "docs/consolidation/autonomous-20261121/evidence-20261121-08.tar.gz",
+          "old_mode": "000000",
+          "new_mode": "100644",
+          "old_blob": "0000000000000000000000000000000000000000",
+          "new_blob": "a99134f00baf401b25427a71dbea8e8ebcfc4c89",
+          "change": "A"
+        },
+        {
+          "path": "docs/consolidation/autonomous-20261121/evidence-20261121-09.tar.gz",
+          "old_mode": "000000",
+          "new_mode": "100644",
+          "old_blob": "0000000000000000000000000000000000000000",
+          "new_blob": "91c834ac4afdfa00af616e30b00cef8a2dba39f6",
+          "change": "A"
+        },
+        {
+          "path": "docs/consolidation/autonomous-20261121/evidence-20261121-10.tar.gz",
+          "old_mode": "000000",
+          "new_mode": "100644",
+          "old_blob": "0000000000000000000000000000000000000000",
+          "new_blob": "68ef6dd24bebaab50a64cb568d10eb9594b5ea4d",
+          "change": "A"
+        },
+        {
+          "path": "docs/consolidation/autonomous-20261121/evidence-20261121-11.tar.gz",
+          "old_mode": "000000",
+          "new_mode": "100644",
+          "old_blob": "0000000000000000000000000000000000000000",
+          "new_blob": "a2533c2b9aee740959cc15f9074cbdb01188a9ba",
+          "change": "A"
+        },
+        {
+          "path": "docs/consolidation/autonomous-20261121/evidence-20261121-12.tar.gz",
+          "old_mode": "000000",
+          "new_mode": "100644",
+          "old_blob": "0000000000000000000000000000000000000000",
+          "new_blob": "38b2b751972ee67009297678b3696b66476bee6e",
+          "change": "A"
+        },
+        {
+          "path": "docs/consolidation/autonomous-20261121/evidence-20261121-13.tar.gz",
+          "old_mode": "000000",
+          "new_mode": "100644",
+          "old_blob": "0000000000000000000000000000000000000000",
+          "new_blob": "fd0711eaa37f5640edc304e23532cfa7f238f19b",
+          "change": "A"
+        },
+        {
+          "path": "docs/consolidation/autonomous-20261121/evidence-20261121-14.tar.gz",
+          "old_mode": "000000",
+          "new_mode": "100644",
+          "old_blob": "0000000000000000000000000000000000000000",
+          "new_blob": "2c0db4aec1236d6350f17144c4e5a6f7c86ed7c2",
+          "change": "A"
+        },
+        {
+          "path": "docs/consolidation/autonomous-20261121/evidence-20261121-15.tar.gz",
+          "old_mode": "000000",
+          "new_mode": "100644",
+          "old_blob": "0000000000000000000000000000000000000000",
+          "new_blob": "3ade866cae91bcc5e16d0dceb6967e6f3bda6f9d",
+          "change": "A"
+        },
+        {
+          "path": "docs/consolidation/autonomous-20261121/open-pr-dispositions-current.json.gz",
+          "old_mode": "000000",
+          "new_mode": "100644",
+          "old_blob": "0000000000000000000000000000000000000000",
+          "new_blob": "36dad86ce55f4377a7542fd7e9118005e9344e64",
+          "change": "A"
+        },
+        {
+          "path": "docs/consolidation/autonomous-20261121/semantic-overlay-20261124T0502Z.json",
+          "old_mode": "000000",
+          "new_mode": "100644",
+          "old_blob": "0000000000000000000000000000000000000000",
+          "new_blob": "7715b1bee4fb7cf228f44a16f0889dc789dc6444",
+          "change": "A"
+        },
+        {
+          "path": "docs/consolidation/autonomous-20261121/semantic-overlay-20261124T0703Z.json",
+          "old_mode": "000000",
+          "new_mode": "100644",
+          "old_blob": "0000000000000000000000000000000000000000",
+          "new_blob": "ad0a833d87a72f6f59f47e43187776bce71a2728",
+          "change": "A"
+        },
+        {
+          "path": "docs/consolidation/autonomous-20261121/semantic-overlay-20261124T0802Z.json",
+          "old_mode": "000000",
+          "new_mode": "100644",
+          "old_blob": "0000000000000000000000000000000000000000",
+          "new_blob": "cdddefa3ee9e77203107b4a91e21def964568a66",
+          "change": "A"
+        },
+        {
+          "path": "docs/consolidation/autonomous-20261121/semantic-overlay-20261124T0907Z.json",
+          "old_mode": "000000",
+          "new_mode": "100644",
+          "old_blob": "0000000000000000000000000000000000000000",
+          "new_blob": "27fd00f48062ce471190e9edd61f5c23f3a1c4cd",
+          "change": "A"
+        },
+        {
+          "path": "docs/consolidation/autonomous-20261121/semantic-overlay-20261124T1005Z.json",
+          "old_mode": "000000",
+          "new_mode": "100644",
+          "old_blob": "0000000000000000000000000000000000000000",
+          "new_blob": "1bc04772bbe681a4be9a69f35f8ddf3af899abbc",
+          "change": "A"
+        },
+        {
+          "path": "docs/consolidation/autonomous-20261121/semantic-overlay-20261124T1105Z.json",
+          "old_mode": "000000",
+          "new_mode": "100644",
+          "old_blob": "0000000000000000000000000000000000000000",
+          "new_blob": "84d4d60d2e2f193c45d95bfb8f30fcbd936636b5",
+          "change": "A"
+        },
+        {
+          "path": "docs/consolidation/autonomous-20261121/semantic-overlay-20261124T1205Z.json",
+          "old_mode": "000000",
+          "new_mode": "100644",
+          "old_blob": "0000000000000000000000000000000000000000",
+          "new_blob": "84c3d0d1cb209acdb43a4b2d58d04a9e464d62c1",
+          "change": "A"
+        },
+        {
+          "path": "docs/consolidation/autonomous-20261121/state.json",
+          "old_mode": "000000",
+          "new_mode": "100644",
+          "old_blob": "0000000000000000000000000000000000000000",
+          "new_blob": "9a530833b6b74f563ef064a13dbbc99d93098ec2",
+          "change": "A"
+        },
+        {
+          "path": "docs/consolidation/autonomous-20261121/verify_evidence.py",
+          "old_mode": "000000",
+          "new_mode": "100644",
+          "old_blob": "0000000000000000000000000000000000000000",
+          "new_blob": "37a435db5c741be475beed0af5d3fe45fa513964",
+          "change": "A"
+        },
+        {
+          "path": "docs/handoffs/GHOSTPAY_MASTER_COMPLETION_LEDGER.md",
+          "old_mode": "100644",
+          "new_mode": "100644",
+          "old_blob": "a3df2408c3fe468d40de582ab7a2869131570384",
+          "new_blob": "4c258548ba774f1903961131b5d7af7a4de74389",
+          "change": "M"
+        }
+      ]
+    }
+  ]
+}

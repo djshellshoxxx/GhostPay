@@ -3,15 +3,22 @@ import { useEffect, useId, useRef, useState, useSyncExternalStore, type FormEven
 import { CopyButton, Field, Mono, Notice, SafeText, downloadText } from '../components/Common';
 import { CameraImporter } from '../components/CameraImporter';
 import { QrFrame } from '../components/QrFrame';
+import { StealthExportMaster } from '../components/StealthExportMaster';
+import { StealthExportRecovery } from '../components/StealthExportRecovery';
 import { displayMessage, captureUserMessage, type DisplayMessage } from '../lib/errors';
 import { GENERATED_PASSPHRASE_BITS, GENERATED_PASSPHRASE_WORDS, generatePassphrase, MAX_KEYSTORE_BYTES, passphraseProblemMessage, validateKeystoreEnvelope } from '../lib/keystore';
-import { captureSessionVersionGuard, clearSession, exportKeystore, generateSession, getSessionBackup, getSessionPublic, importKeystore, importSession, markKeystoreDownloaded, sessionHasExternalCopy, subscribeSessionBackup, verifyDownloadedBackup, waiveSessionBackup, type SessionPublic } from '../lib/session';
+import { captureSessionVersionGuard, clearSession, exportKeystore, generateSession, getSessionBackup, getSessionPublic, importKeystore, importSession, isSessionSuspended, markKeystoreDownloaded, sessionHasExternalCopy, subscribeSession, subscribeSessionBackup, verifyDownloadedBackup, waiveSessionBackup, type SessionPublic } from '../lib/session';
 import { authorizeKeyExport, deleteEncryptedVault, loadedKeysRecoverable, readEncryptedVault, saveEncryptedVault, unlockEncryptedVault, VaultChangedError, vaultMetaAddress, VaultSavedForPreviousKeysError } from '../lib/keyVault';
 import { useApp } from '../state';
 import { multipartIfNeeded } from '../lib/qrMultipart';
 import { SellerPairing, pairingChainIds } from './SellerPairing';
 import { SOURCE_TRANSLATOR, useI18nOptional } from '../i18n/context';
 import type { Translator } from '../i18n/translator';
+
+interface KeyOperation {
+  readonly kind: 'export' | 'import' | 'unlock' | 'verify';
+  readonly controller: AbortController;
+}
 
 /**
  * Stands in for `children` (the meta-address, an invoice form, a whole view) until the loaded keys have a verified
@@ -53,8 +60,8 @@ export function SellerKeys(props: { readonly archive?: ReactNode } = {}): ReactN
   translator.current = i18n?.t ?? SOURCE_TRANSLATOR.t;
   const t: Translator['t'] = (key, values) => translator.current(key, values);
   const backup = useSyncExternalStore(subscribeSessionBackup, getSessionBackup);
+  const suspended = useSyncExternalStore(subscribeSession, isSessionSuspended);
   const [message, setMessage] = useState<{ kind: 'ok' | 'error'; text: DisplayMessage } | undefined>(undefined);
-  const [busy, setBusy] = useState(false);
   const [spend, setSpend] = useState('');
   const [view, setViewKey] = useState('');
   const [signing, setSigning] = useState('');
@@ -64,20 +71,25 @@ export function SellerKeys(props: { readonly archive?: ReactNode } = {}): ReactN
   const [pass2, setPass2] = useState('');
   const [importPass, setImportPass] = useState('');
   const [importText, setImportText] = useState<string | undefined>();
-  const operation = useRef<AbortController | null>(null);
-  const operationKind = useRef<'export' | 'import' | 'unlock' | 'verify' | undefined>(undefined);
+  // The controller owns its busy indication. Retiring it releases only cancellable work.
+  const operation = useRef<KeyOperation | null>(null);
+  const [pendingOperation, setPendingOperation] = useState<KeyOperation | null>(null);
+  const busy = pendingOperation?.kind === 'export' || pendingOperation?.kind === 'import';
+  const verifyBusy = pendingOperation?.kind === 'verify';
+  const unlockBusy = pendingOperation?.kind === 'unlock';
   const mounted = useRef(false);
   const generation = useRef(0);
   const fileInput = useRef<HTMLInputElement | null>(null);
   const [file, setFile] = useState<File | undefined>(undefined);
   const [backupQr, setBackupQr] = useState<string | undefined>(undefined);
   const [backupSmaller, setBackupSmaller] = useState(false);
-  // "Verify backup" (GP-PAGES-02): its own file, passphrase and busy flag, so an aborted verify or a failed unlock never
-  // leaves the other form disabled.
+  // "Verify backup" (GP-PAGES-02) retains its own file and passphrase across other form operations.
   const verifyFileInput = useRef<HTMLInputElement | null>(null);
   const [verifyFile, setVerifyFile] = useState<File | undefined>(undefined);
   const [verifyPass, setVerifyPass] = useState('');
-  const [verifyBusy, setVerifyBusy] = useState(false);
+  // The panel's own outcome and stage: a stale or superseded verification never writes either.
+  const [verifyResult, setVerifyResult] = useState<{ kind: 'error'; text: DisplayMessage } | { kind: 'ok' }>();
+  const [verifyStage, setVerifyStage] = useState<'reading' | 'checking'>();
   const [vaultState, setVaultState] = useState<'checking' | 'empty' | 'saved' | 'unavailable'>('checking');
   // Public meta-address named by the saved vault, if it is a readable keystore.
   const [vaultMeta, setVaultMeta] = useState<string | undefined>(undefined);
@@ -85,11 +97,15 @@ export function SellerKeys(props: { readonly archive?: ReactNode } = {}): ReactN
   const [vaultSavePass, setVaultSavePass] = useState(suggestedVaultPass);
   const [vaultSavePass2, setVaultSavePass2] = useState('');
   const [vaultUnlockPass, setVaultUnlockPass] = useState('');
-  const [vaultBusy, setVaultBusy] = useState(false);
+  // Durable save/delete writes outlive cancellation, form edits and session changes.
+  const vaultWrite = useRef<symbol | null>(null);
+  const [vaultWriteBusy, setVaultWriteBusy] = useState(false);
+  const vaultBusy = unlockBusy || vaultWriteBusy;
   // Step-up passphrases of the vault the loaded keys are tied to (L1-02), and the delete confirmation's passphrase.
   const [exportStepUp, setExportStepUp] = useState('');
   const [saveStepUp, setSaveStepUp] = useState('');
   const [deletePass, setDeletePass] = useState('');
+  const [deletePhrase, setDeletePhrase] = useState('');
   // Unlocking would replace keys that have no backup; set once the user asked to unlock anyway (L1-01).
   const [confirmReplace, setConfirmReplace] = useState(false);
   // Wiping would lose keys that have no backup; set once the user asked to wipe them anyway (C-R4).
@@ -97,7 +113,6 @@ export function SellerKeys(props: { readonly archive?: ReactNode } = {}): ReactN
   // The exact ciphertext shown when deletion was requested; Confirm deletes only this record. Never plaintext keys.
   const [deleteExpected, setDeleteExpected] = useState<string | undefined>(undefined);
   const confirmVaultDelete = deleteExpected !== undefined;
-  const saveOperation = useRef(0);
 
   // Read again for every key change: a saved vault for the keys loaded now arms their step-up (L1-02).
   useEffect(() => {
@@ -114,20 +129,25 @@ export function SellerKeys(props: { readonly archive?: ReactNode } = {}): ReactN
   };
   const resetVerify = (): void => {
     if (verifyFileInput.current !== null) verifyFileInput.current.value = '';
-    setVerifyFile(undefined); setVerifyPass(''); setVerifyBusy(false);
+    setVerifyFile(undefined); setVerifyPass(''); setVerifyResult(undefined); setVerifyStage(undefined);
   };
   const cancelVerify = (): void => {
-    if (operationKind.current === 'verify') stopOperation();
+    if (operation.current?.kind === 'verify') stopOperation();
     resetVerify();
+  };
+  const clearOperation = (): void => {
+    const previous = operation.current;
+    operation.current = null;
+    if (mounted.current) setPendingOperation(null);
+    previous?.controller.abort();
   };
   const stopOperation = (): void => {
     generation.current += 1;
-    operation.current?.abort(); operation.current = null;
-    operationKind.current = undefined;
+    clearOperation();
   };
   const clearImport = (): void => {
     stopOperation();
-    setBusy(false); setVaultBusy(false); setImportPass(''); setFile(undefined); setImportText(undefined); setVaultUnlockPass('');
+    setImportPass(''); setFile(undefined); setImportText(undefined); setVaultUnlockPass('');
   };
   const cancelImport = (): void => {
     clearImport();
@@ -148,30 +168,49 @@ export function SellerKeys(props: { readonly archive?: ReactNode } = {}): ReactN
     setExportStepUp(''); setSaveStepUp(''); setDeletePass(''); setVerifyPass('');
   };
   useEffect(() => subscribeAppLock(() => {
-    const kind = operationKind.current;
     stopOperation();
-    setBusy(false);
     resetVerify();
     // A pending local-vault save/delete has its own lifetime; do not label it cancelled or enable a duplicate.
-    if (kind === 'unlock') setVaultBusy(false);
     setImportText(undefined); setFile(undefined); resetFilePicker();
     setConfirmReplace(false); setConfirmWipe(false); setDeleteExpected(undefined); setBackupQr(undefined);
     forgetTyped();
   }), []);
   useEffect(() => {
-    operation.current?.abort(); operation.current = null;
     // This effect may precede our own unlock/import return; its finally block then no longer owns the controller.
-    operationKind.current = undefined;
-    setBackupQr(undefined); setBusy(false); setVaultBusy(false);
+    // Keep generation unchanged so that ownCompletion can still acknowledge that installation.
+    clearOperation();
+    setBackupQr(undefined);
     forgetTyped(); setImportText(undefined); setFile(undefined);
     resetFilePicker(); resetVerify();
     setConfirmReplace(false); setConfirmWipe(false); setDeleteExpected(undefined);
   }, [app.session]);
-  const startOperation = (kind: 'export' | 'import' | 'unlock' | 'verify'): AbortController => {
+  const startOperation = (kind: KeyOperation['kind']): AbortController => {
     stopOperation();
-    const controller = new AbortController(); operation.current = controller; operationKind.current = kind; return controller;
+    const controller = new AbortController();
+    const next = { kind, controller };
+    operation.current = next;
+    setPendingOperation(next);
+    return controller;
   };
-  const currentOperation = (controller: AbortController): boolean => mounted.current && operation.current === controller && !controller.signal.aborted;
+  const currentOperation = (controller: AbortController): boolean => mounted.current && operation.current?.controller === controller && !controller.signal.aborted;
+  const finishOperation = (controller: AbortController): void => {
+    if (operation.current?.controller !== controller) return;
+    operation.current = null;
+    if (mounted.current) setPendingOperation(null);
+  };
+  const startVaultWrite = (): symbol | undefined => {
+    if (vaultWrite.current !== null || operation.current?.kind === 'unlock') return undefined;
+    const owner = Symbol('vault-write');
+    vaultWrite.current = owner;
+    setVaultWriteBusy(true);
+    return owner;
+  };
+  const currentVaultWrite = (owner: symbol): boolean => mounted.current && vaultWrite.current === owner;
+  const finishVaultWrite = (owner: symbol): void => {
+    if (vaultWrite.current !== owner) return;
+    vaultWrite.current = null;
+    if (mounted.current) setVaultWriteBusy(false);
+  };
   // Installing our own keys triggers the session effect above. Only explicit cancellation, edits or another operation
   // revoke this completion; a new session, even with identical public keys, has a different summary object.
   const ownCompletion = (id: number, installed: SessionPublic): boolean =>
@@ -216,22 +255,22 @@ export function SellerKeys(props: { readonly archive?: ReactNode } = {}): ReactN
     const controller = startOperation('export');
     const unchanged = captureSessionVersionGuard();
     const stepUp = exportStepUp;
-    setBusy(true);
     setMessage({ kind: 'ok', text: { key: 'sellerKeys.encrypting' } });
     void (async () => {
       // Keys tied to a vault leave this tab only with that vault's passphrase (L1-02).
       await authorizeKeyExport(stepUp);
+      if (!currentOperation(controller)) return undefined;
+      unchanged();
       return exportKeystore(pass);
     })().then(
       (text) => {
-        if (!currentOperation(controller)) return;
-        try { unchanged(); } catch (error) { setBusy(false); fail(error); return; }
+        if (!currentOperation(controller) || text === undefined) return;
+        try { unchanged(); } catch (error) { fail(error); return; }
         try {
           downloadText('ghostpay-keystore.json', text, 'application/json');
         } catch (error) {
           // A blocked download produced no file: report it, re-enable the form and leave the backup unrecorded.
           setExportStepUp('');
-          setBusy(false);
           fail(error);
           return;
         }
@@ -241,18 +280,16 @@ export function SellerKeys(props: { readonly archive?: ReactNode } = {}): ReactN
         setPass('');
         setPass2('');
         setExportStepUp('');
-        setBusy(false);
         done({ key: 'sellerKeys.keystoreDownloaded' });
       },
       (err: unknown) => {
         if (!currentOperation(controller)) return;
         setExportStepUp('');
-        setBusy(false);
         // A vault saved meanwhile (another tab) may be why the step-up was needed: show its field.
         refreshVault();
         fail(err);
       },
-    ).finally(() => { if (operation.current === controller) operationKind.current = undefined; });
+    ).finally(() => { finishOperation(controller); });
   };
 
   const onImportKeystore = (e: FormEvent): void => {
@@ -263,7 +300,7 @@ export function SellerKeys(props: { readonly archive?: ReactNode } = {}): ReactN
     const id = generation.current;
     const unchanged = captureSessionVersionGuard();
     const selected = file; const pasted = importText; const passphrase = importPass;
-    setBusy(true); setMessage({ kind: 'ok', text: { key: 'sellerKeys.decrypting' } });
+    setMessage({ kind: 'ok', text: { key: 'sellerKeys.decrypting' } });
     void (async () => {
       try {
         const text = selected === undefined ? pasted! : await selected.text();
@@ -271,37 +308,45 @@ export function SellerKeys(props: { readonly archive?: ReactNode } = {}): ReactN
         unchanged();
         const installed = await importKeystore(text, passphrase, controller.signal);
         if (!ownCompletion(id, installed)) return;
-        setImportPass(''); setFile(undefined); setImportText(undefined); setBusy(false);
+        setImportPass(''); setFile(undefined); setImportText(undefined);
         done({ key: 'sellerKeys.keystoreDecrypted' });
       } catch (error) {
         if (!currentOperation(controller)) return;
-        setImportPass(''); setBusy(false); fail(error);
+        setImportPass(''); fail(error);
       } finally {
-        if (operation.current === controller) operationKind.current = undefined;
+        finishOperation(controller);
       }
     })();
   };
 
   const onVerifyBackup = (e: FormEvent): void => {
     e.preventDefault();
-    if (verifyFile === undefined) { setMessage({ kind: 'error', text: { key: 'sellerKeys.verify.chooseFile' } }); return; }
-    if (verifyFile.size > MAX_KEYSTORE_BYTES) { setMessage({ kind: 'error', text: { key: 'sellerKeys.notKeystore' } }); return; }
+    // A refused attempt clears the passphrase like a failed check does.
+    if (verifyFile === undefined) { setVerifyPass(''); setVerifyResult({ kind: 'error', text: { key: 'sellerKeys.verify.chooseFile' } }); return; }
+    if (verifyFile.size > MAX_KEYSTORE_BYTES) { setVerifyPass(''); setVerifyResult({ kind: 'error', text: { key: 'error.keystore.fileTooLarge' } }); return; }
     const controller = startOperation('verify');
+    // Retire a superseded operation's progress text (for example "Encrypting…"); verification reports in its panel.
+    setMessage(undefined);
     const selected = verifyFile; const passphrase = verifyPass;
-    setVerifyBusy(true); setMessage({ kind: 'ok', text: { key: 'sellerKeys.verify.checking' } });
+    // The result is for the keys loaded now: a seller change during reading or checking retires it.
+    const unchanged = captureSessionVersionGuard();
+    setVerifyResult(undefined); setVerifyStage('reading');
     void (async () => {
       try {
         const text = await selected.text();
         if (!currentOperation(controller)) return;
+        unchanged();
+        setVerifyStage('checking');
         await verifyDownloadedBackup(text, passphrase, controller.signal);
         if (!currentOperation(controller)) return;
+        unchanged();
         resetVerify();
-        done({ key: 'sellerKeys.verify.ok' });
+        setVerifyResult({ kind: 'ok' });
       } catch (error) {
         if (!currentOperation(controller)) return;
-        setVerifyPass(''); setVerifyBusy(false); fail(error);
+        setVerifyPass(''); setVerifyStage(undefined); setVerifyResult({ kind: 'error', text: captureUserMessage(error) });
       } finally {
-        if (operation.current === controller) operationKind.current = undefined;
+        finishOperation(controller);
       }
     })();
   };
@@ -311,69 +356,75 @@ export function SellerKeys(props: { readonly archive?: ReactNode } = {}): ReactN
     const problem = passphraseProblemMessage(vaultSavePass);
     if (problem !== undefined) { setMessage({ kind: 'error', text: problem }); return; }
     if (vaultSavePass !== vaultSavePass2) { setMessage({ kind: 'error', text: { key: 'sellerKeys.passphrasesDiffer' } }); return; }
-    const id = ++saveOperation.current;
+    const owner = startVaultWrite();
+    if (owner === undefined) return;
     const unchanged = captureSessionVersionGuard();
     // Only the initiating save may report; it may claim success only for the keys that were loaded when it started.
-    const current = (): boolean => mounted.current && saveOperation.current === id;
-    setVaultBusy(true);
     const stepUp = saveStepUp;
     void saveEncryptedVault(vaultSavePass, {}, undefined, stepUp).then(
       () => {
-        if (!current()) return;
+        if (!currentVaultWrite(owner)) return;
         setVaultSavePass('');
         setVaultSavePass2('');
         setSaveStepUp('');
         setVaultState('saved');
-        setVaultBusy(false);
         try { unchanged(); } catch { fail(new VaultSavedForPreviousKeysError()); return; }
         refreshVault();
         done({ key: 'sellerKeys.vaultSaved' });
       },
       (err: unknown) => {
-        if (!current()) return;
-        setVaultBusy(false);
+        if (!currentVaultWrite(owner)) return;
         setSaveStepUp('');
         if (err instanceof VaultSavedForPreviousKeysError) { setVaultSavePass(''); setVaultSavePass2(''); setVaultState('saved'); }
         refreshVault();
         fail(err);
       },
-    );
+    ).finally(() => { finishVaultWrite(owner); });
   };
 
   const onUnlockVault = (e: FormEvent): void => {
     e.preventDefault();
+    if (vaultWrite.current !== null) return;
+    // Own the recoverability read as well as decryption, so cancellation cannot revive a delayed unlock request.
+    const controller = startOperation('unlock');
     // Unlocking replaces the loaded keys; keys with no backup would be lost with every payment to them (L1-01). As for a
     // wipe, a vault copy is looked up in storage first, because another tab may have deleted or replaced it since this page
     // last read it (C-R12). A key change during that read drops the request.
-    if (getSessionBackup() === undefined || sessionHasExternalCopy()) { unlockVault(false); return; }
+    if (getSessionBackup() === undefined || sessionHasExternalCopy()) { unlockVault(false, controller); return; }
     const unchanged = captureSessionVersionGuard();
-    void loadedKeysRecoverable().then((recoverable) => {
-      if (!mounted.current) return;
-      try { unchanged(); } catch { return; }
-      if (recoverable) unlockVault(false); else setConfirmReplace(true);
-    });
+    void loadedKeysRecoverable().then(
+      (recoverable) => {
+        if (!currentOperation(controller)) return;
+        try { unchanged(); } catch { finishOperation(controller); return; }
+        if (recoverable) unlockVault(false, controller);
+        else { finishOperation(controller); setConfirmReplace(true); }
+      },
+      (error: unknown) => {
+        if (!currentOperation(controller)) return;
+        finishOperation(controller);
+        fail(error);
+      },
+    );
   };
 
-  const unlockVault = (replaceUnsavedKeys: boolean): void => {
-    const controller = startOperation('unlock');
+  const unlockVault = (replaceUnsavedKeys: boolean, pending?: AbortController): void => {
+    if (vaultWrite.current !== null) return;
+    const controller = pending ?? startOperation('unlock');
     const id = generation.current;
     setConfirmReplace(false);
-    setVaultBusy(true);
     void unlockEncryptedVault(vaultUnlockPass, undefined, controller.signal, { replaceUnsavedKeys }).then(
       (installed) => {
         if (!ownCompletion(id, installed)) return;
         setVaultUnlockPass('');
         setBackupQr(undefined);
-        setVaultBusy(false);
         done({ key: 'sellerKeys.vaultUnlocked' });
       },
       (err: unknown) => {
         if (!currentOperation(controller)) return;
         setVaultUnlockPass('');
-        setVaultBusy(false);
         fail(err);
       },
-    ).finally(() => { if (operation.current === controller) operationKind.current = undefined; });
+    ).finally(() => { finishOperation(controller); });
   };
 
   const onWipe = (): void => {
@@ -410,6 +461,7 @@ export function SellerKeys(props: { readonly archive?: ReactNode } = {}): ReactN
         if (!mounted.current) return;
         if (saved === undefined) { setVaultState('empty'); return; }
         setDeletePass('');
+        setDeletePhrase('');
         setDeleteExpected(saved);
       },
       (err: unknown) => { if (mounted.current) fail(err); },
@@ -418,27 +470,26 @@ export function SellerKeys(props: { readonly archive?: ReactNode } = {}): ReactN
 
   const onDeleteVault = (): void => {
     const expected = deleteExpected;
-    if (expected === undefined) return;
+    if (expected === undefined || !deleteAuthorized) return;
+    const owner = startVaultWrite();
+    if (owner === undefined) return;
     const passphrase = deletePass;
-    setVaultBusy(true);
     void deleteEncryptedVault(expected, undefined, passphrase).then(
       () => {
-        if (!mounted.current) return;
+        if (!currentVaultWrite(owner)) return;
         setDeleteExpected(undefined);
         setDeletePass('');
         setVaultState('empty');
-        setVaultBusy(false);
         refreshVault();
         done({ key: 'sellerKeys.vaultDeleted' });
       },
       (err: unknown) => {
-        if (!mounted.current) return;
-        setVaultBusy(false);
+        if (!currentVaultWrite(owner)) return;
         setDeletePass('');
         if (err instanceof VaultChangedError) { setDeleteExpected(undefined); refreshVault(); }
         fail(err);
       },
-    );
+    ).finally(() => { finishVaultWrite(owner); });
   };
 
   const s = app.session;
@@ -446,6 +497,8 @@ export function SellerKeys(props: { readonly archive?: ReactNode } = {}): ReactN
   const stepUpNeeded = backup?.vaultStepUp === true || (s !== undefined && vaultState === 'saved' && vaultMeta === s.metaAddress);
   const deleteMeta = deleteExpected === undefined ? undefined : vaultMetaAddress(deleteExpected);
   const deletesLoadedKeys = s !== undefined && deleteMeta === s.metaAddress;
+  const deleteAction = t('sellerKeys.confirmDelete');
+  const deleteAuthorized = deletesLoadedKeys ? deletePass !== '' : deletePhrase === deleteAction;
   // Optional smaller codes for low-resolution cameras: same encrypted text, split into GhostPay multi-part QR.
   let backupParts: readonly string[] | undefined;
   try { backupParts = backupQr !== undefined && backupSmaller ? multipartIfNeeded(backupQr, { force: true }) : undefined; } catch { backupParts = undefined; }
@@ -468,9 +521,9 @@ export function SellerKeys(props: { readonly archive?: ReactNode } = {}): ReactN
           <h3 id="vault-unlock-h">{t('sellerKeys.vaultSavedHeading')}</h3>
           <p>{t('sellerKeys.unlockExplain')}</p>
           <form onSubmit={onUnlockVault} className="stack" autoComplete="off">
-            <Field label={t('sellerKeys.vaultPassphrase')} hint={t('sellerKeys.vaultNoBrowserSave')}>{(id, d) => <input id={id} aria-describedby={d} type="password" autoComplete="off" name="ghostpay-vault-unlock" value={vaultUnlockPass} onChange={(e) => { stopOperation(); setVaultBusy(false); setConfirmReplace(false); setVaultUnlockPass(e.target.value); }} />}</Field>
+            <Field label={t('sellerKeys.vaultPassphrase')} hint={t('sellerKeys.vaultNoBrowserSave')}>{(id, d) => <input id={id} aria-describedby={d} type="password" autoComplete="off" name="ghostpay-vault-unlock" value={vaultUnlockPass} onChange={(e) => { stopOperation(); setConfirmReplace(false); setVaultUnlockPass(e.target.value); }} />}</Field>
             <button type="submit" className="btn" disabled={vaultBusy || vaultUnlockPass === ''}>{t('sellerKeys.unlockVault')}</button>
-            {vaultBusy && operation.current !== null && <button type="button" className="btn" onClick={cancelImport}>{t('sellerKeys.cancelUnlock')}</button>}
+            {unlockBusy && <button type="button" className="btn" onClick={cancelImport}>{t('sellerKeys.cancelUnlock')}</button>}
           </form>
           {confirmReplace && (
             <Notice kind="warn" title={backup?.signerOnly === true ? t('sellerKeys.unlockReplacesSignerOnly.title') : backup?.backedUp === true ? t('sellerKeys.unlockReplacesUnverified.title') : t('sellerKeys.unlockReplaces.title')}>
@@ -491,10 +544,12 @@ export function SellerKeys(props: { readonly archive?: ReactNode } = {}): ReactN
                   {s !== undefined && <p>{t(deletesLoadedKeys ? 'sellerKeys.deleteLoaded' : 'sellerKeys.deleteOther')}</p>}
                 </>
               )}
-              {deletesLoadedKeys && (
+              {deletesLoadedKeys ? (
                 <Field label={t('sellerKeys.deletePassphrase')}>{(id) => <input id={id} type="password" autoComplete="off" name="ghostpay-vault-delete" value={deletePass} onChange={(e) => { setDeletePass(e.target.value); }} />}</Field>
+              ) : (
+                <Field label={t('sellerKeys.deleteSoleCopy', { phrase: deleteAction })}>{(id) => <input id={id} autoComplete="off" spellCheck={false} value={deletePhrase} onChange={(e) => { setDeletePhrase(e.target.value); }} />}</Field>
               )}
-              <button type="button" className="btn btn-danger" disabled={vaultBusy || (deletesLoadedKeys && deletePass === '')} onClick={onDeleteVault}>{t('sellerKeys.confirmDelete')}</button>{' '}
+              <button type="button" className="btn btn-danger" disabled={vaultBusy || !deleteAuthorized} onClick={onDeleteVault}>{deleteAction}</button>{' '}
               <button type="button" className="btn" onClick={() => { setDeleteExpected(undefined); setDeletePass(''); }}>{t('sellerKeys.cancel')}</button>
             </div>
           )}
@@ -530,7 +585,7 @@ export function SellerKeys(props: { readonly archive?: ReactNode } = {}): ReactN
                 }} />
                 {file !== undefined && <p className="hint" id={`${id}-file`}>{t('upload.selectedFile')}: <bdi><SafeText value={file.name} /></bdi></p>}
               </>}</Field>
-              <Field label={t('sellerKeys.passphrase')}>{(id) => <input id={id} type="password" autoComplete="off" value={importPass} onChange={(e) => { stopOperation(); setBusy(false); setImportPass(e.target.value); }} />}</Field>
+              <Field label={t('sellerKeys.passphrase')}>{(id) => <input id={id} type="password" autoComplete="off" value={importPass} onChange={(e) => { stopOperation(); setImportPass(e.target.value); }} />}</Field>
               <button type="submit" className="btn" disabled={busy}>{t('sellerKeys.decryptLoad')}</button>
               {busy && <button type="button" className="btn" onClick={cancelImport}>{t('sellerKeys.cancelKeystore')}</button>}
             </form>
@@ -544,6 +599,7 @@ export function SellerKeys(props: { readonly archive?: ReactNode } = {}): ReactN
         </>
       ) : (
         <>
+          {!suspended && <>
           <h3>{t('sellerKeys.metaHeading')}</h3>
           <BackupGate paymentsOnly>
             <p>{t('sellerKeys.metaShare')}</p>
@@ -555,6 +611,7 @@ export function SellerKeys(props: { readonly archive?: ReactNode } = {}): ReactN
           <h3>{t('sellerKeys.signingKeyHeading')}</h3>
           <p><Mono>{s.signerPublicKey}</Mono></p>
           <p className="hint">{t('sellerKeys.payersSee')}</p>
+          </>}
 
           <h3 id="keystore-backup-h" tabIndex={-1}>{t('sellerKeys.backupHeading')}</h3>
           <form onSubmit={onExport} className="stack" autoComplete="off">
@@ -582,7 +639,12 @@ export function SellerKeys(props: { readonly archive?: ReactNode } = {}): ReactN
 
           <section className="panel" aria-labelledby="verify-backup-h">
             <h4 id="verify-backup-h">{t('sellerKeys.verify.heading')}</h4>
-            <p>{backup?.verified === true ? t('sellerKeys.verify.verified') : t('sellerKeys.verify.explain')}</p>
+            <p>{t('sellerKeys.verify.explain')}</p>
+            <div role="status">
+              {verifyBusy && verifyStage !== undefined && <p>{verifyStage === 'reading' ? t('sellerKeys.verify.reading') : t('sellerKeys.verify.checking')}</p>}
+              {verifyResult?.kind === 'ok' && <Notice kind="ok">{t('sellerKeys.verify.ok')} {t('sellerKeys.verify.limit')}</Notice>}
+            </div>
+            {verifyResult?.kind === 'error' && <Notice kind="error">{displayMessage(verifyResult.text, t)}</Notice>}
             <form onSubmit={onVerifyBackup} className="stack" autoComplete="off">
               <Field label={t('sellerKeys.verify.file')}>{(id) => <>
                 <input id={id} aria-describedby={verifyFile === undefined ? undefined : `${id}-file`} ref={verifyFileInput} type="file" accept="application/json,.json" onChange={(e) => {
@@ -592,11 +654,15 @@ export function SellerKeys(props: { readonly archive?: ReactNode } = {}): ReactN
                 }} />
                 {verifyFile !== undefined && <p className="hint" id={`${id}-file`}>{t('upload.selectedFile')}: <bdi><SafeText value={verifyFile.name} /></bdi></p>}
               </>}</Field>
-              <Field label={t('sellerKeys.verify.passphrase')}>{(id) => <input id={id} type="password" autoComplete="off" name="ghostpay-verify-backup" value={verifyPass} onChange={(e) => { if (operationKind.current === 'verify') stopOperation(); setVerifyBusy(false); setVerifyPass(e.target.value); }} />}</Field>
+              <Field label={t('sellerKeys.verify.passphrase')}>{(id) => <input id={id} type="password" autoComplete="off" name="ghostpay-verify-backup" value={verifyPass} onChange={(e) => { if (operation.current?.kind === 'verify') stopOperation(); setVerifyStage(undefined); setVerifyResult(undefined); setVerifyPass(e.target.value); }} />}</Field>
               <button type="submit" className="btn" disabled={verifyBusy || verifyFile === undefined || verifyPass === ''}>{t('sellerKeys.verify.submit')}</button>
               {verifyBusy && <button type="button" className="btn" onClick={cancelVerify}>{t('sellerKeys.verify.cancel')}</button>}
             </form>
           </section>
+
+          {/* Master export needs active authority (captureSessionGuard); while idle-suspended the keystore download above
+              is the recovery export, so do not offer a control that can only fail. */}
+          {!suspended && <StealthExportMaster announce={app.announce} />}
 
           <section className="panel" aria-labelledby="vault-save-h">
             <h3 id="vault-save-h">{t('sellerKeys.vaultOptionalHeading')}</h3>
@@ -639,11 +705,15 @@ export function SellerKeys(props: { readonly archive?: ReactNode } = {}): ReactN
         </>
       )}
 
-      {props.archive}
+      <StealthExportRecovery announce={app.announce} />
 
+      {!suspended && props.archive}
+
+      {!suspended && <>
       <h3>{t('sellerKeys.registryHeading')}</h3>
       <p className="hint">{t('sellerKeys.registryHint')}</p>
       <p><button type="button" className="btn" onClick={() => { app.setView('registry'); }}>{t('sellerKeys.openRegistry')}</button></p>
+      </>}
     </section>
   );
 }

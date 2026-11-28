@@ -21,6 +21,33 @@ checkExpiry(parsed.invoice, Math.floor(Date.now() / 1000));
 if (isTrustedSeller(parsed)) { /* only now may the UI say the seller key is pinned */ }
 ```
 
+### Requiring a known seller
+
+A valid signature proves that the embedded key signed these invoice bytes. It does not identify the seller:
+someone else can sign a different invoice naming their own payment address. Obtain a seller key through a
+trusted channel before pinning it. A caller that requires an already known seller can opt into rejection:
+
+```ts
+const parsed = await parseFragment(location.hash, {
+  pinnedSigners: [merchantSignerKey],
+  requirePinnedSigner: true,
+});
+// Every returned invoice has trust === 'trusted-seller'. Still check expiry and payment policy.
+```
+
+This option applies to both `parseFragment` and `openFragment`, for plaintext, encrypted and passphrase
+links. It throws `InvalidSignatureError` (`INVALID_SIGNATURE`) if the signature does not verify, before
+checking the pins. A valid signature from a key outside the pin set throws `UntrustedSignerError`
+(`UNTRUSTED_SIGNER`). Missing or empty pins trust nobody. Pins compare case-insensitively as compressed
+66-character hex keys, without a `0x` prefix. Only an absent option or explicit `false` disables the guard;
+other values from untyped callers enforce it. Earlier format, schema and decryption errors retain their types.
+
+Without a passphrase, `openFragment` can return `needsPassphrase` before the policy is checked. Its header
+is unauthenticated; it is not a trusted invoice. Reuse the same required-pinning policy when opening the
+decrypted invoice. The default parser still returns signature/trust information for review; callers must
+block `invalid-signature` results. The current browser Pay flow uses that default, blocks invalid signatures,
+and labels unpinned keys. Adding this shared option does not make Pay require pinned sellers.
+
 ### Passphrase-protected links (ADR-0020)
 
 ```ts
@@ -39,6 +66,36 @@ must not look "unlocked"). Passphrase: NFKC, at least 10 code points, at most 10
 give the single `WrongPassphraseError`.
 
 ## Format
+
+### Local payment request files
+
+`serializePaymentRequestFile(fragment)` wraps an existing invoice fragment without changing it.
+Use the generic filename `PAYMENT_REQUEST_FILE_NAME` (`ghostpay-request.gpr.json`) and
+`application/json`. The file contains exactly:
+
+```json
+{"format":"ghostpay-payment-request","version":1,"fragment":"#gpi=v1.<unchanged-envelope>"}
+```
+
+`parsePaymentRequestFile(text)` returns those three fields after checking the closed schema,
+strict JSON, canonical base64url, the 24 KiB UTF-8 file cap, and the existing 16 KiB decoded-envelope
+cap. Outer JSON whitespace is permitted. The fragment is never trimmed, normalized, re-signed,
+decrypted or rewritten. The synchronous helpers use no network, storage or DOM APIs.
+Callers must decode file bytes with a fatal UTF-8 decoder before parsing.
+
+Parsing the transport **does not authenticate the invoice or seller**. Feed the returned fragment
+through the ordinary explicit import review and `openFragment` checks, including signature status,
+signer pins, passphrase requirements, expiry and payment approval. Invalid invoice content can pass
+the transport wrapper and must still fail at that existing boundary. Request files do not prove
+payment or enforce global single-use, and other wallets need not support this GhostPay format.
+
+`PaymentRequestFileError` extends `InvoiceError` with a fixed message and `reason: 'format' | 'size'`;
+its codes are `FRAGMENT_FORMAT` and `FRAGMENT_TOO_LARGE`, respectively. It retains no source input.
+The wrapper adds no encryption: anyone holding a bearer-key fragment can read its invoice.
+Keep passphrases separate. Download history, file synchronization and forwarded copies can persist
+the request. The file intentionally contains no source origin, trusted-seller claim or extra labels.
+
+### Invoice envelopes
 
 - Canonical JSON: sorted keys, no whitespace, NFC strings, safe non-negative integers only (large values are
   decimal strings), UTF-8. The parser rejects duplicate keys, `__proto__`/`constructor`/`prototype`, floats, huge

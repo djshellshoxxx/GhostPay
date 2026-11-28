@@ -101,7 +101,7 @@ export function updateTemplate(t: PaymentTemplate, patch: unknown, clock: Clock)
   };
   const v = validateFields(merged);
   if (!v.ok) return v;
-  return ok({ ...v.value, createdAtMs: t.createdAtMs, updatedAtMs: readClock(clock) });
+  return ok({ ...v.value, createdAtMs: t.createdAtMs, updatedAtMs: Math.max(t.updatedAtMs, readClock(clock)) });
 }
 
 /** Add to a list; enforces uniqueness of id and (case-insensitive) name, and the size cap. */
@@ -148,7 +148,8 @@ export function parseTemplates(raw: unknown): Result<readonly PaymentTemplate[]>
       !Number.isSafeInteger(c) ||
       !Number.isSafeInteger(u) ||
       c < 0 ||
-      u < c
+      u < c ||
+      u > 8_640_000_000_000_000
     ) {
       return err('bad_time', 'invalid template timestamps');
     }

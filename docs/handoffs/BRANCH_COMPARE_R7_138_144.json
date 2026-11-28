@@ -1,0 +1,91 @@
+{
+  "schema": 1,
+  "base": "aec179910c39081d820396409ff3139ff2264132",
+  "offset_start": 138,
+  "offset_end": 145,
+  "results": [
+    {
+      "branch": "chatgpt/zero-codex/pages-renderer-own-property-20261116",
+      "status": "behind",
+      "ahead": 0,
+      "behind": 701,
+      "merge_base": "dd4a7eb4dd71435284d9d326310cb2695faa249a",
+      "files": [],
+      "truncated": false
+    },
+    {
+      "branch": "chatgpt/zero-codex/pages-rpc-http-status-20261113",
+      "status": "behind",
+      "ahead": 0,
+      "behind": 741,
+      "merge_base": "68aca93bc19e4c9d91fa37212d9b8c502b4ce884",
+      "files": [],
+      "truncated": false
+    },
+    {
+      "branch": "chatgpt/zero-codex/pages-same-view-invoice-focus-20261117",
+      "status": "behind",
+      "ahead": 0,
+      "behind": 687,
+      "merge_base": "2fb89ff5f2dcf34f3a02b66e4485d5e282ee9aa1",
+      "files": [],
+      "truncated": false
+    },
+    {
+      "branch": "chatgpt/zero-codex/pages-scan-transfer-filter-20261114",
+      "status": "diverged",
+      "ahead": 2,
+      "behind": 518,
+      "merge_base": "c3e707ade896c5acfebdb5967f4de7c0445740e2",
+      "files": [
+        [
+          "apps/web/src/lib/scanSpam.test.ts",
+          "modified",
+          22,
+          0
+        ],
+        [
+          "apps/web/src/lib/scanSpam.ts",
+          "modified",
+          4,
+          0
+        ]
+      ],
+      "truncated": false
+    },
+    {
+      "branch": "chatgpt/zero-codex/pages-smoke-project-boundary-20261113",
+      "status": "behind",
+      "ahead": 0,
+      "behind": 737,
+      "merge_base": "eece5aff554255ca6c02e53849403f66123b8e40",
+      "files": [],
+      "truncated": false
+    },
+    {
+      "branch": "chatgpt/zero-codex/pages-tag-store-closed-connection-20261116",
+      "status": "behind",
+      "ahead": 0,
+      "behind": 706,
+      "merge_base": "17f681915f25441f5c38326ad718b8082495d52a",
+      "files": [],
+      "truncated": false
+    },
+    {
+      "branch": "chatgpt/zero-codex/pages-tagarchive-blocked-click-20261117",
+      "status": "diverged",
+      "ahead": 1,
+      "behind": 701,
+      "merge_base": "dd4a7eb4dd71435284d9d326310cb2695faa249a",
+      "files": [
+        [
+          "apps/web/src/components/TagArchive.test.tsx",
+          "modified",
+          28,
+          0
+        ]
+      ],
+      "truncated": false
+    }
+  ]
+}

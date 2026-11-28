@@ -37,6 +37,10 @@ export interface ProviderComparison {
 
 const key = (a: ScannedAnnouncement): string => [a.stealthAddress, a.ephemeralPublicKey, a.metadata, a.caller, a.blockHash].join('|').toLowerCase();
 
+/** A transaction hash the primary supplied must be the one the secondary reports; one it left out is not compared. */
+const otherTransaction = (mine: ScannedAnnouncement, theirs: ScannedAnnouncement): boolean =>
+  mine.transactionHash !== undefined && theirs.transactionHash?.toLowerCase() !== mine.transactionHash.toLowerCase();
+
 /**
  * Re-fetches `[fromBlock, toBlock]` from a second, independent provider and compares it with what the primary
  * returned (G-21). Call at each checkpoint. Never throws: failures become discrepancies, the scan decides what to do.
@@ -147,7 +151,7 @@ export async function compareProviders(o: {
     for (const [id, a] of mine) {
       const t = theirs.get(id);
       if (t === undefined) out.push({ kind: 'missing_in_secondary', ref: id });
-      else if (key(t) !== key(a)) out.push({ kind: 'content_differs', ref: id });
+      else if (key(t) !== key(a) || otherTransaction(a, t)) out.push({ kind: 'content_differs', ref: id });
       else if (a.blockTimestamp !== undefined) {
         // A provider can return the correct hash with a forged timestamp. Bind timing evidence to the
         // independent provider's header too; missing time is disagreement, not a successful comparison.

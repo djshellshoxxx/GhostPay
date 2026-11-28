@@ -5,6 +5,7 @@
 // React DOM's own internals contain a few innerHTML / dangerouslySetInnerHTML strings; those are matched by explicit
 // fingerprints below (and the application source is separately forbidden from using them, enforced by ESLint and by
 // the source scan here). Anything else fails.
+import ts from 'typescript';
 import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs';
 import { join, relative, resolve, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -57,6 +58,16 @@ const PRESERVED_CODE_MARKERS = [
   { marker: 'privacy-pools', reason: '@ghostpay/external-pools exit route' },
 ];
 
+/**
+ * Legacy text-manifest scheme (SEC-14 / D-09): sha256/ed25519 text signatures under this domain, and unsigned-dev
+ * acceptance on testnets. The app trusts only bundled, release-signed manifests; neither string may reach any build.
+ */
+const LEGACY_MANIFEST_MARKERS = [
+  // The acceptance-path warning itself; the views' generic "UNSIGNED DEV MANIFEST: testnet only." label is display text.
+  { marker: 'no release key is pinned, so this deployment manifest is not authenticated', reason: 'unsigned-dev manifest acceptance (chain-adapters UNSIGNED_DEV_WARNING)' },
+  { marker: 'GhostPay-deployment-manifest-v1', reason: 'legacy text-manifest signing domain (chain-adapters MANIFEST_SIGNING_DOMAIN)' },
+];
+
 function walk(dir) {
   const out = [];
   for (const name of readdirSync(dir)) {
@@ -78,46 +89,73 @@ function scanInnerHtml(text, label, problems) {
   if (all > allowed) problems.push(`${label}: ${String(all - allowed)} innerHTML assignment(s) outside the known React DOM fingerprints`);
 }
 
-function scanHosts(text, label, problems) {
+// The configured Pages origin is data for a same-origin comparison, never an egress destination.
+// Check the compiled syntax at each occurrence; another use of the identical URL must still fail.
+function approvedComparisons(text, origin) {
+  const file = ts.createSourceFile('bundle.js', text, ts.ScriptTarget.ESNext, true, ts.ScriptKind.JS);
+  const positions = new Set();
+  const check = (property, literal) => {
+    if (ts.isPropertyAccessExpression(property) && ts.isIdentifier(property.expression) &&
+        property.expression.text === 'globalThis' && property.name.text === 'origin' &&
+        ts.isStringLiteralLike(literal) && literal.text === origin) positions.add(literal.getStart(file) + 1);
+  };
+  const visit = (node) => {
+    if (ts.isBinaryExpression(node) && node.operatorToken.kind === ts.SyntaxKind.EqualsEqualsEqualsToken) {
+      check(node.left, node.right);
+      check(node.right, node.left);
+    }
+    ts.forEachChild(node, visit);
+  };
+  if (file.parseDiagnostics.length === 0) visit(file);
+  return positions;
+}
+
+function scanHosts(text, label, problems, approvedOrigin) {
+  let comparisons;
   for (const m of text.matchAll(/\b(?:https?|wss?):\/\/([A-Za-z0-9][A-Za-z0-9.-]*)?[^\s"'`<>)\\]*/g)) {
     const full = m[0];
     if (m[1] === undefined) continue; // a bare "https://" scheme literal used for prefix checks
+    if (full === approvedOrigin && /\.m?js$/.test(label)) {
+      comparisons ??= approvedComparisons(text, approvedOrigin);
+      if (comparisons.has(m.index)) continue;
+    }
     if (!ALLOWED_URLS.some((a) => full.startsWith(a.prefix))) problems.push(`${label}: unexpected origin or hostname "${full.slice(0, 80)}"`);
   }
 }
 
-/** Scans a built `dist` directory (and optionally the app source tree) and returns a list of problems. */
 /**
- * Remove // and block comments while leaving string/template literals intact, so a `//` inside a
- * literal (e.g. "https://x") cannot swallow same-line code. Conservative: an unterminated literal
- * is kept verbatim to the end of its line (template literals to end of file), never dropped.
+ * Scan a source file for forbidden sinks using the TypeScript AST, so comment-like text inside strings, templates,
+ * regular expressions or JSX cannot erase adjacent executable sinks. This checks syntax, not alias/data flow.
+ * Fails closed: a file that does not parse is reported.
+ * @returns Problem kinds found, e.g. `dangerouslySetInnerHTML`, `innerHTML/outerHTML assignment`, `eval/new Function`.
  */
-export function stripComments(src) {
-  let out = '';
-  let i = 0;
-  const n = src.length;
-  while (i < n) {
-    const c = src[i];
-    const d = src[i + 1];
-    if (c === '/' && d === '/') {
-      while (i < n && src[i] !== '\n') i++;
-    } else if (c === '/' && d === '*') {
-      const end = src.indexOf('*/', i + 2);
-      i = end === -1 ? n : end + 2;
-    } else if (c === '"' || c === "'" || c === '`') {
-      let j = i + 1;
-      while (j < n && src[j] !== c && (c === '`' || src[j] !== '\n')) j += src[j] === '\\' ? 2 : 1;
-      out += src.slice(i, Math.min(j + 1, n));
-      i = j + 1;
-    } else {
-      out += c;
-      i++;
+export function scanSourceSinks(text, fileName) {
+  const kind = fileName.endsWith('.tsx') ? ts.ScriptKind.TSX : ts.ScriptKind.TS;
+  const sf = ts.createSourceFile(fileName, text, ts.ScriptTarget.ESNext, true, kind);
+  const found = new Set();
+  if (sf.parseDiagnostics.length > 0) found.add('could not be parsed');
+  const calleeIdent = (e) => {
+    while (ts.isParenthesizedExpression(e)) e = e.expression;
+    if (ts.isBinaryExpression(e) && e.operatorToken.kind === ts.SyntaxKind.CommaToken) return calleeIdent(e.right);
+    return ts.isIdentifier(e) ? e.text : undefined;
+  };
+  const visit = (n) => {
+    if ((ts.isIdentifier(n) || ts.isStringLiteralLike(n)) && n.text === 'dangerouslySetInnerHTML') found.add('dangerouslySetInnerHTML');
+    if (ts.isBinaryExpression(n) && n.operatorToken.kind >= ts.SyntaxKind.FirstAssignment && n.operatorToken.kind <= ts.SyntaxKind.LastAssignment) {
+      const l = n.left;
+      const name = ts.isPropertyAccessExpression(l) ? l.name.text : ts.isElementAccessExpression(l) && ts.isStringLiteralLike(l.argumentExpression) ? l.argumentExpression.text : undefined;
+      if (name === 'innerHTML' || name === 'outerHTML') found.add('innerHTML/outerHTML assignment');
     }
-  }
-  return out;
+    if (ts.isCallExpression(n) && calleeIdent(n.expression) === 'eval') found.add('eval/new Function');
+    if (ts.isNewExpression(n) && calleeIdent(n.expression) === 'Function') found.add('eval/new Function');
+    ts.forEachChild(n, visit);
+  };
+  visit(sf);
+  return [...found];
 }
 
-export function scanBundle(distDir, srcDir, viteConfigPath) {
+/** Scans a built `dist` directory (and optionally the app source tree) and returns a list of problems. */
+export function scanBundle(distDir, srcDir, viteConfigPath, approvedOrigin) {
   const problems = [];
   if (!existsSync(distDir)) return [`dist directory not found: ${distDir}`];
   const files = walk(distDir);
@@ -129,7 +167,7 @@ export function scanBundle(distDir, srcDir, viteConfigPath) {
     if (/\.(js|mjs|css)$/.test(r)) {
       const text = readFileSync(f, 'utf8');
       if (/sourceMappingURL/.test(text)) problems.push(`${r}: sourceMappingURL reference`);
-      scanHosts(text, r, problems);
+      scanHosts(text, r, problems, approvedOrigin);
       if (r.endsWith('.css')) {
         if (/@import/.test(text)) problems.push(`${r}: @import in CSS`);
         if (/url\(\s*["']?(?:https?:)?\/\//.test(text)) problems.push(`${r}: remote url() in CSS`);
@@ -142,6 +180,9 @@ export function scanBundle(distDir, srcDir, viteConfigPath) {
         scanInnerHtml(text, r, problems);
         for (const { marker, reason } of PRESERVED_CODE_MARKERS) {
           if (text.includes(marker)) problems.push(`${r}: preserved-code marker "${marker}" (${reason}) is not part of the lean beta`);
+        }
+        for (const { marker, reason } of LEGACY_MANIFEST_MARKERS) {
+          if (text.includes(marker)) problems.push(`${r}: legacy text-manifest marker "${marker}" (${reason}) must not ship`);
         }
         if (/worker/i.test(r)) {
           for (const w of WORKER_FORBIDDEN) if (text.includes(w)) problems.push(`${r}: scanner worker contains network API "${w}"`);
@@ -207,10 +248,7 @@ export function scanBundle(distDir, srcDir, viteConfigPath) {
     for (const f of walk(srcDir)) {
       const r = relative(srcDir, f).split(sep).join('/');
       if (!/\.(ts|tsx)$/.test(r) || /\.test\.|\/test\//.test(r)) continue;
-      const text = stripComments(readFileSync(f, 'utf8'));
-      if (/dangerouslySetInnerHTML/.test(text)) problems.push(`src/${r}: dangerouslySetInnerHTML`);
-      if (/\.innerHTML\s*=(?!=)|\.outerHTML\s*=(?!=)/.test(text)) problems.push(`src/${r}: innerHTML/outerHTML assignment`);
-      if (/(?<![.\w$])eval\s*\(|new\s+Function\s*\(/.test(text)) problems.push(`src/${r}: eval/new Function`);
+      for (const kind of scanSourceSinks(readFileSync(f, 'utf8'), r)) problems.push(`src/${r}: ${kind}`);
     }
   }
   return problems;
@@ -228,7 +266,7 @@ if (isMain) {
     for (const p of deploymentProblems) console.error(` - ${p}`);
     process.exit(1);
   }
-  const problems = scanBundle(join(root, 'dist'), join(root, 'src'), join(root, 'vite.config.ts'));
+  const problems = scanBundle(join(root, 'dist'), join(root, 'src'), join(root, 'vite.config.ts'), process.env['VITE_GHOSTPAY_PAGES_ORIGIN']);
   if (problems.length > 0) {
     console.error('Bundle scan FAILED:');
     for (const p of problems) console.error(` - ${p}`);

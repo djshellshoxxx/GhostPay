@@ -1,0 +1,86 @@
+{
+  "base": "aec179910c39081d820396409ff3139ff2264132",
+  "ranges": [
+    [
+      299,
+      312
+    ],
+    [
+      313,
+      326
+    ],
+    [
+      327,
+      340
+    ],
+    [
+      341,
+      354
+    ],
+    [
+      355,
+      368
+    ],
+    [
+      369,
+      382
+    ],
+    [
+      383,
+      396
+    ],
+    [
+      397,
+      410
+    ],
+    [
+      411,
+      424
+    ],
+    [
+      425,
+      432
+    ]
+  ],
+  "stat": {
+    "n": 134,
+    "redundant": 24,
+    "positive": 109,
+    "code": 65,
+    "docs_only": 42,
+    "noncode_other": 2,
+    "capped": 26
+  },
+  "errors": [
+    {
+      "name": "gh-pages",
+      "error": "NOT_FOUND: Error code: NOT_FOUND; Error: GitHub API error 404: {\"message\":\"No common ancestor between aec179910c39081d820396409ff3139ff2264132 and gh-pages.\",\"documentation_url\":\"https://docs.github.com/rest/commits/commits#compare-two-commits\",\"status\":\"404\"}"
+    }
+  ],
+  "small": [
+    {
+      "b": "fix/ghostpay-vault-rekey-lock-revocation-20261120",
+      "a": 3,
+      "f": [
+        "docs/handoffs/VAULT_REKEY_LOCK_20261120.md",
+        "packages/ux-vault/src/vault.rekey-lock.test.ts",
+        "packages/ux-vault/src/vault.ts"
+      ]
+    },
+    {
+      "b": "fix/remediation-b16c7936-5ce634",
+      "a": 1,
+      "f": [
+        "apps/web/src/lib/scanClient.ts"
+      ]
+    },
+    {
+      "b": "fix/remediation-f95457fd-22ecf9",
+      "a": 1,
+      "f": [
+        "apps/web/src/features/policy/send.test.ts",
+        "apps/web/src/features/policy/send.ts"
+      ]
+    }
+  ]
+}

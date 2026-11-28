@@ -74,9 +74,19 @@ export interface ScanLaneSettings {
   readonly spamScoring: boolean;
   /** Opt-in: after a scan, count same-token transfers at similar amounts for the privacy set (costs RPC calls). */
   readonly privacySetTransfers: boolean;
+  /**
+   * Opt-in: also verify a keyed share of the other router payments each scan reads, so a provider that only records
+   * requests sees a payment's lookups among others' (many more verification requests; see matchCover.ts for limits).
+   */
+  readonly matchCover: boolean;
+  /**
+   * Set only in memory, never saved: settings were saved in this browser but cannot be read exactly as saved. A cover
+   * opt-in may be among them, so scanning is blocked until the user saves valid settings again.
+   */
+  readonly unreadable?: true;
 }
 
-export const DEFAULT_SCAN_LANES: ScanLaneSettings = Object.freeze({ floodPerBlock: FLOOD_PER_BLOCK, spamScoring: true, privacySetTransfers: false });
+export const DEFAULT_SCAN_LANES: ScanLaneSettings = Object.freeze({ floodPerBlock: FLOOD_PER_BLOCK, spamScoring: true, privacySetTransfers: false, matchCover: false });
 export const SCAN_LANES_KEY = 'ghostpay.scanLanes.v1';
 
 interface StorageLike {
@@ -91,16 +101,34 @@ export function sanitizeScanLanes(raw: unknown): ScanLaneSettings {
     floodPerBlock: intIn(o['floodPerBlock'], 1, MAX_FLOOD_PER_BLOCK) ? o['floodPerBlock'] : DEFAULT_SCAN_LANES.floodPerBlock,
     spamScoring: o['spamScoring'] !== false,
     privacySetTransfers: o['privacySetTransfers'] === true,
+    matchCover: o['matchCover'] === true,
   };
 }
 
+/** True when every field present in `raw` survived sanitizing as itself; older saved versions may lack fields. */
+function intactScanLanes(raw: unknown, s: ScanLaneSettings): boolean {
+  if (typeof raw !== 'object' || raw === null || Array.isArray(raw)) return false;
+  const o = raw as Record<string, unknown>;
+  return (['floodPerBlock', 'spamScoring', 'privacySetTransfers', 'matchCover'] as const)
+    .every((k) => !Object.prototype.hasOwnProperty.call(o, k) || o[k] === s[k]);
+}
+
+/**
+ * Reads the saved settings. Nothing saved (or no storage API at all) gives the defaults. Saved settings that are not
+ * exactly valid, or a read the browser refuses, are marked {@link ScanLaneSettings.unreadable} and keep what could be
+ * read, for review in Settings.
+ */
 export function loadScanLanes(storage: StorageLike | undefined): ScanLaneSettings {
+  let raw: unknown;
   try {
     const text = storage?.getItem(SCAN_LANES_KEY);
-    return text === null || text === undefined ? DEFAULT_SCAN_LANES : sanitizeScanLanes(JSON.parse(text));
+    if (text === null || text === undefined) return DEFAULT_SCAN_LANES;
+    raw = JSON.parse(text);
   } catch {
-    return DEFAULT_SCAN_LANES;
+    return { ...DEFAULT_SCAN_LANES, unreadable: true };
   }
+  const s = sanitizeScanLanes(raw);
+  return intactScanLanes(raw, s) ? s : { ...s, unreadable: true };
 }
 
 export function saveScanLanes(storage: StorageLike | undefined, s: ScanLaneSettings): boolean {
@@ -142,6 +170,7 @@ export async function estimateSimilarTransfers(o: { readonly client: RpcClient; 
   const high = o.amount * 5n;
   let count = 0;
   let seen = 0;
+  const positions = new Set<string>();
   try {
     let requests = 0;
     for (let next = from; next <= o.head; next += range) {
@@ -155,6 +184,10 @@ export async function estimateSimilarTransfers(o: { readonly client: RpcClient; 
         if (log.address.toLowerCase() !== o.token.toLowerCase()) return { status: 'unknown', reason: 'error' };
         const block = BigInt(log.blockNumber);
         if (block < next || block > to) return { status: 'unknown', reason: 'error' };
+        // A block position holds one log: an identical or conflicting repeat would inflate the estimate.
+        const position = `${block.toString()}:${BigInt(log.logIndex).toString()}`;
+        if (positions.has(position)) return { status: 'unknown', reason: 'error' };
+        positions.add(position);
         if (log.topics.length !== 3 || log.topics[0]?.toLowerCase() !== TRANSFER_TOPIC || !WORD_HEX.test(log.data)) continue;
         const value = BigInt(log.data) * 4n;
         if (value >= low && value <= high) count++;
@@ -170,7 +203,7 @@ export interface AnonymitySet {
   readonly level: 'low' | 'medium' | 'high';
   readonly count7d: number;
   readonly count30d: number;
-  /** The scan did not cover the whole 7-day span up to the head, so the counts are lower bounds. */
+  /** The scan did not cover the whole available 30-day span up to the head, so at least one count is a lower bound. */
   readonly partial: boolean;
   /** Opt-in same-token transfer estimate; it never changes `level`. */
   readonly transfers?: TransferEstimate;
@@ -192,7 +225,7 @@ export function anonymitySet(o: { readonly chain: ChainConfig; readonly routerBl
   const count30d = o.routerBlocks.filter((b) => b >= from30 && b <= o.head).length;
   return {
     level: count7d >= HIGH_AT ? 'high' : count7d >= MEDIUM_AT ? 'medium' : 'low', count7d, count30d,
-    partial: o.scannedFrom > (from7 > 0n ? from7 : 0n) || (o.scannedTo !== undefined && o.scannedTo < o.head),
+    partial: o.scannedFrom > (from30 > 0n ? from30 : 0n) || (o.scannedTo !== undefined && o.scannedTo < o.head),
     ...(o.transfers === undefined ? {} : { transfers: o.transfers }),
   };
 }

@@ -9,14 +9,22 @@ import {
 import { shortHex } from '../lib/format';
 import type { MessageKey } from '../i18n/sourceCatalog';
 import { Field, Notice } from '../components/Common';
+import { MetadataRetentionControls } from '../components/MetadataRetentionControls';
 import { displayMessage, captureUserMessage, type DisplayMessage, UserFacingError } from '../lib/errors';
-import { checkDelayRange, checkRelayerUrl, checkRpcUrl, type Settings as SettingsData } from '../lib/settings';
-import { applyParanoidPreset, browserStorage, checkIndexerUrl, checkScanEndpoint, describeScanDisclosureMessages, loadScanPrivacy, saveScanPrivacy, type ScanPrivacySettings, type ScanTransportKind } from '../lib/scanPrivacy';
-import { MAX_FLOOD_PER_BLOCK, PRIVACY_TRANSFER_WINDOW_BLOCKS, loadScanLanes, saveScanLanes, type ScanLaneSettings } from '../lib/scanSpam';
+import { checkDelayRange, checkRelayerUrl, checkRpcUrl, INVOICE_LINK_CLIPBOARD_DELAYS_SEC, invoiceLinkClipboardDelay, type Settings as SettingsData } from '../lib/settings';
+import { SCAN_PRIVACY_KEY, applyParanoidPreset, browserStorage, checkIndexerUrl, checkScanEndpoint, describeScanDisclosureMessages, loadScanPrivacy, saveScanPrivacy, type ScanPrivacySettings, type ScanTransportKind } from '../lib/scanPrivacy';
+import { MAX_FLOOD_PER_BLOCK, PRIVACY_TRANSFER_WINDOW_BLOCKS, SCAN_LANES_KEY, loadScanLanes, saveScanLanes, type ScanLaneSettings } from '../lib/scanSpam';
 import { useServices } from '../lib/services';
 import { useApp } from '../state';
 import { LanguagePicker } from '../i18n/LanguagePicker';
 import { SOURCE_TRANSLATOR, useI18nOptional } from '../i18n/context';
+
+/** `typed`, with each chain whose saved value went from `before` to `after` showing the new one. */
+function followMap(typed: Readonly<Record<string, string>>, before: Readonly<Record<string, string>>, after: Readonly<Record<string, string>>): Record<string, string> {
+  const out = { ...typed };
+  for (const chain of Object.keys({ ...before, ...after })) if (before[chain] !== after[chain]) out[chain] = after[chain] ?? '';
+  return out;
+}
 
 export function Settings(): ReactNode {
   const app = useApp();
@@ -32,6 +40,7 @@ export function Settings(): ReactNode {
   const [maxSec, setMaxSec] = useState(s.delayMaxSec);
   const [lock, setLock] = useState(s.lockTimeoutMin);
   const [theme, setTheme] = useState<SettingsData['theme']>(s.theme);
+  const [clipboardDelaySec, setClipboardDelaySec] = useState(s.invoiceLinkClipboardDelaySec);
   const [autoClear, setAutoClear] = useState(s.autoClearFragment);
   const [pins, setPins] = useState(s.pinnedSigners.join('\n'));
   const [message, setMessage] = useState<{ kind: 'ok' | 'error' | 'warn'; text: DisplayMessage } | undefined>(undefined);
@@ -40,6 +49,32 @@ export function Settings(): ReactNode {
   const mounted = useRef(true);
 
   useEffect(() => { mounted.current = true; return () => { mounted.current = false; }; }, []);
+
+  // The saved values this form last followed. Another tab's save is shown wherever it changed one, so that saving this
+  // form cannot put the old value back; fields it did not change keep what was typed.
+  const followed = useRef(s);
+  useEffect(() => {
+    const before = followed.current;
+    if (before === s) return;
+    followed.current = s;
+    let changed = false;
+    const follow = <K extends keyof SettingsData>(key: K, show: (value: SettingsData[K]) => void): void => {
+      if (JSON.stringify(before[key]) === JSON.stringify(s[key])) return;
+      changed = true;
+      show(s[key]);
+    };
+    follow('rpcUrls', (to) => { setRpc((typed) => followMap(typed, before.rpcUrls, to)); });
+    follow('rpcUrlsSecondary', (to) => { setRpc2((typed) => followMap(typed, before.rpcUrlsSecondary, to)); });
+    follow('relayerUrl', setRelayer);
+    follow('delayMinSec', setMinSec);
+    follow('delayMaxSec', setMaxSec);
+    follow('lockTimeoutMin', setLock);
+    follow('theme', setTheme);
+    follow('invoiceLinkClipboardDelaySec', setClipboardDelaySec);
+    follow('autoClearFragment', setAutoClear);
+    follow('pinnedSigners', (to) => { setPins(to.join('\n')); });
+    if (changed) setMessage({ kind: 'warn', text: { key: 'settings.changedElsewhere' } });
+  }, [s]);
 
   const invalidateTest = (chainId: number): void => {
     testRevision.current.set(chainId, (testRevision.current.get(chainId) ?? 0) + 1);
@@ -69,8 +104,12 @@ export function Settings(): ReactNode {
         setMessage({ kind: 'error', text: { key: 'settings.error.pins' } });
         return;
       }
-      const next: SettingsData = { rpcUrls, rpcUrlsSecondary, relayerUrl: checkRelayerUrl(relayer), delayMinSec: minSec, delayMaxSec: maxSec, lockTimeoutMin: lock, theme, autoClearFragment: autoClear, pinnedSigners };
+      const next: SettingsData = {
+        rpcUrls, rpcUrlsSecondary, relayerUrl: checkRelayerUrl(relayer), delayMinSec: minSec, delayMaxSec: maxSec,
+        lockTimeoutMin: lock, theme, autoClearFragment: autoClear, invoiceLinkClipboardDelaySec: clipboardDelaySec, pinnedSigners,
+      };
       const saved = app.updateSettings(next);
+      followed.current = next;
       setMessage(saved ? { kind: 'ok', text: { key: 'settings.saved' } } : { kind: 'warn', text: { key: 'settings.storageUnavailable' } });
       app.announce(t('settings.announce'));
     } catch (err) {
@@ -106,20 +145,25 @@ export function Settings(): ReactNode {
       <Notice kind="warn" title={t('settings.outside.title')}>
         {t('settings.outside.body')}
       </Notice>
+      {/* #287 item 4: device-local, default-off preferences for closing on-screen previews; they save immediately. */}
+      <MetadataRetentionControls manual={false} />
+      <MetadataRetentionControls scope="proof" manual={false} />
       <form onSubmit={onSave} className="stack" noValidate>
         <fieldset>
           <legend>{t('settings.rpc.legend')}</legend>
           <p className="hint">{t('settings.rpc.hint')}</p>
           {services.chains.map((c) => (
-            <div key={c.chainId} className="row">
+            <div key={c.chainId} className="rpc-row">
               <Field label={t('settings.rpc.url', { chain: c.name })} help={{ label: t('help.about', { control: t('settings.rpc.url', { chain: c.name }) }), text: t('help.rpc') }}>
                 {(id, describedBy) => <input id={id} aria-describedby={describedBy} type="url" dir="ltr" spellCheck={false} value={rpc[String(c.chainId)] ?? ''} onChange={(e) => { invalidateTest(c.chainId); setRpc({ ...rpc, [String(c.chainId)]: e.target.value }); }} />}
               </Field>
-              <button type="button" className="btn" onClick={() => { onTest(c.chainId); }}>{t('settings.rpc.test', { chain: c.name })}</button>
-              <p role="status" className="hint">{displayMessage(checks[c.chainId] ?? '', t)}</p>
               <Field label={t('settings.rpc.secondary.label', { chain: c.name })} hint={t('settings.rpc.secondary.hint')}>
                 {(id, d) => <input id={id} aria-describedby={d} type="url" spellCheck={false} value={rpc2[String(c.chainId)] ?? ''} onChange={(e) => { setRpc2({ ...rpc2, [String(c.chainId)]: e.target.value }); }} />}
               </Field>
+              <div className="rpc-test-row">
+                <button type="button" className="btn" onClick={() => { onTest(c.chainId); }}>{t('settings.rpc.test', { chain: c.name })}</button>
+                <p role="status" className="hint">{displayMessage(checks[c.chainId] ?? '', t)}</p>
+              </div>
             </div>
           ))}
         </fieldset>
@@ -154,6 +198,17 @@ export function Settings(): ReactNode {
             <input id="autoclear" type="checkbox" checked={autoClear} onChange={(e) => { setAutoClear(e.target.checked); }} />
             <label htmlFor="autoclear">{t('settings.autoclear.label')}</label>
           </div>
+          <Field label={t('settings.invoiceClipboard.label')} hint={t('settings.invoiceClipboard.hint')}>
+            {(id, describedBy) => (
+              <select id={id} aria-describedby={describedBy} value={clipboardDelaySec}
+                onChange={(e) => { setClipboardDelaySec(invoiceLinkClipboardDelay(Number(e.target.value))); }}>
+                <option value={0}>{t('settings.invoiceClipboard.off')}</option>
+                {INVOICE_LINK_CLIPBOARD_DELAYS_SEC.map((seconds) => (
+                  <option key={seconds} value={seconds}>{t('settings.invoiceClipboard.seconds', { seconds })}</option>
+                ))}
+              </select>
+            )}
+          </Field>
           <Field label={t('settings.pins.label')} hint={t('settings.pins.hint')}>
             {(id, d) => <textarea id={id} aria-describedby={d} rows={3} spellCheck={false} value={pins} onChange={(e) => { setPins(e.target.value); }} />}
           </Field>
@@ -164,6 +219,7 @@ export function Settings(): ReactNode {
       <ScanPrivacySection />
       <SettingsExchangeSection onApplied={(next, applied) => {
         // Only the form fields of applied sections follow the import; other unsaved edits stay as typed.
+        followed.current = next;
         if (applied.preferences === true) { setMinSec(next.delayMinSec); setMaxSec(next.delayMaxSec); setLock(next.lockTimeoutMin); setTheme(next.theme); setAutoClear(next.autoClearFragment); }
         if (applied.rpcUrls === true) setRpc({ ...next.rpcUrls });
         if (applied.rpcUrlsSecondary === true) setRpc2({ ...next.rpcUrlsSecondary });
@@ -388,6 +444,12 @@ function SettingsExchangeSection({ onApplied }: { readonly onApplied: (next: Set
   );
 }
 
+/** The stored text of both scan option records, to notice that another tab saved since this form was filled. */
+function scanOptionsText(): string {
+  const read = (key: string): string | null | undefined => { try { return browserStorage()?.getItem(key); } catch { return undefined; } };
+  return JSON.stringify([read(SCAN_PRIVACY_KEY), read(SCAN_LANES_KEY)]);
+}
+
 /** Spec 10 / 05 options. Own storage key and own save, so the main settings form and its exchange format are unchanged. */
 // i18n-use: settings.scanLanes.errFlood
 function ScanPrivacySection(): ReactNode {
@@ -395,7 +457,12 @@ function ScanPrivacySection(): ReactNode {
   const services = useServices();
   const i18n = useI18nOptional();
   const t = i18n?.t ?? SOURCE_TRANSLATOR.t;
-  const [cfg, setCfg] = useState<ScanPrivacySettings>(() => loadScanPrivacy(browserStorage()));
+  // What this form was filled from: saving over a newer save could undo a private path or cover lookups turned on there.
+  const filledFrom = useRef<string | undefined>(undefined);
+  const [cfg, setCfg] = useState<ScanPrivacySettings>(() => {
+    filledFrom.current = scanOptionsText();
+    return loadScanPrivacy(browserStorage());
+  });
   // Spec 05 lane and privacy-set options: own key, saved by the same button.
   const [lanes, setLanes] = useState<ScanLaneSettings>(() => loadScanLanes(browserStorage()));
   const [message, setMessage] = useState<{ kind: 'ok' | 'error' | 'warn'; text: DisplayMessage } | undefined>(undefined);
@@ -405,6 +472,13 @@ function ScanPrivacySection(): ReactNode {
 
   const onSave = (e: FormEvent): void => {
     e.preventDefault();
+    if (scanOptionsText() !== filledFrom.current) {
+      filledFrom.current = scanOptionsText();
+      setCfg(loadScanPrivacy(browserStorage()));
+      setLanes(loadScanLanes(browserStorage()));
+      setMessage({ kind: 'warn', text: { key: 'settings.changedElsewhere' } });
+      return;
+    }
     try {
       const endpoints: Record<string, string> = {};
       for (const [k, v] of Object.entries(cfg.endpoints)) if (v.trim() !== '') endpoints[k] = checkScanEndpoint(v, cfg.transport);
@@ -416,8 +490,12 @@ function ScanPrivacySection(): ReactNode {
       if (!ok(cfg.openLaneBudget, 1, 100_000)) throw new UserFacingError({ key: 'settings.scanPrivacy.errBudget' });
       if (!ok(lanes.floodPerBlock, 1, MAX_FLOOD_PER_BLOCK)) throw new UserFacingError({ key: 'settings.scanLanes.errFlood' });
       const next = { ...cfg, endpoints, indexerUrls };
-      setCfg(next);
-      const saved = saveScanPrivacy(browserStorage(), next) && saveScanLanes(browserStorage(), lanes);
+      const savedPrivacy = saveScanPrivacy(browserStorage(), next);
+      // A successful save replaces settings that could not be read: show what is saved now, without the lock.
+      setCfg(savedPrivacy ? loadScanPrivacy(browserStorage()) : next);
+      const saved = savedPrivacy && saveScanLanes(browserStorage(), lanes);
+      if (saved) setLanes(loadScanLanes(browserStorage()));
+      filledFrom.current = scanOptionsText();
       setMessage(saved ? { kind: 'ok', text: { key: 'settings.scanPrivacy.saved' } } : { kind: 'warn', text: { key: 'settings.scanPrivacy.refused' } });
     } catch (err) {
       setMessage({ kind: 'error', text: captureUserMessage(err) });
@@ -482,12 +560,19 @@ function ScanPrivacySection(): ReactNode {
           <label htmlFor="scan-privacy-transfers">{t('settings.scanLanes.transfers')}</label>
         </div>
         <p className="hint">{t('settings.scanLanes.transfersHint', { blocks: String(PRIVACY_TRANSFER_WINDOW_BLOCKS) })}</p>
+        {lanes.unreadable === true && <Notice kind="warn">{t('scanPrivacy.blocked.settingsUnreadable')}</Notice>}
+        <div className="check">
+          <input id="scan-match-cover" type="checkbox" checked={lanes.matchCover} onChange={(e) => { setLane({ matchCover: e.target.checked }); }} />
+          <label htmlFor="scan-match-cover">{t('settings.scanLanes.matchCover')}</label>
+        </div>
+        <p className="hint">{t('settings.scanLanes.matchCoverHint')}</p>
         <h3>{t('settings.scanPrivacy.learnsHeading')}</h3>
         <ul>
           {describeScanDisclosureMessages(cfg, { hasSecondary: Object.values(app.settings.rpcUrlsSecondary).some((u) => u !== '') }).map((row) => (
             <li key={row.party.key}><strong>{displayMessage(row.party, t)}:</strong> {displayMessage(row.learns, t)}</li>
           ))}
           {lanes.privacySetTransfers && <li><strong>{t('scanPrivacy.disclosure.rpcParty')}:</strong> {t('scanLanes.disclosure.transfers', { blocks: String(PRIVACY_TRANSFER_WINDOW_BLOCKS) })}</li>}
+          {lanes.matchCover && <li><strong>{t('scanPrivacy.disclosure.rpcParty')}:</strong> {t('scanLanes.disclosure.matchCover')}</li>}
         </ul>
         <div className="actions">
           <button type="button" className="btn" onClick={() => { set(applyParanoidPreset(cfg)); }}>{t('settings.scanPrivacy.paranoid')}</button>

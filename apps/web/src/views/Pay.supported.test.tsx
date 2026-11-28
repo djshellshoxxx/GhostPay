@@ -45,7 +45,7 @@ async function openQr(profile: 'full' | 'lean') {
   const mounted = renderWith(<AppShell order={ORDER} profile={profile} />, services);
   const user = userEvent.setup();
   await user.click(within(screen.getByRole('navigation', { name: 'Main' })).getByRole('button', { name: /^Pay$/ }));
-  await user.click(screen.getByText('Scan an invoice QR'));
+  await user.click(screen.getByText('Scan an invoice QR or open a request file'));
   // Home loaded deployment metadata before navigation; measure QR intake only.
   vi.mocked(services.loadManifest).mockClear();
   vi.mocked(services.createRpc).mockClear();

@@ -2,6 +2,7 @@
   "extends": "./tsconfig.json",
   "compilerOptions": {
     "noEmit": false,
+    "allowJs": true,
     "rootDir": "src",
     "outDir": "dist",
     "declaration": true,
@@ -10,7 +11,8 @@
     "paths": {}
   },
   "include": [
-    "src/**/*.ts"
+    "src/**/*.ts",
+    "src/**/*.mjs"
   ],
   "exclude": [
     "src/**/*.test.ts",

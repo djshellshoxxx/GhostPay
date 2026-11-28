@@ -16,6 +16,8 @@ export type InvoiceErrorCode =
   | 'SIGNING'
   | 'RANDOMNESS'
   | 'UNSUPPORTED'
+  | 'UNTRUSTED_SIGNER'
+  | 'INVALID_SIGNATURE'
   | 'PASSPHRASE_REQUIRED'
   | 'PASSPHRASE_UNEXPECTED'
   | 'PASSPHRASE_POLICY'
@@ -131,5 +133,19 @@ export class PassphrasePolicyError extends InvoiceError {
 export class WrongPassphraseError extends InvoiceError {
   public constructor() {
     super('PASSPHRASE', 'wrong passphrase or damaged invoice link');
+  }
+}
+
+/** A valid invoice signature is not from a key pinned by a caller requiring seller authentication. */
+export class UntrustedSignerError extends InvoiceError {
+  public constructor() {
+    super('UNTRUSTED_SIGNER', 'invoice signer is not pinned');
+  }
+}
+
+/** The signature does not verify when the caller requires a valid signature from a pinned signer. */
+export class InvalidSignatureError extends InvoiceError {
+  public constructor() {
+    super('INVALID_SIGNATURE', 'invoice signature is invalid');
   }
 }

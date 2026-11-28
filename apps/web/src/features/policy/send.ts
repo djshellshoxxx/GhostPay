@@ -7,7 +7,7 @@ import { PostBroadcastError, submitTx, type BroadcastFn, type Runtime, type Stat
 import { browserAttemptStorage, readAttempts, type WalletAttempt } from '../../lib/duplicateAttemptJournal';
 import { walletAttemptKey, type TxRequest, type WalletSession } from '../../lib/wallet';
 import type { PolicyChainDeployment } from './chain';
-import type { PreparedPolicyPayment } from './pay';
+import { paysDerivedPayment, type PreparedPolicyPayment } from './pay';
 
 /** Exact transaction fields the review screen showed (a copy, so later changes to the prepared object are seen). */
 export interface ReviewedPolicyPayment {
@@ -40,7 +40,8 @@ const sameTx = (a: TxRequest, b: TxRequest): boolean => a.to.toLowerCase() === b
 /**
  * Synchronous final gate, run before every wallet request (inside `sendViaWallet`'s last authority check, after all
  * awaits): the session must be unchanged, the wallet on the reviewed chain, and both transactions byte-equal to the
- * review. The payment calldata is decoded again against the deployment and the approval is checked like Pay's.
+ * review. The payment calldata is decoded again against the deployment and its announcement fields must
+ * match the locally derived payment; the approval is checked like Pay's.
  */
 function assertStillReviewed(session: WalletSession, prepared: PreparedPolicyPayment, guard: PolicySendGuard, nowSeconds: number): void {
   guard.assertCurrent();
@@ -56,7 +57,7 @@ function assertStillReviewed(session: WalletSession, prepared: PreparedPolicyPay
   } catch {
     throw new UserFacingError('Blocked: the payment calldata does not match the verified policy deployment. Nothing was sent.');
   }
-  if (decoded.method !== prepared.built.method || decoded.stealth !== prepared.payment.accountAddress || decoded.owner !== prepared.payment.ownerAddress || decoded.policyHash !== prepared.payment.policyHash) {
+  if (!paysDerivedPayment(decoded, prepared.payment, prepared.built)) {
     throw new UserFacingError('Blocked: the payment calldata does not match the derived policy account. Nothing was sent.');
   }
   const args = routerArgs(prepared);
@@ -130,7 +131,7 @@ export async function sendPolicyPayment(
   const paymentCheck = mined === undefined ? check : (): void => {
     try { check(); } catch (e) {
       if (!(e instanceof UserFacingError)) throw e;
-      throw new UserFacingError(`${e.message.replaceAll(' Nothing was sent.', '')} The approval (${mined}) was already mined and the router allowance remains; no payment was sent. Revoke the allowance in your wallet if you will not pay.`);
+      throw new UserFacingError(`${e.message.replaceAll(' Nothing was sent.', '')} The approval was already mined and the router allowance remains; no payment was sent. Revoke the allowance in your wallet if you will not pay.`);
     }
   };
   paymentCheck();
@@ -138,8 +139,6 @@ export async function sendPolicyPayment(
   return submitTx(session, prepared.built.tx, rt, status, paymentCheck, onBroadcast, { kind: 'payment', scope });
 }
 
-/** Same text as `beginAttempt`'s duplicate refusal (duplicateAttemptJournal.ts). */
-const DUPLICATE_ATTEMPT = 'A previous wallet attempt for this action already exists in this tab. Check its outcome before explicitly clearing it; do not send again blindly.';
 const ALREADY_SENT = 'This review was already used for a wallet request, so it is never sent again (the payment may already have gone to your wallet). Check your wallet and a block explorer, then review a new payment only if nothing was sent.';
 /** Reviews and prepared calls that have reached the wallet (identity, per tab). */
 const sentReviews = new WeakSet<object>();
@@ -151,7 +150,7 @@ function markSent(guard: PolicySendGuard, prepared: PreparedPolicyPayment): void
 /** A payment with this scope already returned a hash in this tab; `hash` is that transaction. */
 export class PolicyAlreadyPaidError extends UserFacingError {
   public constructor(public readonly hash: string) {
-    super(`You already sent this exact payment (same payee, token and amount) from this tab: transaction ${hash}. Check it in your wallet or a block explorer. To pay again on purpose, clear this payment under Wallet attempts first, and for a token payment also its approval.`);
+    super({ key: 'policy.pay.alreadyPaid' });
     this.name = 'PolicyAlreadyPaidError';
   }
 }
@@ -175,7 +174,7 @@ function refuseIfAlreadyPaid(key: string): void {
   }
   if (earlier === undefined) return;
   if (earlier.hash !== undefined) throw new PolicyAlreadyPaidError(earlier.hash);
-  throw new UserFacingError(DUPLICATE_ATTEMPT);
+  throw new UserFacingError({ key: 'error.duplicateAttemptJournal.aPreviousWalletAttemptForThisActionAlreadyExistsIn' });
 }
 
 /**

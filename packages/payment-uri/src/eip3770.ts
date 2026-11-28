@@ -34,6 +34,11 @@ export interface ChainAddress {
 
 const SHORT = /^[a-z0-9][a-z0-9-]{0,31}$/;
 
+/** EIP-155 chain IDs must be positive safe integers, including in supplied runtime registries. */
+function validChainId(value: unknown): value is number {
+  return typeof value === 'number' && Number.isSafeInteger(value) && value > 0;
+}
+
 /** Strict `shortName:0xAddress` parser. The short name must be registered; the address must be a valid EVM address. */
 export function parseChainAddress(
   text: string,
@@ -45,7 +50,8 @@ export function parseChainAddress(
   const shortName = text.slice(0, i);
   if (!SHORT.test(shortName) || !Object.prototype.hasOwnProperty.call(registry, shortName))
     return fail('INVALID_CHAIN_ID');
-  const chainId = registry[shortName]!;
+  const chainId = registry[shortName];
+  if (!validChainId(chainId)) return fail('INVALID_CHAIN_ID');
   const a = parseEvmAddress(text.slice(i + 1));
   return { shortName, chainId, address: a.address, checksummed: a.checksummed };
 }
@@ -56,7 +62,8 @@ export function buildChainAddress(
   address: string,
   registry: Readonly<Record<string, number>> = DEFAULT_CHAIN_SHORT_NAMES,
 ): string {
+  if (!validChainId(chainId)) return fail('INVALID_CHAIN_ID');
   const names = Object.keys(registry).filter((k) => registry[k] === chainId);
-  if (names.length !== 1) return fail('INVALID_CHAIN_ID');
+  if (names.length !== 1 || !SHORT.test(names[0]!)) return fail('INVALID_CHAIN_ID');
   return `${names[0]}:${parseEvmAddress(address).address}`;
 }

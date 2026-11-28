@@ -13,6 +13,7 @@ import { clearPolicyAction, policyActionAttempts, policyActionKey, sendPolicyAct
 import { fetchScheme2Announcements, matchScheme2, mergeMatches, type Scheme2Match } from './scan2';
 import { deployCall, randomNonce, signCancel, signWithdraw, wipe } from './withdraw';
 import type { PolicyCtx } from './PolicyView';
+import { selectPolicyRecordForSeller } from './recordIdentity';
 import { formatPolicyTimestamp } from './policyTime';
 
 type Msg = { readonly kind: 'ok' | 'error' | 'warn'; readonly text: string };
@@ -300,7 +301,9 @@ export function PolicyReceive(props: { readonly ctx: PolicyCtx }): ReactNode {
             {msg !== undefined && (sameSession || msg.kind === 'error') && <Notice kind={msg.kind}>{msg.text}</Notice>}
             <ul className="plain">
               {visibleMatches.map((m) => {
-                const record = ctx.records.find((r) => r.policyHash === m.policyHash);
+                const record = app.session === undefined ? undefined : selectPolicyRecordForSeller(
+                  ctx.records, m.policyHash, app.session.spendingPublicKey, app.session.viewingPublicKey,
+                );
                 return record === undefined ? null : <AccountPanel key={m.accountAddress} ctx={ctx} match={m} record={record} knownIds={knownIds} remember={(id) => { knownIds.add(id); }} />;
               })}
             </ul>

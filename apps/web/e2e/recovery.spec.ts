@@ -177,6 +177,58 @@ async function unlock(page: Page, pass: string): Promise<void> {
   await view(page).getByRole('button', { name: 'Unlock saved vault' }).click();
 }
 
+test('switching to another seller’s backup clears verification and preserves the unlocked seller and vault', async ({ browser }) => {
+  const envs: Env[] = [];
+  try {
+    const b = await newEnv(browser); envs.push(b);
+    const idB = await generate(b.page);
+    const backupB = await exportBackup(b.page, PASS_B);
+
+    const a = await newEnv(browser); envs.push(a);
+    const idA = await generate(a.page);
+    expect(idA.meta).not.toBe(idB.meta);
+    const backupA = await exportBackup(a.page, PASS_A);
+    await saveVault(a.page, PASS_A);
+    await reopenKeys(a.page);
+    await expectNoIdentity(a.page);
+    await unlock(a.page, PASS_A);
+    await expectIdentity(a.page, idA);
+    const vaultBefore = await readVault(a.page);
+    expect(vaultBefore).not.toBeNull();
+
+    const keys = view(a.page);
+    const file = keys.getByLabel('Downloaded keystore file', { exact: true });
+    const passphrase = keys.getByLabel('Keystore passphrase', { exact: true });
+    const verify = keys.getByRole('button', { name: 'Verify backup', exact: true });
+    const fileSuccess = keys.getByText(/^Backup verified:/);
+    const staleSuccess = keys.getByText(/^(Backup verified:|This backup is verified:)/);
+    // Both downloads have the same standard filename. Only their contents identify the seller.
+    const select = (text: string) => file.setInputFiles({
+      name: 'ghostpay-keystore.json', mimeType: 'application/json', buffer: Buffer.from(text, 'utf8'),
+    });
+
+    await select(backupA);
+    await passphrase.fill(PASS_A);
+    await verify.click();
+    await kdfExpect(fileSuccess).toBeVisible();
+    await expectIdentity(a.page, idA);
+    expect(await readVault(a.page)).toBe(vaultBefore);
+
+    await select(backupB);
+    // Observe the selection itself, before typing, submitting, or waiting for a verification result.
+    expect(await staleSuccess.count()).toBe(0);
+    await passphrase.fill(PASS_B);
+    await verify.click();
+    await kdfExpect(keys.getByRole('alert')).toContainText('This keystore decrypts, but it does not hold the loaded seller keys.');
+    await expect(staleSuccess).toHaveCount(0);
+    await expectIdentity(a.page, idA);
+    expect(await readVault(a.page)).toBe(vaultBefore);
+    for (const env of envs) expect(env.blocked).toEqual([]);
+  } finally {
+    for (const env of envs) await env.context.close();
+  }
+});
+
 test('cross-browser recovery: A backup -> independent B, B re-encrypts under a new passphrase', async ({ browser }) => {
   const envs: Env[] = [];
   try {

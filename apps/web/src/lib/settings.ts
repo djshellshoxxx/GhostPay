@@ -2,6 +2,13 @@ import { validateRpcUrl } from '@ghostpay/chain-adapters';
 import { validateSettingsDelayRange } from '@ghostpay/qr-exchange';
 import { UserFacingError } from './errors';
 
+export const INVOICE_LINK_CLIPBOARD_DELAYS_SEC = [30, 60] as const;
+type InvoiceLinkClipboardDelay = 0 | (typeof INVOICE_LINK_CLIPBOARD_DELAYS_SEC)[number];
+
+export function invoiceLinkClipboardDelay(value: unknown): InvoiceLinkClipboardDelay {
+  return INVOICE_LINK_CLIPBOARD_DELAYS_SEC.find((seconds) => seconds === value) ?? 0;
+}
+
 /** Non-secret preferences. RPC URLs are stored in plain text in this browser; the Settings page says so. */
 export interface Settings {
   readonly rpcUrls: Readonly<Record<string, string>>;
@@ -13,6 +20,7 @@ export interface Settings {
   readonly lockTimeoutMin: number;
   readonly theme: 'system' | 'light' | 'dark';
   readonly autoClearFragment: boolean;
+  readonly invoiceLinkClipboardDelaySec: InvoiceLinkClipboardDelay;
   readonly pinnedSigners: readonly string[];
 }
 
@@ -23,8 +31,9 @@ export const DEFAULT_SETTINGS: Settings = Object.freeze({
   delayMinSec: 120,
   delayMaxSec: 900,
   lockTimeoutMin: 15,
-  theme: 'system',
+  theme: 'dark',
   autoClearFragment: true,
+  invoiceLinkClipboardDelaySec: 0,
   pinnedSigners: Object.freeze([]),
 });
 
@@ -107,7 +116,7 @@ export function sanitizeSettings(raw: unknown): Settings {
   const lock = o['lockTimeoutMin'];
   const lockTimeoutMin = typeof lock === 'number' && Number.isInteger(lock) && lock >= 1 && lock <= 240 ? lock : DEFAULT_SETTINGS.lockTimeoutMin;
   const t = o['theme'];
-  const theme = t === 'light' || t === 'dark' || t === 'system' ? t : 'system';
+  const theme = t === 'light' || t === 'dark' || t === 'system' ? t : DEFAULT_SETTINGS.theme;
   const pins = Array.isArray(o['pinnedSigners'])
     ? (o['pinnedSigners'] as unknown[]).filter((p): p is string => typeof p === 'string' && /^(?:02|03)[0-9a-f]{64}$/.test(p)).slice(0, 50)
     : [];
@@ -120,6 +129,7 @@ export function sanitizeSettings(raw: unknown): Settings {
     lockTimeoutMin,
     theme,
     autoClearFragment: typeof o['autoClearFragment'] === 'boolean' ? o['autoClearFragment'] : true,
+    invoiceLinkClipboardDelaySec: invoiceLinkClipboardDelay(o['invoiceLinkClipboardDelaySec']),
     pinnedSigners: pins,
   };
 }
@@ -132,6 +142,29 @@ export function loadSettings(storage: Pick<Storage, 'getItem'> | undefined = saf
   } catch {
     return DEFAULT_SETTINGS;
   }
+}
+
+/** The stored preference text as it is now: `null` when nothing is saved, `undefined` when storage cannot be read. */
+export function storedSettingsText(storage: Pick<Storage, 'getItem'> | undefined = safeLocalStorage()): string | null | undefined {
+  try {
+    return storage?.getItem(SETTINGS_KEY);
+  } catch {
+    return undefined;
+  }
+}
+
+/**
+ * `next`, keeping the identity of every value that `current` already holds, so that only what changed invalidates work
+ * bound to it (an RPC client, a reviewed invoice). Returns `current` itself when nothing differs.
+ */
+export function mergeSettings(current: Settings, next: Settings): Settings {
+  const out: Record<string, unknown> = { ...next };
+  let changed = false;
+  for (const key of Object.keys(next) as (keyof Settings)[]) {
+    if (JSON.stringify(current[key]) === JSON.stringify(next[key])) out[key] = current[key];
+    else changed = true;
+  }
+  return changed ? (out as unknown as Settings) : current;
 }
 
 /** Saves only validated non-secret preferences. Returns false when storage is unavailable. */

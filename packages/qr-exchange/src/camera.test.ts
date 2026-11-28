@@ -266,6 +266,40 @@ describe('readers', () => {
     expect(await (await createPlatformReader(none))?.read(fakeVideo())).toBeNull();
   });
 
+  it('uses the first bounded nonempty native camera result in detection order', async () => {
+    const detect = vi.fn()
+      .mockResolvedValueOnce(['', 'x'.repeat(MAX_SCAN_TEXT_LEN + 1), 'first', 'second'].map((rawValue) => ({ rawValue })))
+      .mockResolvedValueOnce([{ rawValue: '' }]);
+    const reader = await createPlatformReader(class { detect = detect; });
+    expect(await reader?.read(fakeVideo())).toBe('first');
+    expect(await reader?.read(fakeVideo())).toBeNull();
+  });
+
+  it('switches a failing native camera reader to jsQR on the same frame and reuses it', async () => {
+    const detect = vi.fn()
+      .mockResolvedValueOnce([])
+      .mockResolvedValueOnce([{ rawValue: 'native' }])
+      .mockRejectedValue(new Error('video frames unsupported'));
+    const chunk = encodeMultipart(new Uint8Array([4, 3, 2, 1]))[0] as string;
+    const frame = renderFrame(chunk);
+    const createElement = vi.fn((): Canvas2dLike => ({
+      width: 0, height: 0,
+      getContext: () => ({ drawImage: () => undefined, getImageData: () => frame }),
+    }));
+    const reader = await createDefaultReader({
+      BarcodeDetector: class { detect = detect; },
+      document: { createElement },
+    });
+    const video = fakeVideo();
+    expect(await reader.read(video)).toBeNull();
+    expect(await reader.read(video)).toBe('native');
+    expect(createElement).not.toHaveBeenCalled();
+    expect(await reader.read(video)).toBe(chunk);
+    expect(await reader.read(video)).toBe(chunk);
+    expect(detect).toHaveBeenCalledTimes(3);
+    expect(createElement).toHaveBeenCalledOnce();
+  });
+
   function renderFrame(text: string, scale = 4): Frame {
     const m = qrMatrix(text, 'M');
     const q = 4;

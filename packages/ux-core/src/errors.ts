@@ -24,6 +24,8 @@ export const INVOICE_CODES = [
   'SIGNING',
   'RANDOMNESS',
   'UNSUPPORTED',
+  'UNTRUSTED_SIGNER',
+  'INVALID_SIGNATURE',
 ] as const;
 
 /** Codes of `ChainAdapterError` (packages/chain-adapters). */
@@ -355,6 +357,22 @@ const CATALOG: Readonly<Record<string, Entry>> = Object.freeze({
     'error',
     'pre',
     'browser',
+  ),
+  UNTRUSTED_SIGNER: E(
+    'This invoice is not signed by a seller key you trust.',
+    'Its signature is valid, but the signing key is not one of the pinned seller keys, so it does not authenticate the seller\'s identity.',
+    LINK,
+    'error',
+    'pre',
+    'invoice-link',
+  ),
+  INVALID_SIGNATURE: E(
+    'The invoice signature is not valid.',
+    'The invoice was changed after it was signed, or it was signed with a different key.',
+    LINK,
+    'error',
+    'pre',
+    'invoice-link',
   ),
   // Chain adapter
   INVALID_INPUT: E(

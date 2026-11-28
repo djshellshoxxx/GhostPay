@@ -192,6 +192,19 @@ describe('BtcView header chain: busy state after a check', () => {
 });
 
 describe('BtcView header chain: re-review fixes', () => {
+  it('requires a fresh spentness scan when checked headers extend beyond the last local scan', async () => {
+    const chain = mockChain('regtest', walletA());
+    const user = await open(chain, sharedStore().storeFor);
+    await scanToMatch(user); await reviewAndApprove(user);
+    forkChain(chain.blocks, 5, 1, 2);
+    await updateTo(user, 5);
+    const box = screen.getByRole<HTMLInputElement>('checkbox', { name: /^Sweep / });
+    expect(box.disabled).toBe(true); expect(box.checked).toBe(false);
+    expect(screen.queryByText('Review before signing')).toBeNull();
+    expect(screen.queryByText(/1 unspent payment/)).toBeNull();
+    await scanToMatch(user);
+    expect(screen.getByRole<HTMLInputElement>('checkbox', { name: /^Sweep / }).disabled).toBe(false);
+  });
   it('F1: a transaction signed before Forget cannot be broadcast while its input is unchecked', async () => {
     const chain = mockChain('regtest', walletA());
     const user = await open(chain, sharedStore().storeFor, { headersPerRound: 1, maxRounds: 2 });
@@ -208,12 +221,15 @@ describe('BtcView header chain: re-review fixes', () => {
     expect(screen.queryByRole('button', { name: /Broadcast to/ })).toBeNull();
     expect(screen.queryByRole('button', { name: 'Review sweep' })?.hasAttribute('disabled') ?? true).toBe(true);
     expect(chain.broadcasts).toHaveLength(0);
-    // M2: after headers catch up again, the old selection is gone: nothing is re-selected and Review stays disabled.
+    // Catching up headers cannot restore spentness invalidated while only a prefix was checked.
     await updateTo(user, 4);
     const box = screen.getByRole<HTMLInputElement>('checkbox', { name: /Sweep [0-9a-f]{64}:1/ });
-    expect(box.disabled).toBe(false);
+    expect(box.disabled).toBe(true);
     expect(box.checked).toBe(false);
     expect(screen.getByRole<HTMLButtonElement>('button', { name: 'Review sweep' }).disabled).toBe(true);
+    await scanToMatch(user);
+    expect(screen.getByRole<HTMLInputElement>('checkbox', { name: /Sweep [0-9a-f]{64}:1/ }).disabled).toBe(false);
+    expect(screen.getByRole<HTMLInputElement>('checkbox', { name: /Sweep [0-9a-f]{64}:1/ }).checked).toBe(false);
   });
 
   it('M1: while a running check has already switched to a fork without the paying block, Sign and Broadcast refuse', async () => {
@@ -408,12 +424,14 @@ describe('BtcView header chain: delta review fixes', () => {
     // Resync stops at height 2 (the round cap): the payment at height 3 is not reorged, only not checked yet.
     await updateTo(user, 2);
     expect(screen.queryByText(/no longer on the checked chain/)).toBeNull();
-    expect(screen.getByText(/1 unspent payment/)).toBeTruthy();
+    expect(screen.getByText(/1 payment\(s\) found with unknown spent status/)).toBeTruthy();
     const box = screen.getByRole<HTMLInputElement>('checkbox', { name: /Sweep [0-9a-f]{64}:1/ });
     expect(box.disabled).toBe(true);
     expect(screen.getByText(/above the checked headers \(height 2\) and cannot be swept/)).toBeTruthy();
-    // Once headers catch up, it can be selected again.
+    // Headers alone do not recheck the spending suffix. A fresh scan must refresh spentness too.
     await updateTo(user, 4);
+    expect(screen.getByRole<HTMLInputElement>('checkbox', { name: /Sweep [0-9a-f]{64}:1/ }).disabled).toBe(true);
+    await scanToMatch(user);
     expect(screen.getByRole<HTMLInputElement>('checkbox', { name: /Sweep [0-9a-f]{64}:1/ }).disabled).toBe(false);
   });
 
@@ -691,7 +709,9 @@ describe('BtcView header chain', () => {
       return chain.fetchFn(url, init);
     };
     cleanup();
-    // Without a store at all (jsdom has no IndexedDB) headers live in memory, and the view says they are not kept.
+    // Without a store at all (no IndexedDB) headers live in memory, and the view says they are not kept. The shared
+    // test setup installs an in-memory IndexedDB for the wallet journal, so remove it explicitly for this case.
+    vi.stubGlobal('indexedDB', undefined);
     const u3 = userEvent.setup();
     renderWith(<BtcView scanWorkerFactory={inlineBtcScanWorker} />, makeServices({ fetchFn: slow }));
     await importWallet(u3);

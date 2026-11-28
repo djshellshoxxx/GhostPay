@@ -19,8 +19,8 @@ export function findUnsafeAnchors(markup: string): UnsafeAnchor[] {
   while ((m = tagRe.exec(markup)) !== null) {
     const tag = m[0];
     const idx = i++;
-    if (!/\btarget\s*=\s*["']?_blank/i.test(tag)) continue;
-    const rel = /\brel\s*=\s*(?:"([^"]*)"|'([^']*)'|([^\s>]+))/i.exec(tag);
+    if (!/\starget\s*=\s*["']?_blank/i.test(tag)) continue;
+    const rel = /\srel\s*=\s*(?:"([^"]*)"|'([^']*)'|([^\s>]+))/i.exec(tag);
     const val = (rel?.[1] ?? rel?.[2] ?? rel?.[3])?.toLowerCase();
     if (val === undefined) out.push({ index: idx, reason: 'MISSING_REL' });
     else {

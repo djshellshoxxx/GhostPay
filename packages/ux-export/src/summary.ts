@@ -8,6 +8,18 @@ import { isStatus, validateRow, type LedgerRow, type LedgerStatus } from './type
 /** Aggregation bucket size (all UTC). `all` yields one bucket per asset. */
 export type SummaryPeriod = 'day' | 'month' | 'quarter' | 'year' | 'all';
 
+function assertPeriod(period: unknown): asserts period is SummaryPeriod {
+  if (
+    period !== 'day' &&
+    period !== 'month' &&
+    period !== 'quarter' &&
+    period !== 'year' &&
+    period !== 'all'
+  ) {
+    throw new ExportError('INVALID_OPTION', 'unknown summary period');
+  }
+}
+
 export interface SummaryOptions {
   readonly period: SummaryPeriod;
   /** Statuses to include (default `['confirmed']`). */
@@ -37,6 +49,7 @@ export interface SummaryLine {
 /** UTC period label for an instant. */
 export function periodKey(ms: number, period: SummaryPeriod): string {
   assertTimestamp(ms);
+  assertPeriod(period);
   if (period === 'all') return 'ALL';
   const d = new Date(ms);
   const y = String(d.getUTCFullYear()).padStart(4, '0');
@@ -68,6 +81,7 @@ interface Acc {
  * (`SUMMARY_MISMATCH`) rather than silently mis-scaled and summed.
  */
 export function summarize(rows: Iterable<LedgerRow>, options: SummaryOptions): SummaryLine[] {
+  assertPeriod(options.period);
   const statuses = options.statuses ?? ['confirmed'];
   for (const s of statuses) {
     if (!isStatus(s)) throw new ExportError('INVALID_OPTION', 'unknown status filter');

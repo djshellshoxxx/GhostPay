@@ -94,21 +94,26 @@ export interface ResolvedColumn {
 
 /** Validates a column list: known keys, no duplicate keys or headers, non-empty. */
 export function resolveColumns(specs: readonly ColumnSpec[]): ResolvedColumn[] {
-  if (specs.length === 0 || specs.length > ALL_COLUMNS.length) {
+  if (!Array.isArray(specs) || specs.length === 0 || specs.length > ALL_COLUMNS.length) {
     throw new ExportError('INVALID_OPTION', 'columns must contain 1..13 entries');
   }
   const keys = new Set<string>();
   const headers = new Set<string>();
-  return specs.map((s) => {
-    const key = typeof s === 'string' ? s : s.key;
-    const header = typeof s === 'string' ? s : s.header;
-    if (!ALL_COLUMNS.includes(key)) throw new ExportError('INVALID_OPTION', 'unknown column key');
-    if (header === '' || header.length > 64)
+  // Runtime callers may pass sparse arrays or untyped descriptors: Array.from visits holes as undefined.
+  return Array.from(specs as readonly unknown[], (s: unknown) => {
+    if (typeof s !== 'string' && (typeof s !== 'object' || s === null || Array.isArray(s)))
+      throw new ExportError('INVALID_OPTION', 'invalid column descriptor');
+    const d = s as string | { readonly key?: unknown; readonly header?: unknown };
+    const key: unknown = typeof d === 'string' ? d : d.key;
+    const header: unknown = typeof d === 'string' ? d : d.header;
+    if (typeof key !== 'string' || !(ALL_COLUMNS as readonly string[]).includes(key))
+      throw new ExportError('INVALID_OPTION', 'unknown column key');
+    if (typeof header !== 'string' || header.length === 0 || header.length > 64)
       throw new ExportError('INVALID_OPTION', 'header must be 1..64 chars');
     if (keys.has(key) || headers.has(header)) throw new ExportError('INVALID_OPTION', 'duplicate column');
     keys.add(key);
     headers.add(header);
-    return { key, header };
+    return { key: key as ColumnKey, header };
   });
 }
 

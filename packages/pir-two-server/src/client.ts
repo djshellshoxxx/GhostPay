@@ -76,7 +76,11 @@ export function createHttpLink(
 ): PirServerLink {
   assertTestnetChainId(chainId);
   parseHost(baseUrl);
-  const base = baseUrl.replace(/\/+$/, '');
+  // Walk only the terminal run: an unanchored /\/+$/ expression backtracks quadratically when
+  // a long interior run is followed by a non-slash. Keep the configured origin/path bytes unchanged.
+  let end = baseUrl.length;
+  while (end > 0 && baseUrl[end - 1] === '/') end--;
+  const base = baseUrl.slice(0, end);
   const timeoutMs = o.timeoutMs ?? 30_000;
   const wrap = async <T>(f: () => Promise<T>): Promise<T> => {
     try {

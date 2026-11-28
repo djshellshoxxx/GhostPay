@@ -1,0 +1,307 @@
+
+ RUN  v5.0.5 /workspace/scratch/63789860705e/GhostPay-f03-main-reconciliation/apps/web
+
+ ✓ src/lib/qrClassify.test.ts > classifyQrText: positive cases per family > multipart fragment: reports session/index/total but never the chunk data 2ms
+ ✓ src/lib/qrClassify.test.ts > classifyQrText: positive cases per family > invoice link (plain, bearer key, passphrase) and raw fragment, without returning the bearer payload 2ms
+ ✓ src/lib/qrClassify.test.ts > classifyQrText: positive cases per family > invoice link honours the allowed-host option of the owning parser 1ms
+ ✓ src/lib/qrClassify.test.ts > classifyQrText: positive cases per family > EVM requests: EIP-681 native and ERC-20, and EIP-3770 3ms
+ ✓ src/lib/qrClassify.test.ts > classifyQrText: positive cases per family > bitcoin requests: BIP-21 and silent payments 2ms
+ ✓ src/lib/qrClassify.test.ts > classifyQrText: positive cases per family > Solana Pay and TRON requests 2ms
+ ✓ src/lib/qrClassify.test.ts > classifyQrText: positive cases per family > public meta-address, raw and in its versioned envelope 2ms
+ ✓ src/lib/qrClassify.test.ts > classifyQrText: positive cases per family > seller pairing, validated against the allowed chains (default: the app pairing chains) 2ms
+ ✓ src/lib/qrClassify.test.ts > classifyQrText: positive cases per family > settings: envelope only (format + integer v), including a future version 0ms
+ ✓ src/lib/qrClassify.test.ts > classifyQrText: positive cases per family > seller receipt: signature verified by the owning parser 5ms
+ ✓ src/lib/qrClassify.test.ts > classifyQrText: positive cases per family > payment proof: payer local receipt by exact shape 1ms
+ ✓ src/lib/qrClassify.test.ts > classifyQrText: positive cases per family > encrypted keystore: envelope only, never decrypted, no secret material in the result 1ms
+ ✓ src/lib/qrClassify.test.ts > classifyQrText: negatives > empty and whitespace-only input 0ms
+ ✓ src/lib/qrClassify.test.ts > classifyQrText: negatives > size cap is UTF-8 bytes, checked before parsing, and can only be lowered 12ms
+ ✓ src/lib/qrClassify.test.ts > classifyQrText: negatives > malformed JSON, duplicate keys (strict parser) and non-object JSON 1ms
+ ✓ src/lib/qrClassify.test.ts > classifyQrText: negatives > unsupported versions of known formats say which format 1ms
+ ✓ src/lib/qrClassify.test.ts > classifyQrText: negatives > damaged payloads of recognised families are malformed with the family hint 2ms
+ ✓ src/lib/qrClassify.test.ts > classifyQrText: negatives > dangerous and unsupported schemes never reach a parser and are never echoed 1ms
+ ✓ src/lib/qrClassify.test.ts > classifyQrText: negatives > cross-family confusion: receipt vs proof, settings vs pairing, mixed discriminators are ambiguous 5ms
+ ✓ src/lib/qrClassify.test.ts > classifyQrText: negatives > leading/trailing whitespace: no repair beyond the owning parser 4ms
+ ✓ src/lib/qrClassify.test.ts > classifyQrText: negatives > NUL, control, bidi and BOM characters are refused before parsing 1ms
+ ✓ src/lib/qrClassify.test.ts > classifyQrText: negatives > plain text and bare addresses are not a recognised family 0ms
+ ✓ src/lib/qrClassify.test.ts > classifyQrText: negatives > never throws for non-string input 0ms
+ ✓ src/lib/qrClassify.test.ts > QR_FAMILY_SCREEN and kindForFamily > maps every family to its owning screen (or none) 0ms
+ ✓ src/lib/qrClassify.test.ts > QR_FAMILY_SCREEN and kindForFamily > maps classifications to the colour-coded QR kind via kindForPayload 10ms
+ ✓ src/views/Pay.invoiceQr.test.tsx > Pay invoice QR intake > previews a valid signed fragment locally and opens the ordinary review only after confirmation 341ms
+ ✓ src/views/Pay.invoiceQr.test.tsx > Pay invoice QR intake > previews a valid signed link locally and opens the ordinary review only after confirmation 135ms
+ ✓ src/views/Pay.invoiceQr.test.tsx > Pay invoice QR intake > imports its own app-generated invoice QR from deployment path /GhostPay/index.html 123ms
+ ✓ src/views/Pay.invoiceQr.test.tsx > Pay invoice QR intake > imports its own app-generated invoice QR from deployment path /GhostPay.v1/checkout.page.html 93ms
+ ✓ src/views/Pay.invoiceQr.test.tsx > Pay invoice QR intake > imports its own app-generated invoice QR from deployment path /deploy/nestednestednestednestednestednestednestednestednestednestednestednestednestednestednestednestednestednestednestednested/index.html 103ms
+ ✓ src/views/Pay.invoiceQr.test.tsx > Pay invoice QR intake > rejects traversal or a different deployment path /./ 70ms
+ ✓ src/views/Pay.invoiceQr.test.tsx > Pay invoice QR intake > rejects traversal or a different deployment path /../ 65ms
+ ✓ src/views/Pay.invoiceQr.test.tsx > Pay invoice QR intake > rejects traversal or a different deployment path /%2e/ 72ms
+ ✓ src/views/Pay.invoiceQr.test.tsx > Pay invoice QR intake > rejects traversal or a different deployment path /%2E%2e/ 63ms
+ ✓ src/views/Pay.invoiceQr.test.tsx > Pay invoice QR intake > rejects traversal or a different deployment path /.%2e/ 63ms
+ ✓ src/views/Pay.invoiceQr.test.tsx > Pay invoice QR intake > rejects traversal or a different deployment path /%2e./ 77ms
+ ✓ src/views/Pay.invoiceQr.test.tsx > Pay invoice QR intake > rejects traversal or a different deployment path /%252e%252e/ 73ms
+ ✓ src/views/Pay.invoiceQr.test.tsx > Pay invoice QR intake > rejects traversal or a different deployment path /safe/%2f../ 63ms
+ ✓ src/views/Pay.invoiceQr.test.tsx > Pay invoice QR intake > rejects traversal or a different deployment path /safe/%5c../ 73ms
+ ✓ src/views/Pay.invoiceQr.test.tsx > Pay invoice QR intake > rejects traversal or a different deployment path /another/index.html 66ms
+ ✓ src/views/Pay.invoiceQr.test.tsx > Pay invoice QR intake > rejects unsafe or oversized path even when the current base uses it: /%252e%252e/index.html 65ms
+ ✓ src/views/Pay.invoiceQr.test.tsx > Pay invoice QR intake > rejects unsafe or oversized path even when the current base uses it: /safe%2f../index.html 69ms
+ ✓ src/views/Pay.invoiceQr.test.tsx > Pay invoice QR intake > rejects unsafe or oversized path even when the current base uses it: /%5c../index.html 63ms
+ ✓ src/views/Pay.invoiceQr.test.tsx > Pay invoice QR intake > rejects unsafe or oversized path even when the current base uses it: /bad%zz/index.html 63ms
+ ✓ src/views/Pay.invoiceQr.test.tsx > Pay invoice QR intake > rejects unsafe or oversized path even when the current base uses it: /%00/index.html 70ms
+ ✓ src/views/Pay.invoiceQr.test.tsx > Pay invoice QR intake > rejects unsafe or oversized path even when the current base uses it: /aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa 61ms
+ ✓ src/views/Pay.invoiceQr.test.tsx > Pay invoice QR intake > rejects hostile URL prefix javascript:alert(1) without navigation or wallet access 67ms
+ ✓ src/views/Pay.invoiceQr.test.tsx > Pay invoice QR intake > rejects hostile URL prefix data:text/html,secret without navigation or wallet access 67ms
+ ✓ src/views/Pay.invoiceQr.test.tsx > Pay invoice QR intake > rejects hostile URL prefix https://app.test.evil/ without navigation or wallet access 64ms
+ ✓ src/views/Pay.invoiceQr.test.tsx > Pay invoice QR intake > rejects hostile URL prefix https://app.test@evil.test/ without navigation or wallet access 61ms
+ ✓ src/views/Pay.invoiceQr.test.tsx > Pay invoice QR intake > rejects hostile URL prefix https://app.test:443/ without navigation or wallet access 63ms
+ ✓ src/views/Pay.invoiceQr.test.tsx > Pay invoice QR intake > rejects hostile URL prefix https://app.test/?secret=1 without navigation or wallet access 57ms
+ ✓ src/views/Pay.invoiceQr.test.tsx > Pay invoice QR intake > rejects hostile URL prefix http://app.test/ without navigation or wallet access 60ms
+ ✓ src/views/Pay.invoiceQr.test.tsx > Pay invoice QR intake > rejects hostile URL prefix https://app.test/../ without navigation or wallet access 65ms
+ ✓ src/views/Pay.invoiceQr.test.tsx > Pay invoice QR intake > rejects hostile URL prefix prefix without navigation or wallet access 268ms
+ ✓ src/views/Pay.invoiceQr.test.tsx > Pay invoice QR intake > rejects malformed or unrelated input without a preview 67ms
+ ✓ src/views/Pay.invoiceQr.test.tsx > Pay invoice QR intake > rejects malformed or unrelated input without a preview 66ms
+ ✓ src/views/Pay.invoiceQr.test.tsx > Pay invoice QR intake > rejects malformed or unrelated input without a preview 55ms
+ ✓ src/views/Pay.invoiceQr.test.tsx > Pay invoice QR intake > rejects malformed or unrelated input without a preview 56ms
+ ✓ src/views/Pay.invoiceQr.test.tsx > Pay invoice QR intake > rejects malformed or unrelated input without a preview 54ms
+ ✓ src/views/Pay.invoiceQr.test.tsx > Pay invoice QR intake > discards the previous preview before new oversized input is rejected 94ms
+ ✓ src/views/Pay.invoiceQr.test.tsx > Pay invoice QR intake > uses the existing passphrase prompt without showing private fields 1619ms
+ ✓ src/views/Pay.invoiceQr.test.tsx > Pay invoice QR intake > does not install a late ordinary parser result after confirming QR then changing seller session 117ms
+ ✓ src/views/Pay.invoiceQr.test.tsx > Pay invoice QR intake > keeps newer invoice B when an old confirmed QR parse A returns after session change 135ms
+ ✓ src/views/Pay.invoiceQr.test.tsx > Pay invoice QR intake > does not activate an old preview during coalesced collapse and reopening 90ms
+ ✓ src/views/Pay.invoiceQr.test.tsx > Pay invoice QR intake > does not revive a pending parse when collapse and reopening coalesce before toggle 85ms
+ ✓ src/views/Pay.invoiceQr.test.tsx > Pay invoice QR intake > does not install a late preview after collapse changes 86ms
+ ✓ src/views/Pay.invoiceQr.test.tsx > Pay invoice QR intake > does not install a late preview after reset changes 116ms
+ ✓ src/views/Pay.invoiceQr.test.tsx > Pay invoice QR intake > does not install a late preview after session changes 80ms
+ ✓ src/views/Pay.invoiceQr.test.tsx > Pay invoice QR intake > does not install a late preview after fragment changes 114ms
+ ✓ src/views/Pay.invoiceQr.test.tsx > Pay invoice QR intake > does not install a late preview after unmount changes 68ms
+ ✓ src/views/Pay.invoiceQr.test.tsx > Pay invoice QR intake > does not install a late preview after input changes 77ms
+ ✓ src/views/Pay.invoiceQr.test.tsx > Pay invoice QR intake > stops late camera permission tracks after collapse changes 86ms
+ ✓ src/views/Pay.invoiceQr.test.tsx > Pay invoice QR intake > stops late camera permission tracks after reset changes 89ms
+ ✓ src/views/Pay.invoiceQr.test.tsx > Pay invoice QR intake > stops late camera permission tracks after session changes 94ms
+ ✓ src/views/Pay.invoiceQr.test.tsx > Pay invoice QR intake > stops late camera permission tracks after fragment changes 101ms
+ ✓ src/views/Pay.invoiceQr.test.tsx > Pay invoice QR intake > stops late camera permission tracks after unmount changes 79ms
+ ✓ src/views/Pay.invoiceQr.test.tsx > Pay invoice QR intake > invalidates a pending QR preview when pinned signer settings change without unmounting Pay 80ms
+ ✓ src/views/Pay.invoiceQr.test.tsx > Pay invoice QR intake > clears an already displayed preview when disclosure closes or session changes 125ms
+ ✓ src/views/Pay.invoiceQr.test.tsx > Pay invoice QR intake: cryptographic and validity failures reach the same hard stops as pasted links > previews a forged (re-signed-less) invoice as invalid and keeps payment blocked after opening 88ms
+ ✓ src/views/Pay.invoiceQr.test.tsx > Pay invoice QR intake: cryptographic and validity failures reach the same hard stops as pasted links > rejects a QR whose encoding was corrupted in transit without any preview 61ms
+ ✓ src/views/Pay.invoiceQr.test.tsx > Pay invoice QR intake: cryptographic and validity failures reach the same hard stops as pasted links > opens an expired scanned invoice only into the ordinary review, which blocks it 87ms
+ ✓ src/views/Pay.invoiceQr.test.tsx > Pay invoice QR intake: cryptographic and validity failures reach the same hard stops as pasted links > never reaches a wallet merely because a valid QR was scanned and opened 106ms
+ ✓ src/views/Pay.invoiceQr.test.tsx > Pay invoice QR intake: other GhostPay QR families are named, never acted on > explains a {"format":"ghostpay-settings","v":1,"settings":{"autoClearFragment":true,"delayMaxSec":900,"delayMinSec":120,"lockTimeoutMin":15,"theme":"dark"}} QR without a preview, navigation or wallet access 373ms
+ ✓ src/views/Pay.invoiceQr.test.tsx > Pay invoice QR intake: other GhostPay QR families are named, never acted on > explains a ethereum:0xfB6916095ca1df60bB79Ce92cE3Ea74c37c5d359@1?value=1 QR without a preview, navigation or wallet access 77ms
+ ✓ src/views/Pay.invoiceQr.test.tsx > Pay invoice QR intake: other GhostPay QR families are named, never acted on > explains a bitcoin:bc1qar0srrr7xfkvy5l643lydnw9re59gtzzwf5mdq QR without a preview, navigation or wallet access 62ms
+ ✓ src/views/Pay.invoiceQr.test.tsx > Pay invoice QR intake: other GhostPay QR families are named, never acted on > keeps the generic guidance for text that is not any GhostPay QR 50ms
+ ✓ src/views/Pay.invoiceQr.test.tsx > Pay invoice QR intake: multi-part invoice codes > assembles out-of-order parts locally and previews the invoice only once complete 113ms
+ ✓ src/lib/scanSpam.test.ts > splitLanes > puts router announcements in the trusted lane and keeps the rest, deprioritising suspected spam without dropping it 3ms
+ ✓ src/lib/scanSpam.test.ts > splitLanes > flags a caller that floods one block 0ms
+ ✓ src/lib/scanSpam.test.ts > splitLanes adversarial matrix (A5) > drops nothing: every input lands in exactly one lane, whatever the flood 1ms
+ ✓ src/lib/scanSpam.test.ts > splitLanes adversarial matrix (A5) > flags a caller only above FLOOD_PER_BLOCK in one block, counted per caller and per block 2ms
+ ✓ src/lib/scanSpam.test.ts > splitLanes adversarial matrix (A5) > a flooder never pushes honest open-lane announcements behind it, and keeps chain order inside each group 1ms
+ ✓ src/lib/scanSpam.test.ts > splitLanes adversarial matrix (A5) > the router lane is matched case-insensitively and is never deprioritised, even when the router posts in bulk 0ms
+ ✓ src/lib/scanSpam.test.ts > splitLanes adversarial matrix (A5) > an attacker replaying an honest ephemeral key only deprioritises it, never removes it 0ms
+ ✓ src/lib/scanSpam.test.ts > anonymitySet > is partial when the scan stopped before the head it counts back from (A5) 1ms
+ ✓ src/lib/scanSpam.test.ts > anonymitySet > counts router announcements in roughly the last 7 and 30 days and buckets them coarsely 1ms
+ ✓ src/lib/scanSpam.test.ts > anonymitySet > copy gives the number, states the heuristic limits, and never claims anonymity 0ms
+ ✓ src/lib/scanSpam.test.ts > lane options (spec 05 D4) > takes a custom per-block flood threshold 0ms
+ ✓ src/lib/scanSpam.test.ts > lane options (spec 05 D4) > with the local spam score off, keeps chain order, flags nothing and still drops nothing 0ms
+ ✓ src/lib/scanSpam.test.ts > lane options (spec 05 D4) > sanitizes stored lane settings field by field and fails closed to the defaults 0ms
+ ✓ src/lib/scanSpam.test.ts > lane options (spec 05 D4) > round-trips through storage under its own key and tolerates missing or failing storage 0ms
+ ✓ src/lib/scanSpam.test.ts > same-token transfer estimate (spec 05 D3) > counts transfers of the token at similar amounts in a fixed recent window, asking with no sender or recipient filter 1ms
+ ✓ src/lib/scanSpam.test.ts > same-token transfer estimate (spec 05 D3) > starts at genesis on a short chain and reports unknown with the reason on any error or limit 18ms
+ ✓ src/lib/scanSpam.test.ts > same-token transfer estimate (spec 05 D3) > fails closed when the RPC returns another token or an out-of-window transfer 0ms
+ ✓ src/lib/scanSpam.test.ts > same-token transfer estimate (spec 05 D3) > is carried by the privacy set unchanged and described as a labelled estimate without changing the level 1ms
+ ✓ src/views/Pay.requestFile.test.tsx > Pay request-file intake > stages the unchanged signed invoice locally (encrypted=false) and opens only after explicit review 456ms
+ ✓ src/views/Pay.requestFile.test.tsx > Pay request-file intake > stages the unchanged signed invoice locally (encrypted=true) and opens only after explicit review 129ms
+ ✓ src/views/Pay.requestFile.test.tsx > Pay request-file intake > uses the existing passphrase flow without previewing private fields 1789ms
+ ✓ src/views/Pay.requestFile.test.tsx > Pay request-file intake > accepts a second file after forgetting the first without refreshing the page 297ms
+ ✓ src/views/Pay.requestFile.test.tsx > Pay request-file intake > clears an earlier preview before rejecting an oversized replacement without reading it 127ms
+ ✓ src/views/Pay.requestFile.test.tsx > Pay request-file intake > cannot let an older file read replace a newer QR preview 135ms
+ ✓ src/views/Pay.requestFile.test.tsx > Pay request-file intake > choosing a file supersedes an older QR parser result 132ms
+ ✓ src/views/Pay.requestFile.test.tsx > Pay request-file intake > does not stage a file that finishes after clear invalidation 77ms
+ ✓ src/views/Pay.requestFile.test.tsx > Pay request-file intake > does not stage a file that finishes after close invalidation 77ms
+ ✓ src/views/Pay.requestFile.test.tsx > Pay request-file intake > does not stage a file that finishes after hidden invalidation 69ms
+ ✓ src/views/Pay.requestFile.test.tsx > Pay request-file intake > does not stage a file that finishes after session invalidation 69ms
+ ✓ src/views/Pay.requestFile.test.tsx > Pay request-file intake > invalidates a pending file read on app lock (seller session=absent) 87ms
+ ✓ src/views/Pay.requestFile.test.tsx > Pay request-file intake > invalidates a pending file read on app lock (seller session=retained) 93ms
+ ✓ src/views/Pay.requestFile.test.tsx > Pay request-file intake > invalidates a staged file preview on app lock (seller session=absent) 88ms
+ ✓ src/views/Pay.requestFile.test.tsx > Pay request-file intake > invalidates a staged file preview on app lock (seller session=retained) 89ms
+ ✓ src/views/Pay.requestFile.test.tsx > Pay request-file intake > discards a pending file when pinned signer policy changes without unmounting Pay 46ms
+ ✓ src/views/Pay.requestFile.test.tsx > Pay request-file intake > preserves the lean invoice gate when a request file contains a full-profile invoice 35ms
+ ✓ src/components/PaymentRequestDownload.test.tsx > payment request download > exports the unchanged original fragment only after explicit action, with a generic filename 118ms
+ ✓ src/components/PaymentRequestDownload.test.tsx > payment request download > exports the current invoice after a new request replaces it 12ms
+ ✓ src/components/PaymentRequestDownload.test.tsx > payment request download > reports a blocked download without exposing content or claiming that a file was saved 19ms
+ ✓ src/components/PaymentRequestDownload.test.tsx > payment request download > refuses invalid request data before invoking the download helper and clears failure for a new invoice 11ms
+ ✓ src/components/PaymentRequestFileInput.test.tsx > local payment request file intake > reads only an explicitly selected file and passes its exact fragment, independent of MIME and filename 53ms
+ ✓ src/components/PaymentRequestFileInput.test.tsx > local payment request file intake > allows the same file to be selected again without retaining native input state 14ms
+ ✓ src/components/PaymentRequestFileInput.test.tsx > local payment request file intake > rejects declared overflow before calling the file reader and invalidates the preceding preview first 11ms
+ ✓ src/components/PaymentRequestFileInput.test.tsx > local payment request file intake > rejects an empty or invalid wrapper without exposing contents 6ms
+ ✓ src/components/PaymentRequestFileInput.test.tsx > local payment request file intake > rejects an empty or invalid wrapper without exposing contents 7ms
+ ✓ src/components/PaymentRequestFileInput.test.tsx > local payment request file intake > rejects an empty or invalid wrapper without exposing contents 7ms
+ ✓ src/components/PaymentRequestFileInput.test.tsx > local payment request file intake > rejects an empty or invalid wrapper without exposing contents 7ms
+ ✓ src/components/PaymentRequestFileInput.test.tsx > local payment request file intake > checks actual bytes after a declared-small read 7ms
+ ✓ src/components/PaymentRequestFileInput.test.tsx > local payment request file intake > refuses truncated reads and malformed UTF-8 instead of repairing them 10ms
+ ✓ src/components/PaymentRequestFileInput.test.tsx > local payment request file intake > does not expose reader or consumer exception details 12ms
+ ✓ src/components/PaymentRequestFileInput.test.tsx > local payment request file intake > keeps the latest selected request when an older read resolves later 8ms
+ ✓ src/components/PaymentRequestFileInput.test.tsx > local payment request file intake > an invalid replacement discards an older pending read 9ms
+ ✓ src/components/PaymentRequestFileInput.test.tsx > local payment request file intake > honors a parent revision changed by a newer QR input 6ms
+ ✓ src/components/PaymentRequestFileInput.test.tsx > local payment request file intake > invalidates a read when the parent scope changes and when the seller session locks without a render 6ms
+ ✓ src/components/PaymentRequestFileInput.test.tsx > local payment request file intake > invalidates a close/reopen cycle even when native toggle events coalesce 7ms
+ ✓ src/components/PaymentRequestFileInput.test.tsx > local payment request file intake > aborts an active consumer and clears its preview on hide 57ms
+ ✓ src/components/PaymentRequestFileInput.test.tsx > local payment request file intake > does not start reads in a hidden document or closed disclosure 4ms
+ ✓ src/components/PaymentRequestFileInput.test.tsx > local payment request file intake > aborts a pending consumer on unmount and honors explicit consumer refusal 62ms
+ ✓ src/i18n/securityKeys.test.ts > critical translation native-review boundary (IN-3) > classifies every current English key exactly once without unknown or duplicate policy keys 3ms
+ ✓ src/i18n/securityKeys.test.ts > critical translation native-review boundary (IN-3) > includes the accepted consent, fee, irreversibility, loss, recovery and tamper boundaries 1ms
+ ✓ src/i18n/securityKeys.test.ts > critical translation native-review boundary (IN-3) > keeps all critical text English in the es draft despite complete translated content 71ms
+ ✓ src/i18n/securityKeys.test.ts > critical translation native-review boundary (IN-3) > keeps all critical text English in the ar draft despite complete translated content 37ms
+ ✓ src/i18n/securityKeys.test.ts > critical translation native-review boundary (IN-3) > keeps all critical text English in the ja draft despite complete translated content 34ms
+ ✓ src/i18n/securityKeys.test.ts > critical translation native-review boundary (IN-3) > retains actual Spanish neutral labels, neutral plurals, and locale display formatting 13ms
+ ✓ src/i18n/securityKeys.test.ts > critical translation native-review boundary (IN-3) > does not accept a catalog metadata reviewed claim as native-review authority 0ms
+ ✓ src/i18n/securityKeys.test.ts > critical translation native-review boundary (IN-3) > uses the actual catalog locale registry decision, not approval inferred from a regional tag 1ms
+ ✓ src/i18n/securityKeys.test.ts > critical translation native-review boundary (IN-3) > still skips broken reviewed messages and diagnoses the English fallback once 1ms
+ ✓ src/i18n/securityKeys.test.ts > critical translation native-review boundary (IN-3) > always has bundled source critical text even when a caller omits or replaces the English layer 1ms
+ ✓ src/i18n/securityKeys.test.ts > critical translation native-review boundary (IN-3) > refuses draft text for an unknown runtime key before the classification census can run 0ms
+ ✓ src/i18n/securityKeys.test.ts > critical translation native-review boundary (IN-3) > reports policy fallback once and gives pseudo locales no production review exemption 0ms
+ ✓ src/components/QrFrame.test.tsx > QrFrame kinds > shareable renders label, icon and border class 155ms
+ ✓ src/components/QrFrame.test.tsx > QrFrame kinds > bearer renders label, icon and border class 19ms
+ ✓ src/components/QrFrame.test.tsx > QrFrame kinds > device renders label, icon and border class 13ms
+ ✓ src/components/QrFrame.test.tsx > QrFrame kinds > proof renders label, icon and border class 17ms
+ ✓ src/components/QrFrame.test.tsx > QrFrame kinds > caution renders label, icon and border class 12ms
+ ✓ src/components/QrFrame.test.tsx > QrFrame kinds > the secret kind also renders label, icon and class 6ms
+ ✓ src/components/QrFrame.test.tsx > QrFrame kinds > keeps the QR quiet zone inside the frame and never colours modules 6ms
+ ✓ src/components/QrFrame.test.tsx > QrFrame kinds > legacy QrView still renders caption and download 5ms
+ ✓ src/components/QrFrame.test.tsx > QrFrame kinds > shows a message for payloads too long for a QR 5ms
+ ✓ src/components/QrFrame.test.tsx > secret reveal > is hidden until revealed, has no copy or download, and auto-hides after 60 s 24ms
+ ✓ src/components/QrFrame.test.tsx > secret reveal > can be hidden manually and hides when the page is hidden 19ms
+ ✓ src/components/QrFrame.test.tsx > show larger > opens a labelled dialog, Escape closes it and focus returns 52ms
+ ✓ src/components/QrFrame.test.tsx > show larger > closes with the Close button and tolerates a failing wake lock 42ms
+ ✓ src/components/QrFrame.test.tsx > multipart > steps manually with Part i of n 58ms
+ ✓ src/components/QrFrame.test.tsx > multipart > auto-advances slowly and wraps 19ms
+ ✓ src/components/QrFrame.test.tsx > multipart > offers manual stepping only when reduced motion is requested 6ms
+ ✓ src/components/QrFrame.test.tsx > multipart > large view steps parts too 50ms
+ ✓ src/components/QrFrame.test.tsx > multipart > keeps the displayed part in bounds when the multipart payload shrinks 24ms
+ ✓ src/components/QrFrame.test.tsx > multipart > a single chunk is shown as a plain code 4ms
+ ✓ src/lib/merchantIdentity.test.ts > merchant origin pins > rejects credentials, non-HTTPS, fragments and oversized URLs 2ms
+ ✓ src/lib/merchantIdentity.test.ts > merchant origin pins > requires independently confirmed full key and never silently replaces a pin 3ms
+ ✓ src/lib/merchantIdentity.test.ts > merchant origin pins > fails closed on ambiguous duplicate-key JSON in a persisted signer pin 1ms
+ ✓ src/lib/merchantIdentity.test.ts > merchant origin pins > fails closed on corrupt storage, denied writes and stale changes 1ms
+ ✓ src/lib/merchantIdentity.test.ts > merchant pin transaction boundaries > refuses to mutate pins without origin locking 1ms
+ ✓ src/lib/merchantIdentity.test.ts > merchant pin transaction boundaries > does not overwrite a concurrent save between its storage read and write 2ms
+ ✓ src/lib/merchantIdentity.test.ts > merchant pin transaction boundaries > checks the active profile again inside the origin lock 1ms
+ ✓ src/lib/merchantIdentity.test.ts > merchant fetch cancellation > cancels a stalled stream promptly and omits cache, credentials and referrer 3ms
+ ✓ src/lib/merchantIdentity.test.ts > merchant fetch cancellation > refuses remote profiles that do not name their source origin 19ms
+ ✓ src/lib/merchantIdentity.test.ts > merchant fetch cancellation > bounds stalled requests by time and makes no request when already aborted 8ms
+ ✓ src/components/PaymentRequestQr.test.tsx > buildPaymentRequestUri > builds EIP-681 native and ERC-20 requests that re-parse 9ms
+ ✓ src/components/PaymentRequestQr.test.tsx > buildPaymentRequestUri > builds Solana Pay and TRON requests that re-parse 3ms
+ ✓ src/components/PaymentRequestQr.test.tsx > buildPaymentRequestUri > throws on a bad recipient 1ms
+ ✓ src/components/PaymentRequestQr.test.tsx > PaymentRequestQr > shows a QR frame, a text alternative and a copy button for each chain family 229ms
+ ✓ src/components/PaymentRequestQr.test.tsx > PaymentRequestQr > uses the caution frame for testnets 6ms
+ ✓ src/components/PaymentRequestQr.test.tsx > PaymentRequestQr > explains instead of rendering when the request is invalid 5ms
+ ✓ src/components/PaymentRequestQr.test.tsx > PaymentRequestQr > renders an optional note 6ms
+ ✓ src/components/PaymentRequestQr.test.tsx > PaymentProofQr > says it is not independent proof, hides the QR until asked, then shows it with text and copy 43ms
+ ✓ src/components/PaymentRequestQr.test.tsx > PaymentProofQr > downloads the proof JSON 9ms
+Not implemented: navigation to another Document
+ ✓ src/components/PaymentRequestQr.test.tsx > PaymentProofQr > uses the caution frame when the transaction is not confirmed as included 34ms
+ ✓ src/components/PaymentRequestQr.test.tsx > PaymentProofQr > keeps the JSON available when the proof is too large for one QR 12ms
+ ✓ src/components/PaymentRequestQr.test.tsx > PlainPaymentRequest > shows nothing until an address is entered, then a request, with and without an amount 16ms
+ ✓ src/components/PaymentRequestQr.test.tsx > PlainPaymentRequest > builds a TRON request for a named network 8ms
+ ✓ src/components/PaymentRequestQr.test.tsx > PlainPaymentRequest > reports a bad address and declines local TRON chains 12ms
+ ✓ src/lib/qrKinds.test.ts > taxonomy > table snapshot 13ms
+ ✓ src/lib/qrKinds.test.ts > taxonomy > every kind has a unique colour, border, icon and label (colour is never the only cue) 1ms
+ ✓ src/lib/qrKinds.test.ts > taxonomy > rejects unknown runtime payload types before choosing handling warnings 2ms
+ ✓ src/lib/qrKinds.test.ts > taxonomy > rejects unknown frame kinds instead of generating arbitrary CSS classes 1ms
+ ✓ src/lib/qrKinds.test.ts > taxonomy > maps payloads to kinds; secret is never downgraded 0ms
+ ✓ src/lib/qrKinds.test.ts > palette > light: frame colours reach 3:1 against page and surface; label text reaches 4.5:1 1ms
+ ✓ src/lib/qrKinds.test.ts > palette > dark: frame colours reach 3:1 against page and surface; label text reaches 4.5:1 0ms
+ ✓ src/lib/qrKinds.test.ts > palette > light-mode frames also contrast with the white QR quiet zone 0ms
+ ✓ src/lib/qrKinds.test.ts > palette > colours stay distinguishable under simulated colour-vision deficiency (secondary to the label, icon and border cues) 8ms
+ ✓ src/lib/qrKinds.test.ts > palette > qr.css tokens match the TypeScript palette (light and dark) 1ms
+ ✓ src/lib/qrKinds.test.ts > palette > qr.css has no inline-style hazards, external URLs or forced-colors gap 0ms
+ ✓ src/lib/qrKinds.test.ts > printQrPolicy > prints a QR only for short links 0ms
+ ✓ src/lib/qrKinds.test.ts > printQrPolicy > warns about bearer links unless passphrase protected, and picks the frame kind 1ms
+ ✓ src/lib/qrClassify.fuzz.test.ts > classifyQrText properties > never throws on arbitrary strings, and unknown results never contain the input 78ms
+ ✓ src/lib/qrClassify.fuzz.test.ts > classifyQrText properties > never throws on arbitrary text behind every recognised prefix 142ms
+ ✓ src/lib/qrClassify.fuzz.test.ts > classifyQrText properties > never throws on arbitrary JSON values, including ones carrying known discriminators 254ms
+ ✓ src/lib/qrClassify.fuzz.test.ts > classifyQrText properties > single-character mutations of a real keystore never leak ciphertext and never decrypt 76ms
+ ✓ src/lib/qrClassify.fuzz.test.ts > classifyQrText properties > mutated multipart chunks are either a valid chunk or unknown, never another family 103ms
+ ✓ src/lib/qrClassify.fuzz.test.ts > classifyQrText properties > is deterministic 169ms
+ ✓ src/components/QrFrame.security.test.tsx > QR reveal and dialog scopes > requires explicit reveal when a public frame is replaced with secret data 131ms
+ ✓ src/components/QrFrame.security.test.tsx > QR reveal and dialog scopes > hides a replacement secret and requires a new explicit reveal 26ms
+ ✓ src/components/QrFrame.security.test.tsx > QR reveal and dialog scopes > binds reveal to multipart bytes as well as the full-text fallback 31ms
+ ✓ src/components/QrFrame.security.test.tsx > QR reveal and dialog scopes > dismisses a stale large dialog and restores focus to the new reveal control 61ms
+ ✓ src/components/QrFrame.security.test.tsx > QR reveal and dialog scopes > does not extend a secret reveal deadline when labels or equivalent chunk arrays change 16ms
+ ✓ src/components/QrFrame.security.test.tsx > large QR keyboard operation > confines Tab and Shift+Tab to enabled dialog controls and returns focus on Escape 46ms
+ ✓ src/components/QrFrame.security.test.tsx > large QR keyboard operation > brings outside focus back into the open dialog 32ms
+ ✓ src/components/QrFrame.security.test.tsx > stops automatic multipart motion immediately when the device preference changes 25ms
+ ✓ src/lib/requestFileInterop.test.ts > F03 real file, URL and multipart QR interoperability > preserves the original plain invoice through an independent QR image decoder 307ms
+ ✓ src/lib/requestFileInterop.test.ts > F03 real file, URL and multipart QR interoperability > preserves the original bearer invoice through an independent QR image decoder 422ms
+ ✓ src/lib/requestFileInterop.test.ts > F03 real file, URL and multipart QR interoperability > preserves the original passphrase invoice through an independent QR image decoder 2916ms
+ ✓ src/components/QrView.i18n.test.tsx > QR renderer localization > changes auxiliary labels without regenerating or modifying the QR payload 170ms
+ ✓ src/components/QrView.i18n.test.tsx > QR renderer localization > redacts arbitrary failures and keeps failure details on reviewed-English fallback 20ms
+ ✓ src/components/QrView.i18n.test.tsx > QR renderer localization > rerenders an existing public error after reviewed language change without retrying QR generation 16ms
+ ✓ src/lib/qr.test.ts > qr > builds a square matrix and a path from it 8ms
+ ✓ src/lib/qr.test.ts > qr > is deterministic 8ms
+ ✓ src/lib/qr.test.ts > qr > round-trips exact UTF-8 text: Café 27ms
+ ✓ src/lib/qr.test.ts > qr > round-trips exact UTF-8 text: 日本語の領収書 8ms
+ ✓ src/lib/qr.test.ts > qr > round-trips exact UTF-8 text: إيصال الدفع 6ms
+ ✓ src/lib/qr.test.ts > qr > round-trips exact UTF-8 text: Receipt 🧾 3ms
+ ✓ src/lib/qr.test.ts > qr > rejects over-capacity text before invoking the QR encoder 2ms
+ ✓ src/lib/qr.test.ts > qr > rejects malformed Unicode rather than changing its bytes 0ms
+ ✓ src/lib/qr.test.ts > qr > rejects malformed Unicode rather than changing its bytes 0ms
+ ✓ src/lib/qr.test.ts > qr > produces standalone SVG text with only numbers and a fixed path 1ms
+ ✓ src/lib/qr.test.ts > qr > rejects malformed matrices instead of producing misleading SVG output 1ms
+ ✓ src/lib/qr.test.ts > qr > fails clearly when the text is too long for a QR code 0ms
+ ✓ src/components/QrFrame.i18n.test.tsx > QR render-time localization > keeps source copy and immutable handling rules aligned with the kind registry 5ms
+ ✓ src/components/QrFrame.i18n.test.tsx > QR render-time localization > changes control language without rebuilding the QR payload or selected part 234ms
+ ✓ src/lib/qrMultipart.test.ts > multipart QR helpers > reports whether text fits one locally generated QR 9ms
+ ✓ src/lib/qrMultipart.test.ts > multipart QR helpers > round-trips UTF-8 text through GPQ1 chunks that each fit one QR 179ms
+ ✓ src/lib/qrMultipart.test.ts > multipart QR helpers > only splits when a single QR cannot hold the text, unless forced 1ms
+ ✓ src/lib/qrMultipart.test.ts > multipart QR helpers > rejects unpaired UTF-16 surrogates rather than silently replacing them with U+FFFD 1ms
+ ✓ src/lib/qrMultipart.test.ts > multipart QR helpers > refuses empty and oversized input instead of producing a partial transfer 1ms
+ ✓ src/lib/buildProfile.test.ts > resolveProfile (narrow-only) > (undefined, undefined, full) -> full 2ms
+ ✓ src/lib/buildProfile.test.ts > resolveProfile (narrow-only) > (undefined, undefined, lean) -> lean 0ms
+ ✓ src/lib/buildProfile.test.ts > resolveProfile (narrow-only) > (undefined, full, full) -> full 0ms
+ ✓ src/lib/buildProfile.test.ts > resolveProfile (narrow-only) > (undefined, full, lean) -> lean 0ms
+ ✓ src/lib/buildProfile.test.ts > resolveProfile (narrow-only) > (undefined, lean, full) -> lean 0ms
+ ✓ src/lib/buildProfile.test.ts > resolveProfile (narrow-only) > (undefined, lean, lean) -> lean 0ms
+ ✓ src/lib/buildProfile.test.ts > resolveProfile (narrow-only) > (full, undefined, full) -> full 0ms
+ ✓ src/lib/buildProfile.test.ts > resolveProfile (narrow-only) > (full, undefined, lean) -> lean 0ms
+ ✓ src/lib/buildProfile.test.ts > resolveProfile (narrow-only) > (full, full, full) -> full 0ms
+ ✓ src/lib/buildProfile.test.ts > resolveProfile (narrow-only) > (full, full, lean) -> lean 0ms
+ ✓ src/lib/buildProfile.test.ts > resolveProfile (narrow-only) > (full, lean, full) -> lean 0ms
+ ✓ src/lib/buildProfile.test.ts > resolveProfile (narrow-only) > (full, lean, lean) -> lean 0ms
+ ✓ src/lib/buildProfile.test.ts > resolveProfile (narrow-only) > (lean, undefined, full) -> lean 0ms
+ ✓ src/lib/buildProfile.test.ts > resolveProfile (narrow-only) > (lean, undefined, lean) -> lean 0ms
+ ✓ src/lib/buildProfile.test.ts > resolveProfile (narrow-only) > (lean, full, full) -> lean 0ms
+ ✓ src/lib/buildProfile.test.ts > resolveProfile (narrow-only) > (lean, full, lean) -> lean 0ms
+ ✓ src/lib/buildProfile.test.ts > resolveProfile (narrow-only) > (lean, lean, full) -> lean 0ms
+ ✓ src/lib/buildProfile.test.ts > resolveProfile (narrow-only) > (lean, lean, lean) -> lean 0ms
+ ✓ src/lib/buildProfile.test.ts > resolveProfile (narrow-only) > fails closed when an unexpected runtime profile reaches any resolver input 0ms
+ ✓ src/lib/buildProfile.test.ts > resolveProfile (narrow-only) > an explicit full prop never widens a lean build or a lean shell 0ms
+ ✓ src/lib/buildProfile.test.ts > profileFromDefine (fail closed) > undefined -> lean 0ms
+ ✓ src/lib/buildProfile.test.ts > profileFromDefine (fail closed) > "lean" -> lean 0ms
+ ✓ src/lib/buildProfile.test.ts > profileFromDefine (fail closed) > "full" -> full 0ms
+ ✓ src/lib/buildProfile.test.ts > profileFromDefine (fail closed) > "FULL" -> lean 0ms
+ ✓ src/lib/buildProfile.test.ts > profileFromDefine (fail closed) > "" -> lean 0ms
+ ✓ src/lib/buildProfile.test.ts > profileFromDefine (fail closed) > null -> lean 0ms
+ ✓ src/lib/buildProfile.test.ts > profileFromDefine (fail closed) > 1 -> lean 0ms
+ ✓ src/lib/buildProfile.test.ts > profileFromDefine (fail closed) > is pinned to full under the unit-test config 0ms
+ ✓ src/lib/scanSpam.partial.test.ts > privacy-set announcement coverage > marks ten days of scanned history partial for a displayed 30-day count 2ms
+ ✓ src/lib/scanSpam.partial.test.ts > privacy-set announcement coverage > does not mark full available 30-day history partial 0ms
+ ✓ src/lib/scanSpam.partial.test.ts > privacy-set announcement coverage > does not demand blocks older than genesis for a young chain 0ms
+ ✓ src/lib/scanSpam.partial.test.ts > privacy-set announcement coverage > marks coverage partial when a scan has not reached the requested head 0ms
+ ✓ src/lib/qrPayload.test.ts > public meta-address QR > accepts validated public keys only, including a strict versioned public envelope 3ms
+ ✓ src/lib/qrPayload.test.ts > public meta-address QR > rejects unknown fields, duplicate fields, malformed points, private keys, URLs and oversized input 2ms
+ ✓ src/components/QrFrame.largeWarning.test.tsx > full-screen QR keeps the kind warning > shows the bearer warning inside the large dialog 346ms
+ ✓ src/components/QrFrame.largeWarning.test.tsx > full-screen QR keeps the kind warning > shows the secret warning inside the large dialog 44ms
+ ✓ src/components/QrFrame.largeWarning.test.tsx > full-screen QR keeps the kind warning > shows the caution warning inside the large dialog 24ms
+ ✓ src/components/QrView.test.tsx > QrView legacy renderer > renders only the QR image when embedded as a bare frame child 107ms
+ ✓ src/components/QrView.test.tsx > QrView legacy renderer > shows the specific user-facing explanation when the QR payload exceeds capacity 8ms
+ ✓ src/lib/qrContrast.test.ts > qrContrast > matches known WCAG values 2ms
+ ✓ src/lib/qrContrast.test.ts > qrContrast > rejects bad hex 1ms
+ ✓ src/lib/qrContrast.test.ts > qrContrast > colour difference is zero for identical colours and symmetric 0ms
+
+ Test Files  24 passed (24)
+      Tests  294 passed (294)
+   Start at  08:42:48
+   Duration  46.36s (tests 45%, import 29%, environment 15%, transform 11%)
+
+     Import  403 modules were evaluated 623 times · 12.36s total, 29% of tracked time
+             ~4.36s faster with isolate: false — shared modules are evaluated once per worker instead of once per file
+             learn more: https://vitest.dev/guide/improving-performance#test-isolation

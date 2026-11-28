@@ -60,12 +60,18 @@ export function normalizeFeeRate(
   const step = opts.step ?? 1;
   const minRate = opts.minRate ?? 1;
   requireInput(Number.isFinite(rate) && rate > 0 && Number.isFinite(step) && step > 0 && Number.isFinite(minRate) && minRate > 0, 'rate out of range');
+  const cap = opts.cap;
+  if (cap !== undefined) {
+    requireInput(Number.isFinite(cap) && cap > 0, 'cap out of range');
+    if (cap < minRate) throw new MetadataHardeningError('POLICY_REJECTED', 'fee cap is below the minimum rate');
+  }
   let r = Math.ceil(rate / step) * step;
   if (r < rate) r += step;
   if (r < minRate) r = Math.ceil(minRate / step) * step;
-  if (opts.cap !== undefined && r > opts.cap) {
-    if (rate > opts.cap) throw new MetadataHardeningError('POLICY_REJECTED', 'fee rate exceeds the cap');
-    return opts.cap;
+  requireInput(Number.isFinite(r) && r > 0, 'normalised rate out of range');
+  if (cap !== undefined && r > cap) {
+    if (rate > cap) throw new MetadataHardeningError('POLICY_REJECTED', 'fee rate exceeds the cap');
+    return cap;
   }
   return r;
 }

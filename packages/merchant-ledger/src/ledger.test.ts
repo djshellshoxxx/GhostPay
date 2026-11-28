@@ -64,6 +64,19 @@ describe('decimal', () => {
     expect(formatMinor(1n, 3)).toBe('0.001');
     expect(formatMinor(2n ** 100n, 2)).toBe('12676506002282294014967032053.76');
   });
+  it('rejects invalid formatMinor precision instead of silently misformatting money', () => {
+    for (const exponent of [-1, 1.5, NaN, Infinity, -Infinity, 19]) {
+      expect(() => formatMinor(123n, exponent)).toThrow(LedgerError);
+      expect(() => formatMinor(123n, exponent)).toThrow(/bad-exponent/);
+    }
+    for (const exponent of [undefined, null, '2']) {
+      expect(() => formatMinor(123n, exponent as unknown as number)).toThrow(/bad-exponent/);
+    }
+    // The boundary applies only to invalid precisions; valid GhostPay money formatting stays unchanged.
+    expect(formatMinor(123n, 0)).toBe('123');
+    expect(formatMinor(123n, 18)).toBe('0.000000000000000123');
+    expect(formatMinor(-123n, 18)).toBe('-0.000000000000000123');
+  });
   it('exponents', () => {
     // The GhostPay app's exponent for invoice minor units (apps/web fiatDecimals), not ISO 4217's.
     expect(currencyExponent('USD')).toBe(2);
@@ -112,6 +125,12 @@ describe('reconcile', () => {
   it('exact paid', () => {
     const r = reconcile([inv('a', '1000')], [pay('p1', '1000', { invoiceId: 'a' })], { now: T0 });
     expect(r.invoices[0]).toMatchObject({ status: 'paid', paidMinor: '1000', deltaMinor: '0', paymentIds: ['p1'] });
+  });
+  it('a tolerance at least the amount due never turns zero payments into paid (review G, D-2)', () => {
+    const o = { now: T0, tolerance: { absoluteMinor: 100n } };
+    expect(status(reconcile([inv('a', '50')], [], o), 'a')).toBe('unmatched');
+    expect(status(reconcile([inv('a', '50')], [pay('p', '1', { invoiceId: 'a' })], o), 'a')).toBe('paid');
+    expect(status(reconcile([inv('b', '10000')], [], { now: T0, tolerance: { bps: 10_000 } }), 'b')).toBe('unmatched');
   });
   it('tolerance abs and bps', () => {
     const o = { now: T0, tolerance: { absoluteMinor: 5n } };

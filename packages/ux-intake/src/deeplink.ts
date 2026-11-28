@@ -184,9 +184,26 @@ export function parseShareTarget(search: unknown, policy: LinkPolicy): Result<In
   let firstErr: PayloadErrorCode | null = null;
   for (const c of candidates) {
     const r = classifyPayload(c, { ...policy, maxChars: MAX_PAYLOAD_CHARS });
-    if (r.ok)
-      found.set(r.value.safeDisplay + (r.value.kind === 'invoice-link' ? r.value.fragment : ''), r.value);
-    else firstErr ??= r.code;
+    if (r.ok) {
+      // Labels are intentionally absent from safeDisplay but still distinguish payment requests.
+      const key = JSON.stringify([
+        r.value.safeDisplay,
+        r.value.kind === 'invoice-link' ? r.value.fragment : null,
+        r.value.kind === 'payment-uri' ? r.value.label ?? null : null,
+      ]);
+      const previous = found.get(key);
+      // A duplicate must not erase an unverified-checksum diagnostic.
+      if (
+        previous !== undefined &&
+        previous.kind !== 'invoice-link' &&
+        r.value.kind !== 'invoice-link' &&
+        previous.address.checksumUnverified &&
+        !r.value.address.checksumUnverified
+      ) {
+        continue;
+      }
+      found.set(key, r.value);
+    } else firstErr ??= r.code;
   }
   if (found.size > 1) return err('ambiguous-share');
   const only = [...found.values()][0];
@@ -226,18 +243,13 @@ export function parseDeepLink(raw: unknown, policy: LinkPolicy): Result<Incoming
     return err('malformed-url');
   }
   if (url.username !== '' || url.password !== '') return err('credentials-not-allowed');
-  if (url.port !== '') return err('port-not-allowed');
+  // URL.port hides explicit default/empty HTTPS ports. Enforce the raw-authority policy first.
+  const authority = /^https:[\\/]*([^\\/?#]*)/i.exec(s)?.[1] ?? '';
+  if (/:\d*$/.test(authority) || url.port !== '') return err('port-not-allowed');
   if (!policy.allowedHosts.includes(url.hostname)) return err('host-not-allowed');
   const routes = policy.routes ?? DEFAULT_ROUTES;
   const path = url.pathname;
   if (!routes.includes(path)) return err('route-not-allowed');
-  if (url.hash.startsWith('#gpi=')) {
-    const r = classifyPayload(`${url.origin}${path}${url.hash}`, { ...policy, maxChars: MAX_PAYLOAD_CHARS });
-    if (!r.ok) return r;
-    return ok(toIncoming(r.value, []));
-  }
-  if (url.hash !== '') return err('bad-fragment');
-  if (path === '/share-target') return parseShareTarget(url.search, policy);
   let returnTo: string | undefined;
   for (const [k, v] of url.searchParams) {
     if (!REDIRECT_PARAM_NAMES.includes(k.toLowerCase())) continue;
@@ -245,6 +257,13 @@ export function parseDeepLink(raw: unknown, policy: LinkPolicy): Result<Incoming
     if (!t.ok) return t;
     returnTo = t.value;
   }
+  if (url.hash.startsWith('#gpi=')) {
+    const r = classifyPayload(`${url.origin}${path}${url.hash}`, { ...policy, maxChars: MAX_PAYLOAD_CHARS });
+    if (!r.ok) return r;
+    return ok(toIncoming(r.value, []));
+  }
+  if (url.hash !== '') return err('bad-fragment');
+  if (path === '/share-target') return parseShareTarget(url.search, policy);
   return ok({
     kind: 'navigate',
     path,

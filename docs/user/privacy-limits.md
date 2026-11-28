@@ -27,7 +27,7 @@ GhostPay needs an RPC provider (a server that reads the blockchain for you). You
 
 | Who | What they learn |
 |---|---|
-| **Your RPC provider** (and your second RPC, if you set one) | Your internet address, when you scan and how far back, **which payments matched your keys** (the app asks for the receipt of each payment that belongs to you), the one-time address when you open Sweep (the app reads its balance), the destination and amount of a direct sweep, and every transaction you send through it. A second RPC sees the same matches, so it adds a cross-check, not privacy. |
+| **Your RPC provider** (and your second RPC, if you set one) | Your internet address, when you scan and how far back, **which payments matched your keys** (the app asks for the receipt of each payment that belongs to you), the one-time address (and, for a token balance, the token contract) when you press "Read balance from the Settings RPC" in Sweep (opening Sweep alone does not read it), the destination and amount of a direct sweep, and every transaction you send through it. A second RPC sees the same matches, so it adds a cross-check, not privacy. The opt-in cover lookups below add other payments' receipt lookups; they do not cover the balance read, a sweep or any transaction you send. |
 | **A Bitcoin (Esplora) server** | Every block you scan, each output that matched you (it is asked whether it was spent), and what you broadcast. |
 | **A Solana or TRON node** (experimental) | The balance check for each address that matched you. |
 | **The relayer operator**, if you use one | The one-time address, your destination, token, amount, fee, your internet address (stored only as a short-lived hash for rate limiting) and the timing. It can refuse or delay your request. It cannot change the destination or amount you signed. |
@@ -37,7 +37,7 @@ GhostPay needs an RPC provider (a server that reads the blockchain for you). You
 | **Anyone with your invoice link** | The whole invoice (it is a bearer link). Anyone with two of your invoices can tell they come from one seller. |
 | **Anyone with a payment receipt** | Payer-side facts, the one-time address, amount and your signing key. Share receipts only with who needs them. |
 | **Public chain analyst** | Everything in "What stays public", plus any link you create by sweeping carelessly. |
-| **Anyone using your computer or phone later** | Your RPC and relayer addresses (stored unencrypted, including any key you put in an RPC web address), which chains you scan and how far, and possibly your invoice links in browser history. Not your encrypted keys or notes without your passphrase. |
+| **Anyone using your computer or phone later** | Your RPC and relayer addresses (stored unencrypted, including any key you put in an RPC web address), which chains you scan and how far, possibly your invoice links in browser history, and, if you paid from this browser, the wallet address and transaction hashes of your payment attempts (kept until you clear them). Not your encrypted keys or notes without your passphrase. |
 | **Wallet provider or extension** | Transaction requests, chain, connected accounts. |
 | **Fee recipient (project owner)** | Aggregate fees on-chain; nothing beyond public chain data. |
 
@@ -80,6 +80,58 @@ amount rounding exist as libraries but are **not switched on in the web app or t
 protect you. See the [threat model](../threat-model/PRIVACY_THREAT_MODEL.md#8-mitigations-available-today-honestly-rated)
 and [seller privacy](seller-privacy.md).
 
+### What the scan privacy settings cover, and what they do not
+
+- They apply to the requests GhostPay sends while scanning: to the scan RPC or your local proxy, the optional indexer
+  and the second RPC. Before each of those requests, and again when its answer arrives, the app checks that the saved
+  scan privacy settings and the RPC addresses the scan started with are unchanged. If you change them, in this tab or
+  another one, the scan stops: nothing more goes out on the old route and late answers from it are ignored. Start the
+  scan again. Requests that were already sent cannot be recalled.
+- If the saved settings cannot be read exactly as saved (for example, after a manual edit, or because the browser
+  refused to read site storage), GhostPay does not guess and does not fall back to Direct. Scanning stays blocked, the
+  second RPC is not contacted and Sweep reads a balance only when you ask, until you review and save the settings.
+- Sweep, paying an invoice and checking a receipt use the RPC in Settings directly, not the scan path (see the table
+  above).
+- **Your wallet's own traffic is outside them.** A browser wallet or wallet app that you connect to pay, sign or
+  publish talks to its own RPC provider and services, with its own network settings. GhostPay's transport, local proxy,
+  Tor Browser setting, second RPC and request checks do not apply to that traffic, and GhostPay can neither see nor
+  check it. The wallet and its provider can see your accounts, the chain, each request you approve and, unless you hide
+  it yourself, your IP address. Use the wallet's own network and privacy settings to control this. Before GhostPay
+  hands a request to your wallet, its **Review wallet disclosure** dialog says the same.
+- **Which announcement was yours.** Checking a matched router payment asks your RPC (and the second RPC, if set) for
+  that payment's block, receipt and transaction. By default no other announcement gets these lookups, so the provider
+  can tell which public announcement matched your keys and how many did. The opt-in **Blur which payments matched
+  among other lookups** setting (Settings, scan lanes) makes every scan also check about half of the other
+  router payments in supported tokens that it reads, whether or not any payment matched, the same way and in chain
+  order, and discard their results; your payments are verified exactly as before. Which others are checked is decided
+  by a key derived from your viewing key and by each announcement's content, so a rescan, a resumed scan or a scan
+  after a reorg checks the same ones. A check that fails or is still pending moves the saved scan position the same way
+  for your payments and for cover. This is aimed at a provider that records your requests: from the lookups alone it
+  cannot tell your payments from the cover. Limits:
+  - a provider that alters, withholds or fails its answers can still find out which payment matched; the cover is not
+    designed against it;
+  - after a reorg report, the blocks of your payments found in this scan and of your saved ledger records are read
+    again, and a ledger retry reads saved invoice records; these reads are made only for your payments, so they point at
+    them;
+  - a copy of an announcement sent again on chain gets its own cover decision, while router copies of your payments are
+    all checked;
+  - with the similar-transfer estimate also on, its token log query names the token of your latest payment;
+  - reading a balance in Sweep, exporting a payment key or sweeping through the same RPC sends the matched address or
+    transaction and undoes the cover for that payment, as does re-checking one payment from the result list (for
+    example accepting a late payment);
+  - a decoy that fails its check (for example a smart-wallet payment) is followed by fewer requests than a payment that
+    passes, and is not sent to the second RPC;
+  - cover is drawn only from router payments in supported tokens, so with few of them there is little or none;
+  - a third party who posts many cheap router payments in supported tokens can increase the number of extra RPC lookups
+    a cover-enabled scan makes, which is a cost of turning the setting on;
+  - the list of blocks that were read for router payments only because announcer spam exceeded a response cap
+    (`routerOnlyBlocks`, shown after a scan) is capped at 1000 entries, so the list can be incomplete on a very noisy
+    scan;
+  - the provider still sees when you scanned, how far back and your IP address.
+  It costs many more RPC requests, in proportion to how busy the chain is, and a provider's rate limit can then be
+  reached sooner. A scan stops if this setting changes while it runs, and does not start while the saved scan lane
+  settings cannot be read.
+
 ## Specific limits to remember
 
 1. **Links carrying their decryption key are bearer secrets and may persist in browser history.** Passphrase mode keeps the passphrase separate. The app clears the address bar after reading the link, but that cannot guarantee deletion from history, clipboard, screenshots or extensions.
@@ -108,7 +160,32 @@ tag and reconciliation vaults encrypt stored contents; scope identifiers, existe
 observable. Unlocked contents are available to the running page. Locking does not delete saved data, and exported
 files must be deleted separately from site storage.
 
+Downloaded files get fixed names such as `ghostpay-keystore.json`, `ghostpay-receipt.json` or `ghostpay-tags.gpa`. A
+name never contains an address, amount, transaction hash, date or invoice detail, so two downloads of the same kind
+share a name (the browser may add a number) and the contents identify the file on import. The name and the browser's
+download history still show that a GhostPay file was saved. The contents are what you chose to export: an encrypted
+backup stays encrypted, a receipt or public record does not. Screen-reader announcements and error alerts say what
+happened without reading out a transaction hash, amount or address; the value stays visible on the page.
+
 A second RPC adds comparison and availability while sharing queries with another operator. Explorer lookups also
 reveal the requested address or transaction. A valid receipt signature is a field attestation, and restored history
 is not fresh payment verification. See the [shipped privacy page](../../apps/web/privacy.html) and
 [reconciliation guide](reconciliation-and-receipts.md).
+
+### Repeated EVM destinations
+
+A seller can issue many invoices with the same meta-address. The checkout compares the actual derived destination when you choose **Prepare payment**. It distinguishes reviewing the same signed invoice again from seeing that address on a different invoice. Each preparation derives a new random one-time address, so in normal use neither checkout notice appears. A repeat points to a faulty or tampered random number source in the payer's browser; a seller cannot cause it. Funds sent to the repeated address still reach the seller, but payments to one address can be linked on-chain, so reloading or switching browsers before sending is the safer choice.
+
+On the seller side, the sweep form checks the destination you enter in three ways, all local:
+
+- **Another one-time address of these keys.** If the destination is a one-time address that received a different payment in the current scan, sweeping into it links both payments on-chain, and the payer of that other payment can see the funds arrive.
+- **Another seller profile.** If a different seller profile in this tab already submitted a sweep to the destination on the same network, sweeping again links those profiles on-chain.
+- **The same seller profile.** If this profile already submitted a sweep to the destination, the transfers can be linked.
+
+A repeat can be intentional. These notices never block or authorize a transaction, and the existing signing and duplicate-payment checks stay in force.
+
+The history checks use the current tab's recent history, scoped to the payer wallet (checkout) or to the EVM chain with the seller profile kept as a salted suffix (sweep). The tab keeps up to 128 salted fingerprint records across those scopes in session storage. Reloading the same tab preserves that history. Clearing the tab's session storage removes it. A tab opened with an opener can inherit an initial copy. A miss cannot establish that an address is fresh on-chain. No RPC request, explorer query or telemetry is used for the comparison.
+
+The seller's **Scan and receive** screen also flags distinct router announcements that name the same address in the current scan. Each announcement still requires its own receipt and amount checks. Two announcements do not establish two successful payments.
+
+For wallets with account-change events, checkout drops the advisory when the account or network changes or the wallet disconnects. For request-only wallets the comparison uses the account confirmed at connection. Leaving the page ends that snapshot. Reopen the invoice and reconnect to compare again.

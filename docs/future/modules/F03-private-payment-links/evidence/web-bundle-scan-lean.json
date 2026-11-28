@@ -1,0 +1,18 @@
+{
+  "command": [
+    "timeout",
+    "--kill-after=5s",
+    "240s",
+    "node",
+    "--max-old-space-size=1024",
+    "scripts/scan-bundle.mjs"
+  ],
+  "cwd": "apps/web",
+  "environment_overrides": {
+    "GHOSTPAY_LOCAL_BUILD_PROFILE": "lean",
+    "RAYON_NUM_THREADS": "2"
+  },
+  "exit_code": 0,
+  "elapsed_seconds": 1.45,
+  "source_commit": "e543d25fc7f3b65460518f4b3df4c513d34a1215"
+}

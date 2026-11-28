@@ -1,0 +1,276 @@
+{
+  "format": "ghostpay-698-branch-index/1",
+  "generated_at": "2026-11-24T12:50:34.035156+00:00",
+  "source": "bda2af071d4b9d3c85bbe4a20da2f8edb5eabcf8",
+  "tree": "8add357748674afb128926a797982badb54bac6b",
+  "main": "706188000c38b3dde5a3a362370a530870aa7587",
+  "published_core": "87bee07895679deaef345c3dd4aaf2e8f8651f1c",
+  "equivalent_remote_source": "c6efee6e9e0505d4bcb8b81bf5b02e4ab3331c48",
+  "equivalent_remote_tree": "8add357748674afb128926a797982badb54bac6b",
+  "published_core_tree": "74e78d0aad767455fdc26311ec9750cff7c2cba5",
+  "branch_observation": "2026-11-24T12:24:48.356061+00:00",
+  "row_count": 698,
+  "unique_head_count": 692,
+  "baseline_row_count": 696,
+  "historical_residual_row_count": 67,
+  "post_snapshot_publication": "Equivalent source commit c6efee6 existed and was fetched after the frozen snapshot; no later publication branch is added to the 698-row census. A subsequent branch creation must be recorded as an explicit later event.",
+  "new_refs": [
+    {
+      "branch": "automation/20261124T1037Z/bug/dashboard-idb-rejection",
+      "head": "e564360afa37714db4ea7cb63e12cde44db62dee"
+    },
+    {
+      "branch": "integration/ghostpay-additional-reviewed-20261124-68c82b9",
+      "head": "464a7cb4c3cd0a6d23cee82643ca8efd95c067f0"
+    }
+  ],
+  "advanced_refs": [
+    {
+      "branch": "integration/all-branch-review-20261124",
+      "head": "87bee07895679deaef345c3dd4aaf2e8f8651f1c",
+      "previous_head": "100de4006569ee1f65736adce8d111446dfafa59"
+    },
+    {
+      "branch": "ledger/consolidation-snapshot-20261124-0418",
+      "head": "21009fb406eb1059f6cce22c0133873aba465f57",
+      "previous_head": "3fa89e629cac706e2cca633d8a8e1a0ec34f02a7"
+    }
+  ],
+  "unchanged_baseline_ref_count": 694,
+  "deleted_refs": [],
+  "ancestry_method": "git rev-list of each immutable target, testing all snapshot heads for membership. Counts include main itself and aliases. They count refs, not features or eligible changes.",
+  "ancestry_row_counts": {
+    "main": 207,
+    "published_core": 351,
+    "local_combined": 362,
+    "equivalent_remote_source": 365,
+    "selected_either": 365,
+    "selected_both": 348,
+    "published_only": 3,
+    "local_only": 14
+  },
+  "ancestry_unique_head_counts": {
+    "main": 204,
+    "published_core": 347,
+    "local_combined": 357,
+    "equivalent_remote_source": 360,
+    "selected_either": 360,
+    "selected_both": 344
+  },
+  "equivalent_remote_matches_local_published_union_on_snapshot_refs": true,
+  "published_only_rows": [
+    {
+      "branch": "automation/20261120T0035Z/worker/qr-kind-primitives",
+      "head": "17333ceda784ecdf5734a666ef57ee1d1e599296"
+    },
+    {
+      "branch": "automation/20261124T0837Z/bug/tron-network-absence",
+      "head": "9fdb87fe59748a7463e4de5b92dc0ff3396ea7ce"
+    },
+    {
+      "branch": "integration/all-branch-review-20261124",
+      "head": "87bee07895679deaef345c3dd4aaf2e8f8651f1c"
+    }
+  ],
+  "local_only_rows": [
+    {
+      "branch": "automation/20261120T1241Z/bug/receipt-print-css",
+      "head": "e0c583be2514b44af7f3b15619fb8160358f1470"
+    },
+    {
+      "branch": "automation/20261123T1121Z/bug/qr-reader-platform-candidates-r14",
+      "head": "1cf9ec458bdd193f186499ac30ac3f7b207cfe0c"
+    },
+    {
+      "branch": "backup/individual-stealth-keypair-export-20261123-28bba11c",
+      "head": "28bba11cdaebc13edc4d100761ee00750c3f396f"
+    },
+    {
+      "branch": "claude/nifty-bohr-5ra2ap",
+      "head": "caef97781b407b105c8dce177c76dd515462e94e"
+    },
+    {
+      "branch": "codex/ghostpay-receipt-print-integration-20261123",
+      "head": "51c04326ff9258861621b94ce2ab06f44bba8301"
+    },
+    {
+      "branch": "codex/individual-stealth-keypair-export",
+      "head": "28bba11cdaebc13edc4d100761ee00750c3f396f"
+    },
+    {
+      "branch": "codex/qr-exchange-browser-completion",
+      "head": "74121278a08eaf4eddd85651a4518ef657aeeb16"
+    },
+    {
+      "branch": "codex/qualify-508-invoice-link",
+      "head": "36a5b4e0007ad3154cd5e36c914fafede30d4140"
+    },
+    {
+      "branch": "codex/stopped-scan-payment-export-acceptance",
+      "head": "7bbd651def1aa064f31ed91e272d07f629d3b871"
+    },
+    {
+      "branch": "codex/verify-encrypted-payment-spend",
+      "head": "2d79881a52e8f425e19704367c2ac8f91f1d7922"
+    },
+    {
+      "branch": "feature/f08-offline-merchant-profile-review",
+      "head": "923e1edfb9ac34f8b6855d8ac8516cd835070afd"
+    },
+    {
+      "branch": "finish/qr-browser-qualification-20261124",
+      "head": "73f521bad57c24e44fe5c69fbdeecd1d2da2fec1"
+    },
+    {
+      "branch": "finish/receipt-print-completion-20261124",
+      "head": "0d3d804b3f53ad8b463117824ca1fd1b3332d798"
+    },
+    {
+      "branch": "test/receipt-print-action-532",
+      "head": "cb977e4b31047e65ccbe8835c8e45e1cff3cfc84"
+    }
+  ],
+  "current_disposition_counts": {
+    "action_upgrade_qualification_pending": 1,
+    "automation_contract_reconciliation_needed": 2,
+    "automation_source_incompatible_as_is": 1,
+    "behavior_covered_selected_source": 1,
+    "bounded_dependency_candidate_qualification_pending": 1,
+    "coordination_only": 1,
+    "covered_selected_canonical": 1,
+    "covered_selected_source": 12,
+    "dependency_api_incompatible_as_is": 2,
+    "dependency_train_qualification_pending": 2,
+    "deployment_history": 1,
+    "diagnostic_qualification_pending": 1,
+    "equivalent_main_delta": 7,
+    "equivalent_selected_delta": 4,
+    "evidence_only": 85,
+    "held_dependency_incompatible": 1,
+    "held_dormant_qualification": 2,
+    "held_provider_contract": 7,
+    "held_qualification_dependency": 15,
+    "held_related_source": 123,
+    "held_runtime_contract": 12,
+    "held_runtime_dependency": 3,
+    "held_tooling": 6,
+    "held_visual_failures": 1,
+    "integrated_main_ancestry": 206,
+    "native_test_qualification_pending": 1,
+    "no_net_delta": 1,
+    "partial_coverage_residual_held": 5,
+    "production_intent_covered_selected_source": 1,
+    "published_selected_core": 1,
+    "rejected_superseded_source": 1,
+    "retained_qualification_reference": 3,
+    "selected_local_followup": 14,
+    "selected_published_core": 143,
+    "selective_recovery_residual_held": 11,
+    "snapshot_main": 1,
+    "superseded_source": 15,
+    "tooling_candidate_qualification_pending": 2,
+    "tooling_schema_reconciliation_needed": 1
+  },
+  "baseline_disposition_counts": {
+    "behavior_covered_local_candidate": 3,
+    "bounded_fix_behavior_covered_pending_privacy_owner_broader_stack_held": 1,
+    "coheld_code_open_prs": 23,
+    "conditional_tooling_value_held_incompatible_as_is": 1,
+    "diagnostic_tooling_or_qualification": 5,
+    "dormant_future_module_awaiting_qualification": 4,
+    "evidence_only": 85,
+    "exact_changed_code_equivalent_main": 7,
+    "explicitly_rejected_superseded_remediation": 1,
+    "historical_recovery_architecture_superseded_with_qualification_evidence_held": 1,
+    "included_head_open_pr611": 2,
+    "included_local_candidate_awaiting_gates": 141,
+    "infrastructure_coordination_metadata": 1,
+    "infrastructure_dependency_awaiting_review": 8,
+    "infrastructure_deployment_history": 1,
+    "integrated_main_ancestry": 206,
+    "lean_source_already_recovered_and_strengthened": 2,
+    "main": 1,
+    "mixed_scope_unresolved": 9,
+    "narrow_candidate_held": 3,
+    "no_net_delta": 1,
+    "obsolete_dependency_alternative_held_not_pages_functionality": 1,
+    "open_pr611_combined_candidate": 1,
+    "open_successor_covered": 119,
+    "owner_qualification_or_duplicate": 3,
+    "partial_recovery_open_pr611": 1,
+    "preserved_infrastructure_dependency_lane": 3,
+    "preview_or_provider_incomplete": 5,
+    "production_intent_superseded_main": 12,
+    "qualification_continuation_held": 14,
+    "same_head_active_alias": 1,
+    "selectively_recovered_and_other_source_superseded": 1,
+    "semantically_covered_selected_source": 1,
+    "superseded_source_and_regressions": 1,
+    "target_covered_parent_held": 1,
+    "tooling_held": 5,
+    "valuable_followup_in_progress": 2,
+    "valuable_runtime_stack_held": 17,
+    "valuable_unmerged_coherent_feature_held_in_current_owner_lanes": 2
+  },
+  "inputs": [
+    {
+      "path": "/workspace/scratch/f80482f352bc/branch-refresh-698.json",
+      "sha256": "556086c112bbcb3e33461db9faf5f49840e8042d14c3425a00899566fb515dff"
+    },
+    {
+      "path": "/workspace/scratch/f80482f352bc/branch-ref-snapshot-final.json",
+      "sha256": "6b6d23efc5a74f59481b5173b9db92615fe18c3ae544c10ea46c1653724eeacf"
+    },
+    {
+      "path": "/workspace/scratch/f80482f352bc/branch-617-comparison.json",
+      "sha256": "e97e54249aa3738636d829750acfb78e641feb99f11dd57c98dc57322b937c53"
+    },
+    {
+      "path": "/workspace/scratch/f80482f352bc/held-branch-eligibility.json",
+      "sha256": "f2a6fdee5429ed3abbc82dc70c598048a58b2b0e68460c1f9a5ed1bdd88b5b27"
+    },
+    {
+      "path": "/workspace/scratch/f80482f352bc/mixed-scope-deeper-review.md",
+      "sha256": "d4aad0af4ba798aa98deceacf82e6a2d3813136306f569bdd1957364bd5d3cf0"
+    },
+    {
+      "path": "/workspace/scratch/f80482f352bc/branch-census-695.json",
+      "sha256": "062eee98d98a87e4996e58eb6a08b5fe5b184f2fdc14e296641e380b520e4d35"
+    },
+    {
+      "path": "/workspace/scratch/f80482f352bc/branch-current-code-comparisons.json",
+      "sha256": "171a7b42317ca7232fa1e7164faed3c7f98109a838162aa2cd021ae467b8bef4"
+    },
+    {
+      "path": "/workspace/scratch/f80482f352bc/branch-index-notes.json",
+      "sha256": "75c34bf85ae06c2f7dc8a3ff1d466b88a6b1e7a8a7b403872a73a9ceeca2303d"
+    },
+    {
+      "path": "/workspace/scratch/f80482f352bc/residual-index-notes.json",
+      "sha256": "b6329b9a7b574a8dd673c6f45cac2c1507096c1ea663e8f356b8a1737afa6a9f"
+    },
+    {
+      "path": "/workspace/scratch/f80482f352bc/final-selected-composition-independent-review.json",
+      "sha256": "af14c81f0a58686f6816ca70e99dab97e0760f6074ffc6b5cb22a85b6a2e07b0"
+    },
+    {
+      "path": "docs/consolidation/all-branches-20261124/BRANCH_INDEX.csv",
+      "commit": "bda2af071d4b9d3c85bbe4a20da2f8edb5eabcf8",
+      "sha256": "6319dbceee2c563d8593d1d915a5e4f0698b3c9d34ed3156568bfa2033ece5da"
+    },
+    {
+      "path": "docs/handoffs/RESPONSIVE_PALETTE_ELIGIBILITY_20261124.md",
+      "commit": "bda2af071d4b9d3c85bbe4a20da2f8edb5eabcf8",
+      "sha256": "f78c1f14dc7e2884353be78733e33ba75861d1fc888b6dca5d7f55341828886e"
+    }
+  ],
+  "limits": [
+    "Current means pinned bda2af source and the frozen 12:24:48 UTC ref snapshot, not a new live remote census.",
+    "Baseline CSV and 67-row audit are preserved byte-for-byte; corrections are additive overlay fields.",
+    "Exact head ancestry, donor-delta mode/type/blob equality and bounded semantic source review are different evidence.",
+    "A selected subset does not select its whole broad parent. Code-path and branch counts are not feature counts.",
+    "Remaining rows specify contract or qualification gaps; they are not exhaustive broad-stack certification or blanket ownership prohibitions.",
+    "Historical donor CI does not establish fresh combined qualification. This artifact claims no final hosted green or main merge.",
+    "No application tests, vulnerability reproductions, stress tasks, repository changes or remote mutations were performed for this report."
+  ]
+}

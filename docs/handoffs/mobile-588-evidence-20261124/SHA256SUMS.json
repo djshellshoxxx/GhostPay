@@ -1,0 +1,26 @@
+{
+  "red-lean.txt": {
+    "bytes": 6911,
+    "sha256": "6bba37e7eac6470928b8f488d3daab7f8a82b0463fea92d91c451662b4997b3d"
+  },
+  "interrupted-all-lean.txt": {
+    "bytes": 4738,
+    "sha256": "6ad7535bc62bd44915e4f027b4ab5908b943d8be724874ccccae0be7b1c89192"
+  },
+  "green-lean.txt": {
+    "bytes": 8222,
+    "sha256": "8e09729e2a9fb8ab6f40f05f37ce22c64be90c5ec11d3a02ab9d28d8aa0108c2"
+  },
+  "green-full.txt": {
+    "bytes": 8222,
+    "sha256": "9de39c421fdd90df9a4c395ae2f9650bbe0a5537e83b8d761379171a44e0770d"
+  },
+  "build-libraries.txt": {
+    "bytes": 17496,
+    "sha256": "7c86eee40347444746e75554d1444a4d058e39741be602543d021d8c625f9913"
+  },
+  "changed-file-lint.txt": {
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  }
+}

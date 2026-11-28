@@ -27,27 +27,31 @@ const DAY = 86_400_000;
 
 /** Strictly validate an untrusted reminder (e.g. imported schedule). */
 export function validateScheduledReminder(x: unknown): Result<ScheduledReminder> {
-  if (
-    !isRecord(x) ||
-    !onlyKeys(x, ['v', 'id', 'dueAtMs', 'label', 'amount', 'asset', 'address', 'priority', 'graceMs']) ||
-    x['v'] !== 1
-  )
+  try {
+    if (
+      !isRecord(x) ||
+      !onlyKeys(x, ['v', 'id', 'dueAtMs', 'label', 'amount', 'asset', 'address', 'priority', 'graceMs']) ||
+      x['v'] !== 1
+    )
+      return fail('reminder_shape');
+    if (typeof x['id'] !== 'string' || !ID_RE.test(x['id'])) return fail('reminder_id');
+    if (!intIn(x['dueAtMs'], 0, 8.64e15)) return fail('reminder_due');
+    const params = validateParams({ ...pick(x, ['label', 'amount', 'asset', 'address']) });
+    if (!params.ok) return params;
+    const out: ScheduledReminder = { v: 1, id: x['id'], dueAtMs: x['dueAtMs'], ...params.value };
+    if (x['priority'] !== undefined) {
+      if (typeof x['priority'] !== 'string' || !(PRIORITIES as readonly string[]).includes(x['priority']))
+        return fail('reminder_priority');
+      out.priority = x['priority'] as Priority;
+    }
+    if (x['graceMs'] !== undefined) {
+      if (!intIn(x['graceMs'], 0, 365 * DAY)) return fail('reminder_grace');
+      out.graceMs = x['graceMs'];
+    }
+    return ok(out);
+  } catch {
     return fail('reminder_shape');
-  if (typeof x['id'] !== 'string' || !ID_RE.test(x['id'])) return fail('reminder_id');
-  if (!intIn(x['dueAtMs'], 0, 8.64e15)) return fail('reminder_due');
-  const params = validateParams({ ...pick(x, ['label', 'amount', 'asset', 'address']) });
-  if (!params.ok) return params;
-  const out: ScheduledReminder = { v: 1, id: x['id'], dueAtMs: x['dueAtMs'], ...params.value };
-  if (x['priority'] !== undefined) {
-    if (typeof x['priority'] !== 'string' || !(PRIORITIES as readonly string[]).includes(x['priority']))
-      return fail('reminder_priority');
-    out.priority = x['priority'] as Priority;
   }
-  if (x['graceMs'] !== undefined) {
-    if (!intIn(x['graceMs'], 0, 365 * DAY)) return fail('reminder_grace');
-    out.graceMs = x['graceMs'];
-  }
-  return ok(out);
 }
 
 function pick(o: Record<string, unknown>, keys: string[]): Record<string, unknown> {

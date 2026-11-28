@@ -33,7 +33,7 @@ concurrency:
 jobs:
   acceptance:
     name: beta acceptance (lib + cli + browser on anvil)
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 40
     permissions:
       contents: read
@@ -67,5 +67,6 @@ jobs:
         with:
           name: beta-acceptance-log
           path: scripts/beta/.state/*.log
+          include-hidden-files: true
           if-no-files-found: warn
           retention-days: 7

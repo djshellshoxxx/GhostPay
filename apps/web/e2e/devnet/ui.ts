@@ -12,7 +12,7 @@ export const sweepView = (page: Page) => page.locator('section[aria-labelledby="
 export const scanMatches = (page: Page) => page.locator('section[aria-labelledby="scan-h"] .matches > li');
 export const receiptPanel = (page: Page) => page.getByRole('region', { name: 'Seller-signed receipt' });
 export const walletJournal = (page: Page): Promise<{ status: string; hash?: string; chainId: number; kind: string }[]> =>
-  page.evaluate(() => JSON.parse(window.sessionStorage.getItem('ghostpay.wallet-attempts.v1') ?? '[]') as { status: string; hash?: string; chainId: number; kind: string }[]);
+  page.evaluate(() => JSON.parse(window.localStorage.getItem('ghostpay.wallet-attempts.v1') ?? '[]') as { status: string; hash?: string; chainId: number; kind: string }[]);
 export const sweepJournal = (page: Page): Promise<{ chainId: number; owner: string; nonce: number; expectedHash: string; status: string }[]> =>
   page.evaluate(() => JSON.parse(window.sessionStorage.getItem('ghostpay.sweep-attempts.v1') ?? '[]') as { chainId: number; owner: string; nonce: number; expectedHash: string; status: string }[]);
 

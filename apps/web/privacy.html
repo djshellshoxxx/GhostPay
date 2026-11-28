@@ -7,40 +7,211 @@
     <meta name="referrer" content="no-referrer" />
     <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'none'; style-src 'self'; img-src 'self'; font-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'" />
     <title>GhostPay privacy — public payments and local data</title>
-    <meta name="description" content="What GhostPay's browser storage, invoice links, RPC requests, receipts, QR codes and public blockchain transactions reveal." />
+    <meta name="description" content="Feature-by-feature privacy matrix for GhostPay: what is stored in this browser, what networks and providers can observe, what the blockchain shows, and what is not protected." />
     <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
+    <link rel="stylesheet" href="./appearance.css" />
     <link rel="stylesheet" href="./help.css" />
   </head>
   <body>
     <a class="skip" href="#content">Skip to privacy information</a>
-    <header class="site-header"><div class="brand"><img src="./favicon.svg" width="32" height="32" alt="" />GhostPay</div><h1>Privacy and local data</h1><p class="intro">Stealth addresses reduce address reuse. They do not hide the public transaction graph or make your device, browser or chosen services trustworthy.</p></header>
-    <nav class="site-nav" aria-label="Site"><ul><li><a href="./">Open app</a></li><li><a href="./help.html">Help</a></li><li><a href="./privacy.html" aria-current="page">Privacy</a></li><li><a href="https://github.com/djshellshoxxx/GhostPay">Source repository</a></li></ul></nav>
+    <header class="site-header">
+      <div class="brand"><img src="./favicon.svg" width="32" height="32" alt="" />GhostPay</div>
+      <h1>Privacy and local data</h1>
+      <p class="intro">Stealth addresses reduce address reuse. They do not hide the public transaction graph, and they do not make your device, browser, wallet, provider or host trustworthy.</p>
+    </header>
+    <nav class="site-nav" aria-label="Site">
+      <ul>
+        <li><a href="./">Open app</a></li>
+        <li><a href="./help.html">Help</a></li>
+        <li><a href="./privacy.html" aria-current="page">Privacy</a></li>
+        <li><a href="https://github.com/djshellshoxxx/GhostPay">Source repository</a></li>
+      </ul>
+    </nav>
     <main id="content" tabindex="-1">
-      <section aria-labelledby="public"><h2 id="public">What remains public</h2><p>Public-chain transactions reveal the payer, asset, amounts, timing and contract interactions. Announcements contain data used to discover stealth payments. Moving funds from a one-time address can connect it to the sweep destination. The payer already knows the address they paid.</p><p>A seller's public meta-address is a stable identifier. Reusing it across invoices can connect those invoices. Publishing it in a public registry connects it to the publishing account. Public configuration is not private-key material, but it can still link devices and public identities.</p></section>
-      <section aria-labelledby="services"><h2 id="services">Who receives requests</h2>
-        <table><caption>Exposure depends on the action and service you choose</caption><thead><tr><th scope="col">Recipient</th><th scope="col">What it can see</th></tr></thead><tbody>
-          <tr><th scope="row">Web host or CDN</th><td>Requests for app files, network address, timing and ordinary browser request metadata. URL fragments are not part of HTTP requests, but the page code and browser extensions can access them.</td></tr>
-          <tr><th scope="row">RPC or scanning provider</th><td>Requested blocks, addresses and transaction data, plus connection metadata. A second provider adds comparison and availability at the cost of sharing queries with another operator.</td></tr>
-          <tr><th scope="row">Wallet and optional relayer</th><td>The actions sent to them, connected accounts and relevant transaction fields. A relayer can observe its requested destination, amount, fee and timing.</td></tr>
-          <tr><th scope="row">External block explorer</th><td>The transaction or address you look up and your connection metadata. It may index data differently or later than another provider.</td></tr>
-          <tr><th scope="row">Anyone holding a link, export or QR</th><td>The information it contains. A bearer invoice link carries its decryption key. A receipt can expose amount, chain, recipient, transaction and signing-key information.</td></tr>
-        </tbody></table>
-        <p>This static help/privacy page loads only local style and image files and contains no scripts. Actual hosting logs and retention are controlled by whoever serves your copy. This explanation does not promise that an unknown host, wallet, extension or provider collects nothing.</p>
+      <aside class="notice" aria-label="Summary">
+        <p><strong>In brief:</strong> the blockchain is public, your RPC provider sees your queries, and the sweep destination can link a payment to your wallet. GhostPay keeps seller keys in your browser and has no analytics. It does not promise anonymity or automatic refunds, and it has not been audited.</p>
+      </aside>
+
+      <section aria-labelledby="matrix">
+        <h2 id="matrix">Feature privacy matrix</h2>
+        <p>Each row describes one feature. Status labels follow the same meanings as the help guide. Where a feature sends data to a service, the service is named. Read the limits column before you use a feature with real information.</p>
+        <div class="table-wrap" tabindex="0" role="region" aria-labelledby="matrix-caption">
+          <table class="matrix">
+            <caption id="matrix-caption">What each feature stores, exposes and leaves unprotected</caption>
+            <thead><tr><th scope="col">Feature and status</th><th scope="col">Stored in this browser</th><th scope="col">Who can observe it</th><th scope="col">Limits and risks</th></tr></thead>
+            <tbody>
+              <tr>
+                <th scope="row">Generate a seller key set <span class="status status-implemented">Implemented</span></th>
+                <td>Keys in memory only, until you export or save them</td>
+                <td>No network request carries the keys</td>
+                <td>Lost when the tab closes without a backup. Idle lock clears them from memory</td>
+              </tr>
+              <tr>
+                <th scope="row">Download an encrypted keystore <span class="status status-implemented">Implemented</span></th>
+                <td>Nothing. The file goes to your downloads folder</td>
+                <td>Anyone who gets the file and the passphrase</td>
+                <td>Downloads, sync services and backups outside your control keep copies</td>
+              </tr>
+              <tr>
+                <th scope="row">Save the browser vault <span class="status status-implemented">Implemented</span> (optional)</th>
+                <td>One encrypted record in IndexedDB, unlocked by its passphrase</td>
+                <td>Anyone with access to this browser profile who also has the passphrase</td>
+                <td>Clearing site data removes it. It is not a backup</td>
+              </tr>
+              <tr>
+                <th scope="row">Create an invoice <span class="status status-implemented">Implemented</span></th>
+                <td>Nothing by default. Registration for matching stores an encrypted record</td>
+                <td>Anyone holding the link or file. A bearer link is readable by its holder</td>
+                <td>Links remain in chat history, screenshots and clipboards. The fragment is cleared from the address bar after loading by default</td>
+              </tr>
+              <tr>
+                <th scope="row">Pay an invoice <span class="status status-experimental">Experimental</span> on testnets, gated</th>
+                <td>Wallet attempt records with transaction references, in localStorage and IndexedDB</td>
+                <td>Your wallet; the RPC provider (queries and your IP address); the public chain (sender, one-time recipient, amount, time)</td>
+                <td>An unknown outcome may already be on-chain. Clearing a local record cannot cancel a transaction. A gas buffer, if the invoice accepts one, is sent in the same transaction, publicly links the payment, the one-time address and the payer, and is never refunded</td>
+              </tr>
+              <tr>
+                <th scope="row">Scan and receive <span class="status status-experimental">Experimental</span> on testnets, gated</th>
+                <td>A scan checkpoint, your privacy and lane settings, and encrypted tags</td>
+                <td>The RPC or scan provider sees the addresses and ranges your scan asks about, plus your IP address</td>
+                <td>The privacy-set figure is a local estimate. Deep scans send more requests</td>
+              </tr>
+              <tr>
+                <th scope="row">Local tags and reconciliation <span class="status status-implemented">Implemented</span></th>
+                <td>Encrypted records in IndexedDB. Older builds may have left plaintext ledger entries in localStorage; this build reads, exports and deletes them but writes only encrypted records</td>
+                <td>Nothing over the network. Someone with the unlocked page can read unlocked content</td>
+                <td>Matches are suggestions until you confirm them. Imported history is untrusted until rescanned</td>
+              </tr>
+              <tr>
+                <th scope="row">Receipts <span class="status status-implemented">Implemented</span></th>
+                <td>An optional archive, only if you opt in</td>
+                <td>Anyone holding the receipt file</td>
+                <td>A receipt can show amount, network, recipient, transaction reference and signing key. A signature shows key control, not identity</td>
+              </tr>
+              <tr>
+                <th scope="row">Sweep, direct <span class="status status-implemented">Implemented</span> gated on testnets</th>
+                <td>An attempt record in sessionStorage, which ends with the tab session</td>
+                <td>The RPC provider; the chain shows funds moving from the one-time address to your destination</td>
+                <td>The destination can link the payment to the address and to your wallet. Gas must be present at the one-time address</td>
+              </tr>
+              <tr>
+                <th scope="row">Sweep through a relayer <span class="status status-experimental">Experimental</span></th>
+                <td>The relayer URL you set</td>
+                <td>The relayer you chose sees the destination, amount, fee and timing, and the signed request. The chain shows the same movement</td>
+                <td>No hosted relayer is part of this project. Choosing a relayer means trusting its operator</td>
+              </tr>
+              <tr>
+                <th scope="row">Settings <span class="status status-implemented">Implemented</span></th>
+                <td>Unencrypted, in localStorage: preferences, RPC URLs, relayer URL and pinned signer keys</td>
+                <td>Anyone with access to this browser profile. A key inside an RPC path or query is visible there</td>
+                <td>Use endpoints that do not carry secrets, or accept that they are stored in plain text</td>
+              </tr>
+              <tr>
+                <th scope="row">Settings exchange and public configuration <span class="status status-implemented">Implemented</span></th>
+                <td>Nothing beyond the export you create</td>
+                <td>Whoever receives the file or QR code. Settings exchange includes RPC, relayer and signer sections only if you tick them</td>
+                <td>Public configuration links your devices and public identity. It cannot restore private keys</td>
+              </tr>
+              <tr>
+                <th scope="row">Publish a registry entry (ERC-6538) <span class="status status-implemented">Implemented</span></th>
+                <td>Nothing</td>
+                <td>Everyone, on-chain. The entry ties your meta-address to the publishing account</td>
+                <td>A meta-address is a stable identifier. Reusing it across invoices can connect them</td>
+              </tr>
+              <tr>
+                <th scope="row">Load a merchant profile <span class="status status-implemented">Implemented</span> full build</th>
+                <td>Nothing from the profile beyond its use</td>
+                <td>The host that serves the profile URL sees your request, IP address and timing</td>
+                <td>Loads only when you press Load</td>
+              </tr>
+              <tr>
+                <th scope="row">Export one payment's stealth key <span class="status status-implemented">Implemented</span></th>
+                <td>Nothing. The export file goes to your downloads</td>
+                <td>Anyone who obtains the file. A raw key gives full control of that one payment</td>
+                <td>Raw export needs a confirmation. Store the file as a secret</td>
+              </tr>
+              <tr>
+                <th scope="row">Bitcoin, Solana and TRON views <span class="status status-experimental">Experimental</span> full build</th>
+                <td>Public Bitcoin header data in IndexedDB</td>
+                <td>The node or indexer you choose, and the public chain</td>
+                <td>Test networks only. Mainnet is <span class="status status-unsupported">Unsupported</span></td>
+              </tr>
+              <tr>
+                <th scope="row">Route scanning through Tor Browser <span class="status status-unsupported">Unsupported</span> as routing</th>
+                <td>Nothing</td>
+                <td>Selecting the label does not route the app through Tor</td>
+                <td>Use Tor only if you have configured and verified it yourself, and understand its limits</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </section>
-      <section aria-labelledby="local"><h2 id="local">What stays in this browser</h2>
+
+      <section aria-labelledby="public">
+        <h2 id="public">What remains public</h2>
+        <p>Public-chain transactions reveal the payer, asset, amounts, timing and contract interactions. Announcements carry the data used to discover stealth payments. Moving funds from a one-time address can connect it to the sweep destination. The payer already knows the address they paid.</p>
+        <p>A seller's public meta-address is a stable identifier. Reusing it across invoices can connect those invoices. Publishing it in a public registry connects it to the publishing account. Public configuration is not private-key material, but it can still link devices and public identities.</p>
+      </section>
+
+      <section aria-labelledby="services">
+        <h2 id="services">Who receives requests</h2>
+        <div class="table-wrap" tabindex="0" role="region" aria-labelledby="services-caption">
+          <table>
+            <caption id="services-caption">Recipients and what each can see</caption>
+            <thead><tr><th scope="col">Recipient</th><th scope="col">What it can see</th></tr></thead>
+            <tbody>
+              <tr><th scope="row">The host that serves this app</th><td>Requests for app files, your network address, timing and ordinary browser request metadata. URL fragments are not sent in HTTP requests, but page code and browser extensions can read them.</td></tr>
+              <tr><th scope="row">RPC or scan provider you chose</th><td>The addresses, blocks, logs and transactions your requests name, plus your network address and request timing. A second provider adds comparison and availability, and shares your queries with another operator.</td></tr>
+              <tr><th scope="row">Your wallet</th><td>The accounts, chains and transaction requests you approve. Wallet extensions may observe more.</td></tr>
+              <tr><th scope="row">Relayer you chose</th><td>The destination, amount, fee, timing and signed request for a sweep.</td></tr>
+              <tr><th scope="row">Anyone holding a link, file or QR code</th><td>The information it contains. A bearer invoice link carries its decryption key. A receipt can expose amount, network, recipient, transaction and signing-key information.</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p>GhostPay's app code has no analytics, telemetry, third-party scripts or remote fonts. These statements describe the app code. They do not describe what your host, network, browser or extensions record.</p>
+      </section>
+
+      <section aria-labelledby="local">
+        <h2 id="local">What stays in this browser</h2>
         <ul>
-          <li>Ordinary settings, including configured endpoint URLs and pinned public signing keys, are stored without encryption. API credentials embedded in an endpoint path or query are therefore visible in the browser profile.</li>
-          <li>Loaded seller keys are used in the current session. Saving the optional browser vault persists encrypted key material; exporting a keystore creates a separate encrypted file.</li>
-          <li>Optional tags and reconciliation records are encrypted locally. Their public scope identifiers, chain, existence and ciphertext sizes can remain visible. Unlocked content is readable by the running page.</li>
-          <li>Wallet and sweep attempt records preserve transaction references and unresolved outcomes. They are not secret-key backups and clearing them cannot cancel an on-chain action.</li>
-          <li>Imported historical observations and signed receipts do not gain independent payment verification merely by being stored or restored.</li>
+          <li>Settings, including RPC endpoint URLs, relayer URL and pinned signer keys, are stored without encryption in localStorage. A credential inside an endpoint path or query is visible in the browser profile.</li>
+          <li>Seller private keys stay in memory while the key set is loaded. Saving the optional browser vault stores only the keystore ciphertext in IndexedDB. An exported keystore is a separate encrypted file.</li>
+          <li>Tags and reconciliation records are encrypted in IndexedDB. Some record existence and size may remain visible to anyone who can inspect the browser profile. Unlocked content is readable by the running page.</li>
+          <li>Wallet and sweep attempt records keep transaction references and unresolved outcomes. They are not key backups, and clearing them cannot cancel an on-chain action.</li>
+          <li>Imported historical observations and stored receipts do not gain independent payment verification merely by being stored or restored.</li>
+          <li>The browser self-check at the bottom of the app writes a fixed test value under a random temporary <code>__ghostpay_capability_</code> name in localStorage and in a temporary IndexedDB database of the same name, then asks the browser to delete both. If the browser refuses the write, nothing is stored. If it refuses the deletion or does not finish it within the check's time limit, the check reports <em>Failed</em> and the value may remain until you clear site data. The value holds no personal data, and the check makes no network request.</li>
         </ul>
-        <p>Locking a view restricts its current access; it does not erase stored records or previously downloaded files. Local records remain until you use their deletion controls or clear the site's storage, subject to the relevant format's safety history. Export the backups you need before clearing site data. Delete exported copies separately when you no longer need them.</p>
+        <p>Locking a view restricts its current access. It does not erase stored records or downloaded files. Records remain until you delete them or clear the site's storage. Export the backups you need before clearing site data, and delete exported copies separately when you no longer need them.</p>
       </section>
-      <section aria-labelledby="links"><h2 id="links">Links, QR codes and backups</h2><p>Address-bar clearing reduces exposure after an invoice has been read. It cannot guarantee removal from browser history, copied text, screenshots, device backups or extensions. Prefer the app's paste workflow when you do not want to open an invoice link directly.</p><p><strong>Preserve original digital receipt and backup files.</strong> A QR is a representation, and its image can be incomplete or lose context. Public configuration QR codes cannot restore spending, viewing or signing private keys. Keep the encrypted keystore and its passphrase separately, along with the distinct archives you rely on.</p></section>
-      <section aria-labelledby="networks"><h2 id="networks">Privacy network options have limits</h2><p>When a build offers a Tor-browser or local-proxy scanning mode, the actual browser/proxy configuration must route those requests. Selecting a label does not create an onion service, install Tor or hide public blockchain activity. Missing required transport capability should be treated as unavailable, not as evidence of private routing.</p><p>GhostPay's experimental policy accounts, account-abstraction integrations and external privacy-pool fixtures have separate acceptance gates. They are not a promise of anonymity or an operational recovery service in the ordinary invoice flow.</p></section>
-      <section aria-labelledby="verification"><h2 id="verification">Keep evidence claims separate</h2><p>A valid invoice asks for payment. A seller receipt signature attests to its signed fields and key control. An observation reports data. Verified payment evidence requires the relevant checks against the correct chain, transaction, recipient, asset, amount and confirmation state. None of these alone establishes the human identity of a seller.</p><p>Read the <a href="./help.html#evidence">payment-evidence guide</a> and the source repository's <a href="https://github.com/djshellshoxxx/GhostPay/blob/main/SECURITY.md">security policy</a>. This development software has not received an independent professional audit.</p></section>
+
+      <section aria-labelledby="links">
+        <h2 id="links">Links, QR codes and backups</h2>
+        <p>Clearing the address bar reduces exposure after an invoice has been read. It cannot remove the link from browser history, copied text, screenshots, device backups or extensions. Use the app's paste workflow when you do not want to open a link directly.</p>
+        <p><strong>Preserve original receipt and backup files.</strong> A QR code is a representation, and its image can be incomplete or lose context. Public configuration cannot restore private keys. Keep the encrypted keystore and its passphrase separately from every other archive.</p>
+      </section>
+
+      <section aria-labelledby="networks">
+        <h2 id="networks">Privacy options have limits</h2>
+        <p>The scan transport list includes a Tor Browser label. The app does not route its requests through Tor, so the label does not hide your address from the provider. Selecting a label does not create an onion service, install Tor or hide public blockchain activity.</p>
+        <p>Experimental policy accounts and the external privacy-pool fixtures have separate acceptance gates. They are not a promise of anonymity, and they are not an operational recovery service in the ordinary invoice flow.</p>
+      </section>
+
+      <section aria-labelledby="not-claimed">
+        <h2 id="not-claimed">What this page does not claim</h2>
+        <ul>
+          <li>It does not claim anonymity or unlinkability. Stealth addresses reduce address reuse only.</li>
+          <li>It does not claim an independent audit. The source repository's audit records are the place to check status.</li>
+          <li>It does not claim automatic refunds. Refund execution is unsupported in the app.</li>
+          <li>It does not claim that your host, network, wallet, extensions or chosen providers keep no records.</li>
+        </ul>
+      </section>
+
+      <section aria-labelledby="verification">
+        <h2 id="verification">Keep evidence claims separate</h2>
+        <p>A valid invoice asks for payment. A seller receipt signature attests to its signed fields and key control. An observation reports data. Verified payment evidence requires the relevant checks against the correct chain, transaction, recipient, asset, amount and finality. None of these alone establishes the human identity of a seller.</p>
+        <p>Read the <a href="./help.html#evidence">payment-evidence guide</a> and the source repository's <a href="https://github.com/djshellshoxxx/GhostPay/blob/main/SECURITY.md">security policy</a>.</p>
+      </section>
     </main>
-    <footer class="site-footer"><p>Technical privacy explanation for the current product scope. It is not a host-specific retention policy.</p><ul><li><a href="./help.html">Help and recovery</a></li><li><a href="#content">Back to top</a></li></ul></footer>
+    <footer class="site-footer"><p>Privacy explanation for the current product scope. It is not a hosting provider's retention policy.</p><ul><li><a href="./help.html">Help and recovery</a></li><li><a href="#content">Back to top</a></li></ul></footer>
   </body>
 </html>

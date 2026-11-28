@@ -1,4 +1,4 @@
-import { Assembler, parseChunk } from '@ghostpay/qr-exchange';
+import { Assembler, QrExchangeError, parseChunk } from '@ghostpay/qr-exchange';
 import { describe, expect, it } from 'vitest';
 import { fitsSingleQr, multipartIfNeeded, toMultipart } from './qrMultipart';
 
@@ -32,6 +32,16 @@ describe('multipart QR helpers', () => {
     const forced = multipartIfNeeded('y'.repeat(1004), { force: true });
     expect(forced?.length).toBeGreaterThan(1);
     expect(decode(forced ?? [])).toBe('y'.repeat(1004));
+  });
+
+  it('rejects unpaired UTF-16 surrogates rather than silently replacing them with U+FFFD', () => {
+    for (const text of ['\uD800', '\uDC00', 'prefix-\uD800-tail', 'prefix-\uDC00']) {
+      expect(() => toMultipart(text)).toThrowError(QrExchangeError);
+      expect(() => multipartIfNeeded(text)).toThrowError(QrExchangeError);
+    }
+    // A valid surrogate pair remains a valid, lossless UTF-8 transfer.
+    const paired = '🚀';
+    expect(decode(toMultipart(paired))).toBe(paired);
   });
 
   it('refuses empty and oversized input instead of producing a partial transfer', () => {

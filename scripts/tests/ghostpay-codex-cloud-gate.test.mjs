@@ -82,7 +82,7 @@ assert.ok(gateLine, 'integrate has no `for name in ...; do` gate list');
 const gates = [...gateLine[1].matchAll(/'([^']+)'/g)].map((m) => m[1]);
 
 // The ci.yml jobs whose results gate an automated merge. Every check run each of them emits must be required.
-const GATE_JOBS = ['typescript', 'contracts', 'e2e', 'secrets-and-egress'];
+const GATE_JOBS = ['typescript', 'contracts', 'e2e', 'secrets-and-egress', 'ghostid-native'];
 
 test('the ci.yml job parser sees the jobs the gate depends on', () => {
   for (const id of GATE_JOBS) {

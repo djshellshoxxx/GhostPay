@@ -1,0 +1,41 @@
+{
+  "source": "7852931fecc8bdd2ab17e3e70813f36e502c50b0",
+  "files": [
+    {
+      "path": "evidence/cookie/qualification.json",
+      "sha256": "435983de247925725e597217de8f211db83394fe99e4f52fcc752c303c2d12f1",
+      "bytes": 25630
+    },
+    {
+      "path": "evidence/cookie/cookie-recovery-evidence.tar.gz",
+      "sha256": "3a9ee6c67a2e78c842ba7d38ca2f926d55e7221c908c483023cb1806d36048d8",
+      "bytes": 88959
+    },
+    {
+      "path": "evidence/cookie/independent-review.md",
+      "sha256": "b9e6ac0999685231908eadb36f6c53689f04409e1e1a73008b2c0a00994f2d7b",
+      "bytes": 6323
+    },
+    {
+      "path": "evidence/cookie/independent-source-evidence.json",
+      "sha256": "24673bd3395c7ae83679d0ecd6ad02f2c701ef25029c035f03f8797cbfd9228d",
+      "bytes": 9344
+    },
+    {
+      "path": "evidence/cookie/evidence-archive.json",
+      "sha256": "b61463a071ce9ae129545340e6587e172134ecf8a74875f98ccf99afa6daded2",
+      "bytes": 1478
+    },
+    {
+      "path": "evidence/compatibility/independent-review.md",
+      "sha256": "3ea2beb22f536b362436a0b9e2e29f51ec3ded293138cca3cc795d43adb441dc",
+      "bytes": 1505
+    },
+    {
+      "path": "evidence/compatibility/independent-review.json",
+      "sha256": "d8dec001d60a3418502c33462d037f211a1158200e53d40a5ecfffea5412d8b1",
+      "bytes": 5114
+    }
+  ],
+  "all_exact": true
+}

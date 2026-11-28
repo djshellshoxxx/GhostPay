@@ -23,6 +23,7 @@ import {
   type BufferQuote,
   type PayContext,
 } from './pay';
+import { attemptTxDigest, browserAttemptStorage, recordAttemptNonce } from './duplicateAttemptJournal';
 import {
   WalletBroadcastError,
   pollReceipt,
@@ -33,7 +34,8 @@ import {
   type SubmissionCheck,
   type TxRequest,
   type WalletSession,
-  type WalletAttemptOptions,
+  type SeenTx,
+  walletAttemptKey, type WalletAttemptOptions,
 } from './wallet';
 
 export interface Runtime {
@@ -71,7 +73,7 @@ export class PostBroadcastError extends TransactionOutcomeError {
       phase: 'verification-incomplete', hash,
       ...(code === undefined ? {} : { code }),
       message: { key: 'transaction.postBroadcast', values: {
-        hash, detail,
+        detail,
         diagnostic: code === undefined ? '' : { key: 'transaction.code', values: { code: String(code) } },
       } },
     });
@@ -111,6 +113,25 @@ function postBroadcastDetail(error: unknown, fallback: 'rpc' | 'allowance'): Mes
   return { key: fallback === 'rpc' ? 'transaction.detail.rpcFailed' : 'transaction.detail.allowanceFailed' };
 }
 
+/**
+ * Saves the nonce of a transaction already compared with the preview, so a later replacement (speed-up or cancel) can be
+ * verified from the attempt journal. Best effort: it never changes the outcome of a returned hash.
+ */
+async function saveObservedNonce(session: WalletSession, tx: TxRequest, hash: Hex, seen: SeenTx | undefined, attempt: WalletAttemptOptions | undefined): Promise<void> {
+  const nonce = seen?.nonce;
+  if (nonce === undefined || nonce > BigInt(Number.MAX_SAFE_INTEGER) || attempt?.journalLockHeld === true) return;
+  if (attempt?.storage === undefined && browserAttemptStorage() === undefined) return;
+  try {
+    await recordAttemptNonce(hash, Number(nonce), {
+      chainId: session.chainId, account: session.account.toLowerCase(), key: walletAttemptKey(session, tx, attempt),
+      txDigest: attemptTxDigest(session.chainId, session.account, tx.to, tx.data, tx.value),
+    }, {
+      ...(attempt?.storage === undefined ? {} : { storage: attempt.storage }),
+      ...(attempt?.lockManager === undefined ? {} : { lockManager: attempt.lockManager }),
+    });
+  } catch { /* The attempt status check reads the nonce from the RPC again. */ }
+}
+
 /** Sends one transaction, cross-checks it on the user's own RPC and waits for a receipt when an RPC exists. */
 export async function submitTx(session: WalletSession, tx: TxRequest, rt: Runtime, status: StatusFn, assertCurrent?: () => void, onBroadcast?: BroadcastFn, attempt?: WalletAttemptOptions): Promise<SubmitResult> {
   assertCurrent?.();
@@ -133,14 +154,18 @@ export async function submitTx(session: WalletSession, tx: TxRequest, rt: Runtim
     }
     reportTransactionStatus(status, { phase: 'broadcast-attempted', hash, message: { key: 'transaction.status.verifying' } });
     const expected = { from: session.account, to: tx.to, data: tx.data, value: tx.value, chainId: session.chainId };
-    const seen = await verifySubmission(rt.rpc, hash, expected, rt.sleep);
+    let observed: SeenTx | undefined;
+    const keep = (tx: SeenTx): void => { observed = tx; };
+    const seen = await verifySubmission(rt.rpc, hash, expected, rt.sleep, undefined, keep);
+    await saveObservedNonce(session, tx, hash, observed, attempt);
     reportTransactionStatus(status, { phase: 'pending-confirmation', hash, message: { key: 'transaction.phase.pending' } });
     const receipt = await pollReceipt(rt.rpc, hash, tx.to, rt.sleep);
     if (seen === 'verified' || receipt === undefined) return { hash, verification: seen, receipt };
     // L2-F3: the wallet decides when to broadcast and can outwait the first check. A mined transaction is fetched and
     // compared again (a mismatch still throws), so a receipt is never reported without that comparison.
     reportTransactionStatus(status, { phase: 'verification-incomplete', hash, message: { key: 'transaction.status.lateReceipt' } });
-    const late = await verifySubmission(rt.rpc, hash, expected, rt.sleep);
+    const late = await verifySubmission(rt.rpc, hash, expected, rt.sleep, undefined, keep);
+    await saveObservedNonce(session, tx, hash, observed, attempt);
     return { hash, verification: late === 'verified' ? 'verified' : 'unverified', receipt };
   } catch (e) {
     throw new PostBroadcastError(hash, postBroadcastDetail(e, 'rpc'), e);
@@ -191,7 +216,7 @@ export async function planApproval(ctx: PayContext, session: WalletSession, toke
 }
 
 /** Sends only the exact allowance shown in the final preview and reads back what the wallet actually granted. */
-export async function grantApproval(session: WalletSession, ctx: PayContext, plan: ApprovalPlan, rt: Runtime, status: StatusFn, assertCurrent?: () => void, onBroadcast?: BroadcastFn): Promise<bigint> {
+export async function grantApproval(session: WalletSession, ctx: PayContext, plan: ApprovalPlan, rt: Runtime, status: StatusFn, assertCurrent?: () => void, onBroadcast?: BroadcastFn, onWalletRequest?: () => void): Promise<bigint> {
   if (rt.rpc === undefined) throw new UserFacingError({ key: 'error.payExec.approvingATokenNeedsAnRPCForThisChainConfigure' });
   if (!plan.required) return plan.have;
   const tx = buildApproveTx(plan.token, plan.spender, plan.need);
@@ -200,7 +225,11 @@ export async function grantApproval(session: WalletSession, ctx: PayContext, pla
   reportTransactionStatus(status, { phase: 'awaiting-authorization', message: { key: 'transaction.status.approve', values: { amount: formatUnits(plan.need, ctx.review.token?.decimals ?? 18), symbol: ctx.review.token?.symbol ?? '' } } });
   assertCurrent?.();
   // L2-I3: scoped to this invoice, so the identical approval for a later invoice is not refused as a duplicate.
-  const res = await submitTx(session, tx, rt, status, assertCurrent, onBroadcast, { kind: 'approval', scope: bytesToHex(invoiceDigest(ctx.review.invoice)) });
+  const res = await submitTx(session, tx, rt, status, assertCurrent, onBroadcast, {
+    kind: 'approval',
+    scope: bytesToHex(invoiceDigest(ctx.review.invoice)),
+    ...(onWalletRequest === undefined ? {} : { onWalletRequest }),
+  });
   try {
     if (res.receipt === undefined || res.receipt.status !== 'success') throw new UserFacingError({ key: 'error.payExec.theApprovalWasNotConfirmedNothingWasPaid' });
     // B2-R2: uncompared, the mined approve may be another one (a larger one to this spender passes the readback below).
@@ -285,7 +314,8 @@ export async function preparePayment(session: WalletSession, ctx: PayContext, op
   assertCurrent?.();
   if (state === 'already_allowed') {
     reportTransactionStatus(status, { phase: 'signed', message: permitStateDescriptor('already_allowed') });
-    return buildFinal(ctx, { nowSeconds: now });
+    // This build sets a new router deadline, and the prompt and reads above can take minutes: read the clock again.
+    return buildFinal(ctx, { nowSeconds: rt.nowSeconds() });
   }
   if (state !== 'ok_to_permit') throw new PermitRejectedError(state);
   return buildFinal(ctx, { nowSeconds: now, deadlineSeconds: deadline, permitSignature: sig });
@@ -314,9 +344,11 @@ export async function sendPayment(session: WalletSession, ctx: PayContext, built
       message: { key: 'transaction.status.unsimulated', values: { status: outcome?.message ?? message } },
     });
   } : status;
-  // After this boundary a wallet error can mean an unknown broadcast outcome, even without a returned hash.
-  onWalletRequest?.();
-  return submitTx(session, { to: built.tx.to, data: built.tx.data, value: built.tx.value }, rt, report, guard, undefined, { kind: 'payment', scope: bytesToHex(invoiceDigest(ctx.review.invoice)) });
+  return submitTx(session, { to: built.tx.to, data: built.tx.data, value: built.tx.value }, rt, report, guard, undefined, {
+    kind: 'payment',
+    scope: bytesToHex(invoiceDigest(ctx.review.invoice)),
+    ...(onWalletRequest === undefined ? {} : { onWalletRequest }),
+  });
 }
 
 export interface LocalReceipt {
@@ -352,8 +384,9 @@ export function buildReceipt(ctx: PayContext, built: BuiltPayment, result: Submi
     invoiceNonce: inv.nonce,
     fiat: `${inv.fiat.currency} ${inv.fiat.minorUnits}`,
     quote: { source: inv.quote.source, timestamp: inv.quote.timestamp, expiresAt: inv.quote.expiresAt },
-    // L2-F3: `included` only for a receipt whose transaction was compared with the preview on the user's RPC.
-    status: result.receipt === undefined ? 'unconfirmed' : result.receipt.status !== 'success' ? 'reverted' : result.verification === 'verified' ? 'included' : 'unconfirmed',
+    // A receipt for an unmatched transaction cannot establish either outcome for this invoice.
+    status: result.verification !== 'verified' || result.receipt === undefined ? 'unconfirmed'
+      : result.receipt.status === 'success' ? 'included' : 'reverted',
     createdAt: now.toISOString(),
   };
 }

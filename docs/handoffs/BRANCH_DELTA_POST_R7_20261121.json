@@ -1,0 +1,3626 @@
+{
+  "base": "aec179910c39081d820396409ff3139ff2264132",
+  "excluded_census_self": "audit/ghostpay-census-20261121-r7",
+  "new_branch_comparisons": [
+    {
+      "name": "integrate/ghostpay-idle-main-scan-20261121-539818",
+      "sha": "45ece45defd2a26cfb7f471ea4654ba4d1d2266e",
+      "status": "ahead",
+      "ahead": 119,
+      "behind": 0,
+      "merge_base": "aec179910c39081d820396409ff3139ff2264132",
+      "files": [
+        {
+          "name": ".github/workflows/tor-static.yml",
+          "status": "added",
+          "add": 114,
+          "del": 0
+        },
+        {
+          "name": "apps/web/DEVIATIONS.md",
+          "status": "modified",
+          "add": 7,
+          "del": 0
+        },
+        {
+          "name": "apps/web/e2e/backup-ownership.spec.ts",
+          "status": "added",
+          "add": 208,
+          "del": 0
+        },
+        {
+          "name": "apps/web/e2e/core-journey.spec.ts",
+          "status": "modified",
+          "add": 6,
+          "del": 1
+        },
+        {
+          "name": "apps/web/e2e/devnet-journey.spec.ts",
+          "status": "modified",
+          "add": 3,
+          "del": 1
+        },
+        {
+          "name": "apps/web/e2e/flowMocks.ts",
+          "status": "modified",
+          "add": 1,
+          "del": 1
+        },
+        {
+          "name": "apps/web/e2e/idle-session.spec.ts",
+          "status": "added",
+          "add": 179,
+          "del": 0
+        },
+        {
+          "name": "apps/web/e2e/pages-devnet.spec.ts",
+          "status": "modified",
+          "add": 10,
+          "del": 1
+        },
+        {
+          "name": "apps/web/e2e/payment-request-file.spec.ts",
+          "status": "added",
+          "add": 206,
+          "del": 0
+        },
+        {
+          "name": "apps/web/e2e/print-targets.spec.ts",
+          "status": "added",
+          "add": 131,
+          "del": 0
+        },
+        {
+          "name": "apps/web/e2e/sweep.spec.ts",
+          "status": "modified",
+          "add": 1,
+          "del": 0
+        },
+        {
+          "name": "apps/web/locales/ar.json",
+          "status": "modified",
+          "add": 22,
+          "del": 2
+        },
+        {
+          "name": "apps/web/locales/en.json",
+          "status": "modified",
+          "add": 22,
+          "del": 2
+        },
+        {
+          "name": "apps/web/locales/es.json",
+          "status": "modified",
+          "add": 22,
+          "del": 2
+        },
+        {
+          "name": "apps/web/locales/ja.json",
+          "status": "modified",
+          "add": 22,
+          "del": 2
+        },
+        {
+          "name": "apps/web/src/AppShell.idleClock.test.tsx",
+          "status": "modified",
+          "add": 314,
+          "del": 7
+        },
+        {
+          "name": "apps/web/src/AppShell.tsx",
+          "status": "modified",
+          "add": 178,
+          "del": 61
+        },
+        {
+          "name": "apps/web/src/components/CameraImporter.tsx",
+          "status": "modified",
+          "add": 8,
+          "del": 3
+        },
+        {
+          "name": "apps/web/src/components/CameraImporter.visibility.test.tsx",
+          "status": "added",
+          "add": 154,
+          "del": 0
+        },
+        {
+          "name": "apps/web/src/components/PaymentRequestDownload.test.tsx",
+          "status": "added",
+          "add": 56,
+          "del": 0
+        },
+        {
+          "name": "apps/web/src/components/PaymentRequestDownload.tsx",
+          "status": "added",
+          "add": 23,
+          "del": 0
+        },
+        {
+          "name": "apps/web/src/components/PaymentRequestFileInput.test.tsx",
+          "status": "added",
+          "add": 238,
+          "del": 0
+        },
+        {
+          "name": "apps/web/src/components/PaymentRequestFileInput.tsx",
+          "status": "added",
+          "add": 162,
+          "del": 0
+        },
+        {
+          "name": "apps/web/src/components/PrintableBill.test.tsx",
+          "status": "modified",
+          "add": 14,
+          "del": 1
+        },
+        {
+          "name": "apps/web/src/components/PrintableBill.tsx",
+          "status": "modified",
+          "add": 7,
+          "del": 12
+        },
+        {
+          "name": "apps/web/src/components/ReceiptPanel.archive.regeneration.test.tsx",
+          "status": "added",
+          "add": 110,
+          "del": 0
+        },
+        {
+          "name": "apps/web/src/components/ReceiptPanel.archive.rejection.test.tsx",
+          "status": "added",
+          "add": 74,
+          "del": 0
+        },
+        {
+          "name": "apps/web/src/components/ReceiptPanel.test.tsx",
+          "status": "modified",
+          "add": 36,
+          "del": 3
+        },
+        {
+          "name": "apps/web/src/components/ReceiptPanel.tsx",
+          "status": "modified",
+          "add": 25,
+          "del": 4
+        },
+        {
+          "name": "apps/web/src/components/ReconciliationLedger.test.tsx",
+          "status": "modified",
+          "add": 46,
+          "del": 2
+        },
+        {
+          "name": "apps/web/src/components/TagArchive.test.tsx",
+          "status": "modified",
+          "add": 43,
+          "del": 4
+        },
+        {
+          "name": "apps/web/src/features/policy/fixtures.testutil.ts",
+          "status": "modified",
+          "add": 1,
+          "del": 1
+        },
+        {
+          "name": "apps/web/src/i18n/securityKeys.ts",
+          "status": "modified",
+          "add": 22,
+          "del": 0
+        },
+        {
+          "name": "apps/web/src/lib/format.test.ts",
+          "status": "modified",
+          "add": 14,
+          "del": 0
+        },
+        {
+          "name": "apps/web/src/lib/format.ts",
+          "status": "modified",
+          "add": 1,
+          "del": 0
+        },
+        {
+          "name": "apps/web/src/lib/jitter.test.ts",
+          "status": "modified",
+          "add": 18,
+          "del": 0
+        },
+        {
+          "name": "apps/web/src/lib/jitter.ts",
+          "status": "modified",
+          "add": 22,
+          "del": 3
+        },
+        {
+          "name": "apps/web/src/lib/keyVault.ts",
+          "status": "modified",
+          "add": 5,
+          "del": 3
+        },
+        {
+          "name": "apps/web/src/lib/payExec.acceptance.test.ts",
+          "status": "modified",
+          "add": 1,
+          "del": 1
+        },
+        {
+          "name": "apps/web/src/lib/payExec.test.ts",
+          "status": "modified",
+          "add": 82,
+          "del": 4
+        },
+        {
+          "name": "apps/web/src/lib/qrKinds.test.ts",
+          "status": "modified",
+          "add": 86,
+          "del": 2
+        },
+        {
+          "name": "apps/web/src/lib/qrKinds.ts",
+          "status": "modified",
+          "add": 3,
+          "del": 3
+        },
+        {
+          "name": "apps/web/src/lib/requestFileInterop.test.ts",
+          "status": "added",
+          "add": 87,
+          "del": 0
+        },
+        {
+          "name": "apps/web/src/lib/scanCursorSlot.test.ts",
+          "status": "modified",
+          "add": 92,
+          "del": 0
+        },
+        {
+          "name": "apps/web/src/lib/scanCursorSlot.ts",
+          "status": "modified",
+          "add": 11,
+          "del": 5
+        },
+        {
+          "name": "apps/web/src/lib/scanMatches.test.ts",
+          "status": "modified",
+          "add": 17,
+          "del": 0
+        },
+        {
+          "name": "apps/web/src/lib/scanMatches.ts",
+          "status": "modified",
+          "add": 6,
+          "del": 3
+        },
+        {
+          "name": "apps/web/src/lib/scanPrivacy.test.ts",
+          "status": "modified",
+          "add": 7,
+          "del": 2
+        },
+        {
+          "name": "apps/web/src/lib/scanPrivacy.ts",
+          "status": "modified",
+          "add": 2,
+          "del": 2
+        },
+        {
+          "name": "apps/web/src/lib/scannerCore.test.ts",
+          "status": "modified",
+          "add": 58,
+          "del": 0
+        },
+        {
+          "name": "apps/web/src/lib/scannerCore.ts",
+          "status": "modified",
+          "add": 5,
+          "del": 1
+        },
+        {
+          "name": "apps/web/src/lib/session.idleLock.test.ts",
+          "status": "added",
+          "add": 332,
+          "del": 0
+        },
+        {
+          "name": "apps/web/src/lib/session.ts",
+          "status": "modified",
+          "add": 110,
+          "del": 18
+        },
+        {
+          "name": "apps/web/src/lib/sweep.reviewAuthority.test.ts",
+          "status": "added",
+          "add": 249,
+          "del": 0
+        },
+        {
+          "name": "apps/web/src/lib/sweep.test.ts",
+          "status": "modified",
+          "add": 8,
+          "del": 8
+        },
+        {
+          "name": "apps/web/src/lib/sweep.ts",
+          "status": "modified",
+          "add": 32,
+          "del": 17
+        },
+        {
+          "name": "apps/web/src/lib/txGuard.test.ts",
+          "status": "modified",
+          "add": 19,
+          "del": 0
+        },
+        {
+          "name": "apps/web/src/lib/txGuard.ts",
+          "status": "modified",
+          "add": 9,
+          "del": 2
+        },
+        {
+          "name": "apps/web/src/lib/usePrintTarget.test.tsx",
+          "status": "added",
+          "add": 176,
+          "del": 0
+        },
+        {
+          "name": "apps/web/src/lib/usePrintTarget.ts",
+          "status": "added",
+          "add": 52,
+          "del": 0
+        },
+        {
+          "name": "apps/web/src/lib/wallet.test.ts",
+          "status": "modified",
+          "add": 113,
+          "del": 2
+        },
+        {
+          "name": "apps/web/src/lib/wallet.ts",
+          "status": "modified",
+          "add": 15,
+          "del": 2
+        },
+        {
+          "name": "apps/web/src/styles/app.css",
+          "status": "modified",
+          "add": 0,
+          "del": 7
+        },
+        {
+          "name": "apps/web/src/styles/print.css",
+          "status": "modified",
+          "add": 6,
+          "del": 4
+        },
+        {
+          "name": "apps/web/src/views/CreateInvoice.tsx",
+          "status": "modified",
+          "add": 2,
+          "del": 0
+        },
+        {
+          "name": "apps/web/src/views/Pay.invoiceQr.test.tsx",
+          "status": "modified",
+          "add": 2,
+          "del": 2
+        },
+        {
+          "name": "apps/web/src/views/Pay.requestFile.test.tsx",
+          "status": "added",
+          "add": 264,
+          "del": 0
+        },
+        {
+          "name": "apps/web/src/views/Pay.test.tsx",
+          "status": "modified",
+          "add": 3,
+          "del": 3
+        },
+        {
+          "name": "apps/web/src/views/Pay.tsx",
+          "status": "modified",
+          "add": 24,
+          "del": 12
+        },
+        {
+          "name": "apps/web/src/views/Scan.tags.scope.test.tsx",
+          "status": "added",
+          "add": 113,
+          "del": 0
+        },
+        {
+          "name": "apps/web/src/views/Scan.tsx",
+          "status": "modified",
+          "add": 43,
+          "del": 10
+        },
+        {
+          "name": "apps/web/src/views/SellerKeys.operation.test.tsx",
+          "status": "added",
+          "add": 210,
+          "del": 0
+        },
+        {
+          "name": "apps/web/src/views/SellerKeys.ownership.test.tsx",
+          "status": "added",
+          "add": 456,
+          "del": 0
+        },
+        {
+          "name": "apps/web/src/views/SellerKeys.tsx",
+          "status": "modified",
+          "add": 83,
+          "del": 36
+        },
+        {
+          "name": "apps/web/src/views/Sweep.privacy.test.tsx",
+          "status": "modified",
+          "add": 158,
+          "del": 18
+        },
+        {
+          "name": "apps/web/src/views/Sweep.quoteLifecycle.test.tsx",
+          "status": "added",
+          "add": 427,
+          "del": 0
+        },
+        {
+          "name": "apps/web/src/views/Sweep.test.tsx",
+          "status": "modified",
+          "add": 9,
+          "del": 0
+        },
+        {
+          "name": "apps/web/src/views/Sweep.tsx",
+          "status": "modified",
+          "add": 117,
+          "del": 55
+        },
+        {
+          "name": "deploy/TOR.md",
+          "status": "modified",
+          "add": 14,
+          "del": 1
+        },
+        {
+          "name": "deploy/tor-static/.dockerignore",
+          "status": "added",
+          "add": 6,
+          "del": 0
+        },
+        {
+          "name": "deploy/tor-static/Dockerfile",
+          "status": "added",
+          "add": 32,
+          "del": 0
+        },
+        {
+          "name": "deploy/tor-static/README.md",
+          "status": "added",
+          "add": 166,
+          "del": 0
+        },
+        {
+          "name": "deploy/tor-static/host.example.json",
+          "status": "added",
+          "add": 9,
+          "del": 0
+        },
+        {
+          "name": "deploy/tor-static/prepare.mjs",
+          "status": "added",
+          "add": 177,
+          "del": 0
+        },
+        {
+          "name": "deploy/tor-static/runtime-check.sh",
+          "status": "added",
+          "add": 20,
+          "del": 0
+        },
+        {
+          "name": "deploy/tor-static/tor-start.sh",
+          "status": "added",
+          "add": 25,
+          "del": 0
+        },
+        {
+          "name": "docs/ai/ACTIVE_WORK.md",
+          "status": "modified",
+          "add": 2411,
+          "del": 0
+        },
+        {
+          "name": "docs/ai/prompts/F03_AUDIT_HANDOFF.md",
+          "status": "added",
+          "add": 44,
+          "del": 0
+        },
+        {
+          "name": "docs/ai/prompts/F03_WORKER_BRIEF.md",
+          "status": "added",
+          "add": 20,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/backup-preflight-r2-20261120/ARTIFACTS.md",
+          "status": "added",
+          "add": 30,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/backup-preflight-r2-20261120/EVIDENCE.json",
+          "status": "added",
+          "add": 443,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/backup-preflight-r2-20261120/INDEPENDENT_REVIEW.json",
+          "status": "added",
+          "add": 104,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/backup-preflight-r2-20261120/INDEPENDENT_REVIEW.md",
+          "status": "added",
+          "add": 52,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/backup-preflight-r2-20261120/PLAN_REVIEW.json",
+          "status": "added",
+          "add": 90,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/backup-preflight-r2-20261120/PLAN_REVIEW.md",
+          "status": "added",
+          "add": 56,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/backup-preflight-r2-20261120/REPORT.md",
+          "status": "added",
+          "add": 88,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/backup-preflight-r2-20261120/outputs/backup-preflight-r2-build-collection.json.json",
+          "status": "added",
+          "add": 7,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/backup-preflight-r2-20261120/outputs/backup-preflight-r2-compat-run.json.json",
+          "status": "added",
+          "add": 7,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/backup-preflight-r2-20261120/outputs/backup-preflight-r2-compat.json.json",
+          "status": "added",
+          "add": 7,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/backup-preflight-r2-20261120/outputs/backup-preflight-r2-compat.log.json",
+          "status": "added",
+          "add": 7,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/backup-preflight-r2-20261120/outputs/backup-preflight-r2-dependency-reuse.json.json",
+          "status": "added",
+          "add": 7,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/backup-preflight-r2-20261120/outputs/backup-preflight-r2-full-collection.log.json",
+          "status": "added",
+          "add": 7,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/backup-preflight-r2-20261120/outputs/backup-preflight-r2-green-run.json.json",
+          "status": "added",
+          "add": 7,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/backup-preflight-r2-20261120/outputs/backup-preflight-r2-green.json.json",
+          "status": "added",
+          "add": 7,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/backup-preflight-r2-20261120/outputs/backup-preflight-r2-green.log.json",
+          "status": "added",
+          "add": 7,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/backup-preflight-r2-20261120/outputs/backup-preflight-r2-lean-build.log.json",
+          "status": "added",
+          "add": 7,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/backup-preflight-r2-20261120/outputs/backup-preflight-r2-lean-collection.log.json",
+          "status": "added",
+          "add": 7,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/backup-preflight-r2-20261120/outputs/backup-preflight-r2-lint.log.json",
+          "status": "added",
+          "add": 7,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/backup-preflight-r2-20261120/outputs/backup-preflight-r2-original-gates.json.json",
+          "status": "added",
+          "add": 7,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/backup-preflight-r2-20261120/outputs/backup-preflight-r2-red-run.json.json",
+          "status": "added",
+          "add": 7,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/backup-preflight-r2-20261120/outputs/backup-preflight-r2-red.json.json",
+          "status": "added",
+          "add": 7,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/backup-preflight-r2-20261120/outputs/backup-preflight-r2-red.log.json",
+          "status": "added",
+          "add": 7,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/backup-preflight-r2-20261120/outputs/backup-preflight-r2-typecheck.log.json",
+          "status": "added",
+          "add": 7,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/backup-preflight-r2-20261120/outputs/backup-preflight-r3-author-evidence.json.json",
+          "status": "added",
+          "add": 7,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/continuation-20261120/BRANCH_CENSUS_INITIAL.json",
+          "status": "added",
+          "add": 2284,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/continuation-20261120/REPORT.md",
+          "status": "added",
+          "add": 127,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/current-main-r3-20261120/COMPOSITION_INTEGRITY.json",
+          "status": "added",
+          "add": 1095,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/current-main-r3-20261120/INDEPENDENT_REVIEW.json",
+          "status": "added",
+          "add": 46,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/current-main-r3-20261120/PLAN_REVIEW.json",
+          "status": "added",
+          "add": 23,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/current-main-r3-20261120/QUALIFIED_PARENT_CI.json",
+          "status": "added",
+          "add": 1123,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/current-main-r3-20261120/REPORT.md",
+          "status": "added",
+          "add": 70,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/idle-main-scan-r2-20261121-539818/CAPTURE.json",
+          "status": "added",
+          "add": 59,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/idle-main-scan-r2-20261121-539818/CENSUS_EXTENSION.json",
+          "status": "added",
+          "add": 95,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/idle-main-scan-r2-20261121-539818/CENSUS_EXTENSION_DETAILS.json.gz",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/idle-main-scan-r2-20261121-539818/ENVIRONMENT.json",
+          "status": "added",
+          "add": 22,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/idle-main-scan-r2-20261121-539818/EXECUTION.json",
+          "status": "added",
+          "add": 140,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/idle-main-scan-r2-20261121-539818/EXECUTION_HISTORY.bundle",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/idle-main-scan-r2-20261121-539818/EXECUTION_HISTORY.json",
+          "status": "added",
+          "add": 12,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/idle-main-scan-r2-20261121-539818/EXECUTION_LOGS.json.gz",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/idle-main-scan-r2-20261121-539818/EXTEND_CENSUS.py",
+          "status": "added",
+          "add": 115,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/idle-main-scan-r2-20261121-539818/FILES.json",
+          "status": "added",
+          "add": 80,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/idle-main-scan-r2-20261121-539818/INDEPENDENT_REVIEWS.md",
+          "status": "added",
+          "add": 29,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/idle-main-scan-r2-20261121-539818/LIGHT_CHECKS.json",
+          "status": "added",
+          "add": 38,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/idle-main-scan-r2-20261121-539818/MERGES.json",
+          "status": "added",
+          "add": 30,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/idle-main-scan-r2-20261121-539818/PUBLICATION_BASES.json",
+          "status": "added",
+          "add": 28,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/idle-main-scan-r2-20261121-539818/REPORT.md",
+          "status": "added",
+          "add": 116,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/idle-main-scan-r2-20261121-539818/SNAPSHOT.json",
+          "status": "added",
+          "add": 3544,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/idle-session-r2-20261120/EVIDENCE.json",
+          "status": "added",
+          "add": 1210,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/idle-session-r2-20261120/REPORT.md",
+          "status": "added",
+          "add": 56,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/idle-session-r2-20261120/outputs/idle-r2-browser-collect-full.log.json",
+          "status": "added",
+          "add": 6,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/idle-session-r2-20261120/outputs/idle-r2-browser-collect-lean.log.json",
+          "status": "added",
+          "add": 6,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/idle-session-r2-20261120/outputs/idle-r2-green.json.json",
+          "status": "added",
+          "add": 6,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/idle-session-r2-20261120/outputs/idle-r2-green.log.json",
+          "status": "added",
+          "add": 6,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/idle-session-r2-20261120/outputs/idle-r2-lint.log.json",
+          "status": "added",
+          "add": 6,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/idle-session-r2-20261120/outputs/idle-r2-red.json.json",
+          "status": "added",
+          "add": 6,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/idle-session-r2-20261120/outputs/idle-r2-red.log.json",
+          "status": "added",
+          "add": 6,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/idle-session-r2-20261120/outputs/idle-r2-secrets.log.json",
+          "status": "added",
+          "add": 6,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/idle-session-r2-20261120/outputs/idle-r2-typecheck.log.json",
+          "status": "added",
+          "add": 6,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/idle-session-r2-20261120/outputs/idle-r2-whitespace.log.json",
+          "status": "added",
+          "add": 6,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/invoice-file-20261120/EVIDENCE.json",
+          "status": "added",
+          "add": 117,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/invoice-file-20261120/REVIEW.md",
+          "status": "added",
+          "add": 78,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/main-unique-code-20261120/BLOB_DISPOSITIONS.json",
+          "status": "added",
+          "add": 2516,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/main-unique-code-20261120/BRANCH_CENSUS.json",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/main-unique-code-20261120/recovered-fixes/PROVENANCE.json",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/main-unique-code-20261120/recovered-fixes/REPORT.md",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/merge-readiness/PR231.md",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/receipt-identity-r2-20261120/ARTIFACTS.md",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/receipt-identity-r2-20261120/EVIDENCE.json",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/receipt-identity-r2-20261120/INDEPENDENT_REVIEW.json",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/receipt-identity-r2-20261120/INDEPENDENT_REVIEW.md",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/receipt-identity-r2-20261120/LINT_REVIEW_ADDENDUM.json",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/receipt-identity-r2-20261120/LINT_REVIEW_ADDENDUM.md",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/receipt-identity-r2-20261120/REPORT.md",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/receipt-identity-r2-20261120/outputs/receipt-identity-r2-before-lint-fix-lint.log.artifact.json",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/receipt-identity-r2-20261120/outputs/receipt-identity-r2-before-lint-fix-original-gates.json.artifact.json",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/receipt-identity-r2-20261120/outputs/receipt-identity-r2-before-lint-fix-typecheck.log.artifact.json",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/receipt-identity-r2-20261120/outputs/receipt-identity-r2-compat-after-lint-run.json.artifact.json",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/receipt-identity-r2-20261120/outputs/receipt-identity-r2-compat-after-lint.json.artifact.json",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/receipt-identity-r2-20261120/outputs/receipt-identity-r2-compat-after-lint.log.artifact.json",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/receipt-identity-r2-20261120/outputs/receipt-identity-r2-compat-run.json.artifact.json",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/receipt-identity-r2-20261120/outputs/receipt-identity-r2-compat.json.artifact.json",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/receipt-identity-r2-20261120/outputs/receipt-identity-r2-compat.log.artifact.json",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/receipt-identity-r2-20261120/outputs/receipt-identity-r2-corrected-worker-checkpoint.json.artifact.json",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/receipt-identity-r2-20261120/outputs/receipt-identity-r2-dependency-reuse.json.artifact.json",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/receipt-identity-r2-20261120/outputs/receipt-identity-r2-donor-checks.json.artifact.json",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/receipt-identity-r2-20261120/outputs/receipt-identity-r2-final-gates.json.artifact.json",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/receipt-identity-r2-20261120/outputs/receipt-identity-r2-final-lean-build.log.artifact.json",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/receipt-identity-r2-20261120/outputs/receipt-identity-r2-final-lint.log.artifact.json",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/receipt-identity-r2-20261120/outputs/receipt-identity-r2-final-secrets.log.artifact.json",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/receipt-identity-r2-20261120/outputs/receipt-identity-r2-final-typecheck.log.artifact.json",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/receipt-identity-r2-20261120/outputs/receipt-identity-r2-final-whitespace.log.artifact.json",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/receipt-identity-r2-20261120/outputs/receipt-identity-r2-green-run.json.artifact.json",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/receipt-identity-r2-20261120/outputs/receipt-identity-r2-green.json.artifact.json",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/receipt-identity-r2-20261120/outputs/receipt-identity-r2-green.log.artifact.json",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/receipt-identity-r2-20261120/outputs/receipt-identity-r2-lint-fix-provenance.json.artifact.json",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/receipt-identity-r2-20261120/outputs/receipt-identity-r2-lint.log.artifact.json",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/receipt-identity-r2-20261120/outputs/receipt-identity-r2-original-gates.json.artifact.json",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/receipt-identity-r2-20261120/outputs/receipt-identity-r2-red-run.json.artifact.json",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/receipt-identity-r2-20261120/outputs/receipt-identity-r2-red.json.artifact.json",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/receipt-identity-r2-20261120/outputs/receipt-identity-r2-red.log.artifact.json",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/receipt-identity-r2-20261120/outputs/receipt-identity-r2-source-integrity.json.artifact.json",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/receipt-identity-r2-20261120/outputs/receipt-identity-r2-source-pins.json.artifact.json",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/receipt-identity-r2-20261120/outputs/receipt-identity-r2-typecheck.log.artifact.json",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/receipt-identity-r2-20261120/outputs/receipt-identity-r2-worker-checkpoint.json.artifact.json",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/request-file-async-r3-20261120/ARTIFACTS.md",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/request-file-async-r3-20261120/COORDINATOR_REVIEW.json",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/request-file-async-r3-20261120/COORDINATOR_REVIEW.md",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/request-file-async-r3-20261120/EVIDENCE.json",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/request-file-async-r3-20261120/REPORT.md",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/request-file-async-r3-20261120/outputs/r3-backup-hosted-original.log.artifact.json",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/request-file-async-r3-20261120/outputs/r3-request-file-baseline-coverage--lcov.info.artifact.json",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/request-file-async-r3-20261120/outputs/r3-request-file-baseline-coverage-run.json.artifact.json",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/request-file-async-r3-20261120/outputs/r3-request-file-baseline-coverage.json.artifact.json",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/request-file-async-r3-20261120/outputs/r3-request-file-baseline-coverage.log.artifact.json",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/request-file-async-r3-20261120/outputs/r3-request-file-baseline-run.json.artifact.json",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/request-file-async-r3-20261120/outputs/r3-request-file-baseline.json.artifact.json",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/request-file-async-r3-20261120/outputs/r3-request-file-baseline.log.artifact.json",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/request-file-async-r3-20261120/outputs/r3-request-file-build-artifacts.json.artifact.json",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/request-file-async-r3-20261120/outputs/r3-request-file-compatibility-run.json.artifact.json",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/request-file-async-r3-20261120/outputs/r3-request-file-compatibility.json.artifact.json",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/request-file-async-r3-20261120/outputs/r3-request-file-compatibility.log.artifact.json",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/request-file-async-r3-20261120/outputs/r3-request-file-corrected-coverage--lcov.info.artifact.json",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/request-file-async-r3-20261120/outputs/r3-request-file-corrected-coverage-run.json.artifact.json",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/request-file-async-r3-20261120/outputs/r3-request-file-corrected-coverage.json.artifact.json",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/request-file-async-r3-20261120/outputs/r3-request-file-corrected-coverage.log.artifact.json",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/request-file-async-r3-20261120/outputs/r3-request-file-dependency-provenance.json.artifact.json",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/request-file-async-r3-20261120/outputs/r3-request-file-lean-build-run.json.artifact.json",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/request-file-async-r3-20261120/outputs/r3-request-file-lean-build.log.artifact.json",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/request-file-async-r3-20261120/outputs/r3-request-file-lint-run.json.artifact.json",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/request-file-async-r3-20261120/outputs/r3-request-file-lint-serial-run.json.artifact.json",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/request-file-async-r3-20261120/outputs/r3-request-file-lint-serial.log.artifact.json",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/request-file-async-r3-20261120/outputs/r3-request-file-lint.log.artifact.json",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/request-file-async-r3-20261120/outputs/r3-request-file-run.py.artifact.json",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/request-file-async-r3-20261120/outputs/r3-request-file-secrets-run.json.artifact.json",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/request-file-async-r3-20261120/outputs/r3-request-file-secrets.log.artifact.json",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/request-file-async-r3-20261120/outputs/r3-request-file-source-provenance.json.artifact.json",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/request-file-async-r3-20261120/outputs/r3-request-file-typecheck-run.json.artifact.json",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/request-file-async-r3-20261120/outputs/r3-request-file-typecheck.log.artifact.json",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/sweep-20261120/BRANCH_CENSUS.json",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/sweep-20261120/EVIDENCE.json",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/sweep-20261120/REPORT.md",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/future/modules/F03-private-payment-links/CATALOG_RECONCILIATION.md",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/future/modules/F03-private-payment-links/ENVIRONMENT.md",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/future/modules/F03-private-payment-links/HANDOFF.md",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/future/modules/F03-private-payment-links/QUALIFICATION.md",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/future/modules/F03-private-payment-links/SPEC.md",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/future/modules/F03-private-payment-links/audits/PRIVACY_SECURITY.md",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/future/modules/F03-private-payment-links/audits/SPEC.md",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/future/modules/F03-private-payment-links/audits/STANDARDS.md",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/future/modules/F03-private-payment-links/evidence/console-log-normalization.json",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/future/modules/F03-private-payment-links/evidence/feature-lint.json",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/future/modules/F03-private-payment-links/evidence/feature-lint.log",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/future/modules/F03-private-payment-links/evidence/final-secret-scan.json",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/future/modules/F03-private-payment-links/evidence/final-secret-scan.log",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/future/modules/F03-private-payment-links/evidence/final-whitespace.json",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/future/modules/F03-private-payment-links/evidence/final-whitespace.log",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/future/modules/F03-private-payment-links/evidence/hosted-product-status.json",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/future/modules/F03-private-payment-links/evidence/invoice-schema-build.json",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/future/modules/F03-private-payment-links/evidence/invoice-schema-build.log",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/future/modules/F03-private-payment-links/evidence/invoice-schema-coverage-initial-interrupted.log",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/future/modules/F03-private-payment-links/evidence/invoice-schema-coverage.json",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/future/modules/F03-private-payment-links/evidence/invoice-schema-coverage.log",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/future/modules/F03-private-payment-links/evidence/invoice-schema-direct-coverage.json",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/future/modules/F03-private-payment-links/evidence/invoice-schema-direct-coverage.log",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/future/modules/F03-private-payment-links/evidence/invoice-schema-full-coverage.json",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/future/modules/F03-private-payment-links/evidence/invoice-schema-full-coverage.log",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/future/modules/F03-private-payment-links/evidence/invoice-schema-lcov.info",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/future/modules/F03-private-payment-links/evidence/invoice-schema-typecheck.json",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/future/modules/F03-private-payment-links/evidence/invoice-schema-typecheck.log",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/future/modules/F03-private-payment-links/evidence/locale-catalog-final.json",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/future/modules/F03-private-payment-links/evidence/locale-catalog-final.log",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/future/modules/F03-private-payment-links/evidence/locale-catalog.json",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/future/modules/F03-private-payment-links/evidence/locale-catalog.log",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/future/modules/F03-private-payment-links/evidence/original-console-logs.tar.gz.b64",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/future/modules/F03-private-payment-links/evidence/secret-scan.json",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/future/modules/F03-private-payment-links/evidence/secret-scan.log",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/future/modules/F03-private-payment-links/evidence/spec-app-lock-green.json",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/future/modules/F03-private-payment-links/evidence/spec-app-lock-green.log",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/future/modules/F03-private-payment-links/evidence/spec-app-lock-red.log",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/future/modules/F03-private-payment-links/evidence/spec-combined-dom.json",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/future/modules/F03-private-payment-links/evidence/spec-combined-dom.log",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/future/modules/F03-private-payment-links/evidence/web-artifact-full.json",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/future/modules/F03-private-payment-links/evidence/web-artifact-lean.json",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/future/modules/F03-private-payment-links/evidence/web-build-full.json",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/future/modules/F03-private-payment-links/evidence/web-build-full.log",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/future/modules/F03-private-payment-links/evidence/web-build-lean.json",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/future/modules/F03-private-payment-links/evidence/web-build-lean.log",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/future/modules/F03-private-payment-links/evidence/web-bundle-scan-full.json",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/future/modules/F03-private-payment-links/evidence/web-bundle-scan-full.log",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/future/modules/F03-private-payment-links/evidence/web-bundle-scan-lean.json",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/future/modules/F03-private-payment-links/evidence/web-bundle-scan-lean.log",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/future/modules/F03-private-payment-links/evidence/web-typecheck-catalog-final.json",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/future/modules/F03-private-payment-links/evidence/web-typecheck-catalog-final.log",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/future/modules/F03-private-payment-links/evidence/web-typecheck-final.json",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/future/modules/F03-private-payment-links/evidence/web-typecheck-final.log",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/future/modules/F03-private-payment-links/evidence/web-typecheck.json",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/future/modules/F03-private-payment-links/evidence/web-typecheck.log",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/future/modules/F03-private-payment-links/evidence/web-vite-full.json",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/future/modules/F03-private-payment-links/evidence/web-vite-full.log",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/future/modules/F03-private-payment-links/evidence/web-vite-lean.json",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/future/modules/F03-private-payment-links/evidence/web-vite-lean.log",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/guides/troubleshooting-by-symptom.md",
+          "status": "modified",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/handoffs/LEDGER_ACTIONABILITY_20261120.md",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/handoffs/PAYMENT_URI_DECIMAL_OPTIONS_20261120.md",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/handoffs/PR310_MEMO_BROWSER_CHECKS_20261120.md",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/handoffs/RECEIPT_ARCHIVE_IDENTITY_R2_20261120.md",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/handoffs/RECEIPT_PRINT_TARGETS_20261120.md",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/handoffs/SCAN_MATCH_DUPLICATE_ROUTER_20261121.md",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/handoffs/SCAN_TAG_SCOPE_20261120.md",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/handoffs/SCAN_TAG_SESSION_CI_REPAIR_20261120.md",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        }
+      ]
+    },
+    {
+      "name": "integration/ghostpay-idle-scan-candidate-20261121-fc3db",
+      "sha": "418054d5ca041973d31d514406ee4c6157ca919f",
+      "status": "ahead",
+      "ahead": 120,
+      "behind": 0,
+      "merge_base": "aec179910c39081d820396409ff3139ff2264132",
+      "files": [
+        {
+          "name": ".github/workflows/tor-static.yml",
+          "status": "added",
+          "add": 114,
+          "del": 0
+        },
+        {
+          "name": "apps/web/DEVIATIONS.md",
+          "status": "modified",
+          "add": 7,
+          "del": 0
+        },
+        {
+          "name": "apps/web/e2e/backup-ownership.spec.ts",
+          "status": "added",
+          "add": 208,
+          "del": 0
+        },
+        {
+          "name": "apps/web/e2e/core-journey.spec.ts",
+          "status": "modified",
+          "add": 6,
+          "del": 1
+        },
+        {
+          "name": "apps/web/e2e/devnet-journey.spec.ts",
+          "status": "modified",
+          "add": 3,
+          "del": 1
+        },
+        {
+          "name": "apps/web/e2e/flowMocks.ts",
+          "status": "modified",
+          "add": 1,
+          "del": 1
+        },
+        {
+          "name": "apps/web/e2e/idle-session.spec.ts",
+          "status": "added",
+          "add": 179,
+          "del": 0
+        },
+        {
+          "name": "apps/web/e2e/pages-devnet.spec.ts",
+          "status": "modified",
+          "add": 10,
+          "del": 1
+        },
+        {
+          "name": "apps/web/e2e/payment-request-file.spec.ts",
+          "status": "added",
+          "add": 206,
+          "del": 0
+        },
+        {
+          "name": "apps/web/e2e/print-targets.spec.ts",
+          "status": "added",
+          "add": 131,
+          "del": 0
+        },
+        {
+          "name": "apps/web/e2e/sweep.spec.ts",
+          "status": "modified",
+          "add": 1,
+          "del": 0
+        },
+        {
+          "name": "apps/web/locales/ar.json",
+          "status": "modified",
+          "add": 22,
+          "del": 2
+        },
+        {
+          "name": "apps/web/locales/en.json",
+          "status": "modified",
+          "add": 22,
+          "del": 2
+        },
+        {
+          "name": "apps/web/locales/es.json",
+          "status": "modified",
+          "add": 22,
+          "del": 2
+        },
+        {
+          "name": "apps/web/locales/ja.json",
+          "status": "modified",
+          "add": 22,
+          "del": 2
+        },
+        {
+          "name": "apps/web/src/AppShell.idleClock.test.tsx",
+          "status": "modified",
+          "add": 314,
+          "del": 7
+        },
+        {
+          "name": "apps/web/src/AppShell.tsx",
+          "status": "modified",
+          "add": 178,
+          "del": 61
+        },
+        {
+          "name": "apps/web/src/components/CameraImporter.tsx",
+          "status": "modified",
+          "add": 8,
+          "del": 3
+        },
+        {
+          "name": "apps/web/src/components/CameraImporter.visibility.test.tsx",
+          "status": "added",
+          "add": 154,
+          "del": 0
+        },
+        {
+          "name": "apps/web/src/components/PaymentRequestDownload.test.tsx",
+          "status": "added",
+          "add": 56,
+          "del": 0
+        },
+        {
+          "name": "apps/web/src/components/PaymentRequestDownload.tsx",
+          "status": "added",
+          "add": 23,
+          "del": 0
+        },
+        {
+          "name": "apps/web/src/components/PaymentRequestFileInput.test.tsx",
+          "status": "added",
+          "add": 238,
+          "del": 0
+        },
+        {
+          "name": "apps/web/src/components/PaymentRequestFileInput.tsx",
+          "status": "added",
+          "add": 162,
+          "del": 0
+        },
+        {
+          "name": "apps/web/src/components/PrintableBill.test.tsx",
+          "status": "modified",
+          "add": 14,
+          "del": 1
+        },
+        {
+          "name": "apps/web/src/components/PrintableBill.tsx",
+          "status": "modified",
+          "add": 7,
+          "del": 12
+        },
+        {
+          "name": "apps/web/src/components/ReceiptPanel.archive.regeneration.test.tsx",
+          "status": "added",
+          "add": 110,
+          "del": 0
+        },
+        {
+          "name": "apps/web/src/components/ReceiptPanel.archive.rejection.test.tsx",
+          "status": "added",
+          "add": 74,
+          "del": 0
+        },
+        {
+          "name": "apps/web/src/components/ReceiptPanel.test.tsx",
+          "status": "modified",
+          "add": 36,
+          "del": 3
+        },
+        {
+          "name": "apps/web/src/components/ReceiptPanel.tsx",
+          "status": "modified",
+          "add": 25,
+          "del": 4
+        },
+        {
+          "name": "apps/web/src/components/ReconciliationLedger.test.tsx",
+          "status": "modified",
+          "add": 46,
+          "del": 2
+        },
+        {
+          "name": "apps/web/src/components/TagArchive.test.tsx",
+          "status": "modified",
+          "add": 43,
+          "del": 4
+        },
+        {
+          "name": "apps/web/src/features/policy/fixtures.testutil.ts",
+          "status": "modified",
+          "add": 1,
+          "del": 1
+        },
+        {
+          "name": "apps/web/src/i18n/securityKeys.ts",
+          "status": "modified",
+          "add": 22,
+          "del": 0
+        },
+        {
+          "name": "apps/web/src/lib/format.test.ts",
+          "status": "modified",
+          "add": 14,
+          "del": 0
+        },
+        {
+          "name": "apps/web/src/lib/format.ts",
+          "status": "modified",
+          "add": 1,
+          "del": 0
+        },
+        {
+          "name": "apps/web/src/lib/jitter.test.ts",
+          "status": "modified",
+          "add": 18,
+          "del": 0
+        },
+        {
+          "name": "apps/web/src/lib/jitter.ts",
+          "status": "modified",
+          "add": 22,
+          "del": 3
+        },
+        {
+          "name": "apps/web/src/lib/keyVault.ts",
+          "status": "modified",
+          "add": 5,
+          "del": 3
+        },
+        {
+          "name": "apps/web/src/lib/payExec.acceptance.test.ts",
+          "status": "modified",
+          "add": 1,
+          "del": 1
+        },
+        {
+          "name": "apps/web/src/lib/payExec.test.ts",
+          "status": "modified",
+          "add": 82,
+          "del": 4
+        },
+        {
+          "name": "apps/web/src/lib/qrKinds.test.ts",
+          "status": "modified",
+          "add": 86,
+          "del": 2
+        },
+        {
+          "name": "apps/web/src/lib/qrKinds.ts",
+          "status": "modified",
+          "add": 3,
+          "del": 3
+        },
+        {
+          "name": "apps/web/src/lib/requestFileInterop.test.ts",
+          "status": "added",
+          "add": 87,
+          "del": 0
+        },
+        {
+          "name": "apps/web/src/lib/scanCursorSlot.test.ts",
+          "status": "modified",
+          "add": 92,
+          "del": 0
+        },
+        {
+          "name": "apps/web/src/lib/scanCursorSlot.ts",
+          "status": "modified",
+          "add": 11,
+          "del": 5
+        },
+        {
+          "name": "apps/web/src/lib/scanMatches.test.ts",
+          "status": "modified",
+          "add": 17,
+          "del": 0
+        },
+        {
+          "name": "apps/web/src/lib/scanMatches.ts",
+          "status": "modified",
+          "add": 6,
+          "del": 3
+        },
+        {
+          "name": "apps/web/src/lib/scanPrivacy.test.ts",
+          "status": "modified",
+          "add": 7,
+          "del": 2
+        },
+        {
+          "name": "apps/web/src/lib/scanPrivacy.ts",
+          "status": "modified",
+          "add": 2,
+          "del": 2
+        },
+        {
+          "name": "apps/web/src/lib/scannerCore.test.ts",
+          "status": "modified",
+          "add": 58,
+          "del": 0
+        },
+        {
+          "name": "apps/web/src/lib/scannerCore.ts",
+          "status": "modified",
+          "add": 5,
+          "del": 1
+        },
+        {
+          "name": "apps/web/src/lib/session.idleLock.test.ts",
+          "status": "added",
+          "add": 332,
+          "del": 0
+        },
+        {
+          "name": "apps/web/src/lib/session.ts",
+          "status": "modified",
+          "add": 110,
+          "del": 18
+        },
+        {
+          "name": "apps/web/src/lib/sweep.reviewAuthority.test.ts",
+          "status": "added",
+          "add": 249,
+          "del": 0
+        },
+        {
+          "name": "apps/web/src/lib/sweep.test.ts",
+          "status": "modified",
+          "add": 8,
+          "del": 8
+        },
+        {
+          "name": "apps/web/src/lib/sweep.ts",
+          "status": "modified",
+          "add": 32,
+          "del": 17
+        },
+        {
+          "name": "apps/web/src/lib/txGuard.test.ts",
+          "status": "modified",
+          "add": 19,
+          "del": 0
+        },
+        {
+          "name": "apps/web/src/lib/txGuard.ts",
+          "status": "modified",
+          "add": 9,
+          "del": 2
+        },
+        {
+          "name": "apps/web/src/lib/usePrintTarget.test.tsx",
+          "status": "added",
+          "add": 176,
+          "del": 0
+        },
+        {
+          "name": "apps/web/src/lib/usePrintTarget.ts",
+          "status": "added",
+          "add": 52,
+          "del": 0
+        },
+        {
+          "name": "apps/web/src/lib/wallet.finalAccount.test.ts",
+          "status": "added",
+          "add": 121,
+          "del": 0
+        },
+        {
+          "name": "apps/web/src/lib/wallet.test.ts",
+          "status": "modified",
+          "add": 113,
+          "del": 2
+        },
+        {
+          "name": "apps/web/src/lib/wallet.ts",
+          "status": "modified",
+          "add": 15,
+          "del": 2
+        },
+        {
+          "name": "apps/web/src/styles/app.css",
+          "status": "modified",
+          "add": 0,
+          "del": 7
+        },
+        {
+          "name": "apps/web/src/styles/print.css",
+          "status": "modified",
+          "add": 6,
+          "del": 4
+        },
+        {
+          "name": "apps/web/src/views/CreateInvoice.tsx",
+          "status": "modified",
+          "add": 2,
+          "del": 0
+        },
+        {
+          "name": "apps/web/src/views/Pay.invoiceQr.test.tsx",
+          "status": "modified",
+          "add": 2,
+          "del": 2
+        },
+        {
+          "name": "apps/web/src/views/Pay.requestFile.test.tsx",
+          "status": "added",
+          "add": 264,
+          "del": 0
+        },
+        {
+          "name": "apps/web/src/views/Pay.test.tsx",
+          "status": "modified",
+          "add": 3,
+          "del": 3
+        },
+        {
+          "name": "apps/web/src/views/Pay.tsx",
+          "status": "modified",
+          "add": 24,
+          "del": 12
+        },
+        {
+          "name": "apps/web/src/views/Scan.tags.scope.test.tsx",
+          "status": "added",
+          "add": 113,
+          "del": 0
+        },
+        {
+          "name": "apps/web/src/views/Scan.tsx",
+          "status": "modified",
+          "add": 43,
+          "del": 10
+        },
+        {
+          "name": "apps/web/src/views/SellerKeys.operation.test.tsx",
+          "status": "added",
+          "add": 210,
+          "del": 0
+        },
+        {
+          "name": "apps/web/src/views/SellerKeys.ownership.test.tsx",
+          "status": "added",
+          "add": 456,
+          "del": 0
+        },
+        {
+          "name": "apps/web/src/views/SellerKeys.tsx",
+          "status": "modified",
+          "add": 83,
+          "del": 36
+        },
+        {
+          "name": "apps/web/src/views/Sweep.privacy.test.tsx",
+          "status": "modified",
+          "add": 158,
+          "del": 18
+        },
+        {
+          "name": "apps/web/src/views/Sweep.quoteLifecycle.test.tsx",
+          "status": "added",
+          "add": 427,
+          "del": 0
+        },
+        {
+          "name": "apps/web/src/views/Sweep.test.tsx",
+          "status": "modified",
+          "add": 9,
+          "del": 0
+        },
+        {
+          "name": "apps/web/src/views/Sweep.tsx",
+          "status": "modified",
+          "add": 117,
+          "del": 55
+        },
+        {
+          "name": "deploy/TOR.md",
+          "status": "modified",
+          "add": 14,
+          "del": 1
+        },
+        {
+          "name": "deploy/tor-static/.dockerignore",
+          "status": "added",
+          "add": 6,
+          "del": 0
+        },
+        {
+          "name": "deploy/tor-static/Dockerfile",
+          "status": "added",
+          "add": 32,
+          "del": 0
+        },
+        {
+          "name": "deploy/tor-static/README.md",
+          "status": "added",
+          "add": 166,
+          "del": 0
+        },
+        {
+          "name": "deploy/tor-static/host.example.json",
+          "status": "added",
+          "add": 9,
+          "del": 0
+        },
+        {
+          "name": "deploy/tor-static/prepare.mjs",
+          "status": "added",
+          "add": 177,
+          "del": 0
+        },
+        {
+          "name": "deploy/tor-static/runtime-check.sh",
+          "status": "added",
+          "add": 20,
+          "del": 0
+        },
+        {
+          "name": "deploy/tor-static/tor-start.sh",
+          "status": "added",
+          "add": 25,
+          "del": 0
+        },
+        {
+          "name": "docs/ai/ACTIVE_WORK.md",
+          "status": "modified",
+          "add": 541,
+          "del": 0
+        },
+        {
+          "name": "docs/ai/prompts/F03_AUDIT_HANDOFF.md",
+          "status": "added",
+          "add": 44,
+          "del": 0
+        },
+        {
+          "name": "docs/ai/prompts/F03_WORKER_BRIEF.md",
+          "status": "added",
+          "add": 20,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/backup-preflight-r2-20261120/ARTIFACTS.md",
+          "status": "added",
+          "add": 30,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/backup-preflight-r2-20261120/EVIDENCE.json",
+          "status": "added",
+          "add": 443,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/backup-preflight-r2-20261120/INDEPENDENT_REVIEW.json",
+          "status": "added",
+          "add": 104,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/backup-preflight-r2-20261120/INDEPENDENT_REVIEW.md",
+          "status": "added",
+          "add": 52,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/backup-preflight-r2-20261120/PLAN_REVIEW.json",
+          "status": "added",
+          "add": 90,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/backup-preflight-r2-20261120/PLAN_REVIEW.md",
+          "status": "added",
+          "add": 56,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/backup-preflight-r2-20261120/REPORT.md",
+          "status": "added",
+          "add": 88,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/backup-preflight-r2-20261120/outputs/backup-preflight-r2-build-collection.json.json",
+          "status": "added",
+          "add": 7,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/backup-preflight-r2-20261120/outputs/backup-preflight-r2-compat-run.json.json",
+          "status": "added",
+          "add": 7,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/backup-preflight-r2-20261120/outputs/backup-preflight-r2-compat.json.json",
+          "status": "added",
+          "add": 7,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/backup-preflight-r2-20261120/outputs/backup-preflight-r2-compat.log.json",
+          "status": "added",
+          "add": 7,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/backup-preflight-r2-20261120/outputs/backup-preflight-r2-dependency-reuse.json.json",
+          "status": "added",
+          "add": 7,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/backup-preflight-r2-20261120/outputs/backup-preflight-r2-full-collection.log.json",
+          "status": "added",
+          "add": 7,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/backup-preflight-r2-20261120/outputs/backup-preflight-r2-green-run.json.json",
+          "status": "added",
+          "add": 7,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/backup-preflight-r2-20261120/outputs/backup-preflight-r2-green.json.json",
+          "status": "added",
+          "add": 7,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/backup-preflight-r2-20261120/outputs/backup-preflight-r2-green.log.json",
+          "status": "added",
+          "add": 7,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/backup-preflight-r2-20261120/outputs/backup-preflight-r2-lean-build.log.json",
+          "status": "added",
+          "add": 7,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/backup-preflight-r2-20261120/outputs/backup-preflight-r2-lean-collection.log.json",
+          "status": "added",
+          "add": 7,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/backup-preflight-r2-20261120/outputs/backup-preflight-r2-lint.log.json",
+          "status": "added",
+          "add": 7,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/backup-preflight-r2-20261120/outputs/backup-preflight-r2-original-gates.json.json",
+          "status": "added",
+          "add": 7,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/backup-preflight-r2-20261120/outputs/backup-preflight-r2-red-run.json.json",
+          "status": "added",
+          "add": 7,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/backup-preflight-r2-20261120/outputs/backup-preflight-r2-red.json.json",
+          "status": "added",
+          "add": 7,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/backup-preflight-r2-20261120/outputs/backup-preflight-r2-red.log.json",
+          "status": "added",
+          "add": 7,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/backup-preflight-r2-20261120/outputs/backup-preflight-r2-typecheck.log.json",
+          "status": "added",
+          "add": 7,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/backup-preflight-r2-20261120/outputs/backup-preflight-r3-author-evidence.json.json",
+          "status": "added",
+          "add": 7,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/continuation-20261120/BRANCH_CENSUS_INITIAL.json",
+          "status": "added",
+          "add": 2284,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/continuation-20261120/REPORT.md",
+          "status": "added",
+          "add": 127,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/current-main-r3-20261120/COMPOSITION_INTEGRITY.json",
+          "status": "added",
+          "add": 1095,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/current-main-r3-20261120/INDEPENDENT_REVIEW.json",
+          "status": "added",
+          "add": 46,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/current-main-r3-20261120/PLAN_REVIEW.json",
+          "status": "added",
+          "add": 23,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/current-main-r3-20261120/QUALIFIED_PARENT_CI.json",
+          "status": "added",
+          "add": 1123,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/current-main-r3-20261120/REPORT.md",
+          "status": "added",
+          "add": 70,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/idle-session-r2-20261120/EVIDENCE.json",
+          "status": "added",
+          "add": 1210,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/idle-session-r2-20261120/REPORT.md",
+          "status": "added",
+          "add": 56,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/idle-session-r2-20261120/outputs/idle-r2-browser-collect-full.log.json",
+          "status": "added",
+          "add": 6,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/idle-session-r2-20261120/outputs/idle-r2-browser-collect-lean.log.json",
+          "status": "added",
+          "add": 6,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/idle-session-r2-20261120/outputs/idle-r2-green.json.json",
+          "status": "added",
+          "add": 6,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/idle-session-r2-20261120/outputs/idle-r2-green.log.json",
+          "status": "added",
+          "add": 6,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/idle-session-r2-20261120/outputs/idle-r2-lint.log.json",
+          "status": "added",
+          "add": 6,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/idle-session-r2-20261120/outputs/idle-r2-red.json.json",
+          "status": "added",
+          "add": 6,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/idle-session-r2-20261120/outputs/idle-r2-red.log.json",
+          "status": "added",
+          "add": 6,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/idle-session-r2-20261120/outputs/idle-r2-secrets.log.json",
+          "status": "added",
+          "add": 6,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/idle-session-r2-20261120/outputs/idle-r2-typecheck.log.json",
+          "status": "added",
+          "add": 6,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/idle-session-r2-20261120/outputs/idle-r2-whitespace.log.json",
+          "status": "added",
+          "add": 6,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/invoice-file-20261120/EVIDENCE.json",
+          "status": "added",
+          "add": 117,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/invoice-file-20261120/REVIEW.md",
+          "status": "added",
+          "add": 78,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/main-unique-code-20261120/BLOB_DISPOSITIONS.json",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/main-unique-code-20261120/BRANCH_CENSUS.json",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/main-unique-code-20261120/recovered-fixes/PROVENANCE.json",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/main-unique-code-20261120/recovered-fixes/REPORT.md",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/merge-readiness/PR231.md",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/receipt-identity-r2-20261120/ARTIFACTS.md",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/receipt-identity-r2-20261120/EVIDENCE.json",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/receipt-identity-r2-20261120/INDEPENDENT_REVIEW.json",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/receipt-identity-r2-20261120/INDEPENDENT_REVIEW.md",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/receipt-identity-r2-20261120/LINT_REVIEW_ADDENDUM.json",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/receipt-identity-r2-20261120/LINT_REVIEW_ADDENDUM.md",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/receipt-identity-r2-20261120/REPORT.md",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/receipt-identity-r2-20261120/outputs/receipt-identity-r2-before-lint-fix-lint.log.artifact.json",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/receipt-identity-r2-20261120/outputs/receipt-identity-r2-before-lint-fix-original-gates.json.artifact.json",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/receipt-identity-r2-20261120/outputs/receipt-identity-r2-before-lint-fix-typecheck.log.artifact.json",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/receipt-identity-r2-20261120/outputs/receipt-identity-r2-compat-after-lint-run.json.artifact.json",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/receipt-identity-r2-20261120/outputs/receipt-identity-r2-compat-after-lint.json.artifact.json",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/receipt-identity-r2-20261120/outputs/receipt-identity-r2-compat-after-lint.log.artifact.json",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/receipt-identity-r2-20261120/outputs/receipt-identity-r2-compat-run.json.artifact.json",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/receipt-identity-r2-20261120/outputs/receipt-identity-r2-compat.json.artifact.json",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/receipt-identity-r2-20261120/outputs/receipt-identity-r2-compat.log.artifact.json",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/receipt-identity-r2-20261120/outputs/receipt-identity-r2-corrected-worker-checkpoint.json.artifact.json",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/receipt-identity-r2-20261120/outputs/receipt-identity-r2-dependency-reuse.json.artifact.json",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/receipt-identity-r2-20261120/outputs/receipt-identity-r2-donor-checks.json.artifact.json",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/receipt-identity-r2-20261120/outputs/receipt-identity-r2-final-gates.json.artifact.json",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/receipt-identity-r2-20261120/outputs/receipt-identity-r2-final-lean-build.log.artifact.json",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/receipt-identity-r2-20261120/outputs/receipt-identity-r2-final-lint.log.artifact.json",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/receipt-identity-r2-20261120/outputs/receipt-identity-r2-final-secrets.log.artifact.json",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/receipt-identity-r2-20261120/outputs/receipt-identity-r2-final-typecheck.log.artifact.json",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/receipt-identity-r2-20261120/outputs/receipt-identity-r2-final-whitespace.log.artifact.json",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/receipt-identity-r2-20261120/outputs/receipt-identity-r2-green-run.json.artifact.json",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/receipt-identity-r2-20261120/outputs/receipt-identity-r2-green.json.artifact.json",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/receipt-identity-r2-20261120/outputs/receipt-identity-r2-green.log.artifact.json",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/receipt-identity-r2-20261120/outputs/receipt-identity-r2-lint-fix-provenance.json.artifact.json",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/receipt-identity-r2-20261120/outputs/receipt-identity-r2-lint.log.artifact.json",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/receipt-identity-r2-20261120/outputs/receipt-identity-r2-original-gates.json.artifact.json",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/receipt-identity-r2-20261120/outputs/receipt-identity-r2-red-run.json.artifact.json",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/receipt-identity-r2-20261120/outputs/receipt-identity-r2-red.json.artifact.json",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/receipt-identity-r2-20261120/outputs/receipt-identity-r2-red.log.artifact.json",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/receipt-identity-r2-20261120/outputs/receipt-identity-r2-source-integrity.json.artifact.json",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/receipt-identity-r2-20261120/outputs/receipt-identity-r2-source-pins.json.artifact.json",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/receipt-identity-r2-20261120/outputs/receipt-identity-r2-typecheck.log.artifact.json",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/receipt-identity-r2-20261120/outputs/receipt-identity-r2-worker-checkpoint.json.artifact.json",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/request-file-async-r3-20261120/ARTIFACTS.md",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/request-file-async-r3-20261120/COORDINATOR_REVIEW.json",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/request-file-async-r3-20261120/COORDINATOR_REVIEW.md",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/request-file-async-r3-20261120/EVIDENCE.json",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/request-file-async-r3-20261120/REPORT.md",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/request-file-async-r3-20261120/outputs/r3-backup-hosted-original.log.artifact.json",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/request-file-async-r3-20261120/outputs/r3-request-file-baseline-coverage--lcov.info.artifact.json",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/request-file-async-r3-20261120/outputs/r3-request-file-baseline-coverage-run.json.artifact.json",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/request-file-async-r3-20261120/outputs/r3-request-file-baseline-coverage.json.artifact.json",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/request-file-async-r3-20261120/outputs/r3-request-file-baseline-coverage.log.artifact.json",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/request-file-async-r3-20261120/outputs/r3-request-file-baseline-run.json.artifact.json",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/request-file-async-r3-20261120/outputs/r3-request-file-baseline.json.artifact.json",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/request-file-async-r3-20261120/outputs/r3-request-file-baseline.log.artifact.json",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/request-file-async-r3-20261120/outputs/r3-request-file-build-artifacts.json.artifact.json",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/request-file-async-r3-20261120/outputs/r3-request-file-compatibility-run.json.artifact.json",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/request-file-async-r3-20261120/outputs/r3-request-file-compatibility.json.artifact.json",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/request-file-async-r3-20261120/outputs/r3-request-file-compatibility.log.artifact.json",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/request-file-async-r3-20261120/outputs/r3-request-file-corrected-coverage--lcov.info.artifact.json",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/request-file-async-r3-20261120/outputs/r3-request-file-corrected-coverage-run.json.artifact.json",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/request-file-async-r3-20261120/outputs/r3-request-file-corrected-coverage.json.artifact.json",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/request-file-async-r3-20261120/outputs/r3-request-file-corrected-coverage.log.artifact.json",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/request-file-async-r3-20261120/outputs/r3-request-file-dependency-provenance.json.artifact.json",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/request-file-async-r3-20261120/outputs/r3-request-file-lean-build-run.json.artifact.json",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/request-file-async-r3-20261120/outputs/r3-request-file-lean-build.log.artifact.json",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/request-file-async-r3-20261120/outputs/r3-request-file-lint-run.json.artifact.json",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/request-file-async-r3-20261120/outputs/r3-request-file-lint-serial-run.json.artifact.json",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/request-file-async-r3-20261120/outputs/r3-request-file-lint-serial.log.artifact.json",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/request-file-async-r3-20261120/outputs/r3-request-file-lint.log.artifact.json",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/request-file-async-r3-20261120/outputs/r3-request-file-run.py.artifact.json",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/request-file-async-r3-20261120/outputs/r3-request-file-secrets-run.json.artifact.json",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/request-file-async-r3-20261120/outputs/r3-request-file-secrets.log.artifact.json",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/request-file-async-r3-20261120/outputs/r3-request-file-source-provenance.json.artifact.json",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/request-file-async-r3-20261120/outputs/r3-request-file-typecheck-run.json.artifact.json",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/request-file-async-r3-20261120/outputs/r3-request-file-typecheck.log.artifact.json",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/sweep-20261120/BRANCH_CENSUS.json",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/sweep-20261120/EVIDENCE.json",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/consolidation/sweep-20261120/REPORT.md",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/future/modules/F03-private-payment-links/CATALOG_RECONCILIATION.md",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/future/modules/F03-private-payment-links/ENVIRONMENT.md",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/future/modules/F03-private-payment-links/HANDOFF.md",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/future/modules/F03-private-payment-links/QUALIFICATION.md",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/future/modules/F03-private-payment-links/SPEC.md",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/future/modules/F03-private-payment-links/audits/PRIVACY_SECURITY.md",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/future/modules/F03-private-payment-links/audits/SPEC.md",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/future/modules/F03-private-payment-links/audits/STANDARDS.md",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/future/modules/F03-private-payment-links/evidence/console-log-normalization.json",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/future/modules/F03-private-payment-links/evidence/feature-lint.json",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/future/modules/F03-private-payment-links/evidence/feature-lint.log",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/future/modules/F03-private-payment-links/evidence/final-secret-scan.json",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/future/modules/F03-private-payment-links/evidence/final-secret-scan.log",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/future/modules/F03-private-payment-links/evidence/final-whitespace.json",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/future/modules/F03-private-payment-links/evidence/final-whitespace.log",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/future/modules/F03-private-payment-links/evidence/hosted-product-status.json",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/future/modules/F03-private-payment-links/evidence/invoice-schema-build.json",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/future/modules/F03-private-payment-links/evidence/invoice-schema-build.log",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/future/modules/F03-private-payment-links/evidence/invoice-schema-coverage-initial-interrupted.log",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/future/modules/F03-private-payment-links/evidence/invoice-schema-coverage.json",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/future/modules/F03-private-payment-links/evidence/invoice-schema-coverage.log",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/future/modules/F03-private-payment-links/evidence/invoice-schema-direct-coverage.json",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/future/modules/F03-private-payment-links/evidence/invoice-schema-direct-coverage.log",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/future/modules/F03-private-payment-links/evidence/invoice-schema-full-coverage.json",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/future/modules/F03-private-payment-links/evidence/invoice-schema-full-coverage.log",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/future/modules/F03-private-payment-links/evidence/invoice-schema-lcov.info",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/future/modules/F03-private-payment-links/evidence/invoice-schema-typecheck.json",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/future/modules/F03-private-payment-links/evidence/invoice-schema-typecheck.log",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/future/modules/F03-private-payment-links/evidence/locale-catalog-final.json",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/future/modules/F03-private-payment-links/evidence/locale-catalog-final.log",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/future/modules/F03-private-payment-links/evidence/locale-catalog.json",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/future/modules/F03-private-payment-links/evidence/locale-catalog.log",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/future/modules/F03-private-payment-links/evidence/original-console-logs.tar.gz.b64",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/future/modules/F03-private-payment-links/evidence/secret-scan.json",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/future/modules/F03-private-payment-links/evidence/secret-scan.log",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/future/modules/F03-private-payment-links/evidence/spec-app-lock-green.json",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/future/modules/F03-private-payment-links/evidence/spec-app-lock-green.log",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/future/modules/F03-private-payment-links/evidence/spec-app-lock-red.log",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/future/modules/F03-private-payment-links/evidence/spec-combined-dom.json",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/future/modules/F03-private-payment-links/evidence/spec-combined-dom.log",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/future/modules/F03-private-payment-links/evidence/web-artifact-full.json",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/future/modules/F03-private-payment-links/evidence/web-artifact-lean.json",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/future/modules/F03-private-payment-links/evidence/web-build-full.json",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/future/modules/F03-private-payment-links/evidence/web-build-full.log",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/future/modules/F03-private-payment-links/evidence/web-build-lean.json",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/future/modules/F03-private-payment-links/evidence/web-build-lean.log",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/future/modules/F03-private-payment-links/evidence/web-bundle-scan-full.json",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/future/modules/F03-private-payment-links/evidence/web-bundle-scan-full.log",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/future/modules/F03-private-payment-links/evidence/web-bundle-scan-lean.json",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/future/modules/F03-private-payment-links/evidence/web-bundle-scan-lean.log",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/future/modules/F03-private-payment-links/evidence/web-typecheck-catalog-final.json",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/future/modules/F03-private-payment-links/evidence/web-typecheck-catalog-final.log",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/future/modules/F03-private-payment-links/evidence/web-typecheck-final.json",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/future/modules/F03-private-payment-links/evidence/web-typecheck-final.log",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/future/modules/F03-private-payment-links/evidence/web-typecheck.json",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/future/modules/F03-private-payment-links/evidence/web-typecheck.log",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/future/modules/F03-private-payment-links/evidence/web-vite-full.json",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/future/modules/F03-private-payment-links/evidence/web-vite-full.log",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/future/modules/F03-private-payment-links/evidence/web-vite-lean.json",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/future/modules/F03-private-payment-links/evidence/web-vite-lean.log",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/guides/troubleshooting-by-symptom.md",
+          "status": "modified",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/handoffs/LEDGER_ACTIONABILITY_20261120.md",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/handoffs/PAYMENT_URI_DECIMAL_OPTIONS_20261120.md",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/handoffs/PR310_MEMO_BROWSER_CHECKS_20261120.md",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/handoffs/RECEIPT_ARCHIVE_IDENTITY_R2_20261120.md",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/handoffs/RECEIPT_PRINT_TARGETS_20261120.md",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/handoffs/SCAN_MATCH_DUPLICATE_ROUTER_20261121.md",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/handoffs/SCAN_TAG_SCOPE_20261120.md",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/handoffs/SCAN_TAG_SESSION_CI_REPAIR_20261120.md",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/handoffs/SELLERKEYS_OPERATION_COMPLETION_20261120.md",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/handoffs/SELLERKEYS_OPERATION_SUPERSESSION_20261120.md",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/handoffs/SELLERKEYS_PREFLIGHT_20261120_R2.md",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/handoffs/TOR_QUALIFICATION_REPAIR_20261120.md",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/handoffs/WALLET_FINAL_ACCOUNT_REGRESSION_20261120.md",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/handoffs/agents/SWEEP_BALANCE_CONSENT_20261118.md",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/handoffs/agents/SWEEP_QUOTE_LIFECYCLE_20261119.md",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/handoffs/idle-session-20261119/COMPLETION.md",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/handoffs/idle-session-20261119/REVIEW.md",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/handoffs/tor-completion-20261119/EVIDENCE.json",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/handoffs/tor-completion-20261119/INDEPENDENT_QA.md",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/handoffs/tor-completion-20261119/README.md",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/handoffs/tor-completion-20261119/evidence/tor-artifact-validation.json",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/handoffs/tor-completion-20261119/evidence/tor-audit-all.json",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        },
+        {
+          "name": "docs/handoffs/tor-completion-20261119/evidence/tor-audit-production.json",
+          "status": "added",
+          "add": 0,
+          "del": 0
+        }
+      ]
+    }
+  ]
+}
