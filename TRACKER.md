@@ -11,6 +11,7 @@ push, created by PRIMARY 2026-11-28T02:08Z). Integration lock: `origin/automatio
 - Local env: /workspace/GhostPay (detached at main), `npm ci --ignore-scripts && npm run build:libs` OK. No Foundry
   (forge/anvil absent) -> contract and anvil-gated tests cannot run locally; report as SKIPPED, never passed.
 - Push to non-`claude/` refs works (claims push to automation/ghostpay-work-claims succeeded).
+- Backup: tracker + reports + helpers pushed to orphan branch `origin/secondary/tracker` (`/workspace/secondary/sync.sh`).
 
 ## Ownership map (who owns what; treat as unavailable)
 
@@ -42,6 +43,7 @@ push, created by PRIMARY 2026-11-28T02:08Z). Integration lock: `origin/automatio
 | S-COORD | active | — | — | read-only analysis A1–A4 |
 | S-REV-I6 | active | secondary/journal-headroom/rev-i6 | — | worker sthr_01BBwZJC3BquB2aMJkvVmZgY; + REV-I5 row correction |
 | S-SCAN-ROUTE | active | secondary/scan-route/route-snapshot | — | worker sthr_01FCt1pJYhKcEoZZk2Y67WTw (A1-C3 + A1-C1) |
+| S-DOCS-ACCURACY | active | secondary/docs-accuracy/recovery-privacy | — | worker sthr_01MvMaTZxmKogmZVKbm8izey (A4 groups 1-3) |
 
 ## Workers
 
@@ -53,7 +55,8 @@ push, created by PRIMARY 2026-11-28T02:08Z). Integration lock: `origin/automatio
 | sthr_014DKKprbq9PCmsmt5z2wt7H | analyst | A2 branch dispositions | reports/A2-branch-dispositions.md |
 | sthr_01T3BKy1k9o8bn56ghpp73hG | analyst | A3a core-crypto/secret-box/address-safety | PAUSED: API rate limit at ~02:21Z; resume when concurrency drops |
 | sthr_013jpfgfiS7zVA3tL5uqeJFt | analyst | A3b invoice-schema/payment-uri/scan-source | PAUSED: API rate limit at ~02:21Z; resume when concurrency drops |
-| sthr_01QyRyvtpWCG3GzxCJ6oHCJB | analyst | A4 docs accuracy | reports/A4-docs-accuracy.md |
+| sthr_01QyRyvtpWCG3GzxCJ6oHCJB | analyst | A4 docs accuracy | DONE reports/A4-docs-accuracy.md |
+| sthr_01MvMaTZxmKogmZVKbm8izey | engineer | S-DOCS-ACCURACY | PR (draft) |
 
 ## Decisions / deferred
 
@@ -68,4 +71,7 @@ push, created by PRIMARY 2026-11-28T02:08Z). Integration lock: `origin/automatio
 |---|---|---|
 | A1-C2 wss:// RPC accepted but unusable | A1 report; audit security-remediation-20261118 C-2 | Needs 4 locale catalogs + help.html (+ pages-devnet.spec.ts text): wait for #766 (and #762/#764) to land, then claim |
 | Cross-tab scan checkpoint race (post-#723) | A1 report | Low; needs IndexedDB + lock design; not now |
+| A4 P7 gas-funding advice (privacy-limits ~62/144, seller-privacy 67-69) | A4 | Hand-off to PRIMARY P-M1 (sweep/gas guidance) |
+| A4 H1-H5 help.html/privacy.html | A4 | Hand-off to #766 owner |
+| A4 O2 README status/hosting | A4 | Overlaps #639; after #639 resolves |
 | New external branch automation/20261127/bug/browser-digest-deadline (701ae992) | A1 | owns apps/web/src/lib/browserChecks{,.test}.ts; avoid |
