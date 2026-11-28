@@ -1,0 +1,92 @@
+{
+  "format": "ghostpay-work-claims/1",
+  "updated_at": "2026-11-28T02:25:00Z",
+  "claims": [
+    {
+      "id": "P-COORD",
+      "coordinator": "PRIMARY",
+      "status": "active",
+      "claimed_at": "2026-11-28T02:25:00Z",
+      "base_sha": "b890a76603b924829fdbe2b4fb2c5626f0cf4e36",
+      "branch": "claude/feature-tracker-20261128",
+      "scope": "Persistent feature completion tracker for the beta scope; coordination of final platform-wide stress testing, comprehensive code audit, independent bug audit and final release qualification (owner instruction).",
+      "paths": [
+        "docs/beta/FEATURE_COMPLETION_TRACKER.md"
+      ]
+    },
+    {
+      "id": "P-M1-sweep-review",
+      "coordinator": "PRIMARY",
+      "status": "active",
+      "claimed_at": "2026-11-28T02:25:00Z",
+      "base_sha": "b890a76603b924829fdbe2b4fb2c5626f0cf4e36",
+      "branch": "claude/primary-sweep-review-20261128",
+      "scope": "Behaviour: direct sweep shows amount sent, worst-case network fee and amount left behind before signing, and signs exactly the reviewed transaction (finding G07-D2); gas top-up linkage warning on the direct path and no-gas errors (G07-D1); stale sweep guide (G07-D5).",
+      "paths": [
+        "apps/web/src/views/Sweep.tsx (direct-mode review and signing, not presentation-only tooltip wrappers)",
+        "apps/web/src/lib/sweep.ts (directSweep)",
+        "apps/web/src/lib/opStackFee.ts",
+        "apps/web/locales/*.json (sweep.direct*, sweep.gasFunding*, error.sweep.theStealthAddress* keys)",
+        "apps/web/src/i18n/securityKeys.ts (sweep keys)",
+        "apps/web/src/views/Sweep*.test.tsx",
+        "apps/web/src/lib/sweep*.test.ts",
+        "apps/web/e2e/{sweep,core-journey,devnet-journey,pages-devnet}.spec.ts (direct sweep steps only)",
+        "docs/user/sweep-and-gas-privacy.md"
+      ]
+    },
+    {
+      "id": "P-M2-sweep-crosstab",
+      "coordinator": "PRIMARY",
+      "status": "active",
+      "claimed_at": "2026-11-28T02:25:00Z",
+      "base_sha": "b890a76603b924829fdbe2b4fb2c5626f0cf4e36",
+      "branch": "claude/primary-sweep-crosstab-20261128",
+      "scope": "Behaviour: sweep signing lock shared across tabs of one browser profile (IndexedDB + Web Locks like the payment journal), finding G07-D3.",
+      "paths": [
+        "apps/web/src/state.tsx (sweep lock section)",
+        "apps/web/src/lib/sweepAttemptJournal.ts",
+        "apps/web/src/lib/sweepAttemptJournal*.test.ts",
+        "apps/web/src/state.sweep*.test.ts"
+      ]
+    },
+    {
+      "id": "P-M3-create-stale-result",
+      "coordinator": "PRIMARY",
+      "status": "active",
+      "claimed_at": "2026-11-28T02:25:00Z",
+      "base_sha": "b890a76603b924829fdbe2b4fb2c5626f0cf4e36",
+      "branch": "claude/primary-create-stale-20261128",
+      "scope": "Behaviour: Create invoice clears or disables the signed link/QR/downloads when the form terms change and shows the signed terms (finding G03-D1).",
+      "paths": [
+        "apps/web/src/views/CreateInvoice.tsx (result invalidation and signed-terms summary)",
+        "apps/web/src/lib/useInvoiceDraft.ts",
+        "apps/web/src/views/CreateInvoice*.test.tsx",
+        "apps/web/locales/*.json (create.result.terms* keys)"
+      ]
+    },
+    {
+      "id": "P-M4-manifest-secondary",
+      "coordinator": "PRIMARY",
+      "status": "active",
+      "claimed_at": "2026-11-28T02:25:00Z",
+      "base_sha": "b890a76603b924829fdbe2b4fb2c5626f0cf4e36",
+      "branch": "claude/primary-manifest-readback-20261128",
+      "scope": "Behaviour: manifest on-chain read-back cross-checked on the configured secondary RPC; correct DEPLOYMENT_MANIFEST/deployments README claims (finding G10-D2, audit 24 L2-I4).",
+      "paths": [
+        "apps/web/src/lib/manifest.ts",
+        "apps/web/src/lib/deployment.ts",
+        "apps/web/src/lib/manifest*.test.ts",
+        "docs/DEPLOYMENT_MANIFEST.md",
+        "apps/web/deployments/README.md",
+        "manifest call sites in Pay.tsx/Sweep.tsx/Scan.tsx (argument only)"
+      ]
+    }
+  ],
+  "observed_external": [
+    {
+      "branch": "codex/beta-control-tooltips",
+      "head": "e9b14cf2",
+      "note": "Observed 2026-11-28 02:20Z; ACTIVE_WORK entry 'Contextual control help for the browser beta' (Codex). Presentation-only ControlTip wrappers in many lean views, including Sweep.tsx and CreateInvoice.tsx. PRIMARY behavioural claims above touch the same files in different behaviour; whichever merges second keeps both."
+    }
+  ]
+}
