@@ -340,7 +340,7 @@ function directResult(input: sweepLib.DirectSweepInput): sweepLib.DirectSweepRes
 }
 
 async function reviewedDirect(m: ReturnType<typeof mount>, resign: boolean): Promise<void> {
-  vi.spyOn(sweepLib, 'reviewDirectSweep').mockImplementation(async ({ target, destination, amount }) => ({
+  vi.spyOn(sweepLib, 'reviewDirectSweep').mockImplementation(({ target, destination, amount }) => Promise.resolve<sweepLib.DirectSweepReview>({
     owner: target.owner, destination, sent: amount, feeBudget: 1n, digest: HASH, simulation: 'ok',
   }));
   await ready(m);
