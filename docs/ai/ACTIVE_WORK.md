@@ -1,6 +1,13 @@
-# Pages homepage demo publication decision — 2026-11-28
+# Static guide footer keyboard navigation
 
-Worker: Codex, branch `pages/approve-one-feature-guide-demo`, base `70458ebe3ae4a5502d7c39ae25d37342dbde971b`. Own the scope of the one-release decision in ADR-0029, its corresponding Pages owner checklist and this entry. Acceptance: document the approved shared URL for the payments-disabled demo containing PR #776 and the evidence to verify before and after publishing.
+Codex owns the page heading and footer link in `apps/web/{help,privacy}.html` and the matching
+regression in `apps/web/e2e/static-help.spec.ts` on `fix/static-guides-back-to-top`.
+Base: `70458ebe3ae4a5502d7c39ae25d37342dbde971b`. With JavaScript disabled, Enter on
+“Back to top” must focus the page heading and the next Tab must focus “Open app” on both guides.
+
+The follow-up on PR #768 starts at `0d7d069da7e0145b8a373e45de150e82744713ca` and adds
+the `<noscript>` navigation in `apps/web/index.html` to this claim. With JavaScript disabled,
+the first Tab must reveal the skip link, Enter must focus main, and the next Tab must reach the inline help guide.
 
 # Recorded low residuals (web) — 2026-11-27 UTC
 
@@ -14,6 +21,10 @@ Owned paths: `apps/web/public/ghostpay-embed-v2.js` (dialog containment) and `em
 `i18n/securityKeys.ts`; this entry. Overlap: `Pay.tsx` with open #742, separate hunks.
 Acceptance: each fix has a regression test; no payment, journal, privacy or verification guard loosened; no dependency,
 contract, workflow or activation change.
+
+# Pages homepage demo publication decision — 2026-11-28
+
+Worker: Codex, branch `pages/approve-one-feature-guide-demo`, base `70458ebe3ae4a5502d7c39ae25d37342dbde971b`. Own the scope of the one-release decision in ADR-0029, its corresponding Pages owner checklist and this entry. Acceptance: document the approved shared URL for the payments-disabled demo containing PR #776 and the evidence to verify before and after publishing.
 
 # Defensive fixes W2-1 to W2-3, sweep destination, embed popup, F8 — 2026-11-27 UTC
 
