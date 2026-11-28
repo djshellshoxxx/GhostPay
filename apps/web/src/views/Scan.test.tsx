@@ -258,7 +258,7 @@ describe('Scan and receive', () => {
     const seller = importSession(keys);
     window.localStorage.setItem(SETTINGS_KEY, JSON.stringify({ rpcUrls: { '84532': 'https://rpc.test' } }));
     const { rpc, mine, txHash } = verifiedRouterPayment(seller.metaAddress);
-    const createRpc = vi.fn(async () => withManifestChain(rpc));
+    const createRpc = vi.fn(() => Promise.resolve(withManifestChain(rpc)));
     const services = () => makeServices({ loadManifest: loaded, createRpc, checkpoints: scanClient.localCheckpointStore(window.localStorage) });
     const user = await openScan(services());
     const scan = async () => {
