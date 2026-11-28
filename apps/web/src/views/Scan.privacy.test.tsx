@@ -77,13 +77,12 @@ describe('Scan privacy (spec 10)', () => {
     const nav = within(screen.getByRole('navigation', { name: 'Main' }));
     await user.click(nav.getByRole('button', { name: 'Settings' }));
     fireEvent.change(screen.getByLabelText('Base Sepolia RPC URL'), { target: { value: 'https://session.test/' } });
-    const setItem = Storage.prototype.setItem;
-    const refusal = vi.spyOn(Storage.prototype, 'setItem').mockImplementation(function (this: Storage, key, value) {
-      if (key === SETTINGS_KEY) throw new Error('quota exceeded');
-      setItem.call(this, key, value);
+    const refusal = vi.spyOn(Storage.prototype, 'setItem').mockImplementationOnce(() => {
+      throw new DOMException('Storage is full', 'QuotaExceededError');
     });
     try {
       await user.click(screen.getByRole('button', { name: 'Save settings' }));
+      expect(refusal.mock.calls[0]?.[0]).toBe(SETTINGS_KEY);
       expect(screen.getByText(/apply to this tab only/)).toBeTruthy();
     } finally { refusal.mockRestore(); }
     await user.click(nav.getByRole('button', { name: 'Scan and receive' }));
@@ -104,7 +103,7 @@ describe('Scan privacy (spec 10)', () => {
     const sent = vi.spyOn(globalThis, 'fetch').mockResolvedValue(new Response(null, { status: 503 }));
     try {
       const user = await openScan(makeServices({ loadManifest: loaded, createRpc: (chain, url, options) =>
-        createClient(chain, url, { ...options, sleep: async () => { window.localStorage.removeItem(SETTINGS_KEY); } }) }));
+        createClient(chain, url, { ...options, sleep: () => { window.localStorage.removeItem(SETTINGS_KEY); return Promise.resolve(); } }) }));
       await user.type(screen.getByLabelText('Start block'), '100');
       await user.click(screen.getByRole('button', { name: 'Start scan' }));
       expect(await screen.findByText(/Scan stopped: the scan privacy settings or an RPC this scan uses changed/)).toBeTruthy();
