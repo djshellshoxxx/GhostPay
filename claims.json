@@ -1,6 +1,6 @@
 {
   "format": "ghostpay-work-claims/1",
-  "updated_at": "2026-11-28T02:11:00Z",
+  "updated_at": "2026-11-28T02:31:28Z",
   "claims": [
     {
       "id": "P-COORD",
@@ -106,11 +106,32 @@
       "paths": [
         "apps/web/src/lib/duplicateAttemptJournal.ts (mergeRecords / capacity handling only)",
         "apps/web/src/lib/duplicateAttemptJournal.headroom.test.ts (new)",
-        "docs/engineering/SECURITY_FINDINGS.md (REV-I6 row only)",
+        "docs/engineering/SECURITY_FINDINGS.md (REV-I6 row; REV-I5 row status correction only: fixed by #739 bc1e1523)",
         "docs/ai/ACTIVE_WORK.md (one additive entry on the task branch)"
       ],
       "shared_interfaces": "none (internal to the journal module; no format change)",
       "acceptance": "Regression fails on main and passes with the fix; no unresolved/unknown record or returned hash is ever evicted; journal format and lock unchanged; web typecheck, lint, targeted and full web tests; hosted CI green at exact head; independent review; merge under automation/ghostpay-integration-lock.",
+      "integration": "pending",
+      "updated_at": "2026-11-28T02:31:28Z"
+    },
+    {
+      "id": "S-SCAN-ROUTE",
+      "coordinator": "SECONDARY",
+      "worker": "secondary-w2",
+      "status": "active",
+      "claimed_at": "2026-11-28T02:31:28Z",
+      "base_sha": "b890a76603b924829fdbe2b4fb2c5626f0cf4e36",
+      "branch": "secondary/scan-route/route-snapshot",
+      "spec": "#755 PR body residual (scan route guard compares storage with storage); #758 note (no view test for Scan passing the run AbortSignal)",
+      "scope": "Behaviour: Scan takes its starting RPC route from the in-memory settings that build its clients and checks it before opening clients, so a scan started after another tab saved a new RPC (before this tab's storage event) stops with the existing route-changed message instead of running on the replaced RPC. Plus a view regression test that Cancel aborts in-flight scan reads via the run's signal. No change to scan results, checkpoints, reconciliation or cover lookups.",
+      "paths": [
+        "apps/web/src/views/Scan.tsx (start-route capture and route assertion near lines 219-251 only)",
+        "apps/web/src/views/Scan.routeSnapshot.test.tsx (new)",
+        "apps/web/src/views/Scan.cancelSignal.test.tsx (new)",
+        "docs/ai/ACTIVE_WORK.md (one additive entry on the task branch)"
+      ],
+      "shared_interfaces": "none",
+      "acceptance": "Regression red on main, green with fix; cancel-signal test fails when signal wiring is removed; all Scan view tests and related disclosure tests pass; web typecheck/lint/full tests; hosted CI exact head; independent review; merge under the integration lock.",
       "integration": "pending"
     }
   ],
