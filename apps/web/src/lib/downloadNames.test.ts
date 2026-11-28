@@ -106,9 +106,12 @@ describe('every download call site requests a fixed name', () => {
       'components/TagArchive.tsx: out.filename',
       // Fixed request-file constant, pinned and allowlisted above; the real helper is covered by its component test.
       'components/PaymentRequestDownload.tsx: PAYMENT_REQUEST_FILE_NAME',
+      // Dormant F04 dashboard: constants equal to the neutral fallbacks export.csv / export.json (no identifying name).
+      'views/MerchantDashboard.tsx: INVOICE_EXPORT_NAMES[preview.preview.format]',
+      'views/MerchantDashboardReport.tsx: PAYMENT_EXPORT_NAME',
     ]);
     // Exact, so that a new call site, or one the pattern stops matching after a rewrite, has to be looked at here.
-    expect(calls).toHaveLength(15);
+    expect(calls).toHaveLength(17);
     for (const call of calls) {
       const name = literal.exec(call)?.[1];
       if (name !== undefined) expect(DOWNLOAD_NAMES, call).toContain(name);

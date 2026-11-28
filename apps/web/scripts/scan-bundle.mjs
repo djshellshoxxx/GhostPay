@@ -56,6 +56,11 @@ const PRESERVED_CODE_MARKERS = [
   { marker: 'Two-server PIR scanning (research PoC', reason: '@ghostpay/scan-source SCAN_MODE_CLAIMS / describeScanMode' },
   { marker: 'groth16', reason: 'zero-knowledge pool prover' },
   { marker: 'privacy-pools', reason: '@ghostpay/external-pools exit route' },
+  // F04 is excluded from beta/v1.0; only an explicit opt-in build (VITE_MERCHANT_DASHBOARD=1, never a release) may ship it.
+  ...(process.env['VITE_MERCHANT_DASHBOARD'] === '1' ? [] : [
+    { marker: 'ghostpay.dashboard-input/1', reason: 'F04 merchant dashboard, disabled for beta/v1.0' },
+    { marker: 'ghostpay.dashboard-analytics/1', reason: 'F04 merchant dashboard analytics, disabled for beta/v1.0' },
+  ]),
 ];
 
 /**

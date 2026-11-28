@@ -8,7 +8,7 @@ import type { SessionPublic } from './lib/session';
 import type { Settings } from './lib/settings';
 import type { MessageKey } from './i18n/sourceCatalog';
 
-export type ViewId = 'home' | 'seller' | 'create' | 'pay' | 'scan' | 'sweep' | 'btc' | 'solana' | 'tron' | 'registry' | 'policy' | 'settings' | 'about';
+export type ViewId = 'home' | 'seller' | 'create' | 'pay' | 'scan' | 'dashboard' | 'sweep' | 'btc' | 'solana' | 'tron' | 'registry' | 'policy' | 'settings' | 'about';
 
 export const VIEW_LABELS: Readonly<Record<ViewId, MessageKey>> = {
   home: 'app.nav.home',
@@ -16,6 +16,7 @@ export const VIEW_LABELS: Readonly<Record<ViewId, MessageKey>> = {
   create: 'app.nav.create',
   pay: 'app.nav.pay',
   scan: 'app.nav.scan',
+  dashboard: 'app.nav.dashboard',
   sweep: 'app.nav.sweep',
   btc: 'app.nav.btc',
   solana: 'app.nav.solana',
@@ -221,4 +222,4 @@ export function resetSweepAttemptsForTests(opts: { readonly keepStorage?: boolea
   notifySweepAttempts();
 }
 
-// i18n-use: app.nav.home app.nav.seller app.nav.create app.nav.pay app.nav.scan app.nav.sweep app.nav.btc app.nav.solana app.nav.tron app.nav.registry app.nav.policy app.nav.settings app.nav.about error.sweepState.replacementChanged error.sweepState.replacementLimit error.sweepState.pending
+// i18n-use: app.nav.home app.nav.seller app.nav.create app.nav.pay app.nav.scan app.nav.dashboard app.nav.sweep app.nav.btc app.nav.solana app.nav.tron app.nav.registry app.nav.policy app.nav.settings app.nav.about error.sweepState.replacementChanged error.sweepState.replacementLimit error.sweepState.pending

@@ -288,3 +288,31 @@ Everything else under `src/` (all views, components and `lib/` logic) is measure
   construction (labels, roles, live regions, focus management, 44 px targets, contrast ratio check in e2e) plus a few Playwright checks.
 - The embed SDK was verified against a second local origin only; it was not tested inside real merchant pages.
 - No external audit. `README`-level claims of privacy are bounded by `docs/threat-model/THREAT_MODEL.md`.
+
+## Merchant dashboard (F04, merged dormant)
+- **Release containment.** `vite build` ignores `VITEST`; the postbuild bundle scan fails any build that contains F04 code unless
+  `VITE_MERCHANT_DASHBOARD=1`, and `scripts/release-build.sh` refuses to run with that variable (or `VITEST`) set.
+- **Download names.** Exports request the neutral `export.csv` / `export.json` names, the same as `lib/downloadNames.ts` fallbacks.
+- **Off by default and absent from Pages.** F04 is excluded from beta/v1.0 (AGENTS.md, docs/ai/STOP_WORK_20261125.md). Only a
+  full-profile build with `VITE_MERCHANT_DASHBOARD=1` wires it into `src/App.tsx` (build define `__GHOSTPAY_MERCHANT_DASHBOARD__`);
+  default builds emit no dashboard chunk and the lean entry never imports it. `e2e/merchant-dashboard-disabled.spec.ts` checks both
+  default profiles; the CI job `merchant-dashboard-flag` runs the dashboard browser suite in an opt-in full build.
+- **Totals are local scan evidence, not settlement.** Payment totals sum only observations the encrypted reconciliation ledger marks
+  `verified-at-scan` with source `verified-router-scan` (live scan, not imported, not invalidated after a reorg, not conflicting).
+  Pending candidates (`pending-at-scan`), unverified claims (`unverified-at-scan`, e.g. quarantined or announced-only) and any
+  status added later are shown as "Pending or unverified" and excluded (fail closed). They are "verified at scan time": the
+  ledger cannot establish current canonical finality or bind a transfer to an invoice independently (P03 evidence adapter is
+  specification-only). "Linked" totals use the seller's local invoice association plus a matching asset; it is not proof of payment.
+- **Export release check uses the existing vault interface only.** The #535 preview added an IndexedDB-transaction-scoped
+  `ifUnchanged`/`releaseFromCurrentReconciliationState` to `src/lib/reconciliationVault.ts`. That file belongs to the reconciliation
+  owners, so the consolidated dashboard instead re-reads the ledger through `createCurrentReconciliationVault().readState()` and
+  releases a file only if the fresh authenticated state still matches the reviewed fingerprint
+  (`src/features/future/merchant-dashboard/release.ts`). A write committed by another tab after that read is a later change; the file
+  reflects a state that was authenticated and current at release. A transaction-scoped release needs a vault API from its owners.
+- **Payment history CSV includes transaction hashes** (and local invoice associations) behind an explicit disclosure and approval, so a
+  merchant can reconcile. It never writes keys or stealth addresses, but a transaction hash reveals the receiving address on-chain.
+- Amounts are exact atomic units only; no token-decimal or fiat conversion is shown.
+- The module still lives under `src/features/future/merchant-dashboard/` as in #535; held #621 (dormant #371 base) adds an
+  isolation test that forbids production imports from that path and older copies of `model.ts`/`index.ts`. If #621 lands later it
+  must keep main's newer F04 files and treat `src/views/MerchantDashboard*.tsx` as part of the dormant F04 module (only the opt-in
+  define in `src/App.tsx` reaches it).
