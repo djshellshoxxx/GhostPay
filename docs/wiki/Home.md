@@ -19,6 +19,12 @@ GhostPay is an **experimental, pre-audit** browser application for signed invoic
 - [Verification and Release Gates](Verification-and-Release-Gates.md) — exact commit/CI evidence, historical qualifications, requirement-to-test traceability and outstanding approvals.
 - [Codebase Map](Codebase-Map.md) and [Architecture and Design Rationale](Architecture-and-Design-Rationale.md) — module orientation and design records.
 
+## Current status (2026-11-26 UTC)
+
+- **Scope:** experimental, testnet-only and not audited. Lean static GitHub Pages browser beta, not a production release. No live deployment, audit or real-funds use is claimed.
+- **Excluded from beta and v1.0:** GhostStore, merchant dashboard, GhostTeams, GhostID, GhostBridge P2P-Offramp, multi-chain routing beyond approved EVM scope, device sync, GhostTips, GhostPOS and fiat conversion.
+- Read the [current status summary in the User Guide](User-Guide.md#current-status-2026-11-26-utc) first. The dated sections below are historical snapshots.
+
 ## Historical static Pages qualification — November 15, 2026 UTC
 
 **Stack ancestry verified:** This passing #171 head already includes the earlier Pages-only #165 (backup, idle-lock and IndexedDB) and #166 (QR/response hardening) changes: GitHub comparisons [#165 → #166](https://github.com/djshellshoxxx/GhostPay/compare/9b3a3070499a2a6d70349d540f7aaaed006426e9...f3872e90eb255b46a773d78f4f5adb6239db2b4f) and [#166 → #171](https://github.com/djshellshoxxx/GhostPay/compare/f3872e90eb255b46a773d78f4f5adb6239db2b4f...433307b869acf2d81b2d12b415631076a89f7213) are each `ahead` with **0 behind**. #171's GREEN CI covers this stacked Pages source. The separate owner #157 is **diverged** (8 commits ahead, 220 behind relative to #171) and is **not included/qualified**, so final owner consolidation, security gates, merge and deployment remain blocked. The three stacked PRs are still draft and unmerged.
