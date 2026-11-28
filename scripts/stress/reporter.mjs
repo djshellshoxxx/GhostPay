@@ -48,6 +48,7 @@ export default class StressReplayReporter {
   }
 
   onStepEnd(test, _result, step) {
+    if (step.error || step.annotations?.some((annotation) => annotation.type === 'skip')) return;
     if (step.category === 'test.step') this.lastCompletedStep.set(test.id, redactDiagnostics(step.title, 180));
     if (step.category === 'pw:api' || step.category === 'expect') {
       const action = String(step.title).match(/^[A-Za-z][\w.]*/)?.[0] ?? 'action';

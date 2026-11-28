@@ -4,6 +4,7 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import test from 'node:test';
 import Reporter from '../stress/reporter.mjs';
+import { replayLaunchOptions } from '../stress/replay-launch.mjs';
 import { disableRetries } from '../stress/replay-args.mjs';
 import { redactDiagnostics } from '../stress/redact.mjs';
 
@@ -12,6 +13,18 @@ test('keeps retries disabled even when a caller supplies a retry override', () =
     '--workers=2', '--project=chromium', '--retries=0',
   ]);
   assert.deepEqual(disableRetries(['--retries=5']), ['--retries=0']);
+});
+
+test('resolves each browser independently of a configured desktop Chromium', () => {
+  const base = { executablePath: '/desktop/chrome', args: ['--no-sandbox', '--custom'] };
+  for (const browser of ['firefox', 'webkit']) {
+    assert.deepEqual(replayLaunchOptions(browser, base, undefined), {});
+    assert.deepEqual(replayLaunchOptions(browser, base, '/local/' + browser), { executablePath: '/local/' + browser });
+  }
+  assert.deepEqual(replayLaunchOptions('chromium', base, undefined), base);
+  assert.deepEqual(replayLaunchOptions('chromium', base, '/local/chrome'), {
+    executablePath: '/local/chrome', args: ['--no-sandbox', '--custom', '--disable-gpu'],
+  });
 });
 
 test('redacts key-like values without mangling browser executable paths', () => {
@@ -49,6 +62,8 @@ test('writes each completed case durably to the configurable results directory',
   reporter.onBegin({}, { allTests: () => [1, 2, 3] });
   reporter.onStepEnd(testCase(1), {}, { category: 'test.step', title: 'Confirm payment for 0x' + 'a'.repeat(40) });
   reporter.onStepEnd(testCase(1), {}, { category: 'pw:api', title: "locator.click('password=hunter2')" });
+  reporter.onStepEnd(testCase(1), {}, { category: 'pw:api', title: 'locator.fill', error: { message: 'step failed' } });
+  reporter.onStepEnd(testCase(1), {}, { category: 'test.step', title: 'Skipped action', annotations: [{ type: 'skip' }] });
   reporter.onTestEnd(testCase(1), { status: 'passed', retry: 0, duration: 12 });
   reporter.onTestEnd(testCase(2), { status: 'failed', retry: 0, duration: 13, error: { message: 'browser disconnected while password=' + 'b'.repeat(64) } });
   reporter.onTestEnd(testCase(3), { status: 'skipped', retry: 0, duration: 0 });

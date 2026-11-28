@@ -1,3 +1,7 @@
+# November 28 — stress replay qualification
+
+Codex on `ci/765-stress-replay-qa-nov28`, base `3e633f55e100fcb32eca7262919b9b8a413cbceb`. Scope covers the reporter and replay project configuration. Each browser must use its own executable and diagnostics must preserve the last successful step.
+
 # Recorded low residuals (web) — 2026-11-27 UTC
 
 Worker: local Claude Code worker W7 on the existing merged branch `claude/consolidation-stack-20261126`, fast-forwarded

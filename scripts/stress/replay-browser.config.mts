@@ -1,5 +1,6 @@
 import base from '../../apps/web/playwright.config';
 import { resolve } from 'node:path';
+import { replayLaunchOptions } from './replay-launch.mjs';
 import { fileURLToPath } from 'node:url';
 
 const root = resolve(fileURLToPath(new URL('../..', import.meta.url)));
@@ -19,9 +20,7 @@ function engine(browserName: (typeof browserNames)[number]) {
       ...baseUse,
       ...(desktop?.use ?? {}),
       browserName,
-      ...(executablePath
-        ? { launchOptions: { ...(baseUse.launchOptions ?? {}), executablePath, ...(browserName === 'chromium' ? { args: ['--no-sandbox', '--disable-gpu'] } : {}) } }
-        : {}),
+      launchOptions: replayLaunchOptions(browserName, baseUse.launchOptions, executablePath),
     },
   };
 }
