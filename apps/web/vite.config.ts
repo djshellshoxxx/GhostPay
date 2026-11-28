@@ -41,6 +41,7 @@ const buildInfo = {
   app: 'ghostpay-web',
   version: (JSON.parse(readFileSync(fileURLToPath(new URL('./package.json', import.meta.url)), 'utf8')) as { version: string }).version,
   commit: buildCommit,
+  pagesOrigin: process.env['VITE_GHOSTPAY_PAGES_ORIGIN'] || null,
   manifestsSha256: createHash('sha256').update(JSON.stringify(manifests)).digest('hex'),
 };
 

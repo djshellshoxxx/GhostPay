@@ -775,16 +775,19 @@ test('unknown and late outcomes are shown honestly: no false success, pending un
 
 
 test('a mined deadline revert stays unpaid, and an accepted late payment shows its invalidation and original decision after a reorg and reload',
-  async ({ browser }) => acceptedLateReorg(browser, false));
+  async ({ browser }) => latePaymentJourney(browser, 'reorg'));
 
 test('resuming after an unavailable payment header resolves the accepted late payment on the next scan',
-  async ({ browser }) => acceptedLateReorg(browser, true));
+  async ({ browser }) => latePaymentJourney(browser, 'missing-header'));
 
-async function acceptedLateReorg(browser: Browser, temporarilyMissingHeader: boolean): Promise<void> {
+test('ordinary resume rechecks an unlinked late transfer below the saved checkpoint before seller acceptance',
+  async ({ browser }) => latePaymentJourney(browser, 'unlinked-recovery'));
+
+async function latePaymentJourney(browser: Browser, scenario: 'reorg' | 'missing-header' | 'unlinked-recovery'): Promise<void> {
   test.setTimeout(120_000);
   await withChain(browser, async (sim, open) => {
     const s = await openSeller(open);
-    await saveVault(s);
+    if (scenario !== 'unlinked-recovery') await saveVault(s); // The reorg cases also restore after reload.
     const link = await createShortInvoice(s, 1, true);
     const { invoice } = await parseFragment(new URL(link).hash);
     const digest = `0x${bytesToHex(calculateInvoiceDigest(invoice))}`;
@@ -823,10 +826,40 @@ async function acceptedLateReorg(browser: Browser, temporarilyMissingHeader: boo
     await scan(s, { fromStart: true });
     await expect(registration).toContainText('Verified late transfer — invoice decision pending');
     await expect(registration).not.toContainText('No linked observation.');
-    await ledger.getByRole('button', { name: 'Accept late payment for this invoice' }).click();
-    await expect(registration).toContainText('Verified late payment accepted by seller.');
+    const accept = ledger.getByRole('button', { name: 'Accept late payment for this invoice' });
     const amountPaid = registration.getByText('Linked total equals the expected net amount.', { exact: true });
+    if (scenario === 'unlinked-recovery') {
+      const resume = s.getByRole('checkbox', { name: 'Resume from checkpoint', exact: true });
+      await resume.check();
+      const healthyHead = sim.head + 160;
+      sim.head = healthyHead;
+      await scan(s);
+      const saved = s.getByText(`A checkpoint exists at block ${healthyHead + 1 - finality}.`, { exact: true });
+      await expect(saved).toBeVisible();
+
+      // The lagging RPC cannot read the checkpoint anchor and no longer confirms the transfer's depth.
+      sim.head = late.block + finality - 2;
+      await s.getByRole('button', { name: 'Start scan' }).click();
+      await expect(registration).toContainText('Unverified observation. Scan again before relying on it.');
+      await expect(saved).toBeVisible();
+      await expect(accept).toHaveCount(0);
+      await expect(amountPaid).toHaveCount(0);
+
+      sim.head = healthyHead;
+      await scan(s);
+      const checkpoint = s.getByText(/^A checkpoint exists at block \d+\.$/);
+      expect(await checkpoint.innerText()).toBe(`A checkpoint exists at block ${late.block}.`);
+      await expect(amountPaid).toHaveCount(0);
+      await scan(s);
+      await expect(saved).toBeVisible();
+      await expect(registration).toContainText('Verified late transfer — invoice decision pending');
+      await expect(amountPaid).toHaveCount(0);
+      await expect(resume).toBeChecked();
+    }
+    await accept.click();
+    await expect(registration).toContainText('Verified late payment accepted by seller.');
     await expect(amountPaid).toBeVisible();
+    if (scenario === 'unlinked-recovery') return;
     const observation = ledger.locator('li.card').filter({ hasText: late.hash });
     const decision = observation.getByText(/^Seller accepted this late payment at \d{4}-\d{2}-\d{2}T/);
     await expect(decision).toBeVisible();
@@ -837,7 +870,7 @@ async function acceptedLateReorg(browser: Browser, temporarilyMissingHeader: boo
     sim.fork = late.block;
     expect(sim.blockHash(late.block)).not.toBe(late.blockHash);
     await s.getByRole('checkbox', { name: 'Resume from checkpoint', exact: true }).check();
-    if (temporarilyMissingHeader) {
+    if (scenario === 'missing-header') {
       sim.head += 200; // An advancing checkpoint would put the missing payment outside the replay tail.
       sim.unavailableHeader = late.block;
       await scan(s);
