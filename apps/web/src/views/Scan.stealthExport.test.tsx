@@ -7,6 +7,7 @@ import { MemoryKeyVaultStore, saveEncryptedVault, setKeyVaultStoreForTests } fro
 import * as exportModule from '../lib/paymentKeyExport';
 import { TEST_N, captureDownloads } from '../lib/paymentKeyExport.testutil';
 import { clearSession, generateSession } from '../lib/session';
+import { SCAN_LANES_KEY } from '../lib/scanSpam';
 import { SETTINGS_KEY } from '../lib/settings';
 import { decryptPaymentKeys } from '../lib/stealthExport';
 import type { Services } from '../lib/services';
@@ -85,6 +86,8 @@ describe('Scan > Payment details (spec 18)', () => {
     const encrypted = exportModule.exportEncryptedPayment;
     const spy = vi.spyOn(exportModule, 'exportEncryptedPayment').mockImplementation((m, c, p, o) => encrypted(m, c, p, { ...o, N: TEST_N }));
     const { user, stealthAddress, codeQueries } = await scanOnePayment();
+    // A later change to the optional scan statistic does not revoke a separately confirmed export.
+    window.localStorage.setItem(SCAN_LANES_KEY, JSON.stringify({ privacySetTransfers: true }));
     const row = screen.getByText(stealthAddress).closest('li') as HTMLElement;
     await user.click(within(row).getByRole('button', { name: 'Payment details' }));
     expect(within(row).getByText(/could not be verified as a payment/)).toBeTruthy();
