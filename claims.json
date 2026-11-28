@@ -1,6 +1,6 @@
 {
   "format": "ghostpay-work-claims/1",
-  "updated_at": "2026-11-28T02:25:00Z",
+  "updated_at": "2026-11-28T02:11:00Z",
   "claims": [
     {
       "id": "P-COORD",
@@ -80,6 +80,38 @@
         "apps/web/deployments/README.md",
         "manifest call sites in Pay.tsx/Sweep.tsx/Scan.tsx (argument only)"
       ]
+    },
+    {
+      "id": "S-COORD",
+      "coordinator": "SECONDARY",
+      "worker": "secondary-coordinator",
+      "status": "active",
+      "claimed_at": "2026-11-28T02:11:00Z",
+      "base_sha": "b890a76603b924829fdbe2b4fb2c5626f0cf4e36",
+      "branch": "(none: read-only analysis; reports kept outside the repo until a claimed task needs them)",
+      "scope": "SECONDARY coordination and read-only complementary analysis: open-finding census against current main, post-directive unmerged-branch disposition, stable-library defensive review, user-documentation accuracy review. No repository writes under this entry; any fix found gets its own claim first.",
+      "paths": [],
+      "integration": "n/a"
+    },
+    {
+      "id": "S-REV-I6",
+      "coordinator": "SECONDARY",
+      "worker": "secondary-w1",
+      "status": "active",
+      "claimed_at": "2026-11-28T02:11:00Z",
+      "base_sha": "b890a76603b924829fdbe2b4fb2c5626f0cf4e36",
+      "branch": "secondary/journal-headroom/rev-i6 (claude/ fallback if the host refuses the prefix)",
+      "spec": "docs/engineering/SECURITY_FINDINGS.md REV-I6 (open, explicitly unclaimed in ACTIVE_WORK REV-I5 and #742 entries)",
+      "scope": "Behaviour: merging a legacy/mirror journal copy into a nearly full (128-record) wallet-attempt journal must not make every later operation in that tab fail; reserve migration headroom without dropping any unresolved record or returned hash. Fail-closed duplicate-payment guarantees unchanged.",
+      "paths": [
+        "apps/web/src/lib/duplicateAttemptJournal.ts (mergeRecords / capacity handling only)",
+        "apps/web/src/lib/duplicateAttemptJournal.headroom.test.ts (new)",
+        "docs/engineering/SECURITY_FINDINGS.md (REV-I6 row only)",
+        "docs/ai/ACTIVE_WORK.md (one additive entry on the task branch)"
+      ],
+      "shared_interfaces": "none (internal to the journal module; no format change)",
+      "acceptance": "Regression fails on main and passes with the fix; no unresolved/unknown record or returned hash is ever evicted; journal format and lock unchanged; web typecheck, lint, targeted and full web tests; hosted CI green at exact head; independent review; merge under automation/ghostpay-integration-lock.",
+      "integration": "pending"
     }
   ],
   "observed_external": [
