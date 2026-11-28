@@ -34,6 +34,18 @@ function build(files: Record<string, string> = {}, opts: { html?: string; header
 const scan = (b: ReturnType<typeof build>): string[] => scanBundle(b.dist, b.src, b.cfg);
 
 describe('scan-bundle', () => {
+  it('permits the exact independently approved Pages origin only as a direct origin comparison', () => {
+    const approved = 'https://djshellshoxxx.github.io';
+    const b = build({ 'dist/assets/a.js': `function authorized(){return globalThis.origin === "${approved}"}` });
+    expect(scanBundle(b.dist, b.src, b.cfg)).toContainEqual(expect.stringContaining('unexpected origin'));
+    expect(scanBundle(b.dist, b.src, b.cfg, approved)).toEqual([]);
+    for (const operation of [`fetch("${approved}")`, `fetch("${approved}/collect")`,
+      'globalThis.origin === "https://other.github.io"', `globalThis.origin === "${approved}/GhostPay/"`]) {
+      writeFileSync(join(b.dist, 'assets/a.js'), `globalThis.origin === "${approved}"; ${operation}`);
+      expect(scanBundle(b.dist, b.src, b.cfg, approved)).toContainEqual(expect.stringContaining('unexpected origin'));
+    }
+  });
+
   it('passes a clean build', () => {
     expect(scan(build())).toEqual([]);
   });
@@ -78,6 +90,9 @@ describe('scan-bundle', () => {
     ['preserved scan-mode claims', 'dist/assets/a.js', 'var c={label:"Two-server PIR scanning (research PoC, testnet only)"}', /preserved-code marker "Two-server PIR scanning/],
     ['preserved prover', 'dist/assets/a.js', 'var p={protocol:"groth16"}', /preserved-code marker "groth16"/],
     ['preserved external pools', 'dist/assets/a.js', 'var id="privacy-pools"', /preserved-code marker "privacy-pools"/],
+    // SEC-14: the legacy unsigned-dev text-manifest path must not reach any build (lean or full).
+    ['legacy unsigned-dev manifest acceptance', 'dist/assets/a.js', 'var w="UNSIGNED DEV MANIFEST: no release key is pinned, so this deployment manifest is not authenticated. Testnet use only"', /legacy text-manifest marker "no release key is pinned/],
+    ['legacy text-manifest signing domain', 'dist/assets/a.js', 'var d="GhostPay-deployment-manifest-v1\\n"', /legacy text-manifest marker "GhostPay-deployment-manifest-v1"/],
     ['preserved code in the worker', 'dist/assets/scanner.worker-1.js', 'throw Error("PIR server request failed")', /scanner\.worker-1\.js: preserved-code marker/],
   ])('fails on %s', (_name, file, content, re) => {
     const b = build({ [file]: content });

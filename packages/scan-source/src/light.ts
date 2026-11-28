@@ -15,15 +15,16 @@ export interface LightSourceOptions {
  * Any mismatch, or a block the light client cannot vouch for, is a hard error.
  *
  * @security "Verifies answers, does not hide queries": the inner source still sees everything it would see
- * without the light client (NP-L-1). Integrity is `proof` only if the light client itself proves log inclusion
- * (`lc.verifiesLogs`); otherwise it is `unverified`: block identity is checked, log completeness is not
- * (a server can still omit logs inside a real block). Helios WASM/browser support is UNVERIFIED.
+ * without the light client (NP-L-1). Integrity remains `unverified`: this wrapper checks block identity,
+ * not log inclusion or interval completeness. The client's `verifiesLogs` capability is not per-result
+ * proof evidence; this interface has no inclusion-proof operation. A server can still omit or alter logs
+ * inside a real block. Helios WASM/browser support is UNVERIFIED.
  */
 export function createLightSource(o: LightSourceOptions): PublicLogSource {
   assertTestnetChainId(o.chainId);
   return {
     kind: 'light',
-    integrity: o.lc.verifiesLogs ? 'proof' : 'unverified',
+    integrity: 'unverified',
     async fetch(req: FetchRequest, signal?: AbortSignal): Promise<FetchResult> {
       assertTestnetChainId(req.chainId);
       if (req.chainId !== o.chainId) throw new ScanSourceError('INVALID_ARGUMENT', 'chain id mismatch');

@@ -92,7 +92,7 @@ The output directory must not exist and must be outside `apps/web`. Without `GHO
 
 | Variable | Meaning |
 |---|---|
-| `GHOSTPAY_PAGES_ORIGIN` | The serving origin, `https://host[:port]` with no path. Recorded in the evidence and the banner. Required when manifests are bundled. A `*.github.io` origin is treated as shared. |
+| `GHOSTPAY_PAGES_ORIGIN` | The serving origin, `https://host[:port]` with no path. Compiled into the wallet gate and recorded in build-info.json and the evidence. A copied Pages build refuses wallet requests on a different scheme, host or port. Required when manifests are bundled. A `*.github.io` origin is treated as shared. |
 | `GHOSTPAY_PAGES_ALLOW_SHARED_ORIGIN=testnet` | Accept a shared `*.github.io` origin for a build with testnet manifests. Without it such a build is refused (GP-PAGES-01). |
 | `GHOSTPAY_PAGES_DEPLOYMENTS_DIR`, `GHOSTPAY_RELEASE_PUBKEYS` | Release-signed testnet manifests and their public keys. |
 | `GHOSTPAY_PAGES_DEV=1` | Test build: a modified tree and a plain-http loopback origin are accepted; the banner and evidence say it is not a release. |
@@ -123,8 +123,10 @@ node scripts/pages/serve-pages.mjs "$PWD/../ghostpay-pages/site" --port 4180 --b
 ```
 
 ```bash
-node scripts/pages/smoke.mjs http://127.0.0.1:4180/GhostPay/ --commit "$(git rev-parse HEAD)" --timeout-s 0
+node scripts/pages/smoke.mjs http://127.0.0.1:4180/GhostPay/ --loopback-preview --commit "$(git rev-parse HEAD)" --timeout-s 0
 ```
+
+For a build with a configured origin, add `--approved-origin https://your-approved-host` to the local preview command. After publication use `--approved-origin` with the independently approved origin and omit `--loopback-preview`. Smoke then requires both the served URL and the artifact metadata to match the approval. Project paths such as `/GhostPay/` share the hosting origin.
 
 ### Real-chain browser acceptance of the Pages artifact
 
@@ -219,3 +221,16 @@ Record them in a dated file under `docs/handoffs/`. Local anvil results do not c
 - `connect-src 'self' https: wss:` is broad on purpose, because users choose their own RPCs.
 - GitHub (and anyone who controls the repository or its Actions) controls the code you run. Compare served files with `SHA256SUMS` from the workflow run.
 - ADR-0015 (hosting gating) and [ADR-0029](../adr/ADR-0029-github-pages-static-beta.md) record which hosting gates are met and which still need the owner.
+
+### Working through a connection loss
+
+| Operation | What happens in the Pages beta |
+| --- | --- |
+| Create a fixed-token invoice | An already loaded tab can sign the invoice and generate its link and QR with the seller keys loaded and the usual backup gate satisfied. |
+| Read an invoice | An already loaded tab can open the original link or pasted fragment and check its signature locally. A valid signature covers the invoice contents only; payment status still needs chain evidence. |
+| Keep unfinished edits | Select **Keep an encrypted draft in this tab** and wait for **Latest edits saved in this tab**. After reloading the app, load the same seller keys, open **Create invoice** and select **Resume encrypted draft**. Enter any invoice passphrase again. A successful creation removes the saved copy if the form has not changed since submission. |
+| Open or reload Pages offline | The beta installs no offline copy, so loading the application again may need a connection to the static host. A failed navigation leaves a saved encrypted draft in the tab's session storage, subject to browser storage policy. |
+| Verify, scan or settle | Live chain operations need the configured RPC. Checkout stays disabled while the browser reports it is offline; after reconnecting, select **Retry chain verification**. A wallet hash or a reconnection alone establishes neither inclusion nor finality. |
+| Interrupted wallet request | Review the wallet attempt journal in **Pay** after reloading and connect the relevant wallet account and chain to reveal its entries. A request whose result was lost stays unknown; a returned hash is kept for checking. Reconnecting never resubmits a payment. |
+
+Drafts are opt-in and tab-local (session storage), encrypted with a key derived from the loaded seller's viewing key. The storage slot's name is derived from that viewing key too, so the public meta-address and signing key alone cannot confirm that a tab holds a draft; a slot from the earlier format, named from those public keys, is never read and is deleted. They store editable invoice fields and protection choices, never seller keys, invoice passphrases or generated links; a minimal-metadata draft keeps no memo or line descriptions, while a normal draft keeps the memo and line text. A draft has no timer: it stays until the tab closes, the invoice is created, you remove it, or the seller keys are cleared (including an idle wipe), which removes the saved draft without needing the keys. Replacing the keys or an idle lock that keeps them does not. A draft the form cannot show unchanged (an unoffered chain or token, a fiat quote without a price feed, a gas buffer on the native coin, or fiat pricing or a gas buffer in the beta build) is not opened and stays saved until removed. A draft is not a backup of the seller keys, and closing the tab or clearing site data can remove it. Without a saved draft, reloading discards the form.

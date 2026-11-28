@@ -116,7 +116,7 @@ function windowsOf(client: MockRpc): { from: bigint; to: bigint }[] {
 function spyStore(initial?: ScanCursor) {
   let current = initial;
   const history: ScanCursor[] = [];
-  const save = vi.fn((_chainId: number, _keyId: string, cursor: ScanCursor) => { current = cursor; history.push(cursor); });
+  const save = vi.fn<CheckpointStore['save']>((_chainId, _keyId, cursor) => { current = cursor; history.push(cursor); });
   const clear = vi.fn(() => { current = undefined; });
   const load = vi.fn<CheckpointStore['load']>(() => current);
   const store: CheckpointStore = { load, save, clear };
@@ -417,22 +417,104 @@ describe('PRIV-06: caughtUp is only true for a scan that reached the head with n
     expect(store.save).not.toHaveBeenCalled();
   });
 
-  it('when the second provider lags behind, caughtUp stops at ITS head and the lag is reported in the result', async () => {
-    // Pinned behaviour: ScanProgress.caughtUp means "reached the lower of the two heads"; the lag itself is only in the
-    // result's `secondaryLag` (Scan.tsx shows it as a note). A caller that reads caughtUp alone would overstate coverage.
+  it.each([HEAD - 1, HEAD - small.finalityDepth, 11_000])('a second provider at block %i stops the scan without claiming the primary head was reached', async (secondaryHead) => {
     const f = fixture();
     const store = spyStore();
     const primary = chainWith(HEAD, f.logs);
-    const secondaryInner = chainWith(HEAD, f.logs);
-    const secondary: MockRpc = { ...secondaryInner, blockNumber: () => Promise.resolve(11_000n), getBlock: (n) => (n > 11_000n ? Promise.resolve(null) : secondaryInner.getBlock(n)) };
-    const out = await attempt(f, { client: primary, secondaryClient: secondary, checkpoints: store.store });
+    const secondaryInner = chainWith(secondaryHead, f.logs);
+    const secondary: MockRpc = { ...secondaryInner, getBlock: (n) => (n > BigInt(secondaryHead) ? Promise.resolve(null) : secondaryInner.getBlock(n)) };
+    // Four pages bound this fixture even if the terminal break is accidentally changed to depend on caughtUp.
+    const out = await attempt(f, { client: primary, secondaryClient: secondary, checkpoints: store.store, maxPages: 4 });
+    expect(out.error).toBeUndefined();
     expect(out.result?.discrepancies).toEqual([]);
-    expect(out.result?.cursor.nextBlock).toBe(11_001n);
-    expect(out.progress.at(-1)).toMatchObject({ nextBlock: 11_001n, caughtUp: true });
-    expect(out.result?.secondaryLag).toEqual({ secondaryHead: 11_000n, head: BigInt(HEAD) });
-    // The primary was never asked past the secondary's head, and the last saved anchor is at that head too.
-    expect(Math.max(...windowsOf(primary).map((w) => Number(w.to)))).toBe(11_000);
-    expect(store.history.at(-1)).toEqual(cursorAt(11_001 - 10));
+    expect(out.result?.cursor.nextBlock).toBe(BigInt(secondaryHead) + 1n);
+    expect(idsOf(out.result?.matches ?? [])).toEqual(f.truth);
+    expect(idsOf(out.matches)).toEqual(f.truth);
+    expect(out.result?.secondaryLag).toEqual(HEAD - secondaryHead > small.finalityDepth
+      ? { secondaryHead: BigInt(secondaryHead), head: BigInt(HEAD) } : undefined);
+    // Preserve the lower fetch boundary and finality replay tail even though the completion label is now false.
+    const windows = windowsOf(primary);
+    expect(Math.max(...windows.map((w) => Number(w.to)))).toBe(secondaryHead);
+    expect(windows).toEqual(Array.from({ length: Math.ceil((secondaryHead + 1) / 100) }, (_, i) => ({
+      from: BigInt(i * 100), to: BigInt(Math.min(i * 100 + 99, secondaryHead)),
+    })));
+    const tail = cursorAt(secondaryHead + 1 - small.finalityDepth);
+    expect(store.history.at(-1)).toEqual(tail);
+    expect(savedCalls(store)).toEqual([P1, P2, tail]);
+    expect(store.clear).not.toHaveBeenCalled();
+    expect(out.progress.map((p) => [p.nextBlock, p.caughtUp])).toEqual([
+      [5000n, false], [10_000n, false], [BigInt(secondaryHead) + 1n, false],
+    ]);
+    expectHonestCaughtUp(out.progress, HEAD);
+  });
+
+  it.each([HEAD, HEAD + 1])('reports caughtUp at the primary head when the second provider is at block %i', async (secondaryHead) => {
+    const f = fixture();
+    const store = spyStore();
+    const primary = chainWith(HEAD, f.logs);
+    const out = await attempt(f, {
+      client: primary, secondaryClient: chainWith(secondaryHead, f.logs), checkpoints: store.store, maxPages: 4,
+    });
+    expect(out.error).toBeUndefined();
+    expect(out.result?.discrepancies).toEqual([]);
+    expect(out.result?.secondaryLag).toBeUndefined();
+    expect(out.result?.cursor).toEqual(cursorAt(HEAD + 1));
+    expect(idsOf(out.result?.matches ?? [])).toEqual(f.truth);
+    expect(out.result?.matches.every((match) => match.receipt === 'verified')).toBe(true);
+    expect(savedCalls(store)).toEqual([P1, P2, P3]);
+    expect(store.clear).not.toHaveBeenCalled();
+    expect(windowsOf(primary)).toHaveLength(121);
+    expect(windowsOf(primary).at(-1)?.to).toBe(BigInt(HEAD));
+    expect(out.progress.map((p) => [p.nextBlock, p.caughtUp])).toEqual([[5000n, false], [10_000n, false], [12_001n, true]]);
+    expectHonestCaughtUp(out.progress, HEAD);
+  });
+
+  it('resumes a lagged scan from its replay tail, verifies retained evidence and discovers the remaining payment', async () => {
+    const f = fixture();
+    const later = f.mine(11_500);
+    const laterId = `${later.log.blockHash}:${Number(BigInt(later.log.logIndex)) + 100}`;
+    const full = { ...f, logs: [...f.logs, later.log], truth: [...f.truth, laterId] };
+    const store = spyStore();
+    const primary = chainWith(HEAD, full.logs);
+    const secondaryInner = chainWith(11_000, full.logs);
+    const secondary: MockRpc = { ...secondaryInner, getBlock: (n) => (n > 11_000n ? Promise.resolve(null) : secondaryInner.getBlock(n)) };
+    const first = await attempt(full, { client: primary, secondaryClient: secondary, checkpoints: store.store, maxPages: 4 });
+    expect(first.error).toBeUndefined();
+    expect(first.result?.discrepancies).toEqual([]);
+    expect(first.result?.secondaryLag).toEqual({ secondaryHead: 11_000n, head: BigInt(HEAD) });
+    expect(first.result?.cursor).toEqual(cursorAt(11_001));
+    expect(idsOf(first.result?.matches ?? [])).toEqual(f.truth);
+    // The providers disagree about this tip payment's finality; retain its claim until both can verify it.
+    expect(first.result?.matches.at(-1)?.receipt).toBe('claimed');
+    expect(windowsOf(primary)).toHaveLength(111);
+    expect(windowsOf(primary).at(-1)?.to).toBe(11_000n);
+    const resumeAt = store.load(CHAIN_ID, KEY)!;
+    expect(resumeAt).toEqual(cursorAt(10_991));
+    expect(savedCalls(store)).toEqual([P1, P2, resumeAt]);
+
+    const recoveredPrimary = chainWith(HEAD, full.logs);
+    const second = await attempt(full, {
+      client: recoveredPrimary, secondaryClient: chainWith(HEAD, full.logs), cursor: resumeAt,
+      checkpoints: store.store, maxPages: 2,
+    });
+    expect(second.error).toBeUndefined();
+    expect(second.result?.discrepancies).toEqual([]);
+    expect(second.result?.secondaryLag).toBeUndefined();
+    expect(second.result?.cursor).toEqual(cursorAt(HEAD + 1));
+    expect(idsOf(second.result?.matches ?? [])).toEqual([f.truth.at(-1), laterId]);
+    expect(second.result?.matches.every((match) => match.receipt === 'verified')).toBe(true);
+    expect(windowsOf(recoveredPrimary)).toEqual(Array.from({ length: 11 }, (_, i) => ({
+      from: 10_991n + BigInt(i * 100), to: BigInt(Math.min(10_991 + i * 100 + 99, HEAD)),
+    })));
+    expect(savedCalls(store)).toEqual([P1, P2, resumeAt, P3]);
+    expect(store.clear).not.toHaveBeenCalled();
+    const recovered = new Map(first.matches.map((match) => [match.announcement.id, match] as const));
+    for (const match of second.matches) recovered.set(match.announcement.id, match);
+    expect(idsOf([...recovered.values()])).toEqual(full.truth);
+    expect([...recovered.values()].every((match) => match.receipt === 'verified')).toBe(true);
+    expect(second.progress.map((p) => [p.nextBlock, p.caughtUp])).toEqual([[12_001n, true]]);
+    expectHonestCaughtUp(second.progress, HEAD);
+    expect(first.progress.map((p) => [p.nextBlock, p.caughtUp])).toEqual([[5000n, false], [10_000n, false], [11_001n, false]]);
   });
 });
 
@@ -834,17 +916,19 @@ describe('PRIV-06: a stale or late run cannot overwrite a newer checkpoint', () 
     expect(store.history.slice(0, 3)).toEqual([P1, P2, P3]);
   });
 
-  // DEFECT (scanClient.ts:503 `p.checkpoints.save(...)`): runScan saves blindly. It never re-reads the store, so run A,
-  // resolving late, overwrites run B's newer checkpoint (11,991) with its own older page-1 cursor (5,000). The next scan
-  // then re-covers 5,000..11,990 (a wasted rescan, not a skipped block: the cursor only moves backward). Fails today.
-  it.fails('DEFECT: a late older run overwrites the newer checkpoint (final stored cursor must not be older than B\'s)', async () => {
-    const { store, afterB } = await overlap();
+  // F1 (was `it.fails`), within one document: runScan re-reads the slot before each save and yields it once another scan has written there,
+  // so run A, resolving late, no longer overwrites run B's newer checkpoint (11,991) with its own page-1 cursor (5,000).
+  it('a late older run does not overwrite the newer checkpoint (final stored cursor is not older than B\'s)', async () => {
+    const { store, afterB, aOut } = await overlap();
+    expect(aOut.error).toBeUndefined();
     expect(store.current!.nextBlock).toBeGreaterThanOrEqual(afterB!.nextBlock);
+    expect(store.current).toEqual(P3);
+    // A yielded: B's three pages are the only saves.
+    expect(savedCalls(store)).toEqual([P1, P2, P3]);
   });
 
-  // DEFECT (scanClient.ts localCheckpointStore.save ~727): the store is last-writer-wins too, so even a guarded runScan has
-  // no compare-and-swap to lean on. Fails today.
-  it.fails('DEFECT: localCheckpointStore.save accepts an older cursor over a newer one for the same chain and key', () => {
+  // F1 (was `it.fails`): a plain save to localCheckpointStore is forward-only.
+  it('localCheckpointStore.save refuses an older cursor over a newer one for the same chain and key', () => {
     const key = new Uint8Array(32).fill(7);
     const map = new Map<string, string>();
     const store = secretKeyedStore({ getItem: (k) => map.get(k) ?? null, setItem: (k, v) => { map.set(k, v); }, removeItem: (k) => { map.delete(k); } }, (_id, use) => use(key));
@@ -852,5 +936,285 @@ describe('PRIV-06: a stale or late run cannot overwrite a newer checkpoint', () 
     store.save(CHAIN_ID, valid, P3);
     store.save(CHAIN_ID, valid, P1);
     expect(store.load(CHAIN_ID, valid)?.nextBlock).toBe(P3.nextBlock);
+  });
+
+  it('a run also yields to a foreign cursor that is older than its own (another scan\'s rollback stands)', async () => {
+    const f = fixture();
+    const store = spyStore();
+    let entered = false;
+    let release!: () => void;
+    const gate = new Promise<void>((resolve) => { release = resolve; });
+    const slow = hooked(chainWith(HEAD, f.logs), { getLogs: async (q) => { if (q.fromBlock === 0n && !entered) { entered = true; await gate; } } });
+    const pages: bigint[] = [];
+    const a = attempt(f, { client: slow, checkpoints: store.store, onPageMatches: (_m, page) => { pages.push(page.from); return Promise.resolve(true); } });
+    await vi.waitFor(() => expect(entered).toBe(true));
+    // Another scan writes an older position meanwhile (for example after it rolled back over a reorg).
+    const foreign = cursorAt(100);
+    store.store.save(CHAIN_ID, KEY, foreign);
+    release();
+    const out = await a;
+    expect(out.error).toBeUndefined();
+    // The run still scanned everything, reported every payment and handed every page to onPageMatches (the durable
+    // invoice record); it only stopped writing the checkpoint slot.
+    expect(idsOf(out.matches)).toEqual(f.truth);
+    expect(pages).toEqual([0n, 5000n, 10_000n]);
+    expect(savedCalls(store)).toEqual([foreign]);
+    expect(store.current).toEqual(foreign);
+  });
+
+  it('a run yields to another scan\'s clear: the slot stays empty and every page still reaches onPageMatches', async () => {
+    const f = fixture();
+    const store = spyStore();
+    let cleared = false;
+    // Another tab clears the slot (Start over, or its own reorg reset) while this run fetches page 2.
+    const client = hooked(chainWith(HEAD, f.logs), { getLogs: (q) => { if (q.fromBlock === 5000n && !cleared) { cleared = true; store.store.clear(CHAIN_ID, KEY); } } });
+    const pages: bigint[] = [];
+    const out = await attempt(f, { client, checkpoints: store.store, onPageMatches: (_m, page) => { pages.push(page.from); return Promise.resolve(true); } });
+    expect(out.error).toBeUndefined();
+    expect(cleared).toBe(true);
+    expect(idsOf(out.matches)).toEqual(f.truth);
+    expect(pages).toEqual([0n, 5000n, 10_000n]);
+    expect(savedCalls(store)).toEqual([P1]);
+    expect(store.current).toBeUndefined();
+  });
+
+  it('an owning run keeps saving page after page when no other scan writes (each save expects its previous one)', async () => {
+    const f = fixture();
+    const store = spyStore(P1);
+    const out = await attempt(f, { client: chainWith(HEAD, f.logs), cursor: P1, checkpoints: store.store });
+    expect(out.error).toBeUndefined();
+    expect(savedCalls(store)).toEqual([P2, P3]);
+    expect(store.save.mock.calls.map((c) => c[3])).toEqual([P1, P2]);
+  });
+
+  it('a save lost to a failing storage is retried at the next page, not mistaken for another scan\'s write', async () => {
+    const f = fixture();
+    const key = new Uint8Array(32).fill(8);
+    const map = new Map<string, string>();
+    let writes = 0;
+    // The second write (page 2) hits a full storage; the first and third succeed.
+    const storage = { getItem: (k: string) => map.get(k) ?? null, setItem: (k: string, v: string) => { if (++writes === 2) throw new Error('quota'); map.set(k, v); }, removeItem: (k: string) => { map.delete(k); } };
+    const store = secretKeyedStore(storage, (_id, use) => use(key));
+    const out = await attempt(f, { client: chainWith(HEAD, f.logs), checkpoints: store });
+    expect(out.error).toBeUndefined();
+    expect(writes).toBe(3);
+    expect(store.load(CHAIN_ID, KEY)).toEqual(P3);
+  });
+
+  describe('checkpointSeen: ownership starts at the snapshot the caller chose its cursor against', () => {
+    const recordPages = () => {
+      const pages: bigint[] = [];
+      return { pages, onPageMatches: (_m: readonly ScanMatch[], page: { readonly from: bigint }) => { pages.push(page.from); return Promise.resolve(true); } };
+    };
+
+    it('a foreign save between the caller\'s read and the run\'s start is not adopted: no overwrite, every page recorded', async () => {
+      const f = fixture();
+      const store = spyStore(P3); // another tab advanced the slot after the caller read P1
+      const rec = recordPages();
+      const out = await attempt(f, { client: chainWith(HEAD, f.logs), cursor: P1, checkpointSeen: P1, checkpoints: store.store, onPageMatches: rec.onPageMatches });
+      expect(out.error).toBeUndefined();
+      expect(store.save).not.toHaveBeenCalled();
+      expect(store.current).toEqual(P3);
+      expect(rec.pages).toEqual([5000n, 10_000n]);
+      expect(idsOf(out.matches)).toEqual(f.truth.slice(2));
+    });
+
+    it('a foreign clear between the caller\'s read and the run\'s start is not undone', async () => {
+      const f = fixture();
+      const store = spyStore(); // cleared by another tab after the caller read P1
+      const rec = recordPages();
+      const out = await attempt(f, { client: chainWith(HEAD, f.logs), cursor: P1, checkpointSeen: P1, checkpoints: store.store, onPageMatches: rec.onPageMatches });
+      expect(out.error).toBeUndefined();
+      expect(store.save).not.toHaveBeenCalled();
+      expect(store.current).toBeUndefined();
+      expect(rec.pages).toEqual([5000n, 10_000n]);
+    });
+
+    it('a deliberate restart from an earlier block still rewinds the slot the user saw', async () => {
+      const f = fixture();
+      const store = spyStore(P3);
+      const out = await attempt(f, { client: chainWith(HEAD, f.logs), cursor: { nextBlock: 0n }, checkpointSeen: P3, checkpoints: store.store });
+      expect(out.error).toBeUndefined();
+      expect(savedCalls(store)).toEqual([P1, P2, P3]);
+      expect(store.save.mock.calls.map((c) => c[3])).toEqual([P3, P1, P2]);
+    });
+
+    it('`null` (no checkpoint was shown) owns an empty slot and saves normally', async () => {
+      const f = fixture();
+      const store = spyStore();
+      const out = await attempt(f, { client: chainWith(HEAD, f.logs), checkpointSeen: null, checkpoints: store.store });
+      expect(out.error).toBeUndefined();
+      expect(savedCalls(store)).toEqual([P1, P2, P3]);
+      expect(store.save.mock.calls[0]?.[3]).toBeNull();
+    });
+  });
+
+  it('a newer stored cursor survives a run during which localStorage reads fail while writes work', async () => {
+    const f = fixture();
+    const key = new Uint8Array(32).fill(6);
+    const map = new Map<string, string>();
+    let failGet = false;
+    let writes = 0;
+    const storage = {
+      getItem: (k: string) => { if (failGet) throw new Error('storage read denied'); return map.get(k) ?? null; },
+      setItem: (k: string, v: string) => { writes++; map.set(k, v); },
+      removeItem: (k: string) => { map.delete(k); },
+    };
+    const store = secretKeyedStore(storage, (_id, use) => use(key));
+    store.save(CHAIN_ID, KEY, P3);
+    writes = 0;
+    failGet = true;
+    const pages: bigint[] = [];
+    const out = await attempt(f, { client: chainWith(HEAD, f.logs), checkpoints: store, onPageMatches: (_m, page) => { pages.push(page.from); return Promise.resolve(true); } });
+    failGet = false;
+    expect(out.error).toBeUndefined();
+    expect(idsOf(out.matches)).toEqual(f.truth);
+    expect(pages).toEqual([0n, 5000n, 10_000n]);
+    expect(writes).toBe(0);
+    expect(store.load(CHAIN_ID, KEY)).toEqual(P3);
+  });
+
+  it('two tabs sharing one localStorage: the late older run leaves the newer checkpoint in place', async () => {
+    const f = fixture();
+    const key = new Uint8Array(32).fill(9);
+    const map = new Map<string, string>();
+    const storage = { getItem: (k: string) => map.get(k) ?? null, setItem: (k: string, v: string) => { map.set(k, v); }, removeItem: (k: string) => { map.delete(k); } };
+    const tabA = secretKeyedStore(storage, (_id, use) => use(key));
+    const tabB = secretKeyedStore(storage, (_id, use) => use(key));
+    let entered = false;
+    let release!: () => void;
+    const gate = new Promise<void>((resolve) => { release = resolve; });
+    const slow = hooked(chainWith(HEAD, f.logs), { getLogs: async (q) => { if (q.fromBlock === 0n && !entered) { entered = true; await gate; } } });
+    const a = attempt(f, { client: slow, checkpoints: tabA, maxPages: 1 });
+    await vi.waitFor(() => expect(entered).toBe(true));
+    const b = await attempt(f, { client: chainWith(HEAD, f.logs), checkpoints: tabB });
+    expect(b.error).toBeUndefined();
+    expect(tabA.load(CHAIN_ID, KEY)).toEqual(P3);
+    release();
+    expect((await a).error).toBeUndefined();
+    expect(tabA.load(CHAIN_ID, KEY)).toEqual(P3);
+    expect(tabB.load(CHAIN_ID, KEY)).toEqual(P3);
+  });
+});
+
+// Composition of F1 checkpoint ownership with cover lookups (#696): both must hold with cover off and on.
+describe.each([['off', false], ['on', true]] as const)('PRIV-06: checkpoint ownership with match cover %s', (_label, matchCover) => {
+  /** The fixture plus router payments to someone else, so an enabled cover has non-matching announcements to look up. */
+  function covered() {
+    const f = fixture();
+    const stranger = encodeMetaAddress(generateKeySet());
+    const others = Array.from({ length: 24 }, (_, i) => makeLog({ announcer: FAKE_ANNOUNCER, metaAddress: stranger, block: 200 + i * 450, index: 0, caller: FAKE_ROUTER }).log);
+    return { ...f, logs: [...f.logs, ...others].sort((a, b) => Number(BigInt(a.blockNumber) - BigInt(b.blockNumber))) };
+  }
+  const recorder = () => {
+    const from: bigint[] = [];
+    return { from, onPageMatches: (_m: readonly ScanMatch[], page: { readonly from: bigint }) => { from.push(page.from); return Promise.resolve(true); } };
+  };
+
+  it.each([['write', 5000n], ['clear', 5000n]] as const)('a foreign %s mid-run stands while every payment is still found and recorded', async (kind, atBlock) => {
+    const f = covered();
+    const store = spyStore();
+    const foreign = cursorAt(100);
+    let done = false;
+    const client = hooked(chainWith(HEAD, f.logs), { getLogs: (q) => {
+      if (q.fromBlock !== atBlock || done) return;
+      done = true;
+      if (kind === 'write') store.store.save(CHAIN_ID, KEY, foreign); else store.store.clear(CHAIN_ID, KEY);
+    } });
+    const rec = recorder();
+    const out = await attempt(f, { client, matchCover, checkpoints: store.store, onPageMatches: rec.onPageMatches });
+    expect(out.error).toBeUndefined();
+    expect(idsOf(out.matches)).toEqual(f.truth);
+    expect(rec.from).toEqual([0n, 5000n, 10_000n]);
+    expect(savedCalls(store)).toEqual(kind === 'write' ? [P1, foreign] : [P1]);
+    expect(store.current).toEqual(kind === 'write' ? foreign : undefined);
+  });
+
+  it('a lagging second provider is never caught up, and the resumed run catches up from the saved replay tail', async () => {
+    const f = covered();
+    const strangers = new Set(f.logs.filter((l) => !f.made.some((m) => m.log === l)).map((l) => l.transactionHash!.toLowerCase()));
+    const store = spyStore();
+    const primary = chainWith(HEAD, f.logs);
+    const inner = chainWith(11_000, f.logs);
+    const behind: MockRpc = { ...inner, getBlock: (n) => (n > 11_000n ? Promise.resolve(null) : inner.getBlock(n)) };
+    const first = await attempt(f, { client: primary, secondaryClient: behind, matchCover, checkpoints: store.store, maxPages: 4 });
+    expect(first.error).toBeUndefined();
+    expect(first.result?.discrepancies).toEqual([]);
+    expect(first.result?.secondaryLag).toEqual({ secondaryHead: 11_000n, head: BigInt(HEAD) });
+    expect(first.progress.every((p) => !p.caughtUp)).toBe(true);
+    const resumeAt = cursorAt(11_001 - small.finalityDepth);
+    expect(savedCalls(store)).toEqual([P1, P2, resumeAt]);
+    // The case is real in both modes: strangers' receipts are read exactly when cover is on.
+    expect(primary.calls.some((c) => c.method === 'eth_getTransactionReceipt' && strangers.has(String(c.params[0]).toLowerCase()))).toBe(matchCover);
+
+    const second = await attempt(f, { client: chainWith(HEAD, f.logs), secondaryClient: chainWith(HEAD, f.logs), cursor: resumeAt, matchCover, checkpoints: store.store, maxPages: 2 });
+    expect(second.error).toBeUndefined();
+    expect(second.result?.secondaryLag).toBeUndefined();
+    expect(second.progress.map((p) => [p.nextBlock, p.caughtUp])).toEqual([[BigInt(HEAD) + 1n, true]]);
+    expect(new Set([...idsOf(first.matches), ...idsOf(second.matches)])).toEqual(new Set(f.truth));
+    expect(savedCalls(store)).toEqual([P1, P2, resumeAt, P3]);
+  });
+
+  it('an unreadable slot is never replaced while every payment is still found and recorded', async () => {
+    const f = covered();
+    const map = new Map<string, string>();
+    let failGet = false;
+    let writes = 0;
+    const store = secretKeyedStore({
+      getItem: (k) => { if (failGet) throw new Error('storage read denied'); return map.get(k) ?? null; },
+      setItem: (k, v) => { writes++; map.set(k, v); },
+      removeItem: (k) => { map.delete(k); },
+    }, (_id, use) => use(new Uint8Array(32).fill(4)));
+    store.save(CHAIN_ID, KEY, P3);
+    writes = 0;
+    failGet = true;
+    const rec = recorder();
+    const out = await attempt(f, { client: chainWith(HEAD, f.logs), matchCover, checkpoints: store, onPageMatches: rec.onPageMatches });
+    failGet = false;
+    expect(out.error).toBeUndefined();
+    expect(idsOf(out.matches)).toEqual(f.truth);
+    expect(rec.from).toEqual([0n, 5000n, 10_000n]);
+    expect(writes).toBe(0);
+    expect(store.load(CHAIN_ID, KEY)).toEqual(P3);
+  });
+
+  it.each([['owns the slot', false], ['lost the slot', true]] as const)('a claim replay on a run that %s', async (_case, lost) => {
+    const f = covered();
+    const failed = f.made.at(-1)!.log.transactionHash!.toLowerCase(); // the payment at block 11,000
+    const inner = chainWith(HEAD, f.logs);
+    // No token transfer in that receipt: the router claim degrades to `claimed` and its block is saved for one replay.
+    const unbacked: MockRpc = { ...inner, request: async (method, params) => {
+      const raw = await inner.request(method, params);
+      if (method !== 'eth_getTransactionReceipt' || String(params[0]).toLowerCase() !== failed) return raw;
+      return { ...(raw as object), logs: (raw as { logs: RpcLog[] }).logs.filter((l) => l.topics[0] !== TRANSFER_TOPIC) };
+    } };
+    const store = spyStore();
+    const foreign = cursorAt(100);
+    let wrote = false;
+    const client = hooked(unbacked, { getLogs: (q) => { if (lost && !wrote && q.fromBlock === 10_000n) { wrote = true; store.store.save(CHAIN_ID, KEY, foreign); } } });
+    const out = await attempt(f, { client, matchCover, checkpoints: store.store });
+    expect(out.error).toBeUndefined();
+    expect(out.matches.at(-1)?.receipt).toBe('claimed');
+    expect(idsOf(out.matches)).toEqual(f.truth);
+    expect(savedCalls(store)).toEqual([P1, P2, lost ? foreign : cursorAt(11_000)]);
+    expect(store.current).toEqual(lost ? foreign : cursorAt(11_000));
+  });
+
+  it.each([['owns the slot', false], ['lost the slot', true]] as const)('a reorg rollback on a run that %s', async (_case, lost) => {
+    const f = covered();
+    const stale = cursorAt(8001);
+    const forked = f.logs.map((l) => ({ ...l, blockHash: forkHash(Number(BigInt(l.blockNumber))) }));
+    const store = spyStore(stale);
+    const foreign = cursorAt(100, forkHash);
+    const out = await attempt(f, {
+      client: chainWith(HEAD, forked, forkHash), matchCover, cursor: stale, checkpoints: store.store,
+      onReorg: () => { if (lost) store.store.save(CHAIN_ID, KEY, foreign); },
+    });
+    expect(out.error).toBeUndefined();
+    expect(idsOf(out.matches)).toEqual(f.made.map((m) => `${forkHash(Number(BigInt(m.log.blockNumber)))}:100`));
+    expect(savedCalls(store)).toEqual(lost ? [foreign] : [cursorAt(5000, forkHash), cursorAt(10_000, forkHash), cursorAt(11_991, forkHash)]);
+    expect(store.current).toEqual(lost ? foreign : cursorAt(11_991, forkHash));
+    // Coverage of the fetched range is independent of who owns the saved checkpoint.
+    expect(out.progress.at(-1)).toMatchObject({ nextBlock: BigInt(HEAD) + 1n, caughtUp: true });
   });
 });

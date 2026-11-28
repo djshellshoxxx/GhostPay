@@ -22,7 +22,7 @@ Trust boundaries: browser tab (keys live here) | wallet extension | static host/
 | **The payer** | The one-time address they paid, so they can follow it to wherever it is swept (D1) | Seller keys |
 | Static host / CDN | Client IP, user agent, which app assets were fetched, timing | The URL fragment, keys, invoice contents |
 | RPC provider | Client IP, queried block ranges and addresses (including a one-time address checked before sweeping, D8), submitted transactions | Viewing/spending keys (never sent), invoice contents |
-| Relayer operator | IP (hashed), owner stealth address, destination, token, amount, fee, timing; can censor or delay | Keys |
+| Relayer operator | IP address (the reference relayer hashes it for rate limits; the operator and any proxy can see it raw), owner stealth address, destination, token, amount, fee, timing; can censor or delay | Keys |
 | Wallet provider | Transaction requests, chain, addresses connected | Keys of the stealth wallet |
 | Anyone holding the invoice link | Entire invoice (bearer link) | Seller keys |
 | Anyone holding two invoices of one seller | They share a seller (stable meta-address, D3) | Keys |

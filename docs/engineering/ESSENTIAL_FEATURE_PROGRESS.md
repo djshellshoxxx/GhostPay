@@ -42,8 +42,11 @@ One entry per milestone. Evidence: [REGRESSION_RESULTS.md](REGRESSION_RESULTS.md
 
 ## Peer milestones (another Claude session, same owner)
 
-- M2 P0-KEYS (branch `claude/nifty-bohr-5ra2ap`) and M4-DORM371 (`claude/nifty-bohr-5ra2ap-dormant-371`). Evidence goes in
-  `docs/engineering/milestones/` on those branches.
+- M2 P0-KEYS: on `main` via #539 and #707 (merged by #718, `c7c6349c`); evidence
+  [`milestones/M2-P0-KEYS.md`](milestones/M2-P0-KEYS.md).
+- M4-DORM371 (#621, landing #371's dormant F04/F05/F10 base): held under
+  [STOP_WORK_20261125](../ai/STOP_WORK_20261125.md); not merged. Evidence stays on
+  `claude/nifty-bohr-5ra2ap-dormant-371` (`docs/engineering/milestones/M4-DORM371.md`).
 
 ## M1 status update (2026-11-24)
 
@@ -79,3 +82,24 @@ One entry per milestone. Evidence: [REGRESSION_RESULTS.md](REGRESSION_RESULTS.md
   `ANVIL_BIN=$HOME/.foundry/bin/anvil SOLC_BIN=$HOME/.svm/0.8.28/solc-0.8.28 REQUIRE_ANVIL=1 npm test -w @ghostpay/web`
   and `npm run e2e:devnet -w @ghostpay/web`.
 
+
+## Session handoff — `claude-loving-brown-v8dlp6` (2026-11-27)
+
+- **Open from this session:** [#742](https://github.com/djshellshoxxx/GhostPay/pull/742) on `claude/loving-brown-v8dlp6`
+  (base `6bc97fde`, merged with `b8f1c2ee`). Not merged; no lock taken.
+  - LATE-L1 fixed (`f4353c2c`): the replay now also covers an unlinked candidate that lost verified evidence. A candidate
+    never verified is still not replayed (A5 liveness).
+  - #569 (`68276f80`, `ec5587a5`) and #355 (`819e842d`) test dispositions:
+    [`MASKING_569_DISPOSITIONS_20261127.md`](../handoffs/MASKING_569_DISPOSITIONS_20261127.md). Two gaps on main fixed:
+    Pay kept the previous wallet's receipt file after a wallet change, and a quick hide that cancelled a wallet review
+    left focus on the page heading or `<body>` instead of the privacy control.
+- **Current status of the earlier follow-up list:** REV-I5 fixed by #739; RCPT-L1/L2 fixed by #690 (see REMAINING_WORK);
+  LATE-L1 fixed in #742 (pending merge). Still open: LATE-M1 (owner approved a presence marker on 2026-11-27; the
+  first fix was held in review for cross-tab serialization and reverted from #742; a redo follows in its own PR), REV-I6,
+  QA-I1, IDLE-M1 and GP-PAGES-01 (owner decisions). Product decision for #742 (qualification FUZZ-D3): whether to bound the
+  LATE-L1 replay pin for an unlinked candidate that never re-verifies.
+- **Next steps:** hosted CI and an independent review of #742's exact head, then a merge under the integration lock.
+  #569 and #355 can close once #742 lands (their branches are kept).
+- **Environment notes:** this container's proxy also refused `github.com` release downloads and
+  `binaries.soliditylang.org`, so no Foundry or solc: Anvil-gated web tests were skipped locally (not passes). Hosted CI
+  covers them.

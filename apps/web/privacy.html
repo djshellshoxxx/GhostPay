@@ -16,7 +16,7 @@
     <a class="skip" href="#content">Skip to privacy information</a>
     <header class="site-header">
       <div class="brand"><img src="./favicon.svg" width="32" height="32" alt="" />GhostPay</div>
-      <h1>Privacy and local data</h1>
+      <h1 id="top" tabindex="-1">Privacy and local data</h1>
       <p class="intro">Stealth addresses reduce address reuse. They do not hide the public transaction graph, and they do not make your device, browser, wallet, provider or host trustworthy.</p>
     </header>
     <nav class="site-nav" aria-label="Site">
@@ -179,7 +179,7 @@
           <li>Tags and reconciliation records are encrypted in IndexedDB. Some record existence and size may remain visible to anyone who can inspect the browser profile. Unlocked content is readable by the running page.</li>
           <li>Wallet and sweep attempt records keep transaction references and unresolved outcomes. They are not key backups, and clearing them cannot cancel an on-chain action.</li>
           <li>Imported historical observations and stored receipts do not gain independent payment verification merely by being stored or restored.</li>
-          <li>The browser self-check at the bottom of the app writes a fixed test value under a temporary <code>__ghostpay_capability_</code> name in localStorage and removes it at once. If the browser does not let it remove the value, the check reports <em>Failed</em>. The value holds no personal data, and the check makes no network request.</li>
+          <li>The browser self-check at the bottom of the app writes a fixed test value under a random temporary <code>__ghostpay_capability_</code> name in localStorage and in a temporary IndexedDB database of the same name, then asks the browser to delete both. If the browser refuses the write, nothing is stored. If it refuses the deletion or does not finish it within the check's time limit, the check reports <em>Failed</em> and the value may remain until you clear site data. The value holds no personal data, and the check makes no network request.</li>
         </ul>
         <p>Locking a view restricts its current access. It does not erase stored records or downloaded files. Records remain until you delete them or clear the site's storage. Export the backups you need before clearing site data, and delete exported copies separately when you no longer need them.</p>
       </section>
@@ -212,6 +212,6 @@
         <p>Read the <a href="./help.html#evidence">payment-evidence guide</a> and the source repository's <a href="https://github.com/djshellshoxxx/GhostPay/blob/main/SECURITY.md">security policy</a>.</p>
       </section>
     </main>
-    <footer class="site-footer"><p>Privacy explanation for the current product scope. It is not a hosting provider's retention policy.</p><ul><li><a href="./help.html">Help and recovery</a></li><li><a href="#content">Back to top</a></li></ul></footer>
+    <footer class="site-footer"><p>Privacy explanation for the current product scope. It is not a hosting provider's retention policy.</p><ul><li><a href="./help.html">Help and recovery</a></li><li><a href="#top">Back to top</a></li></ul></footer>
   </body>
 </html>

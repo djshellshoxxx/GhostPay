@@ -36,7 +36,8 @@ function stringKey(key: IDBValidKey): string {
  * In-memory IndexedDB for tests that run a real storage adapter (jsdom and node have none): versioned opens whose upgrade
  * can be aborted (a database created that way is not kept), object stores with out-of-line keys, and transactions whose
  * get, put and getAllKeys requests succeed in order on later tasks and then commit, or roll back on abort. It covers what
- * IdbReconciliationVaultStore and storedHistoryChains call, nothing more.
+ * IdbReconciliationVaultStore and storedHistoryChains call, plus deleteDatabase and databases() for the browser
+ * self-check's temporary probe database, nothing more.
  */
 export function memoryIndexedDb(): IDBFactory {
   const databases = new Map<string, Database>();
@@ -138,6 +139,12 @@ export function memoryIndexedDb(): IDBFactory {
       });
       return req;
     },
+    deleteDatabase: (name: string) => {
+      const req: Request<undefined> & { onblocked: Handler } = { result: undefined, error: null, onsuccess: null, onerror: null, onblocked: null };
+      later(() => { databases.delete(name); req.onsuccess?.(); });
+      return req;
+    },
+    databases: () => Promise.resolve([...databases].map(([name, db]) => ({ name, version: db.version }))),
   };
   return factory as unknown as IDBFactory;
 }

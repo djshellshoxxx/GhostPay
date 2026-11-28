@@ -1,6 +1,9 @@
 import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore, type ReactNode } from 'react';
 import { WalletDisclosureProvider } from './components/WalletDisclosure';
 import { SessionPresentationBoundary } from './components/SessionPresentationBoundary';
+import { PrivacyControls } from './components/PrivacyControls';
+import { SensitiveContent } from './components/SensitiveContent';
+import { PrivacyProvider, usePrivacyModePreference } from './lib/privacyMode';
 import type { RpcClient } from '@ghostpay/chain-adapters';
 import { clearFragment, readInvoiceFragment } from './lib/fragment';
 import { loadedKeysRecoverable } from './lib/keyVault';
@@ -8,7 +11,8 @@ import type { ScanMatch } from './lib/scanClient';
 import { useServices } from './lib/services';
 import { captureSessionVersionGuard, clearSession, getSessionBackup, getSessionPublic, hasSession, isSessionSuspended, sessionHasExternalCopy, subscribeSession, subscribeSessionBackup, subscribeSessionExpiryCheck, suspendSession } from './lib/session';
 import { cancelClipboardCleanup } from './lib/clipboardPrivacy';
-import { loadSettings, saveSettings, type Settings as SettingsData } from './lib/settings';
+import { loadSettings, mergeSettings, saveSettings, storedSettingsText, SETTINGS_KEY, type Settings as SettingsData } from './lib/settings';
+import { UserFacingError } from './lib/errors';
 import { AppContext, VIEW_LABELS, type AppState, type ViewId } from './state';
 import { RegistryView } from './features/registry/RegistryView';
 import { About } from './views/About';
@@ -19,11 +23,13 @@ import { Scan } from './views/Scan';
 import { BackupGate, SellerKeys } from './views/SellerKeys';
 import { Settings } from './views/Settings';
 import { Sweep } from './views/Sweep';
+import { pagesOriginAllowsPayments } from './lib/pagesOrigin';
 import { Notice } from './components/Common';
 import { ErrorBoundary } from './components/ErrorBoundary';
 import { BrowserChecks } from './components/BrowserChecks';
 import { CopiedBackupNotice } from './components/SecretBackup';
 import { notifyAppLock } from './lib/appLock';
+import { useBrowserOnline } from './lib/browserOnline';
 
 /** How often the idle lock compares the wall clock with the last activity, for devices whose timers paused in sleep (GP-PAGES-04). */
 export const IDLE_CHECK_MS = 20_000;
@@ -93,6 +99,7 @@ function ViewSwitch(props: { readonly view: ViewId; readonly extraViews: ExtraVi
 
 export function AppShell(props: AppShellProps): ReactNode {
   const profile = props.profile ?? 'full';
+  const online = useBrowserOnline();
   const extraViews = props.extraViews ?? {};
   const order = profile === 'lean' ? props.order.filter((id) => CORE_ORDER.includes(id)) : props.order;
   const services = useServices();
@@ -101,7 +108,12 @@ export function AppShell(props: AppShellProps): ReactNode {
   const setView = useCallback((next: ViewId): void => {
     setViewState(profile === 'lean' && !CORE_ORDER.includes(next) ? 'home' : next);
   }, [profile]);
-  const [settings, setSettings] = useState<SettingsData>(() => loadSettings());
+  // The stored text this tab last read or wrote: a different one means another tab has saved since.
+  const settingsText = useRef<string | null | undefined>(undefined);
+  const [settings, setSettings] = useState<SettingsData>(() => {
+    settingsText.current = storedSettingsText();
+    return loadSettings();
+  });
   const [matches, setMatches] = useState<readonly ScanMatch[]>([]);
   const [sweepTarget, selectForSweep] = useState<AppState['sweepTarget']>(undefined);
   const [live, setLive] = useState<string | { readonly key: MessageKey }>('');
@@ -118,6 +130,24 @@ export function AppShell(props: AppShellProps): ReactNode {
   const rpcCache = useRef(new Map<string, Promise<RpcClient>>());
   // Configuration/service rerenders do not count as activity. Only actual key installation starts a new session lease.
   const idleLease = useRef<IdleLease | undefined>(undefined);
+
+  // Another tab saved settings: take them over and forget every opened client, so a removed RPC, relayer or signer pin
+  // is not used from this tab's older copy. Wallet attempts and sweep locks are separate records and stay as they are.
+  const adoptStoredSettings = useCallback((): void => {
+    settingsText.current = storedSettingsText();
+    rpcCache.current.clear();
+    const stored = loadSettings();
+    setSettings((current) => mergeSettings(current, stored));
+  }, []);
+  useEffect(() => {
+    const onStorage = (event: StorageEvent): void => {
+      if (event.key === null || event.key === SETTINGS_KEY) adoptStoredSettings();
+    };
+    window.addEventListener('storage', onStorage);
+    // Saved between the first read and this subscription.
+    if (storedSettingsText() !== settingsText.current) adoptStoredSettings();
+    return () => { window.removeEventListener('storage', onStorage); };
+  }, [adoptStoredSettings]);
 
   // Remove a sensitive invoice fragment on initial load and when the user re-enables automatic clearing.
   // Hash changes arriving later are handled by the listener below.
@@ -364,9 +394,16 @@ export function AppShell(props: AppShellProps): ReactNode {
       setView,
       settings,
       updateSettings: (s) => {
+        // Values chosen before another tab saved must not replace that tab's choice, even before its notice arrives.
+        if (storedSettingsText() !== settingsText.current) {
+          adoptStoredSettings();
+          throw new UserFacingError({ key: 'settings.changedElsewhere' });
+        }
         if (s.invoiceLinkClipboardDelaySec !== settings.invoiceLinkClipboardDelaySec) cancelClipboardCleanup();
         setSettings(s);
-        return saveSettings(s);
+        const saved = saveSettings(s);
+        settingsText.current = storedSettingsText();
+        return saved;
       },
       session,
       fragment,
@@ -379,17 +416,21 @@ export function AppShell(props: AppShellProps): ReactNode {
       getSecondaryRpc,
       announce: setLive,
     }),
-    [view, setView, settings, session, fragment, matches, sweepTarget, getRpc, getSecondaryRpc],
+    [view, setView, settings, session, fragment, matches, sweepTarget, getRpc, getSecondaryRpc, adoptStoredSettings],
   );
   // One gate scope for the life of the shell: a connected wallet keeps working across key or settings changes, which
   // each view's own authority checks handle. Such a change only cancels a review that is open at that moment.
   const [walletDisclosureScope] = useState(() => ({}));
   // A new view or invoice fragment cancels an open review too: it was requested for what was on screen before.
   const walletDisclosureRevision = useMemo(() => ({ session, settings, view, fragment }), [session, settings, view, fragment]);
+  // #286 item 1: a temporary reveal belongs to what was on screen; navigation, a new invoice or new keys revoke it.
+  const privacyEnabled = usePrivacyModePreference();
+  const privacyScope = useMemo(() => ({ session, view, fragment }), [session, view, fragment]);
 
   return (
     <AppContext.Provider value={state}>
       <SessionPresentationBoundary>
+      <PrivacyProvider enabled={privacyEnabled} scope={privacyScope}>
       <WalletDisclosureProvider scope={walletDisclosureScope} revokeOn={walletDisclosureRevision}>
       <a className="skip" href="#main" onClick={() => { main.current?.focus(); }}>{t('app.shell.skip')}</a>
       <header className="site-header">
@@ -406,9 +447,12 @@ export function AppShell(props: AppShellProps): ReactNode {
             ))}
           </ul>
         </nav>
+        <PrivacyControls />
       </header>
       <main id="main" tabIndex={-1} ref={main}>
-        {!suspended && props.mainPrelude}
+        <SensitiveContent>{!suspended && props.mainPrelude}</SensitiveContent>
+        {!pagesOriginAllowsPayments() && <Notice kind="warn">{t('app.pagesOriginMismatch')}</Notice>}
+        {!online && <Notice kind="warn">{t('app.offline')}</Notice>}
         {suspended && <Notice kind="warn" title={t('app.idle.suspended.title')}>{t('app.idle.suspended.body')}</Notice>}
         {session !== undefined && backup?.backedUp === true && backup.verified === false && (
           <Notice kind="warn" title={t('app.backup.unverified.title')}>
@@ -433,11 +477,14 @@ export function AppShell(props: AppShellProps): ReactNode {
         {/* A render error in a view shows an error panel instead of unmounting the app (G1-01). */}
         <ErrorBoundary resetKey={view} onBack={() => { setFragment(undefined); setViewState('home'); }}>
           <ShellProfileContext.Provider value={profile}>
-            <ViewSwitch view={view} extraViews={extraViews} profile={profile} sellerArchive={suspended ? undefined : props.sellerArchive} />
+            {/* Home and About show only the public deployment: fee schedule, contracts and project text. */}
+            <SensitiveContent active={view !== 'home' && view !== 'about'}>
+              <ViewSwitch view={view} extraViews={extraViews} profile={profile} sellerArchive={suspended ? undefined : props.sellerArchive} />
+            </SensitiveContent>
           </ShellProfileContext.Provider>
         </ErrorBoundary>
       </main>
-      <div className="sr-only" role="status" aria-live="polite" aria-atomic="true">{typeof live === 'string' ? live : t(live.key)}</div>
+      <SensitiveContent><div className="sr-only" role="status" aria-live="polite" aria-atomic="true">{typeof live === 'string' ? live : t(live.key)}</div></SensitiveContent>
       <footer className="site-footer">
         <BrowserChecks />
         <p>{t('app.shell.footer')}</p>
@@ -448,9 +495,10 @@ export function AppShell(props: AppShellProps): ReactNode {
         </ul>
       </footer>
       </WalletDisclosureProvider>
+      </PrivacyProvider>
       </SessionPresentationBoundary>
     </AppContext.Provider>
   );
 }
 
-// i18n-use: app.idle.tagsLocked app.idle.kept app.idle.wiped
+// i18n-use: app.idle.tagsLocked app.idle.kept app.idle.wiped settings.changedElsewhere

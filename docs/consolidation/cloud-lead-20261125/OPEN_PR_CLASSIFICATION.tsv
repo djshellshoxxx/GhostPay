@@ -1,257 +1,177 @@
-pr	class	head_ref	head_sha	last_commit_local	commits_behind_main	changed_since_base	differs_from_main	differs_nondoc	historical_disposition	reason
-672	J	claude/w3-provider-privacy-boundary	18586c524ba1	11-25T05:16	0	11	11	10	-	W3 privacy-boundary WIP
-671	J	automation/20261125T1241Z/containment/help-scope	d05b7fa0bd2b	11-25T05:44	0	4	4	2	-	automation containment of help scope
-670	J	claude/small-fix-20261125	e3e1385431de	11-25T04:31	0	5	5	3	-	newghostpay-ae (merge queue #3)
-669	J	claude/fc05b-btc-hardening-20261125	8ea606ff1816	11-25T04:14	41	73	73	40	-	FC-05b (worker fc03)
-668	J	claude/w4-clipboard-286-main-20261125	74e0c61dd0ed	11-25T04:01	13	37	37	27	-	W4 clipboard (#553+#580)
-667	J	claude/w1-reconcile-659-20261125	67a241c7589f	11-25T03:24	13	8	8	0	-	W1 reconcile of #659
-666	J	claude/sec1-payer-key-warning	92ff63317676	11-25T03:21	13	6	6	5	-	SEC-1 payer key warning (recent owner session)
-665	J	nodata/elegant-tesla-kpeojx	7ad60919f35c	11-25T12:46	0	20	20	14	-	W5 independent verifier
-664	J	claude/fc-integration-20261125	d205fc30257a	11-25T04:46	0	260	260	104	-	FC round-1 qualification candidate (coordinator)
-663	J	claude/fc04-hardening-tests-20261125	d05108873af1	11-25T01:54	39	8	8	3	-	FC-04 in #664
-662	J	claude/fc05a-t-btc-text-20261125	22c3cb1d7a5c	11-25T01:40	41	70	70	38	-	FC-05a-T in #664
-661	J	claude/fc03-t-chain-text-20261125	a2b14ca87253	11-25T01:23	41	41	41	33	-	FC-03-T in #664
-659	J	owner/privacy-beta-scope-20261125	ea94ba7cf2dd	11-25T02:29	39	8	8	0	-	owner scope record (via W1 #667)
-658	J	claude/priv-t02-rpc-disclosure	9aed38866932	11-25T02:15	41	16	16	12	-	PRIV-T02 RPC disclosure evidence (P14)
-656	J	claude/fc05a-btc-spentness-20261125	8e7b191501a4	11-25T00:59	41	64	64	38	-	FC-05a in #664
-655	J	automation/20261125T0841Z/qa/private-scan-presentation	1dcd5a25130b	11-25T01:44	901	2200	2127	535	-	automation QA (private-scan presentation)
-654	J	nodata/focused-meitner-07a9u7	a75ed0b14e26	11-25T08:41	41	134	134	26	-	FC-01 follow-up
-653	J	claude/serene-hawking-kjd54q	da44bb30c52e	11-25T12:08	0	34	34	27	-	light-indexer owner (updated today)
-652	J	automation/20261125T0637Z/qa/account-privacy-signer-pin	724afdcf5571	11-24T23:39	901	2199	2126	535	-	automation QA (account-privacy signer pin)
-651	J	docs/privacy-profile-decisions-20261124	be04d1167aeb	11-24T23:22	70	2	2	0	-	privacy-profile decisions (#644 owner)
-650	J	claude/fc01-f03-request-file-20261125	3851f02b0432	11-25T01:34	41	132	132	25	-	FC-01 in #664
-649	J	claude/fc02-sweep-consent-20261125	790de53e198d	11-25T00:47	41	23	23	15	-	FC-02 in #664
-648	J	claude/fc03-chain-interop-20261125	a13ab24dce06	11-25T00:08	41	41	41	33	-	FC-03 in FC #664 candidate
-647	J	claude/p0-keys-independent-recovery	6fd126dbb4d3	11-25T02:59	13	11	11	6	-	ghostpay-15 P0-KEYS (merge queue #2)
-645	J	automation/20261125T0437Z/qa/registry-history-live-region	3b7351c7f289	11-24T21:39	901	2198	2125	535	-	automation QA (registry journal)
-644	J	nodata/peaceful-faraday-enxrin	94ab256e5285	11-25T05:06	70	35	35	31	-	privacy-profiles owner
-643	J	nodata/gracious-pascal-vdb581	c13070f8e0bb	11-25T05:54	70	36	36	31	-	metadata-hardening owner
-642	J	nodata/eloquent-shannon-gfv6t9	54130ff151c9	11-25T12:49	0	40	40	29	-	confidential amounts owner (locked worktree)
-639	J	nodata/magical-volta-z6taog	e8de5ae5375f	11-25T08:26	41	13	13	0	-	housekeeping owner
-637	G	automation/20261125/bug/template-import-epoch-bound	02d6a800e99d	11-24T20:23	74	4	4	2	-	ux-schedule template (stopped scope)
-634	K	automation/20261125T0120Z/bug/ux-links-handle-confusable-case	898106124f7f	11-24T18:25	74	4	4	2	-	unique ux-links handle fix; owner check: handles vs F08 GhostID
-633	A	automation/20261124/bug/nl-amount-locale-prefix-r11	4a13cffec376	11-24T16:26	74	4	4	2	-	unique ux-intake amount fix; recovered in cloud bundle
-632	C	automation/20261124T2237Z/qa/disclosure-firefox-reflow	0036fe165657	11-24T15:38	901	2209	2135	544	-	large historical composition far behind main; needs semantic recovery review
-631	G	automation/20261124T2125Z/bug/schedule-negative-handled	bc8fa946c387	11-24T14:29	74	4	4	2	-	ux-schedule recurring/subscription (stopped scope)
-630	C	automation/20261124T2037Z/qa/disclosure-signer-pin-gate	c484f833560a	11-24T13:38	901	2207	2133	543	-	large historical composition far behind main; needs semantic recovery review
-628	K	automation/20261124T1821Z/bug/ux-export-leading-bom	0fe0f06f1f7c	11-24T11:27	74	4	4	2	-	unique ux-export CSV fix; owner check: payment-history export vs F04 analytics
-627	A	automation/20261124/bug/i18n-accessible-name-surrogate-r11	005ca59c5b2c	11-24T10:26	74	4	4	2	-	unique i18n a11y fix; recovered in cloud bundle
-626	A	automation/20261124/bug/ux-intake-qr-clock-rollback-r11	4b6a36a94def	11-24T09:24	74	4	4	2	-	unique ux-intake QR fix; recovered in cloud bundle
-625	E	automation/20261124T1437Z/bug/scan-locale-vault-fixture	694383f7964a	11-24T07:39	930	0	0	0	-	head is an ancestor of main
-624	D	claude/keen-volta-8ctx9x	0007e739c056	11-24T14:35	74	4	4	0	-	documentation/census/handoff record only; superseded by later census; branch preserves history
-623	A	automation/20261124/bug/i18n-adjacent-quoted-literals-r11	9e41a4e47a8e	11-24T07:30	119	4	4	2	-	unique shipped i18n fix; recovered in cloud bundle
-622	J	claude/nifty-bohr-5ra2ap	8c7ae937a3ef	11-24T14:23	119	28	28	27	-	P0-KEYS M2b owner
-621	H	archive/owner-stop-20261125/claude/nifty-bohr-5ra2ap-dormant-371,claude/nifty-bohr-5ra2ap-dormant-371	98065511df4b	11-24T14:35	74	79	79	21	-	owner HOLD: #371 dormant base (F04/F05/F10)
-619	C	automation/20261124T1237Z/bug/deployment-diagnostic-fixture	3107b816144b	11-24T05:40	926	54	51	47	-	unique source vs main; semantic review required before recovery
-617	E	integration/ghostpay-additional-reviewed-20261124-68c82b9	464a7cb4c3cd	11-24T03:33	193	158	110	3	-	residual code already on main in equivalent or stricter form
-616	E	integration/ghostpay-followup-fixes-20261124-68c82b9	7c4987650faf	11-24T03:19	215	61	34	1	-	residual code already on main in equivalent or stricter form
-614	H	archive/owner-stop-20261125/integration/near-finished-20261124,integration/near-finished-20261124	c03598fe5923	11-24T08:04	74	3	3	0	-	owner HOLD: mixed POS/fiat with amount/countdown/QR
-613	C	investigate/privacy-569-firefox-20261124	17fa04b0ad4a	11-24T02:37	901	2221	2147	542	-	large historical composition far behind main; needs semantic recovery review
-612	C	fix/20261124/encrypted-wallet-revocation-notice	e580fcac85e1	11-24T02:35	901	2197	2124	535	-	large historical composition far behind main; needs semantic recovery review
-610	J	finish/destination-reuse-type-20261124	874d38097591	11-24T02:30	926	20	20	16	-	#287 destination reuse typing (claude/w-reuse-287)
-609	C	resume/receipt-retention-tor-fixture-20261124	00078ed6a256	11-24T02:28	901	2199	2125	535	-	large historical composition far behind main; needs semantic recovery review
-606	C	codex/recover-wallet-disclosure-qualification-20261124	f941ac01fd94	11-24T02:23	901	2206	2132	543	-	large historical composition far behind main; needs semantic recovery review
-604	C	finish/offline-completion-20261124	2f2c282e4e88	11-24T02:13	892	29	26	21	active-owner-source-qualification-pending	unique source vs main; semantic review required before recovery
-602	G	finish/recurring-m4-qualification-20261124	8d8fe2f0986b	11-24T02:00	958	91	91	29	active-owner-source-qualification-pending	F10 recurring M4 qualification
-600	J	resume/privacy-minimal-typecheck-20261124	c8f892f2aaa4	11-24T01:55	926	19	19	15	active-owner-source-qualification-pending	W4 #287 minimal invoices
-599	E	resume/seller-reconciliation-20261124	0c7f680d0791	11-24T01:55	933	0	0	0	history-retained-in-newer-descendants-source-review-open	head is an ancestor of main
-598	C	resume/account-privacy-20261124	86450d8d459c	11-24T01:55	901	2195	2122	535	active-owner-source-qualification-pending	large historical composition far behind main; needs semantic recovery review
-597	E	fix/mobile-588-memo-assertion-20261124	a929b178a662	11-24T01:50	923	0	0	0	active-owner-source-qualification-pending	head is an ancestor of main
-596	C	resume/recovery-native-20261124	f637214e6f38	11-24T01:45	967	368	336	92	active-owner-source-qualification-pending	unique source vs main; semantic review required before recovery
-595	B	codex/recover-wallet-attempt-status-fixture-20261124	534bb3808d0f	11-24T01:44	902	3	3	1	active-owner-source-qualification-pending	test-only; conflicts (main already has cleanup); manual port
-592	H	archive/owner-stop-20261125/codex/spec-03-fiat-price-feeds,codex/spec-03-fiat-price-feeds	e9025d72f140	11-23T23:01	926	39	39	34	active-owner-source-qualification-pending	owner HOLD: spec-03 fiat feeds (F13)
-591	C	codex/offline-interrupted-invoice	49862e2d3b48	11-23T23:03	926	20	20	18	-	unique source vs main; semantic review required before recovery
-590	C	fix/pages-offline-session	f01c69d277c3	11-23T23:02	926	24	21	18	-	unique source vs main; semantic review required before recovery
-589	D	codex/287-wallet-request-preview	697cb7314c32	11-23T23:02	901	2205	2131	543	history-retained-in-newer-descendants-source-review-open	source history retained in newer descendants (branch-comparison-20261124)
-587	C	feature/287-receipt-timestamp-retention	19a11f90db0b	11-23T22:59	901	2197	2123	535	active-owner-source-qualification-pending	large historical composition far behind main; needs semantic recovery review
-586	J	codex/287-local-destination-reuse	f024ce3e0eab	11-23T23:04	926	19	19	16	active-owner-source-qualification-pending	#287 destination reuse (claude/w-reuse-287)
-585	J	feature/287-minimal-invoice-sharing	b82be893d3d3	11-23T23:08	926	18	18	15	history-retained-in-newer-descendants-source-review-open	W4 #287 minimal invoices
-584	J	codex/287-evm-payment-destination-reuse	17c5a2ee3828	11-23T23:03	926	18	18	15	active-owner-source-qualification-pending	#287 destination reuse (claude/w-reuse-287 branch active)
-583	D	fix/364-responsive-pages	c1980912f87f	11-23T22:54	338	19	13	12	active-owner-source-qualification-pending	commits cherry-picked into #640 (merged 5dc05bd6, #364 help/Pages)
-582	C	test/gp-pages-04-frozen-page-sweep-resume	9303aecc53c1	11-23T23:06	967	365	333	91	active-owner-source-qualification-pending	unique source vs main; semantic review required before recovery
-580	J	feat/remaining-sensitive-clipboard-286	e68d32d7e424	11-24T01:53	939	40	40	31	active-owner-source-qualification-pending	W4 (in #668)
-577	D	codex/gp-pages-02-retain-suspended-signer	2363943571de	11-23T22:37	967	367	335	92	history-retained-in-newer-descendants-source-review-open	source history retained in newer descendants (branch-comparison-20261124)
-575	E	fix/seller-linked-payment-reconciliation	5a225f6cdaee	11-23T22:47	934	0	0	0	history-retained-in-newer-descendants-source-review-open	head is an ancestor of main
-572	E	backup/individual-stealth-keypair-export-20261123-28bba11c,codex/individual-stealth-keypair-export	28bba11cdaeb	11-23T22:46	935	0	0	0	active-owner-source-qualification-pending	head is an ancestor of main
-571	D	fix/286-account-vault-privacy	63f40efac175	11-23T23:03	901	2194	2121	535	history-retained-in-newer-descendants-source-review-open	source history retained in newer descendants (branch-comparison-20261124)
-570	C	codex/286-private-export-surfaces	557815335b8e	11-23T22:51	926	52	50	47	active-owner-source-qualification-pending	unique source vs main; semantic review required before recovery
-569	C	fix/286-global-mask-document	c30283d28ec1	11-23T22:58	901	2204	2130	541	active-owner-source-qualification-pending	large historical composition far behind main; needs semantic recovery review
-559	K	feature/p08-local-history-coverage	0419d3609cae	11-23T20:36	1083	9	9	2	active-owner-source-qualification-pending	dormant future P08 history coverage; owner acceptance needed
-558	K	qualification/p06-existing-role-inventory-20261123	d242926030fe	11-23T20:35	1083	9	9	2	active-owner-source-qualification-pending	dormant future key-role inventory; owner acceptance needed
-555	E	qualification/merchant-ledger-522-current-main	3ae56a5e0b3d	11-23T20:26	934	0	0	0	history-retained-in-newer-descendants-source-review-open	head is an ancestor of main
-553	J	integrate/invoice-clipboard-286	068fbc36b803	11-23T19:49	939	18	18	17	history-retained-in-newer-descendants-source-review-open	W4 (in #668)
-549	C	feat/create-invoice-link-clipboard-286	21b1d68c0a31	11-23T19:21	1055	1385	1317	445	active-owner-source-qualification-pending	large historical composition far behind main; needs semantic recovery review
-548	E	test/receipt-print-action-532	cb977e4b3104	11-23T20:01	931	0	0	0	active-owner-source-qualification-pending	head is an ancestor of main
-547	E	codex/qualify-508-invoice-link	36a5b4e0007a	11-23T19:31	938	0	0	0	-	head is an ancestor of main
-546	E	test/seller-accepted-late-reorg	711168f18e5d	11-23T19:55	940	0	0	0	history-retained-in-newer-descendants-source-review-open	head is an ancestor of main
-544	D	test/ghostpay-first-sign-after-sleep	4b077d2b13f9	11-23T19:47	967	363	331	89	history-retained-in-newer-descendants-source-review-open	source history retained in newer descendants (branch-comparison-20261124)
-541	C	verify/policy-prompt-two-tabs-20261124	f5bc0d6c7126	11-23T19:03	912	7	7	5	active-owner-source-qualification-pending	unique source vs main; semantic review required before recovery
-534	J	codex/ghostpay-sweep-balance-integration-20261123	5c93c3b172cd	11-23T16:50	945	19	19	15	active-owner-source-qualification-pending	FC-02 donor (in #649/#664)
-528	B	codex/ghostpay-policy-lock-release-20261123	ff274a08de2a	11-23T17:42	912	5	5	3	history-retained-in-newer-descendants-source-review-open	unique policy wallet-callback lock change; needs semantic review of lock scope before integration
-527	E	automation/20261123T2235Z/test/scan-range-record-isolation	482d6ab97338	11-23T15:38	935	0	0	0	-	head is an ancestor of main
-526	D	docs/ghostpay-live-census-20261123	111c3de7fc58	11-23T15:32	945	4	4	0	-	documentation/census/handoff record only; superseded by later census; branch preserves history
-523	E	automation/20261123T2041Z/bug/scan-proxy-test-lint	36cf79d0ce4a	11-23T13:43	938	0	0	0	-	head is an ancestor of main
-515	E	audit/ghostpay-r68-jitter-expiry-qualification-20261123	f2b262c2afe5	11-23T09:08	1095	0	0	0	active-owner-source-qualification-pending	head is an ancestor of main
-512	E	automation/20261123T1440Z/bug/c1-rpc-input-subgrid	ad921a34a810	11-23T21:07	358	0	0	0	-	head is an ancestor of main
-493	G	dependabot/npm_and_yarn/npm-minor-patch-f6308e442e	51160bcb70cd	11-24T13:06	170	68	68	68	active-owner-source-qualification-pending	dependabot npm bump (CI owner)
-492	G	dependabot/github_actions/actions-8158e918cd	592b99417039	11-23T03:15	958	5	5	5	active-owner-source-qualification-pending	dependabot actions bump (CI owner)
-485	E	automation/20261122T2232Z/bug/policy-sparse-test-typecheck	fe1c59a3d5aa	11-22T15:33	947	0	0	0	-	head is an ancestor of main
-482	E	automation/20261122T2038Z/bug/policy-sparse-records	e5705abded67	11-22T13:41	950	0	0	0	-	head is an ancestor of main
-476	E	automation/20261122T1640Z/bug/qr-snapshot-lint	6aba5e7c2fee	11-22T09:42	951	0	0	0	-	head is an ancestor of main
-471	C	audit/ghostpay-r41-semantic-backfill-20261122-1400Z	d068ffd41637	11-23T18:05	958	117	117	6	active-owner-source-qualification-pending	unique source vs main; semantic review required before recovery
-469	D	audit/ghostpay-r40-semantic-branch-dispositions-20261122	fd3abbc297fe	11-22T06:09	958	5	5	0	-	documentation/census/handoff record only; superseded by later census; branch preserves history
-468	D	automation/20261122-r11/audit/mythril-evidence-summary	cb63ec21cbac	11-22T05:45	958	4	2	0	active-owner-source-qualification-pending	documentation/census/handoff record only; superseded by later census; branch preserves history
-466	G	audit/ghostpay-r39-uncapped-branch-triage-20261122	87eb78767567	11-22T05:15	958	6	6	2	active-owner-source-qualification-pending	consolidation audit tooling
-464	D	audit/ghostpay-r38-source-census-20261122	4f529cbb1529	11-22T04:11	958	4	4	0	-	documentation/census/handoff record only; superseded by later census; branch preserves history
-459	D	audit/ghostpay-scheme2-completion-20261122	ecfe65666b51	11-22T03:19	958	2	2	0	-	documentation/census/handoff record only; superseded by later census; branch preserves history
-457	G	docs/f05-receipt-assurance-coverage-20261122	300c9d215b01	11-22T03:14	958	79	79	21	active-owner-source-qualification-pending	F05 coverage docs
-456	G	feature/f10-durable-cas-m4-20261122	9e8a619cc2ce	11-22T03:23	958	90	90	29	history-retained-in-newer-descendants-source-review-open	F10 recurring M4
-455	D	audit/ghostpay-fund-recovery-expiry-20261122-p0	74b9f85523f7	11-22T03:12	958	2	2	0	-	documentation/census/handoff record only; superseded by later census; branch preserves history
-450	E	automation/20261122-r34/bug/ux-receipts-lookup-boundary	5aa0194f1a27	11-22T01:03	950	0	0	0	-	head is an ancestor of main
-448	D	audit/ghostpay-r33-514-branch-pr-qualification-20261122	8251eaa0813a	11-22T00:09	958	6	6	0	-	documentation/census/handoff record only; superseded by later census; branch preserves history
-445	D	audit/ghostpay-r32-census-and-ci-gates-20261122	bd1bc845bb85	11-21T23:08	958	3	3	0	-	documentation/census/handoff record only; superseded by later census; branch preserves history
-443	E	repair/ghostpay-r31-journal-readback-test-typecheck-20261122	4e1fa09571f9	11-21T22:04	945	0	0	0	history-retained-in-newer-descendants-source-review-open	head is an ancestor of main
-442	F	audit/ct-c-2-fee-event-forensics-20261121	4bfaffa5d44f	11-21T21:52	958	2	2	1	diagnostic-contract-test-evidence-not-beta-runtime	unique diagnostic confidential-contracts test; not beta runtime
-441	E	review/427-440-wallet-journal-readback-regression	3c21b02194c9	11-21T21:52	948	0	0	0	history-retained-in-newer-descendants-source-review-open	head is an ancestor of main
-440	E	automation/20261122T0438Z/bug/wallet-hash-type-guard	2b73dec30338	11-21T21:42	950	0	0	0	history-retained-in-newer-descendants-source-review-open	head is an ancestor of main
-438	D	audit/ghostpay-r30-504-reconciliation-20261122	745004a16dbb	11-21T21:04	958	4	4	0	-	documentation/census/handoff record only; superseded by later census; branch preserves history
-436	C	automation/20261122/tor-scan-saved-message-contract-r29	cbf6edbb5471	11-21T20:09	901	2187	2113	528	active-owner-source-qualification-pending	large historical composition far behind main; needs semantic recovery review
-435	E	automation/20261122T0239Z/bug/settings-exchange-incoming-snapshot	6af1a4bc3cd8	11-21T19:42	949	0	0	0	-	head is an ancestor of main
-428	D	audit/ghostpay-r24-494-ci-triage-20261121	2e8e2fde366f	11-21T16:07	958	4	4	0	-	documentation/census/handoff record only; superseded by later census; branch preserves history
-425	E	fix/ghostpay-sweep-privacy-ci-expected-note-r23-20261121	ec3c7d9bf304	11-21T15:03	945	0	0	0	-	head is an ancestor of main
-423	E	audit/ghostpay-r22-privacy-option-guards-20261121	e8afa1d2297b	11-21T14:05	949	0	0	0	-	head is an ancestor of main
-422	E	automation/20261121T2033Z/integration/display-text-boundaries	f846464db3cb	11-21T13:37	949	0	0	0	-	head is an ancestor of main
-419	E	automation/20261121T1835Z/bug/display-surrogate-cut	62dcc695ae3f	11-21T11:39	958	4	4	2	active-owner-source-qualification-pending	residual code already on main in equivalent or stricter form
-416	E	automation/20261121T1636Z/bug/countdown-invalid-runtime	5d3e21617a8a	11-21T09:40	958	7	4	2	active-owner-source-qualification-pending	residual code already on main in equivalent or stricter form
-412	E	fix/ghostpay-browser-selfchecks-lint-r16-20261121	087ecf7e17f7	11-21T08:10	947	0	0	0	-	head is an ancestor of main
-410	C	automation/20261121T1439Z/bug/qr-print-policy-boolean	0bd06cbbdfc3	11-21T07:44	981	217	186	77	active-owner-source-qualification-pending	unique source vs main; semantic review required before recovery
-409	E	automation/20261121/bug/cache-control-no-cache-r3	8d55b4e39be4	11-21T07:27	958	4	4	2	active-owner-source-qualification-pending	residual code already on main in equivalent or stricter form
-408	D	audit/ghostpay-r15-475-delta-20261121	4aea5f7ed3de	11-21T07:05	958	36	36	0	-	documentation/census/handoff record only; superseded by later census; branch preserves history
-405	E	automation/20261121T1238Z/bug/unix-timestamp-runtime-guard	11117b9fff06	11-21T05:40	958	5	4	2	history-retained-in-newer-descendants-source-review-open	residual code already on main in equivalent or stricter form
-403	D	audit/ghostpay-r13-capped-lineage-20261121	bb668e18b1ba	11-21T05:26	958	34	34	0	-	documentation/census/handoff record only; superseded by later census; branch preserves history
-402	E	fix/ghostpay-browser-selfchecks-optionals-r13-20261121	3c9b96d0a10a	11-21T05:20	951	0	0	0	-	head is an ancestor of main
-401	D	audit/ghostpay-r12-delta-20261121-0507	2eb64d0a19e1	11-21T05:12	958	32	32	0	-	documentation/census/handoff record only; superseded by later census; branch preserves history
-396	G	feature/f10-reviewed-preparation-m3-20261121	7079eedfc671	11-21T04:27	958	84	84	25	history-retained-in-newer-descendants-source-review-open	F10 recurring M3
-391	G	feature/f10-lifecycle-m2-20261121	20a353d28e1a	11-21T04:25	958	81	81	23	history-retained-in-newer-descendants-source-review-open	F10 recurring M2
-386	C	fix/ghostpay-signer-pin-continue-20261121-r11	51c019d0cd3b	11-21T04:07	901	2203	2129	539	active-owner-source-qualification-pending	large historical composition far behind main; needs semantic recovery review
-385	E	test/ghostpay-policy-review-races-20261121-r1	d981b19ff34c	11-21T04:11	923	0	0	0	-	head is an ancestor of main
-384	E	automation/20261121T1033Z/bug/fiat-minor-units	f3e554077749	11-21T03:40	958	4	4	2	history-retained-in-newer-descendants-source-review-open	residual code already on main in equivalent or stricter form
-383	D	feature/ghostpay-invoice-timestamp-retention-20261121-5ceb	cfa8131bab9a	11-21T02:19	901	2194	2120	533	history-retained-in-newer-descendants-source-review-open	source history retained in newer descendants (branch-comparison-20261124)
-382	C	repair/ghostpay-btc-lifecycle-20261121-5ceb	4fc5c3dceb68	11-21T02:10	901	2190	2116	531	active-owner-source-qualification-pending	large historical composition far behind main; needs semantic recovery review
-381	D	automation/20261121T0900Z/qa/firefox-closed-details-reflow	df0e715686bc	11-21T03:04	901	2202	2128	539	history-retained-in-newer-descendants-source-review-open	source history retained in newer descendants (branch-comparison-20261124)
-380	J	(head ref moved or deleted)	91da5d03e3ad	11-25T05:04	958	30	30	0	-	autonomous ledger (updated today)
-379	E	automation/20261121T0842Z/bug/payment-uri-query-boundaries	31b943bbc5bc	11-21T01:43	989	0	0	0	-	head is an ancestor of main
-378	D	audit/ghostpay-main-447-census-20261121-r9	c493df9e210f	11-21T01:30	958	33	33	0	-	documentation/census/handoff record only; superseded by later census; branch preserves history
-376	J	recover/ghostpay-chain-interop-20261121-5ceb	f717157271fe	11-21T01:07	958	35	35	30	active-owner-source-qualification-pending	FC-03 donor (in #648/#664)
-375	E	recover/ghostpay-policy-validation-20261121-5ceb	2e0aff849008	11-21T01:07	930	0	0	0	-	head is an ancestor of main
-374	E	recover/ghostpay-policy-asset-coverage-20261121-5ceb	821700d172dc	11-21T00:45	931	0	0	0	-	head is an ancestor of main
-373	D	qualify/ghostpay-native-browsers-20261121-5ceb	b660b2d8f3f8	11-21T01:37	901	2200	2126	538	history-retained-in-newer-descendants-source-review-open	source history retained in newer descendants (branch-comparison-20261124)
-372	D	integrate/ghostpay-recovery-privacy-20261121-5ceb	055d33e042c6	11-21T00:17	901	2186	2112	528	history-retained-in-newer-descendants-source-review-open	source history retained in newer descendants (branch-comparison-20261124)
-371	H	archive/owner-stop-20261125/consolidate/ghostpay-dormant-modules-1f782-20261121,consolidate/ghostpay-dormant-modules-1f782-20261121	1de6e0247e0f	11-21T00:17	958	78	78	21	history-retained-in-newer-descendants-source-review-open	owner HOLD: mixed F04 dormant base with F05/F10
-370	E	automation/20261121T0638Z/bug/payment-uri-runtime-types	3d57d9881033	11-20T23:40	993	0	0	0	-	head is an ancestor of main
-369	E	repair/ghostpay-tron-main-20261121-5ceb	500ece7a7c99	11-20T23:30	949	0	0	0	-	head is an ancestor of main
-368	E	fix/ghostpay-policy-security-translation-parity-20261121-r1	18d0442a1561	11-20T23:03	989	0	0	0	-	head is an ancestor of main
-367	C	integration/ghostpay-idle-scan-candidate-20261121-fc3db	50ccf5c8b396	11-20T22:27	967	354	322	90	-	unique source vs main; semantic review required before recovery
-365	D	integrate/ghostpay-idle-main-scan-20261121-539818	45ece45defd2	11-20T22:02	967	363	331	89	history-retained-in-newer-descendants-source-review-open	source history retained in newer descendants (branch-comparison-20261124)
-363	G	integration/ghostpay-tor-qualified-20261121	260caca240f9	11-20T22:36	1002	93	93	21	active-owner-source-qualification-pending	static Tor hosting
-362	E	fix/ghostpay-policy-recovery-followup-20261121-r1	67542c09ba18	11-20T21:57	993	0	0	0	-	head is an ancestor of main
-361	C	integrate/ghostpay-export-recovery-acceptance-20261121-539818	4ccb3db334de	11-20T21:52	1055	1962	1892	534	-	large historical composition far behind main; needs semantic recovery review
-358	D	audit/ghostpay-complete-claim-reconciliation-20261120	c9e53c2c5908	11-20T21:51	1002	33	30	0	coordination-tooling-or-audit-snapshot-preserve	documentation/census/handoff record only; superseded by later census; branch preserves history
-356	C	repair/ghostpay-settings-import-expectations-20261121-539818	82ab06f1bb6f	11-20T20:00	981	220	189	78	active-owner-source-qualification-pending	unique source vs main; semantic review required before recovery
-355	C	fix/ghostpay-disclosure-focus-recovery-20261120	0fb2831a1b89	11-20T20:02	1055	1948	1879	534	-	large historical composition far behind main; needs semantic recovery review
-354	C	repair/ghostpay-privacy-browser-lifecycle-20261121-539818	8ce7f1db4521	11-20T19:47	1055	1946	1877	533	-	large historical composition far behind main; needs semantic recovery review
-353	D	automation/20261121T0238Z/qa/settings-partial-import-drafts	a8c10a965f72	11-20T19:39	981	218	187	78	history-retained-in-newer-descendants-source-review-open	source history retained in newer descendants (branch-comparison-20261124)
-352	C	test/ghostpay-wallet-attempt-reveal-after-reconnect-20261121	28f1e4bd0960	11-20T19:06	1055	1933	1864	533	-	large historical composition far behind main; needs semantic recovery review
-349	C	codex/ghostpay-autonomous-20261120-9a4ab6	3433f7f098b5	11-20T17:37	981	299	259	79	active-owner-source-qualification-pending	unique source vs main; semantic review required before recovery
-348	C	test/ghostpay-privacy-fixtures-20261120-9a4ab6	26b45165c1d6	11-20T17:28	1055	1931	1862	533	-	large historical composition far behind main; needs semantic recovery review
-347	E	test/ghostpay-hygiene-lint-20261120-9a4ab6	95e60ce4948b	11-20T17:11	1033	0	0	0	-	head is an ancestor of main
-346	C	test/ghostpay-recovery-interoperability-20261120-9a4ab6	37760c3655c4	11-20T17:11	1079	1040	981	416	active-owner-source-qualification-pending	large historical composition far behind main; needs semantic recovery review
-344	C	fix/ghostpay-request-file-async-20261120-r3	a88157b53d1e	11-20T16:25	1013	333	306	85	-	unique source vs main; semantic review required before recovery
-343	D	docs/ghostpay-coordination-ledger-20261120	5564d8d2dcd2	11-20T20:18	1012	25	25	0	-	documentation/census/handoff record only; superseded by later census; branch preserves history
-341	C	automation/20261120T2234Z/bug/sweep-ledger-seven-testnets	781376220115	11-20T14:39	1013	186	158	60	active-owner-source-qualification-pending	unique source vs main; semantic review required before recovery
-336	C	fix/ghostpay-devnet-wallet-consent-20261120-r2	410353a23631	11-20T11:45	1055	1921	1852	532	-	large historical composition far behind main; needs semantic recovery review
-335	C	fix/ghostpay-receipt-archive-identity-20261120-r2	e31a090501b3	11-20T11:16	1013	299	272	85	-	unique source vs main; semantic review required before recovery
-333	C	fix/ghostpay-backup-preflight-20261120-r2	3172a93ceb8f	11-20T10:56	1013	257	230	82	-	unique source vs main; semantic review required before recovery
-327	C	feature/ghostpay-retention-focus-20261120	9608ec996fb1	11-20T10:01	1055	1890	1821	531	-	large historical composition far behind main; needs semantic recovery review
-326	C	feature/ghostpay-retention-completion-20261120	a34ce43e296e	11-20T09:34	1055	1880	1811	531	-	large historical composition far behind main; needs semantic recovery review
-324	G	future/f10-private-recurring	4a48f2f09b13	11-20T08:48	1044	27	27	8	history-retained-in-newer-descendants-source-review-open	F10 recurring (future-only)
-323	G	future/f05-ghostproof	ccd1b16dea7b	11-20T08:48	1044	30	30	8	history-retained-in-newer-descendants-source-review-open	F05 GhostProof (future-only)
-320	G	fix/ghostpay-tor-qualification-20261120	e8010bbe0023	11-20T08:22	1044	39	39	17	-	static Tor hosting
-319	I	fix/ghostpay-backup-completion-20261120	627ab977c9cc	11-20T08:15	1070	4	4	2	-	obsolete: main refactored SellerKeys busy split
-312	D	audit/bugcheck-core-latest-20261120	9cb8f511b0e1	11-19T22:49	1076	67	67	0	-	documentation/census/handoff record only; superseded by later census; branch preserves history
-310	J	future/f03-private-payment-links	dad6bc746be1	11-20T08:55	1044	122	122	19	active-owner-source-qualification-pending	FC-01 donor (in #650/#664)
-309	D	audit/ghostpay-qa-stress-20261119	e9643073be74	11-19T22:36	1083	27	27	0	-	documentation/census/handoff record only; superseded by later census; branch preserves history
-308	G	feat/ghostpay-tor-completion-20261119	e60c69f32dbb	11-19T22:35	1076	38	38	17	-	static Tor hosting (hosting scope)
-307	C	integration/ghostpay-main-recovered-fixes-20261120	5a745d4b5fba	11-20T16:21	981	216	185	77	-	unique source vs main; semantic review required before recovery
-304	C	evidence/ghostpay-completion-20261120	070fc5bbbf35	11-19T19:24	1055	1766	1694	450	active-owner-source-qualification-pending	large historical composition far behind main; needs semantic recovery review
-303	C	fix/ghostpay-format-validation-20261120	a9e0715573f7	11-19T19:21	1051	1717	1642	450	active-owner-source-qualification-pending	large historical composition far behind main; needs semantic recovery review
-302	D	integration/ghostpay-completion-20261120	e22c1748a3de	11-19T19:06	1055	1701	1629	450	history-retained-in-newer-descendants-source-review-open	source history retained in newer descendants (branch-comparison-20261124)
-300	C	feat/ghostpay-privacy-quick-hide-20261120	137628961463	11-19T18:43	1055	1571	1502	474	-	large historical composition far behind main; needs semantic recovery review
-299	G	automation/20261120T0115Z/coordinator/cycle-checkpoint	77e01d9a78cd	11-19T17:48	1120	136	131	2	coordination-tooling-or-audit-snapshot-preserve	automation lock tooling duplicate
-298	C	automation/20261120T0115Z/worker/receipt-hash-validation	acbf39ee21ad	11-19T17:34	1055	1499	1430	448	-	large historical composition far behind main; needs semantic recovery review
-297	D	automation/20261120T0115Z/coordinator/clipboard-qualification	04910f65dc02	11-19T17:27	1055	1383	1315	443	history-retained-in-newer-descendants-source-review-open	source history retained in newer descendants (branch-comparison-20261124)
-296	G	automation/20261120T0035Z/coordinator/cycle-checkpoint	a47648872e64	11-19T17:10	1120	70	65	2	coordination-tooling-or-audit-snapshot-preserve	automation lock tooling duplicate
-295	C	automation/20261120T0035Z/worker/qr-flag-coverage	4493793ad2c4	11-19T17:00	1055	1378	1310	439	-	large historical composition far behind main; needs semantic recovery review
-294	C	fix/ghostpay-qr-conflict-expiry-20261119-c374725a11b7	172695efb416	11-19T16:55	1055	1392	1324	441	-	large historical composition far behind main; needs semantic recovery review
-293	D	automation/20261120T004531Z/feature/clipboard-guard	6c648770f564	11-19T16:50	1055	1382	1314	443	history-retained-in-newer-descendants-source-review-open	source history retained in newer descendants (branch-comparison-20261124)
-292	C	fix/ghostpay-pages-integrity-gate-20261120	936d054ed067	11-19T17:13	1055	1594	1524	443	-	large historical composition far behind main; needs semantic recovery review
-290	C	automation/20261120T003500Z/coordinator/qr-runtime-qualification	ec546311f994	11-19T16:51	1055	1377	1309	439	-	large historical composition far behind main; needs semantic recovery review
-278	C	release/ghostpay-beta-qualification-20261119	417f7c71daf8	11-19T16:57	1055	1492	1423	442	-	large historical composition far behind main; needs semantic recovery review
-277	E	repair/ghostpay-276-artifact-races-20261119	8cbae85c95fa	11-19T03:38	1078	0	0	0	-	head is an ancestor of main
-275	C	repair/ghostpay-270-policy-fixture-20261119	dc821780e054	11-19T03:16	1074	1026	974	415	-	large historical composition far behind main; needs semantic recovery review
-273	D	codex/ghostpay-consolidation-records-20261119	042b2ce3c79f	11-19T03:47	1083	38	38	0	-	documentation/census/handoff record only; superseded by later census; branch preserves history
-272	J	review/ghostpay-sweep-quote-lifecycle-20261119	63ff40d57af8	11-19T02:58	1085	19	19	15	-	FC-02 ancestor (in #649/#664)
-271	J	integration/ghostpay-adapter-qualification-20261119	429a4de80b9e	11-19T02:58	1085	13	9	5	active-owner-source-qualification-pending	FC-04 donor (test remainder in #663/#664)
-270	C	codex/ghostpay-consolidation-followthrough-20261119	73545f631129	11-19T03:08	1074	1024	972	414	-	large historical composition far behind main; needs semantic recovery review
-269	C	codex/ghostpay-private-checkpoint-browser-20261119	683f8587b8de	11-19T02:36	1079	1024	966	416	-	large historical composition far behind main; needs semantic recovery review
-264	C	integration/ghostpay-master-consolidation-20261118	bf510471283c	11-19T00:20	1088	1062	1018	452	active-owner-source-qualification-pending	large historical composition far behind main; needs semantic recovery review
-263	D	maintenance/ghostpay-branch-audit-20261119	55e7799574d9	11-19T00:31	1105	17	17	0	-	documentation/census/handoff record only; superseded by later census; branch preserves history
-262	C	codex/ghostpay-feature-consolidation-20261119	40b64e8f3a0f	11-19T03:22	1072	1173	1122	413	documentation-divergence-relative-to-retained-feature-source	large historical composition far behind main; needs semantic recovery review
-261	G	automation/20261119T073600Z/coordinator/integration-lock	61f2b3729fa4	11-19T00:09	1120	19	19	2	coordination-tooling-or-audit-snapshot-preserve	automation lock tooling (duplicate of #296/#299)
-260	C	integration/ghostpay-recovery-reconciled-20261119	f3bb7c662274	11-19T00:10	1142	639	602	261	active-owner-source-qualification-pending	large historical composition far behind main; needs semantic recovery review
-259	D	integration/ghostpay-docs-recovery-20261119	4ff80733a3b3	11-19T00:00	1106	20	20	0	-	documentation/census/handoff record only; superseded by later census; branch preserves history
-256	C	integration/ghostpay-idle-session-completion-20261119	e2ebb4902e53	11-19T00:58	1103	23	23	16	-	unique source vs main; semantic review required before recovery
-255	C	integration/ghostpay-mythril-security-closure-20261118	ea47fa75eabb	11-18T22:58	1135	55	55	21	active-owner-source-qualification-pending	unique source vs main; semantic review required before recovery
-254	J	chatgpt/btc-spentness-private-scan-20261118	2b4b1e912350	11-19T01:00	1105	57	57	36	active-owner-source-qualification-pending	FC-05b donor (ported in #669)
-253	G	repair/ghostpay-pr-87-20261119	6b07e403dd26	11-18T23:06	1135	73	71	69	active-owner-source-qualification-pending	major dependency repair for #87
-252	J	repair/ghostpay-pr-231-20261118	408562246341	11-18T23:00	1135	17	17	14	-	FC-02 ancestor (in #649/#664)
-251	C	codex/network-isolation-complete-20261119	3ae0b4f642a8	11-18T23:28	1140	571	535	285	active-owner-source-qualification-pending	large historical composition far behind main; needs semantic recovery review
-250	E	integration/ghostpay-historical-promotion-20261118	22af2074a086	11-18T22:42	1136	10	7	4	history-retained-in-newer-descendants-source-review-open	residual code already on main in equivalent or stricter form
-249	C	chatgpt/ghostpay-tm-hardening-20261118	c17e5c387e3c	11-18T23:44	1142	571	537	273	active-owner-source-qualification-pending	large historical composition far behind main; needs semantic recovery review
-248	K	chatgpt/ghostpay-private-scan-completion-20261119	18b367457103	11-18T23:36	1135	75	75	23	active-owner-source-qualification-pending	FC-06 deferred by FC coordinator: Scan.tsx/scanClient.ts overlap with P1-LATE checkpoint logic
-246	C	chatgpt/ghostpay-remaining-work-20261119	509a800439f2	11-19T01:27	1103	1199	1173	380	active-owner-source-qualification-pending	large historical composition far behind main; needs semantic recovery review
-244	J	chatgpt/btc-spent-private-scan-20261118	981cc2f4395d	11-19T00:19	1141	63	63	38	history-retained-in-newer-descendants-source-review-open	FC-05a donor (in #656/#664)
-243	C	chatgpt/ghostpay-pinned-signer-completion-20261119	276aed60f196	11-18T22:56	1142	555	528	276	-	large historical composition far behind main; needs semantic recovery review
-240	C	chatgpt/spec18-recovery-completion-20261118	38d69832ddc5	11-18T16:39	1142	655	619	259	active-owner-source-qualification-pending	large historical composition far behind main; needs semantic recovery review
-239	C	chatgpt/spec18-recovery-reviewed-20261118-a264	4a1b181c89e0	11-18T16:08	1142	637	600	261	-	large historical composition far behind main; needs semantic recovery review
-238	C	integration/ghostpay-pages-completion-20261118	198aa5baff22	11-18T07:59	1142	537	503	257	-	large historical composition far behind main; needs semantic recovery review
-233	C	chatgpt/ghostpay-privacy-browser-fixtures-20261118	67cf835d0bf5	11-18T04:28	1150	114	114	100	-	unique source vs main; semantic review required before recovery
-232	D	chatgpt/ghostpay-beta-consolidation-20261118	df5e4f6990bd	11-18T05:55	1146	37	37	0	-	documentation/census/handoff record only; superseded by later census; branch preserves history
-231	C	chatgpt/ghostpay-sweep-balance-consent-20261118	d9ff386807de	11-18T03:49	1146	14	14	12	-	unique source vs main; semantic review required before recovery
-230	C	chatgpt/ghostpay-sweep-ledger-memory-20261118	0b2609c2c831	11-18T03:35	1150	107	107	93	-	unique source vs main; semantic review required before recovery
-229	C	chatgpt/ghostpay-recovery-review-20261118	18110015e99e	11-18T03:30	1151	42	35	30	-	unique source vs main; semantic review required before recovery
-228	C	chatgpt/ghostpay-own-node-guard-20261118	685fe1a39a3f	11-18T03:28	1150	108	108	93	-	unique source vs main; semantic review required before recovery
-226	C	chatgpt/ghostpay-sonar-review-20261118	3a3b136a326e	11-18T03:24	1150	41	41	33	active-owner-source-qualification-pending	unique source vs main; semantic review required before recovery
-225	C	chatgpt/ghostpay-mythril-checker-failclosed-20261118	94ca7d5ba9dc	11-18T03:20	1150	16	14	5	active-owner-source-qualification-pending	unique source vs main; semantic review required before recovery
-224	D	nodata/jolly-rubin-u4zd45	1054daabc5ca	11-18T09:49	1150	40	40	33	history-retained-in-newer-descendants-source-review-open	source history retained in newer descendants (branch-comparison-20261124)
-223	D	nodata/doc-sweep-20261118	cce7a7f7e548	11-18T09:45	1150	3	3	0	-	documentation/census/handoff record only; superseded by later census; branch preserves history
-222	C	privacy/hardening-recommendations	2bc2098298d9	11-18T09:48	1150	104	104	92	-	unique source vs main; semantic review required before recovery
-221	D	nodata/wizardly-allen-qwol6u	1c9a3ce4a103	11-18T08:40	1150	3	3	0	-	documentation/census/handoff record only; superseded by later census; branch preserves history
-220	C	security/mythril-full-remediation-20261118	16c48521f999	11-18T08:32	1150	34	33	21	active-owner-source-qualification-pending	unique source vs main; semantic review required before recovery
-219	J	claude/vibrant-cori-scu18b	9617e8572f9b	11-18T08:27	1150	25	25	24	-	FC-05a ancestor (in #656/#664)
-218	C	claude/exciting-brown-7v69cr	b1327d4d0e26	11-18T09:18	1150	57	57	36	active-owner-source-qualification-pending	unique source vs main; semantic review required before recovery
-217	C	claude/ghostpay-consolidation-9xhtxg-feeguard	9e5cc3789b7b	11-18T07:52	1150	7	7	5	-	unique source vs main; semantic review required before recovery
-215	D	chatgpt/zero-codex/docs-postmerge-wiki-20261118	362dfa999a96	11-18T21:42	1150	6	6	0	-	documentation/census/handoff record only; superseded by later census; branch preserves history
-213	C	claude/ghostpay-consolidation-9xhtxg-spec18	ebf7c92c3be1	11-18T08:44	1151	41	34	30	-	unique source vs main; semantic review required before recovery
-212	D	claude/ghostpay-consolidation-9xhtxg-security	4894d0d8d943	11-18T07:42	1150	14	12	5	history-retained-in-newer-descendants-source-review-open	source history retained in newer descendants (branch-comparison-20261124)
-211	C	nodata/wonderful-darwin-kd1h22	a92658b1ef6b	11-18T09:43	1150	84	78	65	active-owner-source-qualification-pending	unique source vs main; semantic review required before recovery
-209	C	claude/ghostpay-completion-audit-ot5jjm	b5e2ea3e5030	11-18T09:50	1150	45	39	35	active-owner-source-qualification-pending	unique source vs main; semantic review required before recovery
-205	D	nodata/zealous-hopper-lr0nxe	b2604949ae3c	11-18T08:43	1150	58	58	0	-	documentation/census/handoff record only; superseded by later census; branch preserves history
-160	D	chatgpt/pages-release-gate-audit-20261114	2221a6117cdc	11-14T18:22	1520	2	2	0	-	documentation/census/handoff record only; superseded by later census; branch preserves history
-153	D	chatgpt/zero-codex/pages-owner-ci-handoff-20261114	83fe9b022d2b	11-17T22:46	1695	1	1	0	-	documentation/census/handoff record only; superseded by later census; branch preserves history
-140	D	chatgpt/zero-codex/docs-pages-scope-20261112	c5efadab9d9a	11-17T22:45	1559	8	8	0	-	documentation/census/handoff record only; superseded by later census; branch preserves history
-139	D	chatgpt/zero-codex/audit-pages-release-20261112	364b01f84739	11-17T22:43	1667	1	1	0	-	documentation/census/handoff record only; superseded by later census; branch preserves history
-87	G	dependabot/npm_and_yarn/npm-major-1ddf9439d6	23ea4cba265b	11-24T14:16	119	69	69	69	active-owner-source-qualification-pending	major dependency train (deferred with failures)
-82	G	codex/setup-autonomous-agent-20261104	122e51710eee	11-04T14:19	2641	2	2	1	optional-worker-automation-outside-pages-runtime	CI automation agents, outside beta
-52	G	automation/ghostpay-parallel-four-agents-20261103	68dc5b502f25	11-03T17:34	2647	3	3	2	optional-worker-automation-outside-pages-runtime	CI automation agents, outside beta
-51	I	automation/ghostpay-recurrent-backlog-20261103	5835736c1296	11-03T17:19	2647	1	1	1	optional-worker-automation-outside-pages-runtime	obsolete: main has stricter cloud gate
+pr	class	head_ref	head_sha	head_commit_time	commits_behind_main	unique_commits	patch_equivalent_commits	files_differing	code_files_differing	code_files_also_changed_on_main	historical_disposition_20261124	reason
+718	J	claude/consolidation-stack-20261126	06fe92755bbb	2026-11-26T02:53	0	42	0	59	51	0	-	consolidation train (#704 #631 #637 #701 #711 #712 #714)
+717	J	claude/offline-drafts-successor-20261126	9772b1be0b4a	2026-11-26T02:33	0	1	0	18	16	0	-	offline checkout successor
+716	J	claude/keen-volta-8ctx9x	b536fdda9f89	2026-11-26T10:16	0	2	0	4	2	0	-	reconciliation fix
+715	J	nodata/optimistic-maxwell-epuo8f	68c98c2d3871	2026-11-26T09:38	4	2	0	4	3	0	-	cloud lead (this tracker)
+714	J	claude/a11y-reflow-checkvisibility-20261126	cb8d9b3052e1	2026-11-26T01:37	4	2	0	2	1	0	-	a11y test fix
+713	J	automation/20261126/bug/i18n-exact-extension-negotiation	73c4301f136f	2026-11-26T02:29	4	4	0	4	2	0	-	i18n fix
+712	J	claude/multipart-note-copy-20261126	122ca29d7e23	2026-11-26T01:08	4	2	0	5	4	0	-	QR note fix
+711	J	claude/idle-sweep-freeze-tests-20261126	fdb85e71a723	2026-11-26T01:05	4	1	0	3	2	0	-	idle Sweep tests
+710	J	claude/account-privacy-audit-20261126	5092b254e3f1	2026-11-26T02:23	4	4	0	17	15	0	-	post-#691/#692 audit fixes
+709	J	claude/auto-rescan-rearm-r2-20261126	5d86a6a20798	2026-11-26T00:49	4	1	0	2	2	0	-	scan re-arm fix
+708	J	claude/global-masking-286-20261126	03ba9783600a	2026-11-26T02:34	0	7	0	29	26	0	-	global masking (#286 item 1)
+707	J	(head moved)	9d373b2b37ee	2026-11-26T01:43	4	7	0	30	28	0	-	P0-KEYS M2b successor
+706	J	claude/journal-fuzz-20261126	ecb964ec4a1d	2026-11-26T02:25	0	3	0	10	8	0	-	journal fix + fuzzing
+705	J	claude/keystore-recovery-followups-20261126	d739ecc4390b	2026-11-26T01:00	4	14	0	35	31	0	-	keystore recovery follow-ups
+704	J	claude/fc05b-main-20261126	b6f9d0cbc65d	2026-11-26T02:34	0	26	0	49	44	0	-	FC-05b onto main
+701	J	nodata/zen-dirac-vkl84j	8a8d72dee2e8	2026-11-26T02:28	0	3	0	2	0	0	-	account-privacy verification record
+700	J	automation/20261126/bug/i18n-unsupported-locale-fallback	a75480ca8a02	2026-11-26T01:00	4	10	0	30	26	0	-	i18n fallback fix
+696	J	claude/w-match-cover-20261125	cb119fa1966c	2026-11-26T01:50	4	5	0	23	18	0	-	opt-in cover lookups
+678	J	nodata/eloquent-shannon-gfv6t9	6dd9732382f7	2026-11-25T16:15	307	5	0	44	39	0	-	P13 hardening
+669	D	claude/fc05b-btc-hardening-20261125	8ea606ff1816	2026-11-25T04:14	350	3	0	16	15	6	-	superseded by #704 (supersedes #669); branch preserves history
+665	J	(head moved)	67220f84f5fd	2026-11-26T07:28	16	16	0	24	16	0	-	W5 independent verifier
+653	J	claude/serene-hawking-kjd54q	2021b0b4c72e	2026-11-25T21:46	232	3	0	34	27	0	-	light-indexer (optional service)
+643	C	nodata/gracious-pascal-vdb581	c13070f8e0bb	2026-11-25T05:54	402	7	0	36	31	0	-	31 code files differ (0 also changed on main); semantic review needed
+639	J	nodata/magical-volta-z6taog	6adf71f7256f	2026-11-26T10:27	0	4	0	16	0	0	-	housekeeping docs
+637	J	automation/20261125/bug/template-import-epoch-bound	7c8773c11c18	2026-11-26T00:59	4	4	0	4	2	0	-	in #718 train (ux-schedule; subscription scope)
+632	C	automation/20261124T2237Z/qa/disclosure-firefox-reflow	0036fe165657	2026-11-24T15:38	1218	402	2	2057	531	188	-	historical composition 1218 commits behind main; 531 code files differ (188 also changed on main)
+631	J	automation/20261124T2125Z/bug/schedule-negative-handled	d43205e69056	2026-11-26T00:51	4	4	0	4	2	0	-	in #718 train (ux-schedule; subscription scope)
+622	D	claude/nifty-bohr-5ra2ap	8c7ae937a3ef	2026-11-24T14:23	451	5	0	28	27	8	-	superseded by #707 (P0-KEYS M2b successor); branch preserves history
+621	H	archive/owner-stop-20261125/claude/nifty-bohr-5ra2ap-dormant-371,claude/nifty-bohr-5ra2ap-dormant-371	98065511df4b	2026-11-24T14:35	403	39	0	77	21	1	-	owner HOLD: #371 dormant base
+614	H	archive/owner-stop-20261125/integration/near-finished-20261124,integration/near-finished-20261124	c03598fe5923	2026-11-24T08:04	406	0	0	3	0	0	-	owner HOLD: mixed POS/fiat
+613	C	investigate/privacy-569-firefox-20261124	17fa04b0ad4a	2026-11-24T02:37	1218	403	2	2070	530	186	-	historical composition 1218 commits behind main; 530 code files differ (186 also changed on main)
+609	G	resume/receipt-retention-tor-fixture-20261124	00078ed6a256	2026-11-24T02:28	1218	393	2	2048	523	185	-	owner: #587 browser qualification (declined for beta)
+604	D	finish/offline-completion-20261124	2f2c282e4e88	2026-11-24T02:13	1224	3	0	28	23	18	active-owner-source-qualification-pending	superseded by #717 (successor of #604/#591); branch preserves history
+602	G	finish/recurring-m4-qualification-20261124	8d8fe2f0986b	2026-11-24T02:00	1287	73	0	89	29	2	active-owner-source-qualification-pending	F10 recurring M4 qualification
+592	H	archive/owner-stop-20261125/codex/spec-03-fiat-price-feeds,codex/spec-03-fiat-price-feeds	e9025d72f140	2026-11-23T23:01	1258	1	0	39	34	13	active-owner-source-qualification-pending	owner HOLD: spec-03 fiat feeds (F13)
+591	D	codex/offline-interrupted-invoice	49862e2d3b48	2026-11-23T23:03	1258	2	0	20	18	13	-	superseded by #717 (successor of #604/#591); branch preserves history
+587	G	feature/287-receipt-timestamp-retention	19a11f90db0b	2026-11-23T22:59	1218	392	2	2046	523	185	active-owner-source-qualification-pending	owner: vault format v4->v5 declined for beta
+582	D	test/gp-pages-04-frozen-page-sweep-resume	9303aecc53c1	2026-11-23T23:06	1285	68	1	263	88	56	active-owner-source-qualification-pending	superseded by #711 (successor of #582); branch preserves history
+569	D	fix/286-global-mask-document	c30283d28ec1	2026-11-23T22:58	1218	402	2	2053	529	186	active-owner-source-qualification-pending	superseded by #708 (global masking re-cut); branch preserves history
+559	G	feature/p08-local-history-coverage	0419d3609cae	2026-11-23T20:36	1412	5	0	5	2	0	active-owner-source-qualification-pending	owner: dormant future module stays on branch
+558	G	qualification/p06-existing-role-inventory-20261123	d242926030fe	2026-11-23T20:35	1412	8	0	5	2	0	active-owner-source-qualification-pending	owner: dormant future module stays on branch
+549	D	feat/create-invoice-link-clipboard-286	21b1d68c0a31	2026-11-23T19:21	1379	279	6	1312	442	127	active-owner-source-qualification-pending	superseded by #668 clipboard cleanup (#553 + #580, merged); branch preserves history
+544	G	test/ghostpay-first-sign-after-sleep	4b077d2b13f9	2026-11-23T19:47	1285	63	1	261	86	56	history-retained-in-newer-descendants-source-review-open	owner: #544 base stack declined (sole-signer behaviour on main 2a70c041)
+526	D	docs/ghostpay-live-census-20261123	111c3de7fc58	2026-11-23T15:32	1277	4	0	4	0	0	-	documentation/census/handoff record only; superseded by later censuses
+493	G	dependabot/npm_and_yarn/npm-minor-patch-f6308e442e	fb9c4b6f618f	2026-11-25T15:44	307	1	0	68	68	0	active-owner-source-qualification-pending	dependabot npm
+492	G	dependabot/github_actions/actions-8158e918cd	592b99417039	2026-11-23T03:15	1290	1	0	5	5	2	active-owner-source-qualification-pending	dependabot actions
+471	C	audit/ghostpay-r41-semantic-backfill-20261122-1400Z	d068ffd41637	2026-11-23T18:05	1290	182	0	117	6	0	active-owner-source-qualification-pending	historical composition 1290 commits behind main; 6 code files differ (0 also changed on main)
+469	D	audit/ghostpay-r40-semantic-branch-dispositions-20261122	fd3abbc297fe	2026-11-22T06:09	1290	8	0	5	0	0	-	documentation/census/handoff record only; superseded by later censuses
+468	G	automation/20261122-r11/audit/mythril-evidence-summary	cb63ec21cbac	2026-11-22T05:45	1290	4	0	2	0	0	active-owner-source-qualification-pending	Mythril evidence tooling
+466	G	audit/ghostpay-r39-uncapped-branch-triage-20261122	87eb78767567	2026-11-22T05:15	1290	14	0	6	2	0	active-owner-source-qualification-pending	consolidation audit tooling
+464	D	audit/ghostpay-r38-source-census-20261122	4f529cbb1529	2026-11-22T04:11	1290	4	0	4	0	0	-	documentation/census/handoff record only; superseded by later censuses
+459	D	audit/ghostpay-scheme2-completion-20261122	ecfe65666b51	2026-11-22T03:19	1290	4	0	2	0	0	-	documentation/census/handoff record only; superseded by later censuses
+457	G	docs/f05-receipt-assurance-coverage-20261122	300c9d215b01	2026-11-22T03:14	1287	40	0	77	21	2	active-owner-source-qualification-pending	F05 coverage docs
+456	G	feature/f10-durable-cas-m4-20261122	9e8a619cc2ce	2026-11-22T03:23	1287	72	0	88	29	2	history-retained-in-newer-descendants-source-review-open	F10 recurring M4
+455	D	audit/ghostpay-fund-recovery-expiry-20261122-p0	74b9f85523f7	2026-11-22T03:12	1290	3	0	2	0	0	-	documentation/census/handoff record only; superseded by later censuses
+448	D	audit/ghostpay-r33-514-branch-pr-qualification-20261122	8251eaa0813a	2026-11-22T00:09	1290	9	0	6	0	0	-	documentation/census/handoff record only; superseded by later censuses
+445	D	audit/ghostpay-r32-census-and-ci-gates-20261122	bd1bc845bb85	2026-11-21T23:08	1290	4	0	3	0	0	-	documentation/census/handoff record only; superseded by later censuses
+442	F	audit/ct-c-2-fee-event-forensics-20261121	4bfaffa5d44f	2026-11-21T21:52	1290	2	0	2	1	0	diagnostic-contract-test-evidence-not-beta-runtime	diagnostic confidential-contracts test (not beta runtime)
+438	D	audit/ghostpay-r30-504-reconciliation-20261122	745004a16dbb	2026-11-21T21:04	1290	4	0	4	0	0	-	documentation/census/handoff record only; superseded by later censuses
+436	C	automation/20261122/tor-scan-saved-message-contract-r29	cbf6edbb5471	2026-11-21T20:09	1218	392	2	2036	516	184	active-owner-source-qualification-pending	historical composition 1218 commits behind main; 516 code files differ (184 also changed on main)
+428	D	audit/ghostpay-r24-494-ci-triage-20261121	2e8e2fde366f	2026-11-21T16:07	1290	4	0	4	0	0	-	documentation/census/handoff record only; superseded by later censuses
+419	E	automation/20261121T1835Z/bug/display-surrogate-cut	62dcc695ae3f	2026-11-21T11:39	1290	4	0	4	2	2	active-owner-source-qualification-pending	residual code already on main in equivalent or stricter form (semantic triage 2026-11-25)
+416	E	automation/20261121T1636Z/bug/countdown-invalid-runtime	5d3e21617a8a	2026-11-21T09:40	1290	19	0	4	2	2	active-owner-source-qualification-pending	residual code already on main in equivalent or stricter form (semantic triage 2026-11-25)
+410	C	automation/20261121T1439Z/bug/qr-print-policy-boolean	0bd06cbbdfc3	2026-11-21T07:44	1299	41	1	117	75	49	active-owner-source-qualification-pending	historical composition 1299 commits behind main; 75 code files differ (49 also changed on main)
+409	E	automation/20261121/bug/cache-control-no-cache-r3	8d55b4e39be4	2026-11-21T07:27	1290	4	0	4	2	1	active-owner-source-qualification-pending	residual code already on main in equivalent or stricter form (semantic triage 2026-11-25)
+408	D	audit/ghostpay-r15-475-delta-20261121	4aea5f7ed3de	2026-11-21T07:05	1290	14	0	36	0	0	-	documentation/census/handoff record only; superseded by later censuses
+405	E	automation/20261121T1238Z/bug/unix-timestamp-runtime-guard	11117b9fff06	2026-11-21T05:40	1290	12	0	4	2	2	history-retained-in-newer-descendants-source-review-open	residual code already on main in equivalent or stricter form (semantic triage 2026-11-25)
+403	D	audit/ghostpay-r13-capped-lineage-20261121	bb668e18b1ba	2026-11-21T05:26	1290	11	0	34	0	0	-	documentation/census/handoff record only; superseded by later censuses
+401	D	audit/ghostpay-r12-delta-20261121-0507	2eb64d0a19e1	2026-11-21T05:12	1290	8	0	32	0	0	-	documentation/census/handoff record only; superseded by later censuses
+396	G	feature/f10-reviewed-preparation-m3-20261121	7079eedfc671	2026-11-21T04:27	1287	50	0	82	25	2	history-retained-in-newer-descendants-source-review-open	F10 recurring M3
+391	G	feature/f10-lifecycle-m2-20261121	20a353d28e1a	2026-11-21T04:25	1287	45	0	79	23	2	history-retained-in-newer-descendants-source-review-open	F10 recurring M2
+386	C	fix/ghostpay-signer-pin-continue-20261121-r11	51c019d0cd3b	2026-11-21T04:07	1218	400	2	2052	527	185	active-owner-source-qualification-pending	historical composition 1218 commits behind main; 527 code files differ (185 also changed on main)
+384	E	automation/20261121T1033Z/bug/fiat-minor-units	f3e554077749	2026-11-21T03:40	1290	8	0	4	2	2	history-retained-in-newer-descendants-source-review-open	residual code already on main in equivalent or stricter form (semantic triage 2026-11-25)
+383	G	feature/ghostpay-invoice-timestamp-retention-20261121-5ceb	cfa8131bab9a	2026-11-21T02:19	1218	390	2	2043	521	185	history-retained-in-newer-descendants-source-review-open	owner: ancestor of #587 retention (declined for beta)
+382	C	repair/ghostpay-btc-lifecycle-20261121-5ceb	4fc5c3dceb68	2026-11-21T02:10	1218	390	2	2039	519	184	active-owner-source-qualification-pending	historical composition 1218 commits behind main; 519 code files differ (184 also changed on main)
+381	D	automation/20261121T0900Z/qa/firefox-closed-details-reflow	df0e715686bc	2026-11-21T03:04	1218	397	2	2051	527	185	history-retained-in-newer-descendants-source-review-open	source history retained in newer descendants (2026-11-24 dispositions)
+380	J	integration/ghostpay-autonomous-ledger-20261121-5ceb	c5fea36ecdc3	2026-11-26T01:02	1290	25	0	49	0	0	-	autonomous ledger
+378	D	audit/ghostpay-main-447-census-20261121-r9	c493df9e210f	2026-11-21T01:30	1290	33	0	33	0	0	-	documentation/census/handoff record only; superseded by later censuses
+373	D	qualify/ghostpay-native-browsers-20261121-5ceb	b660b2d8f3f8	2026-11-21T01:37	1218	392	2	2049	526	185	history-retained-in-newer-descendants-source-review-open	source history retained in newer descendants (2026-11-24 dispositions)
+372	D	integrate/ghostpay-recovery-privacy-20261121-5ceb	055d33e042c6	2026-11-21T00:17	1218	389	2	2035	516	184	history-retained-in-newer-descendants-source-review-open	superseded by #677/#679 (wallet disclosure) and #708 (masking) re-cuts; branch preserves history
+371	H	archive/owner-stop-20261125/consolidate/ghostpay-dormant-modules-1f782-20261121,consolidate/ghostpay-dormant-modules-1f782-20261121	1de6e0247e0f	2026-11-21T00:17	1287	38	0	76	21	2	history-retained-in-newer-descendants-source-review-open	owner HOLD: mixed F04 dormant base
+367	C	integration/ghostpay-idle-scan-candidate-20261121-fc3db	50ccf5c8b396	2026-11-20T22:27	1285	59	1	253	88	57	-	historical composition 1285 commits behind main; 88 code files differ (57 also changed on main)
+365	D	integrate/ghostpay-idle-main-scan-20261121-539818	45ece45defd2	2026-11-20T22:02	1285	58	1	262	87	57	history-retained-in-newer-descendants-source-review-open	source history retained in newer descendants (2026-11-24 dispositions)
+363	G	integration/ghostpay-tor-qualified-20261121	260caca240f9	2026-11-20T22:36	1334	4	0	93	21	0	active-owner-source-qualification-pending	static Tor hosting
+361	C	integrate/ghostpay-export-recovery-acceptance-20261121-539818	4ccb3db334de	2026-11-20T21:52	1379	328	6	1883	527	168	-	historical composition 1379 commits behind main; 527 code files differ (168 also changed on main)
+358	D	audit/ghostpay-complete-claim-reconciliation-20261120	c9e53c2c5908	2026-11-20T21:51	1334	2	0	30	0	0	coordination-tooling-or-audit-snapshot-preserve	documentation/census/handoff record only; superseded by later censuses
+356	C	repair/ghostpay-settings-import-expectations-20261121-539818	82ab06f1bb6f	2026-11-20T20:00	1299	42	1	120	76	49	active-owner-source-qualification-pending	historical composition 1299 commits behind main; 76 code files differ (49 also changed on main)
+355	D	fix/ghostpay-disclosure-focus-recovery-20261120	0fb2831a1b89	2026-11-20T20:02	1379	327	6	1870	527	168	-	superseded by #708 (quick-hide focus); branch preserves history
+354	C	repair/ghostpay-privacy-browser-lifecycle-20261121-539818	8ce7f1db4521	2026-11-20T19:47	1379	326	6	1868	526	168	-	historical composition 1379 commits behind main; 526 code files differ (168 also changed on main)
+353	D	automation/20261121T0238Z/qa/settings-partial-import-drafts	a8c10a965f72	2026-11-20T19:39	1299	41	1	118	76	49	history-retained-in-newer-descendants-source-review-open	source history retained in newer descendants (2026-11-24 dispositions)
+352	C	test/ghostpay-wallet-attempt-reveal-after-reconnect-20261121	28f1e4bd0960	2026-11-20T19:06	1379	325	6	1855	526	168	-	historical composition 1379 commits behind main; 526 code files differ (168 also changed on main)
+349	C	codex/ghostpay-autonomous-20261120-9a4ab6	3433f7f098b5	2026-11-20T17:37	1299	38	1	190	77	49	active-owner-source-qualification-pending	historical composition 1299 commits behind main; 77 code files differ (49 also changed on main)
+348	C	test/ghostpay-privacy-fixtures-20261120-9a4ab6	26b45165c1d6	2026-11-20T17:28	1379	318	6	1853	526	168	-	historical composition 1379 commits behind main; 526 code files differ (168 also changed on main)
+346	C	test/ghostpay-recovery-interoperability-20261120-9a4ab6	37760c3655c4	2026-11-20T17:11	1409	174	1	978	413	121	active-owner-source-qualification-pending	historical composition 1409 commits behind main; 413 code files differ (121 also changed on main)
+344	C	fix/ghostpay-request-file-async-20261120-r3	a88157b53d1e	2026-11-20T16:25	1331	54	1	237	83	53	-	historical composition 1331 commits behind main; 83 code files differ (53 also changed on main)
+343	D	docs/ghostpay-coordination-ledger-20261120	5564d8d2dcd2	2026-11-20T20:18	1344	3	0	25	0	0	-	documentation/census/handoff record only; superseded by later censuses
+341	C	automation/20261120T2234Z/bug/sweep-ledger-seven-testnets	781376220115	2026-11-20T14:39	1338	30	1	93	59	35	active-owner-source-qualification-pending	historical composition 1338 commits behind main; 59 code files differ (35 also changed on main)
+336	C	fix/ghostpay-devnet-wallet-consent-20261120-r2	410353a23631	2026-11-20T11:45	1379	317	6	1843	525	167	-	historical composition 1379 commits behind main; 525 code files differ (167 also changed on main)
+335	C	fix/ghostpay-receipt-archive-identity-20261120-r2	e31a090501b3	2026-11-20T11:16	1331	50	1	203	83	53	-	historical composition 1331 commits behind main; 83 code files differ (53 also changed on main)
+333	C	fix/ghostpay-backup-preflight-20261120-r2	3172a93ceb8f	2026-11-20T10:56	1331	46	1	161	80	51	-	historical composition 1331 commits behind main; 80 code files differ (51 also changed on main)
+327	C	feature/ghostpay-retention-focus-20261120	9608ec996fb1	2026-11-20T10:01	1379	314	6	1812	524	166	-	historical composition 1379 commits behind main; 524 code files differ (166 also changed on main)
+326	C	feature/ghostpay-retention-completion-20261120	a34ce43e296e	2026-11-20T09:34	1379	308	6	1803	525	167	-	historical composition 1379 commits behind main; 525 code files differ (167 also changed on main)
+324	G	future/f10-private-recurring	4a48f2f09b13	2026-11-20T08:48	1373	8	0	25	8	2	history-retained-in-newer-descendants-source-review-open	F10 recurring (future-only)
+323	G	future/f05-ghostproof	ccd1b16dea7b	2026-11-20T08:48	1373	9	0	28	8	2	history-retained-in-newer-descendants-source-review-open	F05 GhostProof (future-only)
+320	G	fix/ghostpay-tor-qualification-20261120	e8010bbe0023	2026-11-20T08:22	1376	2	0	39	17	0	-	static Tor hosting
+312	D	audit/bugcheck-core-latest-20261120	9cb8f511b0e1	2026-11-19T22:49	1408	1	0	67	0	0	-	documentation/census/handoff record only; superseded by later censuses
+309	D	audit/ghostpay-qa-stress-20261119	e9643073be74	2026-11-19T22:36	1415	1	0	27	0	0	-	documentation/census/handoff record only; superseded by later censuses
+308	G	feat/ghostpay-tor-completion-20261119	e60c69f32dbb	2026-11-19T22:35	1408	2	0	38	17	0	-	static Tor hosting (hosting scope)
+307	C	integration/ghostpay-main-recovered-fixes-20261120	5a745d4b5fba	2026-11-20T16:21	1299	36	1	116	75	49	-	historical composition 1299 commits behind main; 75 code files differ (49 also changed on main)
+304	C	evidence/ghostpay-completion-20261120	070fc5bbbf35	2026-11-19T19:24	1379	326	6	1690	448	127	active-owner-source-qualification-pending	historical composition 1379 commits behind main; 448 code files differ (127 also changed on main)
+303	C	fix/ghostpay-format-validation-20261120	a9e0715573f7	2026-11-19T19:21	1375	325	6	1638	448	127	active-owner-source-qualification-pending	historical composition 1375 commits behind main; 448 code files differ (127 also changed on main)
+302	D	integration/ghostpay-completion-20261120	e22c1748a3de	2026-11-19T19:06	1379	325	6	1625	448	127	history-retained-in-newer-descendants-source-review-open	source history retained in newer descendants (2026-11-24 dispositions)
+300	D	feat/ghostpay-privacy-quick-hide-20261120	137628961463	2026-11-19T18:43	1379	291	6	1497	471	134	-	superseded by #708 (quick-hide shortcut re-cut with masking); branch preserves history
+299	G	automation/20261120T0115Z/coordinator/cycle-checkpoint	77e01d9a78cd	2026-11-19T17:48	1452	10	0	131	2	0	coordination-tooling-or-audit-snapshot-preserve	automation lock tooling
+298	C	automation/20261120T0115Z/worker/receipt-hash-validation	acbf39ee21ad	2026-11-19T17:34	1379	293	6	1425	445	128	-	historical composition 1379 commits behind main; 445 code files differ (128 also changed on main)
+297	D	automation/20261120T0115Z/coordinator/clipboard-qualification	04910f65dc02	2026-11-19T17:27	1379	276	6	1310	440	125	history-retained-in-newer-descendants-source-review-open	superseded by clipboard cleanup merged (#668 lineage); branch preserves history
+296	G	automation/20261120T0035Z/coordinator/cycle-checkpoint	a47648872e64	2026-11-19T17:10	1452	6	0	65	2	0	coordination-tooling-or-audit-snapshot-preserve	automation lock tooling
+295	C	automation/20261120T0035Z/worker/qr-flag-coverage	4493793ad2c4	2026-11-19T17:00	1379	273	6	1305	436	121	-	historical composition 1379 commits behind main; 436 code files differ (121 also changed on main)
+294	C	fix/ghostpay-qr-conflict-expiry-20261119-c374725a11b7	172695efb416	2026-11-19T16:55	1379	268	6	1319	438	121	-	historical composition 1379 commits behind main; 438 code files differ (121 also changed on main)
+293	D	automation/20261120T004531Z/feature/clipboard-guard	6c648770f564	2026-11-19T16:50	1379	273	6	1309	440	125	history-retained-in-newer-descendants-source-review-open	superseded by clipboard cleanup merged (#668 lineage); branch preserves history
+292	C	fix/ghostpay-pages-integrity-gate-20261120	936d054ed067	2026-11-19T17:13	1379	301	6	1519	440	121	-	historical composition 1379 commits behind main; 440 code files differ (121 also changed on main)
+290	C	automation/20261120T003500Z/coordinator/qr-runtime-qualification	ec546311f994	2026-11-19T16:51	1379	270	6	1304	436	121	-	historical composition 1379 commits behind main; 436 code files differ (121 also changed on main)
+278	C	release/ghostpay-beta-qualification-20261119	417f7c71daf8	2026-11-19T16:57	1379	289	6	1418	439	122	-	historical composition 1379 commits behind main; 439 code files differ (122 also changed on main)
+275	C	repair/ghostpay-270-policy-fixture-20261119	dc821780e054	2026-11-19T03:16	1404	169	1	971	412	118	-	historical composition 1404 commits behind main; 412 code files differ (118 also changed on main)
+273	D	codex/ghostpay-consolidation-records-20261119	042b2ce3c79f	2026-11-19T03:47	1415	33	0	38	0	0	-	documentation/census/handoff record only; superseded by later censuses
+272	D	review/ghostpay-sweep-quote-lifecycle-20261119	63ff40d57af8	2026-11-19T02:58	1410	3	0	15	14	14	-	superseded by FC-02 successor #683 merged; branch preserves history
+271	D	integration/ghostpay-adapter-qualification-20261119	429a4de80b9e	2026-11-19T02:58	1417	1	0	9	5	5	active-owner-source-qualification-pending	superseded by FC-04 merged via #684; branch preserves history
+270	C	codex/ghostpay-consolidation-followthrough-20261119	73545f631129	2026-11-19T03:08	1404	168	1	969	411	117	-	historical composition 1404 commits behind main; 411 code files differ (117 also changed on main)
+269	C	codex/ghostpay-private-checkpoint-browser-20261119	683f8587b8de	2026-11-19T02:36	1409	173	1	963	413	121	-	historical composition 1409 commits behind main; 413 code files differ (121 also changed on main)
+264	C	integration/ghostpay-master-consolidation-20261118	bf510471283c	2026-11-19T00:20	1402	143	0	956	414	118	active-owner-source-qualification-pending	historical composition 1402 commits behind main; 414 code files differ (118 also changed on main)
+263	D	maintenance/ghostpay-branch-audit-20261119	55e7799574d9	2026-11-19T00:31	1437	3	0	17	0	0	-	documentation/census/handoff record only; superseded by later censuses
+262	C	codex/ghostpay-feature-consolidation-20261119	40b64e8f3a0f	2026-11-19T03:22	1402	168	1	1119	410	118	documentation-divergence-relative-to-retained-feature-source	historical composition 1402 commits behind main; 410 code files differ (118 also changed on main)
+261	G	automation/20261119T073600Z/coordinator/integration-lock	61f2b3729fa4	2026-11-19T00:09	1452	2	0	19	2	0	coordination-tooling-or-audit-snapshot-preserve	automation lock tooling
+260	C	integration/ghostpay-recovery-reconciled-20261119	f3bb7c662274	2026-11-19T00:10	1473	75	0	605	262	82	active-owner-source-qualification-pending	historical composition 1473 commits behind main; 262 code files differ (82 also changed on main)
+259	D	integration/ghostpay-docs-recovery-20261119	4ff80733a3b3	2026-11-19T00:00	1438	28	0	20	0	0	-	documentation/census/handoff record only; superseded by later censuses
+256	C	integration/ghostpay-idle-session-completion-20261119	e2ebb4902e53	2026-11-19T00:58	1435	5	0	23	16	14	-	historical composition 1435 commits behind main; 16 code files differ (14 also changed on main)
+255	C	integration/ghostpay-mythril-security-closure-20261118	ea47fa75eabb	2026-11-18T22:58	1467	1	0	55	21	1	active-owner-source-qualification-pending	historical composition 1467 commits behind main; 21 code files differ (1 also changed on main)
+254	D	chatgpt/btc-spentness-private-scan-20261118	2b4b1e912350	2026-11-19T01:00	1436	10	0	51	30	27	active-owner-source-qualification-pending	superseded by #704/#669 (FC-05b port); branch preserves history
+253	G	repair/ghostpay-pr-87-20261119	6b07e403dd26	2026-11-18T23:06	1467	7	0	71	69	3	active-owner-source-qualification-pending	major dependency repair for #87
+251	C	codex/network-isolation-complete-20261119	3ae0b4f642a8	2026-11-18T23:28	1471	69	0	537	285	88	active-owner-source-qualification-pending	historical composition 1471 commits behind main; 285 code files differ (88 also changed on main)
+250	E	integration/ghostpay-historical-promotion-20261118	22af2074a086	2026-11-18T22:42	1468	1	0	7	4	4	history-retained-in-newer-descendants-source-review-open	residual code already on main in equivalent or stricter form (semantic triage 2026-11-25)
+249	C	chatgpt/ghostpay-tm-hardening-20261118	c17e5c387e3c	2026-11-18T23:44	1473	69	0	539	273	83	active-owner-source-qualification-pending	historical composition 1473 commits behind main; 273 code files differ (83 also changed on main)
+248	C	chatgpt/ghostpay-private-scan-completion-20261119	18b367457103	2026-11-18T23:36	1467	1	0	75	23	11	active-owner-source-qualification-pending	historical composition 1467 commits behind main; 23 code files differ (11 also changed on main)
+246	C	chatgpt/ghostpay-remaining-work-20261119	509a800439f2	2026-11-19T01:27	1434	66	0	1146	355	103	active-owner-source-qualification-pending	historical composition 1434 commits behind main; 355 code files differ (103 also changed on main)
+243	C	chatgpt/ghostpay-pinned-signer-completion-20261119	276aed60f196	2026-11-18T22:56	1473	74	0	529	276	88	-	historical composition 1473 commits behind main; 276 code files differ (88 also changed on main)
+240	C	chatgpt/spec18-recovery-completion-20261118	38d69832ddc5	2026-11-18T16:39	1473	72	0	622	260	82	active-owner-source-qualification-pending	historical composition 1473 commits behind main; 260 code files differ (82 also changed on main)
+239	C	chatgpt/spec18-recovery-reviewed-20261118-a264	4a1b181c89e0	2026-11-18T16:08	1473	72	0	602	261	81	-	historical composition 1473 commits behind main; 261 code files differ (81 also changed on main)
+238	C	integration/ghostpay-pages-completion-20261118	198aa5baff22	2026-11-18T07:59	1473	66	0	505	257	81	-	historical composition 1473 commits behind main; 257 code files differ (81 also changed on main)
+233	C	chatgpt/ghostpay-privacy-browser-fixtures-20261118	67cf835d0bf5	2026-11-18T04:28	1482	3	0	113	99	49	-	historical composition 1482 commits behind main; 99 code files differ (49 also changed on main)
+232	D	chatgpt/ghostpay-beta-consolidation-20261118	df5e4f6990bd	2026-11-18T05:55	1478	4	0	37	0	0	-	documentation/census/handoff record only; superseded by later censuses
+230	C	chatgpt/ghostpay-sweep-ledger-memory-20261118	0b2609c2c831	2026-11-18T03:35	1482	3	0	107	93	45	-	historical composition 1482 commits behind main; 93 code files differ (45 also changed on main)
+229	C	chatgpt/ghostpay-recovery-review-20261118	18110015e99e	2026-11-18T03:30	1483	7	0	36	30	23	-	historical composition 1483 commits behind main; 30 code files differ (23 also changed on main)
+228	C	chatgpt/ghostpay-own-node-guard-20261118	685fe1a39a3f	2026-11-18T03:28	1482	3	0	108	93	45	-	historical composition 1482 commits behind main; 93 code files differ (45 also changed on main)
+226	C	chatgpt/ghostpay-sonar-review-20261118	3a3b136a326e	2026-11-18T03:24	1482	6	0	41	33	2	active-owner-source-qualification-pending	historical composition 1482 commits behind main; 33 code files differ (2 also changed on main)
+225	C	chatgpt/ghostpay-mythril-checker-failclosed-20261118	94ca7d5ba9dc	2026-11-18T03:20	1482	7	0	14	5	1	active-owner-source-qualification-pending	historical composition 1482 commits behind main; 5 code files differ (1 also changed on main)
+224	D	nodata/jolly-rubin-u4zd45	1054daabc5ca	2026-11-18T09:49	1482	5	0	40	33	2	history-retained-in-newer-descendants-source-review-open	source history retained in newer descendants (2026-11-24 dispositions)
+223	D	nodata/doc-sweep-20261118	cce7a7f7e548	2026-11-18T09:45	1482	1	0	3	0	0	-	documentation/census/handoff record only; superseded by later censuses
+222	C	privacy/hardening-recommendations	2bc2098298d9	2026-11-18T09:48	1482	2	0	104	92	45	-	historical composition 1482 commits behind main; 92 code files differ (45 also changed on main)
+221	D	nodata/wizardly-allen-qwol6u	1c9a3ce4a103	2026-11-18T08:40	1482	1	0	3	0	0	-	documentation/census/handoff record only; superseded by later censuses
+220	J	security/mythril-full-remediation-20261118	377869a0dde4	2026-11-26T10:52	0	11	0	31	19	0	active-owner-source-qualification-pending	security remediation (updated today)
+218	C	claude/exciting-brown-7v69cr	b1327d4d0e26	2026-11-18T09:18	1482	31	0	57	36	5	active-owner-source-qualification-pending	historical composition 1482 commits behind main; 36 code files differ (5 also changed on main)
+217	C	claude/ghostpay-consolidation-9xhtxg-feeguard	9e5cc3789b7b	2026-11-18T07:52	1482	1	0	7	5	0	-	historical composition 1482 commits behind main; 5 code files differ (0 also changed on main)
+215	D	chatgpt/zero-codex/docs-postmerge-wiki-20261118	362dfa999a96	2026-11-18T21:42	1482	25	0	6	0	0	-	documentation/census/handoff record only; superseded by later censuses
+213	C	claude/ghostpay-consolidation-9xhtxg-spec18	ebf7c92c3be1	2026-11-18T08:44	1483	6	0	35	30	23	-	historical composition 1483 commits behind main; 30 code files differ (23 also changed on main)
+212	D	claude/ghostpay-consolidation-9xhtxg-security	4894d0d8d943	2026-11-18T07:42	1482	6	0	12	5	1	history-retained-in-newer-descendants-source-review-open	source history retained in newer descendants (2026-11-24 dispositions)
+211	C	nodata/wonderful-darwin-kd1h22	a92658b1ef6b	2026-11-18T09:43	1482	41	0	51	41	33	active-owner-source-qualification-pending	historical composition 1482 commits behind main; 41 code files differ (33 also changed on main)
+209	C	claude/ghostpay-completion-audit-ot5jjm	b5e2ea3e5030	2026-11-18T09:50	1482	21	0	39	35	10	active-owner-source-qualification-pending	historical composition 1482 commits behind main; 35 code files differ (10 also changed on main)
+205	D	nodata/zealous-hopper-lr0nxe	b2604949ae3c	2026-11-18T08:43	1482	3	0	58	0	0	-	documentation/census/handoff record only; superseded by later censuses
+160	D	chatgpt/pages-release-gate-audit-20261114	2221a6117cdc	2026-11-14T18:22	1852	2	0	2	0	0	-	documentation/census/handoff record only; superseded by later censuses
+153	D	chatgpt/zero-codex/pages-owner-ci-handoff-20261114	83fe9b022d2b	2026-11-17T22:46	2027	42	0	1	0	0	-	documentation/census/handoff record only; superseded by later censuses
+140	D	chatgpt/zero-codex/docs-pages-scope-20261112	c5efadab9d9a	2026-11-17T22:45	1891	110	0	8	0	0	-	documentation/census/handoff record only; superseded by later censuses
+139	D	chatgpt/zero-codex/audit-pages-release-20261112	364b01f84739	2026-11-17T22:43	1999	43	0	1	0	0	-	documentation/census/handoff record only; superseded by later censuses
+87	G	dependabot/npm_and_yarn/npm-major-1ddf9439d6	812bbfba8172	2026-11-25T15:43	307	1	0	69	69	0	active-owner-source-qualification-pending	major dependency train
+82	G	codex/setup-autonomous-agent-20261104	122e51710eee	2026-11-04T14:19	2973	2	0	2	1	1	optional-worker-automation-outside-pages-runtime	CI automation agents
+52	G	automation/ghostpay-parallel-four-agents-20261103	68dc5b502f25	2026-11-03T17:34	2979	6	0	3	2	0	optional-worker-automation-outside-pages-runtime	CI automation agents
+51	G	automation/ghostpay-recurrent-backlog-20261103	5835736c1296	2026-11-03T17:19	2979	3	0	1	1	1	optional-worker-automation-outside-pages-runtime	CI automation agent (obsolete gate)

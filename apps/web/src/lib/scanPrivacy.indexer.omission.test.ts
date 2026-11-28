@@ -5,7 +5,7 @@ import { FAKE_ANNOUNCER, FAKE_ROUTER, fakeManifest } from '../test/fakeManifest'
 import { InlineWorker } from '../test/inlineWorker';
 import { makeLog } from '../test/announcements';
 import { mockRpc } from '../test/mockRpc';
-import { DEFAULT_SCAN_PRIVACY, createIndexerScanClient, describeScanDisclosure } from './scanPrivacy';
+import { DEFAULT_SCAN_PRIVACY, createIndexerScanClient, describeScanDisclosure, openScanClients } from './scanPrivacy';
 import { checkpointKeyId, runScan, type CheckpointStore, type ScanProgress } from './scanClient';
 
 // PRIV-04 / PRIV-T01 web boundary: what the app exposes when an indexer-only scan omits records. Synthetic data only.
@@ -145,12 +145,60 @@ describe('indexer-only scan: omission and truncation at the web boundary (PRIV-T
     expect(saved).toEqual([]);
   });
 
-  it('too many announcement blocks to cross-check is TRUNCATED and fails closed (more than 200 blocks)', async () => {
+  // Anyone can post announcements into any number of blocks, so a dense window must not stop the scan; every one of
+  // its blocks is still confirmed by the independent RPC.
+  describe('a window with more than 200 announcement blocks', () => {
     const meta = encodeMetaAddress(generateKeySet());
-    const many = Array.from({ length: 201 }, (_, i) => annFrom(makeLog({ announcer: FAKE_ANNOUNCER, metaAddress: meta, block: 1000 + i, index: 0, caller: OTHER }).log));
-    const idx = indexerFetch(2500, many);
-    const client = createIndexerScanClient(rpcAt(2500), { chain, announcer: FAKE_ANNOUNCER, baseUrl: 'https://indexer.example.org', fetchImpl: idx.fetchImpl, windowBlocks: 1000 });
-    await expect(client.getLogs({ address: FAKE_ANNOUNCER, topics: [ANNOUNCEMENT_TOPIC, `0x${'1'.padStart(64, '0')}`], fromBlock: 1000n, toBlock: 1999n })).rejects.toMatchObject({ code: 'RPC_FAILURE', message: expect.stringContaining('indexer TRUNCATED') as unknown });
+    const blocks = Array.from({ length: 201 }, (_, i) => 1000 + 4 * i);
+    const dense = (rpc: ReturnType<typeof rpcAt>, fromBlock: bigint, toBlock: bigint) => {
+      const idx = indexerFetch(2500, blocks.map((block) => annFrom(makeLog({ announcer: FAKE_ANNOUNCER, metaAddress: meta, block, index: 0, caller: OTHER }).log)));
+      const client = createIndexerScanClient(rpc, { chain, announcer: FAKE_ANNOUNCER, baseUrl: 'https://indexer.example.org', fetchImpl: idx.fetchImpl, windowBlocks: 1000 });
+      return { idx, logs: client.getLogs({ address: FAKE_ANNOUNCER, topics: [ANNOUNCEMENT_TOPIC, `0x${'1'.padStart(64, '0')}`], fromBlock, toBlock }) };
+    };
+
+    it.each([
+      ['one grid window', 1000n, 1999n],
+      ['a page that is not on the grid, so two windows are fetched', 999n, 1998n],
+    ])('is read whole in one request, every block checked against the RPC (%s)', async (_name, fromBlock, toBlock) => {
+      const asked = new Set<bigint>();
+      const { idx, logs } = dense(rpcAt(2500, (n) => { asked.add(n); return undefined; }), fromBlock, toBlock);
+      expect((await logs).map((l) => BigInt(l.blockNumber))).toEqual(blocks.map(BigInt));
+      expect(blocks.filter((b) => !asked.has(BigInt(b)))).toEqual([]);
+      expect(idx.urls).toHaveLength(1);
+    });
+
+    // One read per block, one at a time: Cancel and a key lock must not wait for the rest of them.
+    it.each([
+      ['during the cross-check of the indexer', 1],
+      ['during the block reads that follow the logs', 2],
+    ])('reads no further block once the scan is stopped %s, and saves nothing', async (_name, nth) => {
+      const keys = generateKeySet();
+      const ctl = new AbortController();
+      const reads: bigint[] = [];
+      let seen = 0;
+      // The second dense block is read once by the cross-check and once more by the scan itself.
+      const rpc = rpcAt(2500, (n) => { reads.push(n); if (n === 1004n && ++seen === nth) ctl.abort(); return undefined; });
+      const idx = indexerFetch(2500, blocks.map((block) => annFrom(makeLog({ announcer: FAKE_ANNOUNCER, metaAddress: meta, block, index: 0, caller: OTHER }).log)));
+      const clients = await openScanClients({
+        plan: { kind: 'ready', endpoint: undefined, allowLoopbackHttp: false, useSecondary: false, indexerUrl: 'https://indexer.example.org', window: { windowBlocks: 1000, jitterMs: [0, 0] } },
+        chain, announcer: FAKE_ANNOUNCER, appRpc: () => Promise.resolve(rpc), fetchImpl: idx.fetchImpl, sleep: () => Promise.resolve(), signal: ctl.signal,
+      });
+      const saved: ScanCursor[] = [];
+      const checkpoints: CheckpointStore = { load: () => undefined, save: (_id, _k, c) => { saved.push(c); }, clear: () => undefined };
+      const res = await runScan({
+        chain, manifest, client: clients!.scan, cursor: { nextBlock: 1000n }, spendingPublicKeyHex: hexOf(keys.spendingPublicKey), keyId: KEY,
+        viewingKey: unsafeRevealSecret(keys.viewingSecret), createWorker: () => new InlineWorker(), signal: ctl.signal, checkpoints, maxPages: 1,
+      });
+      expect(reads.at(-1)).toBe(1004n);
+      expect(reads.filter((n) => n === 1008n)).toHaveLength(nth - 1);
+      expect(res.cursor).toEqual({ nextBlock: 1000n });
+      expect(saved).toEqual([]);
+    });
+
+    it('still fails closed when the RPC does not confirm a block past the 200th', async () => {
+      const { logs } = dense(rpcAt(2500, (n) => (n === 1800n ? `0x${'ee'.repeat(32)}` : undefined)), 1000n, 1999n);
+      await expect(logs).rejects.toMatchObject({ code: 'RPC_FAILURE', message: expect.stringContaining('indexer HEAD_MISMATCH') as unknown });
+    });
   });
 
   it('RPC head below the window start: nothing is scanned, the indexer is never asked and no match appears', async () => {

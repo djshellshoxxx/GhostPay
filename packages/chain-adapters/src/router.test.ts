@@ -87,6 +87,14 @@ describe('buildPaymentTx happy paths', () => {
     expect(() => buildPaymentTx(input({ permitSignature: SIG, buffer: { bufferWei: 0n } }))).toThrow(ChainAdapterError);
     expect(() => buildPaymentTx(input({ permitSignature: SIG, buffer: { bufferWei: 5n, maxBufferWei: 4n } }))).toThrow(ChainAdapterError);
   });
+  it('decode refuses a buffer above its own cap, which the router always reverts (BufferTooLarge)', () => {
+    const b = buffer(); // msg.value 5, cap 10
+    expect(() => decodePaymentCalldata({ ...b.tx, value: 11n }, 11155111)).toThrow(/PREVIEW_MISMATCH: buffer above its cap/);
+    expect(decodePaymentCalldata({ ...b.tx, value: 10n }, 11155111).value).toBe(10n);
+    const pb = permitBuffer(); // msg.value 5, cap 10, with a permit
+    expect(() => decodePaymentCalldata({ ...pb.tx, value: 11n }, 11155111)).toThrow(/PREVIEW_MISMATCH: buffer above its cap/);
+    expect(decodePaymentCalldata({ ...pb.tx, value: 10n }, 11155111).value).toBe(10n);
+  });
   it('payNative: gross is msg.value, native metadata', () => {
     const b = native();
     expect(b.tx.value).toBe(10n ** 18n);

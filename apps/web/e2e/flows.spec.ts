@@ -23,6 +23,7 @@ test.afterEach(async ({ page }, info) => {
 import { ORIGIN, createInvoice, generateKeys, openFresh } from './helpers';
 import { CORS, RPC, TEST_USDC, configureRpc, mockNetwork, stageVerifiedErc20Payment, type MockNetworkState, type SentTx } from './flowMocks';
 import { approveWalletDisclosures, shownWalletDisclosures } from './walletDisclosure';
+import { expectMaskedDocument } from './assertMaskedDocument';
 
 interface WalletControls {
   holdSend: boolean;
@@ -483,6 +484,44 @@ test.describe('with a (fake, test-only) manifest, a mock wallet and a mock RPC',
     expect(state.sendCalls).toBe(1); // Clearing itself never starts another wallet request.
   });
 
+  for (const hashReturned of [false, true]) {
+    test(`a connection lost during a wallet request ${hashReturned ? 'keeps its returned hash' : 'leaves its outcome unknown'} and never resends`, async ({ page, context }) => {
+      const state: { sent?: SentTx; sendCalls?: number } = {};
+      await mockNetwork(context, state);
+      await injectWallet(page, state);
+      await configureRpc(page);
+      await page.goto('/');
+      await generateKeys(page);
+      const link = await createInvoice(page);
+      await openFresh(page, link);
+      await page.getByRole('button', { name: 'Continue', exact: true }).click();
+      await page.getByRole('button', { name: /Connect E2E Wallet/ }).click();
+      await page.getByRole('button', { name: 'Prepare payment' }).click();
+      await page.evaluate(() => { (window as unknown as { __e2eWallet: WalletControls }).__e2eWallet.holdSend = true; });
+      await page.getByRole('button', { name: 'Send payment in my wallet' }).click();
+      await expect.poll(() => page.evaluate(() => (window as unknown as { __e2eWallet: WalletControls }).__e2eWallet.pending)).toBe(true);
+
+      await context.setOffline(true);
+      await context.route(`${RPC}/**`, (route) => route.abort('internetdisconnected'));
+      await expect(page.getByText(/Your browser is offline/)).toBeVisible();
+      const hash = `0x${'9'.repeat(64)}`;
+      if (hashReturned) {
+        await page.evaluate(() => { (window as unknown as { __e2eWallet: WalletControls }).__e2eWallet.releaseSend(); });
+        await expect(page.getByRole('heading', { name: 'Payment sent, verifying' })).toBeVisible();
+        await expect(page.getByRole('button', { name: 'Send payment in my wallet' })).toHaveCount(0);
+      }
+      const retained = hashReturned ? { status: 'submitted', hash } : { status: 'unknown' };
+      await expect.poll(() => readJournalMirror(page)).toMatchObject([retained]);
+      await expect(page.getByText(/Status: included in block/)).toHaveCount(0);
+
+      await context.setOffline(false);
+      await openFresh(page, link);
+      await expect.poll(() => readJournalMirror(page)).toMatchObject([retained]);
+      await expect(page.getByText(/Status: included in block/)).toHaveCount(0);
+      expect(state.sendCalls).toBe(1);
+    });
+  }
+
   test('a stale receipt delivered on reconnect cannot settle the payment or change its journal hash', async ({ page, context }) => {
     const state: { sent?: SentTx; sendCalls?: number } = {};
     await mockNetwork(context, state);
@@ -556,6 +595,35 @@ test.describe('with a (fake, test-only) manifest, a mock wallet and a mock RPC',
     expect(state.sendCalls ?? 0).toBe(0);
     expect(state.sent).toBeUndefined();
     expect(await page.evaluate(() => window.localStorage.getItem('ghostpay.wallet-attempts.v1'))).toBeNull();
+  });
+
+  // Ported from #569 `c30283d2` (e2e/wallet-disclosure.spec.ts), on main's wallet fixture and auto-approved disclosure.
+  test('a newly revealed checkout cannot inherit the previous wallet’s receipt file', async ({ page, context }) => {
+    const state: { sent?: SentTx; sendCalls?: number } = {};
+    await mockNetwork(context, state);
+    await injectWallet(page, state);
+    await page.goto('/');
+    await generateKeys(page);
+    const link = await createInvoice(page);
+    await connectCheckout(page, link);
+    await expect(page.getByRole('button', { name: 'Prepare payment' })).toBeVisible();
+    const file = page.locator('section[aria-labelledby="seller-receipt-h"] form input[type=file]');
+    const filename = 'private-receipt-account-286.json';
+    await file.setInputFiles({ name: filename, mimeType: 'application/json', buffer: Buffer.from('{}') });
+    expect(await file.evaluate((element: HTMLInputElement) => element.files?.[0]?.name)).toBe(filename);
+    await page.getByRole('banner').getByRole('switch', { name: 'Privacy mode', exact: true }).check();
+    await expectMaskedDocument(page, [filename]);
+    const reveal = page.getByRole('banner').getByRole('button', { name: 'Reveal details for 30 seconds', exact: true });
+    await reveal.click();
+    // Masking keeps the subtree mounted, so the same wallet keeps its selection.
+    expect(await file.evaluate((element: HTMLInputElement) => element.files?.[0]?.name)).toBe(filename);
+    await page.evaluate(() => { (window as unknown as { __e2eWallet: WalletControls }).__e2eWallet.changeAccount(); });
+    await expect(reveal).toBeVisible();
+    await reveal.click();
+    await expect(file).toHaveValue('');
+    expect(await file.evaluate((element: HTMLInputElement) => element.files?.length)).toBe(0);
+    await expectMaskedDocument(page, [filename]);
+    expect(state.sendCalls ?? 0).toBe(0);
   });
 
   test('refuses when the wallet mutates the transaction', async ({ page, context }) => {

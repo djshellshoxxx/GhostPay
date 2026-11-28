@@ -14,12 +14,14 @@ import { hexToBytes } from '@noble/hashes/utils.js';
 import { signerPublicKeyHex } from '@ghostpay/invoice-schema';
 import { decryptKeystore, encryptKeystore, type KeystoreOptions } from './keystore';
 import { UserFacingError } from './errors';
+import { purgeInvoiceDrafts } from './invoiceDraftSlots';
 
 /**
  * In-memory seller key holder. The three private scalars are held as `SecretBox` values (closure/WeakMap storage, not
  * `Uint8Array` subtypes), so spread, `structuredClone`/`postMessage`, `Array.from` and `slice` of the stored value see no
  * key bytes (audit S3-08). Code that needs a scalar borrows a temporary `SecretScalar` through `withSessionSecrets`,
- * which wipes it afterwards. Nothing here touches web storage. React state only ever receives the public summary.
+ * which wipes it afterwards. Nothing here stores anything in web storage; clearing the keys only removes the opt-in invoice
+ * drafts from tab storage ({@link clearSession}). React state only ever receives the public summary.
  */
 export interface SessionPublic {
   readonly metaAddress: string;
@@ -239,13 +241,18 @@ function summarize(s: SessionSecrets): SessionPublic {
 
 /** Moves freshly created scalars into boxes (wiping the scalars) and returns the stored form. */
 function box(next: SessionSecrets): Stored {
-  return {
-    spending: SecretBox.copyOf(next.keys.spendingSecret, { label: 'spending' }),
-    viewing: SecretBox.copyOf(next.keys.viewingSecret, { label: 'viewing' }),
-    signing: SecretBox.copyOf(next.signingKey, { label: 'signing' }),
-    spendingPublicKey: next.keys.spendingPublicKey,
-    viewingPublicKey: next.keys.viewingPublicKey,
-  };
+  let spending: SecretBox | undefined;
+  let viewing: SecretBox | undefined;
+  let signing: SecretBox | undefined;
+  try {
+    spending = SecretBox.copyOf(next.keys.spendingSecret, { label: 'spending' });
+    viewing = SecretBox.copyOf(next.keys.viewingSecret, { label: 'viewing' });
+    signing = SecretBox.copyOf(next.signingKey, { label: 'signing' });
+    return { spending, viewing, signing, spendingPublicKey: next.keys.spendingPublicKey, viewingPublicKey: next.keys.viewingPublicKey };
+  } catch (error) {
+    spending?.dispose(); viewing?.dispose(); signing?.dispose();
+    throw error;
+  }
 }
 
 function scalarOf(b: SecretBox): SecretScalar {
@@ -277,11 +284,20 @@ export function getSessionPublic(): SessionPublic | undefined {
 type Origin = { readonly from: 'generated' | 'import' | 'import-new-signer' } | { readonly from: 'vault'; readonly record: string };
 
 function install(next: SessionSecrets, origin: Origin): SessionPublic {
-  if (next.signingKey.every((byte, i) => byte === next.keys.spendingSecret[i]) || next.signingKey.every((byte, i) => byte === next.keys.viewingSecret[i])) throw new UserFacingError({ key: 'error.session.theInvoiceSigningKeyMustBeIndependentOfSpendingAnd' });
+  let nextSummary: SessionPublic;
+  let nextStored: Stored;
+  try {
+    if (next.signingKey.every((byte, i) => byte === next.keys.spendingSecret[i]) || next.signingKey.every((byte, i) => byte === next.keys.viewingSecret[i])) throw new UserFacingError({ key: 'error.session.theInvoiceSigningKeyMustBeIndependentOfSpendingAnd' });
+    // Prepare the complete replacement before wiping the current wallet. A failed allocation must preserve its keys,
+    // custody state and revision. Summarize first because boxing consumes the new scalars.
+    nextSummary = summarize(next);
+    nextStored = box(next);
+  } finally {
+    wipeOpened(next);
+  }
   clearSession(false);
-  // Summarize first: boxing wipes the scalars.
-  publicSummary = summarize(next);
-  current = box(next);
+  publicSummary = nextSummary;
+  current = nextStored;
   const vault = origin.from === 'vault' ? origin.record : undefined;
   const imported = origin.from === 'import' || origin.from === 'import-new-signer';
   setCustody({ external: origin.from === 'import' ? 'verified' : 'none', paymentKeysExternal: imported, vaultRecord: vault, vaultStored: vault !== undefined, waived: false }, false);
@@ -511,7 +527,11 @@ export async function verifyDownloadedBackup(text: string, passphrase: string, s
   updateCustody(guard, (c) => ({ ...c, external: 'verified' }));
 }
 
-/** Best-effort wipe and forget. */
+/**
+ * Best-effort wipe and forget. An explicit clear (`notify`, the default) also removes this tab's opt-in encrypted invoice
+ * drafts, which have no timer of their own and need no keys to find. Replacing keys (`install` passes `false`) leaves them: a
+ * reload, an import of the same keys and a resume of the draft is the documented flow. A suspension keeps them as well.
+ */
 export function clearSession(notify = true): void {
   sessionRevision++;
   suspended = false;
@@ -524,7 +544,10 @@ export function clearSession(notify = true): void {
   current = undefined;
   publicSummary = undefined;
   setCustody(undefined, false);
-  if (notify) emit();
+  if (notify) {
+    purgeInvoiceDrafts();
+    emit();
+  }
 }
 
 /** Encrypted backup text. Raw keys exist only for the duration of the call. */
