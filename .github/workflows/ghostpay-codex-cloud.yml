@@ -189,7 +189,7 @@ jobs:
 
       - name: Run API-funded Codex
         if: steps.preflight.outputs.run_agent == 'true'
-        uses: openai/codex-action@bdf19a4a223ec2549a3e2274a0cf61556bc07675 # v1
+        uses: openai/codex-action@306c6a196a99dcc6582530c396a19d2672d5e9ec # v1
         with:
           openai-api-key: ${{ secrets.GHOSTPAY_OPENAI_API_KEY || secrets.OPENAI_API_KEY || secrets.PATCHTRACE_OPENAI_API_KEY }}
           permission-profile: ":workspace"
@@ -422,7 +422,7 @@ jobs:
 
       - name: Open persistent review PR
         id: pr
-        uses: peter-evans/create-pull-request@22a9089034f40e5a961c8808d113e2c98fb63676 # v7
+        uses: peter-evans/create-pull-request@3ffccacd46053766916f087ce41d627c0b8cf2d1 # v8.1.3
         with:
           token: ${{ secrets.GHOSTPAY_GITHUB_TOKEN || github.token }}
           branch: codex/ghostpay-cloud-${{ github.run_id }}
