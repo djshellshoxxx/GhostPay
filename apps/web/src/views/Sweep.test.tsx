@@ -357,7 +357,10 @@ describe('Sweep', () => {
     await toSweep();
     await screen.findByText('5 USDC');
     expect(screen.getByText(/Relayer sweeps need a relayer URL in Settings/)).toBeTruthy();
-    expect(screen.getByRole<HTMLButtonElement>('button', { name: 'Get relayer quote' }).disabled).toBe(true);
+    expect(screen.getByLabelText<HTMLInputElement>(/^Through the relayer/).disabled).toBe(true);
+    expect(screen.getByLabelText<HTMLInputElement>(/^Directly/).checked).toBe(true);
+    expect(screen.queryByRole('button', { name: 'Get relayer quote' })).toBeNull();
+    expect(screen.getByRole<HTMLButtonElement>('button', { name: 'Review direct sweep' }).disabled).toBe(false);
   });
 
   it('clears the selected payment and destination when their keys leave memory', async () => {

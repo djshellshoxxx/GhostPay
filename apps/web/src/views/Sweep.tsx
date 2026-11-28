@@ -132,7 +132,7 @@ function SweepPanel(): ReactNode {
   const tokenAddr: Address | 'native' | undefined = meta === undefined ? undefined : meta.kind === 'native' ? 'native' : meta.token;
   const tokenCfg = chainId === undefined || tokenAddr === undefined || tokenAddr === 'native' ? undefined : findToken(chainId, tokenAddr);
   const relayerOk = tokenCfg?.permit === true && app.settings.relayerUrl !== '';
-  const mode = selectedMode ?? (relayerOk ? 'relayer' : 'direct');
+  const mode = relayerOk ? (selectedMode ?? 'relayer') : 'direct';
   const decimals = tokenAddr === 'native' ? 18 : (tokenCfg?.decimals ?? 18);
   const symbol = tokenAddr === 'native' ? (chainId === undefined ? '' : (findChain(chainId)?.nativeSymbol ?? '')) : (tokenCfg?.symbol ?? t('sweep.tokenFallback'));
 
