@@ -4240,6 +4240,17 @@ Worker: Codex on `fix/pages-offline-session` from main `f76904301cff0b24d65ea4e3
 
 Worker: Codex. Branch: `fix/364-responsive-pages`. Base: C1 #504 at `1a7447d58c08363209b6b9b67e9a6afad07d87f3` (main `f76904301cff0b24d65ea4e31cbf37d470db4d95`). Reuse #387/#512; do not edit the parent branch. Own shared app/static presentation styles, theme assets and references, affected layout regressions and a scoped handoff. Verify supported navigation, RPC controls, local assets, contrast, focus and reduced motion at 320/375/768/1280/1920 CSS pixels and native 200% zoom. Payment logic, deployment and other issue workstreams are outside this claim.
 
+## Beta usability and recovery guide corrections
+
+Codex coordinates this work on `fix/beta-usability-recovery-guides` from
+`70458ebe3ae4a5502d7c39ae25d37342dbde971b`. The guide worker owns the recovery text,
+jump links and file table in the static Help and Privacy pages. The Settings worker owns
+draft feedback, timeout editing, validation focus and the primary RPC test label. The receipt
+worker owns local download feedback, QR visibility, archive feedback and issued-time display.
+The invoice worker owns line-item focus and limit feedback. Each owns its focused regressions.
+The coordinator owns shared locale catalogs, integration and verification. PR #768 owns the
+separate skip-link and footer navigation changes.
+
 # Issue 364 static help, privacy and Circuit Drift documentation — 2026-11-25 (isolated)
 
 - Worker: single lead agent in this session (no delegated writers; read-only source-verification agents only). Owner of issue #364 documentation scope per the user's request on 2026-11-25.

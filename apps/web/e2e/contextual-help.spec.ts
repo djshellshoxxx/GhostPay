@@ -48,7 +48,7 @@ test('contextual RPC help is described, keyboard operable and dismissible at a m
   await expect(tooltip).toBeHidden();
   await expect(help).toHaveAttribute('aria-expanded', 'false');
   await page.keyboard.press('Tab');
-  await expect(page.getByRole('button', { name: 'Test Base Sepolia', exact: true })).toBeFocused();
+  await expect(page.getByRole('button', { name: 'Test primary RPC for Base Sepolia', exact: true })).toBeFocused();
   await expect(input).toHaveValue(before);
 });
 

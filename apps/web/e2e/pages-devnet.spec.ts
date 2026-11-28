@@ -1040,7 +1040,7 @@ test.describe('GitHub Pages artifact: refusals', () => {
         await expect(page.getByRole('alert').filter({ hasText: 'RPC URL rejected: use https:// or wss://, with no username, password or fragment.' })).toBeVisible();
         await expect(page.getByText('Settings saved.', { exact: true })).toHaveCount(0);
         expect(await storedSettings(page)).toEqual(before);
-        await page.getByRole('button', { name: 'Test Base Sepolia' }).click();
+        await page.getByRole('button', { name: 'Test primary RPC for Base Sepolia' }).click();
         await expect(page.getByRole('status').filter({ hasText: 'RPC URL rejected' })).toBeVisible();
         expect(await storedSettings(page)).toEqual(before);
       }
@@ -1049,7 +1049,7 @@ test.describe('GitHub Pages artifact: refusals', () => {
       expect(net.methods).toEqual([]);
       // The saved endpoint still works after the refusals.
       await page.getByLabel('Base Sepolia RPC URL', { exact: true }).fill(APP_RPC);
-      await page.getByRole('button', { name: 'Test Base Sepolia' }).click();
+      await page.getByRole('button', { name: 'Test primary RPC for Base Sepolia' }).click();
       await expect(page.getByText('Connected. The endpoint reports the expected chain id.')).toBeVisible({ timeout: 30_000 });
       expect(await storedSettings(page)).toEqual({ rpcUrls: { '84532': APP_RPC } });
       // On chain: nothing happened while the endpoints were refused (automine is on, so any transaction would show).

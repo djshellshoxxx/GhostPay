@@ -69,7 +69,7 @@ test('HTTPS invoice review and selected RPC health check with the Tor Browser sc
         await configureRpc(page, RPC);
         expect(methods).toEqual(['eth_chainId']);
         chainId = '0x1';
-        await page.getByRole('button', { name: 'Test Base Sepolia' }).click();
+        await page.getByRole('button', { name: 'Test primary RPC for Base Sepolia' }).click();
         await expect(page.getByText('Failed: the endpoint is unreachable or reports a different chain.')).toBeVisible();
         expect(methods).toEqual(['eth_chainId', 'eth_chainId']);
         expect(unexpected).toEqual([]);

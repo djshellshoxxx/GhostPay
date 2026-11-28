@@ -1,5 +1,5 @@
 // @vitest-environment jsdom
-import { openFragment, parseFragment } from '@ghostpay/invoice-schema';
+import { MAX_LINE_ITEMS, openFragment, parseFragment } from '@ghostpay/invoice-schema';
 import { fireEvent, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
@@ -62,6 +62,49 @@ describe('Create invoice fiat gating (per chain and token)', () => {
 });
 
 describe('Create invoice', () => {
+  it('moves focus to the new row or its surviving neighbour after keyboard edits', async () => {
+    generateWaivedSession();
+    const user = await open();
+    const add = screen.getByRole('button', { name: 'Add item' });
+    add.focus();
+    await user.keyboard('{Enter}');
+    expect(document.activeElement).toBe(screen.getByLabelText('Item 2 description'));
+    await user.click(add);
+    await user.type(screen.getByLabelText('Item 3 description'), 'Third row');
+    screen.getByRole('button', { name: 'Remove item 2' }).focus();
+    await user.keyboard('{Enter}');
+    const neighbour = screen.getByLabelText<HTMLInputElement>('Item 2 description');
+    expect(neighbour.value).toBe('Third row');
+    expect(document.activeElement).toBe(neighbour);
+
+    await user.click(screen.getByRole('checkbox', { name: 'Privacy-minimal invoice' }));
+    await user.click(add);
+    expect(document.activeElement).toBe(screen.getByLabelText('Item 3 quantity'));
+    await user.click(screen.getByRole('button', { name: 'Remove item 3' }));
+    expect(document.activeElement).toBe(screen.getByLabelText('Item 2 quantity'));
+    await user.click(screen.getByRole('button', { name: 'Remove item 2' }));
+    expect(document.activeElement).toBe(screen.getByLabelText('Item 1 quantity'));
+    expect(screen.queryByRole('button', { name: /Remove item/ })).toBeNull();
+  });
+
+  it('explains the item limit and makes Add item available again after removal', async () => {
+    generateWaivedSession();
+    await open();
+    const add = screen.getByRole<HTMLButtonElement>('button', { name: 'Add item' });
+    for (let count = 1; count < MAX_LINE_ITEMS; count++) fireEvent.click(add);
+    expect(add.disabled).toBe(true);
+    const limit = screen.getByText('50 of 50 items. Remove an item to add another.');
+    expect(limit.closest('[role="status"]')?.id).toBe(add.getAttribute('aria-describedby'));
+    expect(document.activeElement).toBe(screen.getByLabelText('Item 50 description'));
+    fireEvent.click(add);
+    expect(screen.queryByLabelText('Item 51 description')).toBeNull();
+    fireEvent.click(screen.getByRole('button', { name: 'Remove item 50' }));
+    expect(document.activeElement).toBe(screen.getByLabelText('Item 49 description'));
+    expect(add.disabled).toBe(false);
+    expect(add.hasAttribute('aria-describedby')).toBe(false);
+    expect(limit.isConnected).toBe(false);
+  });
+
   it('asks for keys first', async () => {
     const user = await open();
     expect(screen.getByText('You need seller keys first.')).toBeTruthy();

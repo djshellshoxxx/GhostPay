@@ -130,3 +130,47 @@ test.describe('help guide coverage', () => {
     for (const status of used) expect(legend).toContain(status);
   });
 });
+
+test.describe('static recovery and privacy guidance', () => {
+  test.use({ javaScriptEnabled: false });
+
+  test('explains idle lock, master-backup recovery and the Pay request file', async ({ page }) => {
+    await page.goto('/help.html');
+    await expect(page.locator('#idle-lock')).toContainText('only when it can confirm a recoverable copy');
+    await expect(page.locator('#idle-lock')).toContainText('the keys stay in memory for recovery');
+
+    const master = page.getByRole('row').filter({ has: page.getByRole('rowheader', { name: /Master stealth key backup/ }) });
+    await expect(master.getByRole('cell').nth(0)).toContainText('master spending and viewing keys');
+    await expect(master.getByRole('cell').nth(1)).toContainText('creates a new invoice-signing key');
+    await expect(master.getByRole('cell').nth(2)).toHaveText('Implemented both builds');
+
+    const requestFile = page.getByRole('row').filter({ has: page.getByRole('rowheader', { name: 'Payment request (Pay)' }) });
+    await expect(requestFile).toContainText('Scan an invoice QR or open a request file');
+    await expect(requestFile).toContainText('ghostpay-request.gpr.json (up to 24 KiB)');
+    await expect(requestFile).toContainText('Open request file');
+
+    await page.goto('/privacy.html');
+    const keys = page.getByRole('row').filter({ has: page.getByRole('rowheader', { name: /Generate a seller key set/ }) });
+    await expect(keys).toContainText('If GhostPay cannot confirm a recoverable copy, the keys stay in memory');
+  });
+
+  test('walkthrough and privacy summary links focus their destinations with the keyboard', async ({ page }) => {
+    await page.goto('/help.html');
+    const walkthrough = page.getByRole('region', { name: '1. How a payment works', exact: true });
+    for (const [label, target] of [
+      ['Keys and backups', 'keys-backups'],
+      ['wallet connection steps', 'wallet'],
+      ['What counts as evidence', 'evidence'],
+    ] as const) {
+      await walkthrough.getByRole('link', { name: label, exact: true }).press('Enter');
+      await expect(page.locator(`#${target}`)).toBeFocused();
+    }
+
+    await page.goto('/privacy.html');
+    const topics = page.getByRole('navigation', { name: 'Privacy topics', exact: true });
+    for (const label of ['What stays in this browser', 'Who receives requests', 'Links, QR codes and backups']) {
+      await topics.getByRole('link', { name: label, exact: true }).press('Enter');
+      await expect(page.getByRole('heading', { name: label, exact: true })).toBeFocused();
+    }
+  });
+});
