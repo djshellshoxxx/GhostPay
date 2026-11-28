@@ -2,8 +2,8 @@ import { InvoiceMetadataChoice, DownloadInvoiceLink } from '../components/Invoic
 import { ManifestBanner } from '../components/ManifestBanner';
 import { usePresentationGeneration } from '../components/SessionPresentationBoundary';
 import { findChain, findToken, isQuoteAvailable } from '@ghostpay/chain-adapters';
-import { useEffect, useMemo, useRef, useState, type FormEvent, type ReactNode } from 'react';
-import type { BufferPolicy, Invoice } from '@ghostpay/invoice-schema';
+import { useEffect, useId, useLayoutEffect, useMemo, useRef, useState, type FormEvent, type ReactNode } from 'react';
+import { MAX_LINE_ITEMS, type BufferPolicy, type Invoice } from '@ghostpay/invoice-schema';
 import { CopyButton, Field, Notice } from '../components/Common';
 import { MetadataRetentionControls } from '../components/MetadataRetentionControls';
 import { useManifest } from '../components/Disclosure';
@@ -75,6 +75,16 @@ function InvoiceForm({ supportedOnly }: { readonly supportedOnly: boolean }): Re
   const { draft, change } = editor;
   const { chainId, token, currency, items, taxRate, feePolicy, tokenAmount, expiryHours, quoteMinutes,
     slippage, minimalMetadata, memo, bufferMin, bufferMax, encrypt, protectWithPassphrase } = draft;
+  const itemFields = useRef<HTMLFieldSetElement>(null);
+  const itemToFocus = useRef<number | undefined>(undefined);
+  const itemLimitId = useId();
+  const itemLimitReached = items.length >= MAX_LINE_ITEMS;
+  useLayoutEffect(() => {
+    const index = itemToFocus.current;
+    if (index === undefined) return;
+    itemToFocus.current = undefined;
+    itemFields.current?.querySelector<HTMLInputElement>(`[data-invoice-item="${String(index)}"] input`)?.focus();
+  }, [items.length]);
   // The invoice passphrase starts as a generated suggestion (L1-06), shown in clear only while untouched.
   const [suggested, setSuggested] = useState(generatePassphrase);
   const [passphrase, setPassphrase] = useState(suggested);
@@ -237,6 +247,10 @@ function InvoiceForm({ supportedOnly }: { readonly supportedOnly: boolean }): Re
   const setItem = (i: number, patch: Partial<LineItemInput>): void => {
     change({ items: items.map((it, idx) => (idx === i ? { ...it, ...patch } : it)) });
   };
+  const changeItemRows = (next: readonly LineItemInput[], index: number): void => {
+    itemToFocus.current = Math.min(index, next.length - 1);
+    change({ items: next });
+  };
 
   return (
     <section aria-labelledby="inv-h">
@@ -317,7 +331,7 @@ function InvoiceForm({ supportedOnly }: { readonly supportedOnly: boolean }): Re
           </Field>
         </fieldset>
 
-        <fieldset>
+        <fieldset ref={itemFields}>
           <legend>{t('create.items.legend')}</legend>
           <InvoiceMetadataChoice minimal={minimalMetadata} onChange={(minimal) => {
             submissionRun.current++;
@@ -328,20 +342,24 @@ function InvoiceForm({ supportedOnly }: { readonly supportedOnly: boolean }): Re
             change({ minimalMetadata: minimal });
           }} />
           {items.map((it, i) => (
-            <div className="row" key={i}>
+            <div className="row" key={i} data-invoice-item={i}>
               {!minimalMetadata && <Field label={t('create.item.description', { n: String(i + 1) })}>{(id) => <input id={id} value={it.description} maxLength={200} onChange={(e) => { setItem(i, { description: e.target.value }); }} />}</Field>}
               <Field label={t('create.item.quantity', { n: String(i + 1) })}>{(id) => <input id={id} inputMode="numeric" value={it.quantity} onChange={(e) => { setItem(i, { quantity: e.target.value }); }} />}</Field>
               <Field label={t('create.item.unitPrice', { n: String(i + 1) })}>{(id) => <input id={id} inputMode="decimal" value={it.unitPrice} onChange={(e) => { setItem(i, { unitPrice: e.target.value }); }} />}</Field>
               {items.length > 1 && (
-                <button type="button" className="btn" onClick={() => { change({ items: items.filter((_, idx) => idx !== i) }); }}>
+                <button type="button" className="btn" onClick={() => { changeItemRows(items.filter((_, idx) => idx !== i), i); }}>
                   {t('create.item.remove', { n: String(i + 1) })}
                 </button>
               )}
             </div>
           ))}
-          <button type="button" className="btn" onClick={() => { change({ items: [...items, { ...emptyItem }] }); }} disabled={items.length >= 50}>
+          <button type="button" className="btn" onClick={() => { changeItemRows([...items, { ...emptyItem }], items.length); }}
+            disabled={itemLimitReached} aria-describedby={itemLimitReached ? itemLimitId : undefined}>
             {t('create.item.add')}
           </button>
+          <div id={itemLimitId} role="status">
+            {itemLimitReached && <p className="hint">{t('create.item.limit', { count: items.length, limit: MAX_LINE_ITEMS })}</p>}
+          </div>
           <Field label={t('create.taxRate')}>{(id) => <input id={id} inputMode="decimal" value={taxRate} onChange={(e) => { change({ taxRate: e.target.value }); }} />}</Field>
         </fieldset>
 

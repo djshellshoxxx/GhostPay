@@ -22,8 +22,8 @@ async function checkLayout(page: Page, name: string): Promise<void> {
 
 async function checkRpc(page: Page): Promise<void> {
   const rows = page.locator('main .rpc-row');
-  await expect(page.getByRole('button', { name: 'Test Ethereum Sepolia', exact: true })).toBeVisible();
-  await expect(page.getByRole('button', { name: 'Test Base Sepolia', exact: true })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Test primary RPC for Ethereum Sepolia', exact: true })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Test primary RPC for Base Sepolia', exact: true })).toBeVisible();
   for (const row of await rows.all()) {
     const [a, b] = await row.locator('input[type=url]').evaluateAll((inputs) =>
       inputs.map((input) => input.getBoundingClientRect().toJSON() as { x: number; y: number; width: number; height: number }));

@@ -5,6 +5,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { clearSession, generateSession } from '../lib/session';
 import type { ScanMatch } from '../lib/scanClient';
 import { verifyReceipt } from '../lib/receipts';
+import * as Common from './Common';
 import { ReceiptPanel } from './ReceiptPanel';
 
 afterEach(() => {
@@ -65,10 +66,43 @@ describe('ReceiptPanel', () => {
     });
     expect(screen.getAllByText(/not matched/).length).toBeGreaterThan(0);
     expect(screen.queryByRole('img', { name: 'Signed seller receipt JSON' })).toBeNull();
-    await user.click(screen.getByRole('button', { name: 'Show receipt QR' }));
-    expect(screen.getByRole('img', { name: 'Signed seller receipt JSON' })).toBeTruthy();
+    const toggle = screen.getByRole('button', { name: 'Show receipt QR', expanded: false });
+    const qrRegion = document.getElementById(toggle.getAttribute('aria-controls')!);
+    expect(qrRegion?.hidden).toBe(true);
+    await user.click(toggle);
+    expect(screen.getByRole('button', { name: 'Hide receipt QR', expanded: true })).toBe(toggle);
+    expect(qrRegion?.contains(screen.getByRole('img', { name: 'Signed seller receipt JSON' }))).toBe(true);
     expect(document.querySelector('[data-qr-kind="proof"]')).toBeTruthy();
     expect(screen.getByText(/This QR contains the transaction, recipient, amount and invoice digest/)).toBeTruthy();
+    await user.keyboard('{Enter}');
+    expect(toggle).toBe(document.activeElement);
+    expect(screen.getByRole('button', { name: 'Show receipt QR', expanded: false })).toBe(toggle);
+    expect(qrRegion?.hidden).toBe(true);
+    expect(document.querySelector('[data-qr-kind="proof"]')).toBeNull();
+  });
+
+  it('keeps the original signed JSON available to copy and retry after a blocked download', async () => {
+    const seller = generateSession();
+    const user = userEvent.setup();
+    const download = vi.spyOn(Common, 'downloadText')
+      .mockImplementationOnce(() => { throw new Error('private browser error'); })
+      .mockImplementation(() => undefined);
+    render(<ReceiptPanel match={verifiedMatch(`0x${'c'.repeat(64)}`)} sellerSignerPublicKey={seller.signerPublicKey} />);
+    fireEvent.change(screen.getByLabelText('Invoice digest (entered manually)'), { target: { value: `0x${'d'.repeat(64)}` } });
+    await user.click(screen.getByRole('button', { name: 'Sign receipt' }));
+    const json = screen.getByLabelText<HTMLTextAreaElement>('Signed receipt JSON').value;
+    const button = screen.getByRole('button', { name: 'Download JSON' });
+    await user.click(button);
+    expect(screen.getByRole('alert').textContent).toContain('The receipt download could not start.');
+    expect(screen.queryByText(/private browser error/)).toBeNull();
+    await user.click(screen.getByRole('button', { name: 'Copy receipt JSON' }));
+    expect(await navigator.clipboard.readText()).toBe(json);
+    await user.click(button);
+    expect(screen.queryByRole('alert')).toBeNull();
+    expect(download.mock.calls).toEqual([
+      ['ghostpay-receipt.json', json, 'application/json'],
+      ['ghostpay-receipt.json', json, 'application/json'],
+    ]);
   });
 
   it('rejects an invalid manually supplied invoice digest without producing a receipt', async () => {

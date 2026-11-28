@@ -41,6 +41,46 @@ describe('Settings', () => {
     expect(document.body.textContent).not.toMatch(/Keys stay in memory until you wipe them or close the tab/);
   });
 
+  it('shows unsaved edits, removes the stale save confirmation, and recognizes a reverted edit', async () => {
+    const user = await open();
+    const timeout = screen.getByLabelText<HTMLInputElement>(/Idle lock after minutes/);
+    const save = screen.getByRole('button', { name: 'Save settings' });
+    await user.click(save);
+    expect(screen.getByText('Settings saved.')).toBeTruthy();
+
+    fireEvent.change(timeout, { target: { value: '27' } });
+    expect(screen.queryByText('Settings saved.')).toBeNull();
+    expect(screen.getByText('Unsaved changes.')).toBeTruthy();
+    expect(stored()['lockTimeoutMin']).toBe(15);
+
+    fireEvent.change(timeout, { target: { value: '15' } });
+    expect(screen.queryByText('Unsaved changes.')).toBeNull();
+    expect(screen.getByText('Settings saved.')).toBeTruthy();
+  });
+
+  it('keeps an erased timeout blank, identifies the error on save, and accepts a corrected value', async () => {
+    const user = await open();
+    const timeout = screen.getByLabelText<HTMLInputElement>(/Idle lock after minutes/);
+    const save = screen.getByRole('button', { name: 'Save settings' });
+    const originalHint = timeout.getAttribute('aria-describedby');
+    await user.clear(timeout);
+    expect(timeout.value).toBe('');
+    await user.click(save);
+    const reason = screen.getByText('Lock timeout must be 1 to 240 minutes.');
+    expect(document.activeElement).toBe(timeout);
+    expect(timeout.getAttribute('aria-invalid')).toBe('true');
+    const descriptions = timeout.getAttribute('aria-describedby')?.split(' ');
+    expect(descriptions).toContain(originalHint);
+    expect(descriptions).toContain(reason.id);
+    expect(window.localStorage.getItem(SETTINGS_KEY)).toBeNull();
+
+    await user.type(timeout, '27');
+    expect(timeout.hasAttribute('aria-invalid')).toBe(false);
+    await user.click(save);
+    expect(stored()['lockTimeoutMin']).toBe(27);
+    expect(screen.queryByText('Unsaved changes.')).toBeNull();
+  });
+
   it('validates and saves RPC URL, relayer, delay, lock timeout, theme, pins; applies the theme', async () => {
     const user = await open();
     const pin = `02${'ab'.repeat(32)}`;
@@ -81,6 +121,7 @@ describe('Settings', () => {
     await user.type(screen.getByLabelText('Base Sepolia second RPC URL (optional)'), 'http://insecure.example');
     await user.click(screen.getByRole('button', { name: 'Save settings' }));
     expect((await screen.findByRole('alert')).textContent).toMatch(/RPC URL rejected/);
+    expect(document.activeElement).toBe(screen.getByLabelText('Base Sepolia second RPC URL (optional)'));
   });
 
   it.each([
@@ -91,7 +132,13 @@ describe('Settings', () => {
     const user = await open();
     await user.type(screen.getByLabelText(label), value);
     await user.click(screen.getByRole('button', { name: 'Save settings' }));
-    expect((await screen.findByRole('alert')).textContent).toMatch(re);
+    const alert = await screen.findByRole('alert');
+    expect(alert.textContent).toMatch(re);
+    const field = screen.getByLabelText(label);
+    expect(document.activeElement).toBe(field);
+    expect(field.getAttribute('aria-invalid')).toBe('true');
+    const descriptions = (field.getAttribute('aria-describedby') ?? '').split(' ').map((id) => document.getElementById(id)?.textContent);
+    expect(descriptions.join(' ')).toMatch(re);
     expect(window.localStorage.getItem(SETTINGS_KEY)).toBeNull();
   });
 
@@ -103,6 +150,7 @@ describe('Settings', () => {
     await user.type(screen.getByLabelText('Maximum delay (seconds)'), '5');
     await user.click(screen.getByRole('button', { name: 'Save settings' }));
     expect((await screen.findByRole('alert')).textContent).toMatch(/Delay range/);
+    expect(document.activeElement).toBe(screen.getByLabelText('Maximum delay (seconds)'));
     await user.clear(screen.getByLabelText('Minimum delay (seconds)'));
     await user.type(screen.getByLabelText('Minimum delay (seconds)'), '1');
     await user.clear(screen.getByLabelText(/Idle lock after minutes/));
@@ -114,6 +162,7 @@ describe('Settings', () => {
     await user.type(screen.getByLabelText(/Pinned seller signing keys/), 'not-a-key');
     await user.click(screen.getByRole('button', { name: 'Save settings' }));
     await waitFor(() => { expect(screen.getByRole('alert').textContent).toMatch(/Pinned signer keys/); });
+    expect(document.activeElement).toBe(screen.getByLabelText(/Pinned seller signing keys/));
   });
 
   it('applies settings for this tab and says so when storage is unavailable', async () => {
@@ -142,17 +191,17 @@ describe('Settings', () => {
       },
     });
     const user = await open(services);
-    await user.click(screen.getByRole('button', { name: 'Test Base Sepolia' }));
+    await user.click(screen.getByRole('button', { name: 'Test primary RPC for Base Sepolia' }));
     expect(await screen.findByText(/Connected\. The endpoint reports the expected chain id/)).toBeTruthy();
     fail = 'chain';
-    await user.click(screen.getByRole('button', { name: 'Test Base Sepolia' }));
+    await user.click(screen.getByRole('button', { name: 'Test primary RPC for Base Sepolia' }));
     expect(await screen.findByText(/reports a different chain/)).toBeTruthy();
     fail = 'other';
-    await user.click(screen.getByRole('button', { name: 'Test Base Sepolia' }));
+    await user.click(screen.getByRole('button', { name: 'Test primary RPC for Base Sepolia' }));
     await waitFor(() => { expect(screen.getByText(/Something went wrong/)).toBeTruthy(); });
     await user.clear(screen.getByLabelText('Base Sepolia RPC URL'));
     await user.type(screen.getByLabelText('Base Sepolia RPC URL'), 'http://nope');
-    await user.click(screen.getByRole('button', { name: 'Test Base Sepolia' }));
+    await user.click(screen.getByRole('button', { name: 'Test primary RPC for Base Sepolia' }));
     await waitFor(() => { expect(screen.getByText(/RPC URL rejected/)).toBeTruthy(); });
   });
 });

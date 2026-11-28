@@ -26,6 +26,10 @@ function followMap(typed: Readonly<Record<string, string>>, before: Readonly<Rec
   return out;
 }
 
+function rpcDraftChanged(draft: Readonly<Record<string, string>>, saved: Readonly<Record<string, string>>): boolean {
+  return Object.keys({ ...saved, ...draft }).some((chain) => (draft[chain] ?? '') !== (saved[chain] ?? ''));
+}
+
 export function Settings(): ReactNode {
   const app = useApp();
   const services = useServices();
@@ -38,17 +42,35 @@ export function Settings(): ReactNode {
   const [relayer, setRelayer] = useState(s.relayerUrl);
   const [minSec, setMinSec] = useState(s.delayMinSec);
   const [maxSec, setMaxSec] = useState(s.delayMaxSec);
-  const [lock, setLock] = useState(s.lockTimeoutMin);
+  const [lock, setLock] = useState(String(s.lockTimeoutMin));
   const [theme, setTheme] = useState<SettingsData['theme']>(s.theme);
   const [clipboardDelaySec, setClipboardDelaySec] = useState(s.invoiceLinkClipboardDelaySec);
   const [autoClear, setAutoClear] = useState(s.autoClearFragment);
   const [pins, setPins] = useState(s.pinnedSigners.join('\n'));
-  const [message, setMessage] = useState<{ kind: 'ok' | 'error' | 'warn'; text: DisplayMessage } | undefined>(undefined);
+  const [message, setMessage] = useState<{ kind: 'ok' | 'error' | 'warn'; text: DisplayMessage; field?: string } | undefined>(undefined);
   const [checks, setChecks] = useState<Record<string, DisplayMessage>>({});
+  const form = useRef<HTMLFormElement>(null);
+  const errorId = useId();
   const testRevision = useRef(new Map<number, number>());
   const mounted = useRef(true);
 
   useEffect(() => { mounted.current = true; return () => { mounted.current = false; }; }, []);
+
+  const dirty = rpcDraftChanged(rpc, s.rpcUrls) || rpcDraftChanged(rpc2, s.rpcUrlsSecondary) ||
+    relayer !== s.relayerUrl || minSec !== s.delayMinSec || maxSec !== s.delayMaxSec ||
+    lock !== String(s.lockTimeoutMin) || theme !== s.theme || autoClear !== s.autoClearFragment ||
+    clipboardDelaySec !== s.invoiceLinkClipboardDelaySec || pins !== s.pinnedSigners.join('\n');
+
+  useEffect(() => {
+    if (message?.field === undefined) return;
+    const control = form.current?.elements.namedItem(message.field);
+    if (control instanceof HTMLElement) control.focus();
+  }, [message]);
+
+  const validationProps = (name: string, hint?: string) => {
+    const invalid = message?.field === name;
+    return { name, 'aria-invalid': invalid || undefined, 'aria-describedby': invalid ? [hint, errorId].filter(Boolean).join(' ') : hint };
+  };
 
   // The saved values this form last followed. Another tab's save is shown wherever it changed one, so that saving this
   // form cannot put the old value back; fields it did not change keep what was typed.
@@ -68,7 +90,7 @@ export function Settings(): ReactNode {
     follow('relayerUrl', setRelayer);
     follow('delayMinSec', setMinSec);
     follow('delayMaxSec', setMaxSec);
-    follow('lockTimeoutMin', setLock);
+    follow('lockTimeoutMin', (minutes) => { setLock(String(minutes)); });
     follow('theme', setTheme);
     follow('invoiceLinkClipboardDelaySec', setClipboardDelaySec);
     follow('autoClearFragment', setAutoClear);
@@ -89,31 +111,55 @@ export function Settings(): ReactNode {
 
   const onSave = (e: FormEvent): void => {
     e.preventDefault();
+    let field: string | undefined;
+    const checkedUrls = (draft: Readonly<Record<string, string>>, prefix: string): Record<string, string> => {
+      const urls: Record<string, string> = {};
+      for (const [chain, value] of Object.entries(draft)) {
+        if (value.trim() === '') continue;
+        field = `${prefix}-${chain}`;
+        urls[chain] = checkRpcUrl(value);
+      }
+      return urls;
+    };
     try {
-      const rpcUrls: Record<string, string> = {};
-      for (const [k, v] of Object.entries(rpc)) if (v.trim() !== '') rpcUrls[k] = checkRpcUrl(v);
-      const rpcUrlsSecondary: Record<string, string> = {};
-      for (const [k, v] of Object.entries(rpc2)) if (v.trim() !== '') rpcUrlsSecondary[k] = checkRpcUrl(v);
+      const rpcUrls = checkedUrls(rpc, 'rpc');
+      const rpcUrlsSecondary = checkedUrls(rpc2, 'secondary');
+      field = 'relayer';
+      const relayerUrl = checkRelayerUrl(relayer);
+      field = 'delay-min';
+      checkDelayRange(minSec, minSec);
+      field = 'delay-max';
       checkDelayRange(minSec, maxSec);
-      if (!Number.isInteger(lock) || lock < 1 || lock > 240) throw new Error('lock');
+      field = 'lock';
+      const lockTimeoutMin = Number(lock);
+      if (!Number.isInteger(lockTimeoutMin) || lockTimeoutMin < 1 || lockTimeoutMin > 240) {
+        throw new UserFacingError({ key: 'settings.error.lock' });
+      }
+      field = 'pins';
       const pinnedSigners = pins
         .split('\n')
         .map((l) => l.trim().toLowerCase())
         .filter((l) => l !== '');
       if (pinnedSigners.some((p) => !/^(?:02|03)[0-9a-f]{64}$/.test(p))) {
-        setMessage({ kind: 'error', text: { key: 'settings.error.pins' } });
-        return;
+        throw new UserFacingError({ key: 'settings.error.pins' });
       }
       const next: SettingsData = {
-        rpcUrls, rpcUrlsSecondary, relayerUrl: checkRelayerUrl(relayer), delayMinSec: minSec, delayMaxSec: maxSec,
-        lockTimeoutMin: lock, theme, autoClearFragment: autoClear, invoiceLinkClipboardDelaySec: clipboardDelaySec, pinnedSigners,
+        rpcUrls, rpcUrlsSecondary, relayerUrl, delayMinSec: minSec, delayMaxSec: maxSec,
+        lockTimeoutMin, theme, autoClearFragment: autoClear, invoiceLinkClipboardDelaySec: clipboardDelaySec, pinnedSigners,
       };
+      field = undefined;
       const saved = app.updateSettings(next);
       followed.current = next;
+      // Show the canonical values that were actually applied, including normalized URLs.
+      setRpc(rpcUrls);
+      setRpc2(rpcUrlsSecondary);
+      setRelayer(relayerUrl);
+      setLock(String(lockTimeoutMin));
+      setPins(pinnedSigners.join('\n'));
       setMessage(saved ? { kind: 'ok', text: { key: 'settings.saved' } } : { kind: 'warn', text: { key: 'settings.storageUnavailable' } });
       app.announce(t('settings.announce'));
     } catch (err) {
-      setMessage({ kind: 'error', text: err instanceof Error && err.message === 'lock' ? { key: 'settings.error.lock' } : captureUserMessage(err) });
+      setMessage({ kind: 'error', text: captureUserMessage(err), ...(field === undefined ? {} : { field }) });
     }
   };
 
@@ -148,17 +194,21 @@ export function Settings(): ReactNode {
       {/* #287 item 4: device-local, default-off preferences for closing on-screen previews; they save immediately. */}
       <MetadataRetentionControls manual={false} />
       <MetadataRetentionControls scope="proof" manual={false} />
-      <form onSubmit={onSave} className="stack" noValidate>
+      <form ref={form} onSubmit={onSave} className="stack" noValidate onChange={(event) => {
+        const target = event.target;
+        if (message?.field === undefined || !(target instanceof HTMLInputElement || target instanceof HTMLTextAreaElement)) return;
+        if (target.name === message.field || (message.field.startsWith('delay-') && target.name.startsWith('delay-'))) setMessage(undefined);
+      }}>
         <fieldset>
           <legend>{t('settings.rpc.legend')}</legend>
           <p className="hint">{t('settings.rpc.hint')}</p>
           {services.chains.map((c) => (
             <div key={c.chainId} className="rpc-row">
               <Field label={t('settings.rpc.url', { chain: c.name })} help={{ label: t('help.about', { control: t('settings.rpc.url', { chain: c.name }) }), text: t('help.rpc') }}>
-                {(id, describedBy) => <input id={id} aria-describedby={describedBy} type="url" dir="ltr" spellCheck={false} value={rpc[String(c.chainId)] ?? ''} onChange={(e) => { invalidateTest(c.chainId); setRpc({ ...rpc, [String(c.chainId)]: e.target.value }); }} />}
+                {(id, describedBy) => <input id={id} {...validationProps(`rpc-${String(c.chainId)}`, describedBy)} type="url" dir="ltr" spellCheck={false} value={rpc[String(c.chainId)] ?? ''} onChange={(e) => { invalidateTest(c.chainId); setRpc({ ...rpc, [String(c.chainId)]: e.target.value }); }} />}
               </Field>
               <Field label={t('settings.rpc.secondary.label', { chain: c.name })} hint={t('settings.rpc.secondary.hint')}>
-                {(id, d) => <input id={id} aria-describedby={d} type="url" spellCheck={false} value={rpc2[String(c.chainId)] ?? ''} onChange={(e) => { setRpc2({ ...rpc2, [String(c.chainId)]: e.target.value }); }} />}
+                {(id, d) => <input id={id} {...validationProps(`secondary-${String(c.chainId)}`, d)} type="url" spellCheck={false} value={rpc2[String(c.chainId)] ?? ''} onChange={(e) => { setRpc2({ ...rpc2, [String(c.chainId)]: e.target.value }); }} />}
               </Field>
               <div className="rpc-test-row">
                 <button type="button" className="btn" onClick={() => { onTest(c.chainId); }}>{t('settings.rpc.test', { chain: c.name })}</button>
@@ -170,21 +220,21 @@ export function Settings(): ReactNode {
         <fieldset>
           <legend>{t('settings.relayer.legend')}</legend>
           <Field label={t('settings.relayer.label')} hint={t('settings.relayer.hint')}>
-            {(id, d) => <input id={id} aria-describedby={d} type="url" spellCheck={false} value={relayer} onChange={(e) => { setRelayer(e.target.value); }} />}
+            {(id, d) => <input id={id} {...validationProps('relayer', d)} type="url" spellCheck={false} value={relayer} onChange={(e) => { setRelayer(e.target.value); }} />}
           </Field>
         </fieldset>
         <fieldset>
           <legend>{t('settings.delay.legend')}</legend>
-          <Field label={t('settings.delay.min')}>{(id) => <input id={id} type="number" min={0} value={minSec} onChange={(e) => { setMinSec(Number(e.target.value)); }} />}</Field>
-          <Field label={t('settings.delay.max')}>{(id) => <input id={id} type="number" min={0} value={maxSec} onChange={(e) => { setMaxSec(Number(e.target.value)); }} />}</Field>
+          <Field label={t('settings.delay.min')}>{(id) => <input id={id} {...validationProps('delay-min')} type="number" min={0} value={minSec} onChange={(e) => { setMinSec(Number(e.target.value)); }} />}</Field>
+          <Field label={t('settings.delay.max')}>{(id) => <input id={id} {...validationProps('delay-max')} type="number" min={0} value={maxSec} onChange={(e) => { setMaxSec(Number(e.target.value)); }} />}</Field>
           <p className="hint">{t('settings.delay.range', { min: minSec, max: maxSec })}</p>
         </fieldset>
         <fieldset>
           <legend>{t('settings.safety.legend')}</legend>
           <Field label={t('settings.lock.idleLabel')} hint={t('settings.lock.keysHint')}>
-            {(id, d) => <input id={id} aria-describedby={d} type="number" min={1} max={240} value={lock} onChange={(e) => { setLock(Number(e.target.value)); }} />}
+            {(id, d) => <input id={id} {...validationProps('lock', d)} type="number" min={1} max={240} value={lock} onChange={(e) => { setLock(e.target.value); }} />}
           </Field>
-          <p className="hint">{t('settings.lock.summary', { minutes: lock })}</p>
+          {lock !== '' && <p className="hint">{t('settings.lock.summary', { minutes: Number(lock) })}</p>}
           <Field label={t('settings.theme.label')}>
             {(id) => (
               <select id={id} value={theme} onChange={(e) => { setTheme(e.target.value as SettingsData['theme']); }}>
@@ -210,24 +260,27 @@ export function Settings(): ReactNode {
             )}
           </Field>
           <Field label={t('settings.pins.label')} hint={t('settings.pins.hint')}>
-            {(id, d) => <textarea id={id} aria-describedby={d} rows={3} spellCheck={false} value={pins} onChange={(e) => { setPins(e.target.value); }} />}
+            {(id, d) => <textarea id={id} {...validationProps('pins', d)} rows={3} spellCheck={false} value={pins} onChange={(e) => { setPins(e.target.value); }} />}
           </Field>
           <p className="hint">{t('settings.pins.count', { count: pins.split('\n').filter((line) => line.trim() !== '').length })}</p>
         </fieldset>
         <button type="submit" className="btn btn-primary">{t('settings.save')}</button>
+        {dirty && <p role="status">{t('settings.unsaved')}</p>}
+        {message !== undefined && (message.kind !== 'ok' || !dirty) && (
+          <Notice kind={message.kind}><span id={message.field === undefined ? undefined : errorId}>{displayMessage(message.text, t)}</span></Notice>
+        )}
       </form>
       <ScanPrivacySection />
       <SettingsExchangeSection onApplied={(next, applied) => {
         // Only the form fields of applied sections follow the import; other unsaved edits stay as typed.
         followed.current = next;
-        if (applied.preferences === true) { setMinSec(next.delayMinSec); setMaxSec(next.delayMaxSec); setLock(next.lockTimeoutMin); setTheme(next.theme); setAutoClear(next.autoClearFragment); }
+        if (applied.preferences === true) { setMinSec(next.delayMinSec); setMaxSec(next.delayMaxSec); setLock(String(next.lockTimeoutMin)); setTheme(next.theme); setAutoClear(next.autoClearFragment); }
         if (applied.rpcUrls === true) setRpc({ ...next.rpcUrls });
         if (applied.rpcUrlsSecondary === true) setRpc2({ ...next.rpcUrlsSecondary });
         if (applied.relayerUrl === true) setRelayer(next.relayerUrl);
         if ((applied.addSigners ?? []).length > 0 || applied.removeSigners === true) setPins(next.pinnedSigners.join('\n'));
         setMessage(undefined);
       }} />
-      {message !== undefined && <Notice kind={message.kind}>{displayMessage(message.text, t)}</Notice>}
     </section>
   );
 }

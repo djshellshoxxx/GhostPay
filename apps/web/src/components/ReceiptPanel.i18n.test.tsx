@@ -37,13 +37,24 @@ describe('ReceiptPanel locale changes', () => {
     await user.type(screen.getByLabelText('Invoice digest (entered manually)'), `0x${'d'.repeat(64)}`);
     await user.click(screen.getByRole('button', { name: 'Sign receipt' }));
     const json = screen.getByLabelText<HTMLTextAreaElement>('Signed receipt JSON').value;
+    const timestamp = new Date((JSON.parse(json) as { issuedAt: number }).issuedAt * 1000);
+    const time = screen.getByRole('time');
+    const formatted = (locale: string) => new Intl.DateTimeFormat(locale, {
+      dateStyle: 'medium', timeStyle: 'long', timeZone: 'UTC',
+    }).format(timestamp);
+    expect(time.getAttribute('datetime')).toBe(timestamp.toISOString());
+    expect(time.textContent).toBe(formatted('en'));
+    expect(time.textContent).toContain('UTC');
     await user.click(screen.getByRole('button', { name: 'Spanish fixture' }));
     await waitFor(() => { expect(screen.getAllByText(es.messages['receipt.network'])).toHaveLength(2); });
+    expect(time.textContent).toBe(formatted('es'));
     expect(screen.getByText(SOURCE_CATALOG.messages['receipt.attestation'] ?? '')).toBeTruthy();
     expect(screen.getByLabelText<HTMLTextAreaElement>('Signed receipt JSON').value).toBe(json);
     await user.click(screen.getByRole('button', { name: 'Arabic fixture' }));
     await waitFor(() => { expect(screen.getAllByText(ar.messages['receipt.transaction'])).toHaveLength(2); });
     expect(screen.getByLabelText<HTMLTextAreaElement>('Signed receipt JSON').value).toBe(json);
+    expect(time.textContent).toBe(formatted('ar'));
+    expect(time.getAttribute('datetime')).toBe(timestamp.toISOString());
     expect(screen.getByLabelText('Signed receipt JSON').getAttribute('dir')).toBe('ltr');
     expect(screen.getByLabelText('Signed invoice link or fragment').getAttribute('dir')).toBe('ltr');
   });

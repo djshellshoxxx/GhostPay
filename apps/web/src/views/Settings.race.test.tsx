@@ -22,7 +22,7 @@ describe('RPC test result identity', () => {
     await user.click(within(screen.getByRole('navigation', { name: 'Main' })).getByRole('button', { name: 'Settings' }));
     const field = screen.getByLabelText('Base Sepolia RPC URL');
     await user.type(field, 'https://old.example');
-    await user.click(screen.getByRole('button', { name: 'Test Base Sepolia' }));
+    await user.click(screen.getByRole('button', { name: 'Test primary RPC for Base Sepolia' }));
     expect(screen.getByText('Checking…')).toBeTruthy();
     await user.clear(field);
     await user.type(field, 'https://new.example');
@@ -39,8 +39,8 @@ describe('RPC test result identity', () => {
     renderApp(makeServices({ createRpc: () => ++requests === 1 ? old.promise : recent.promise }));
     await user.click(within(screen.getByRole('navigation', { name: 'Main' })).getByRole('button', { name: 'Settings' }));
     await user.type(screen.getByLabelText('Base Sepolia RPC URL'), 'https://rpc.example');
-    await user.click(screen.getByRole('button', { name: 'Test Base Sepolia' }));
-    await user.click(screen.getByRole('button', { name: 'Test Base Sepolia' }));
+    await user.click(screen.getByRole('button', { name: 'Test primary RPC for Base Sepolia' }));
+    await user.click(screen.getByRole('button', { name: 'Test primary RPC for Base Sepolia' }));
     await act(async () => { recent.resolve(mockRpc(84532, () => '0x')); await Promise.resolve(); });
     await screen.findByText('Connected. The endpoint reports the expected chain id.');
     await act(async () => { old.reject(new Error('private endpoint diagnostic')); await Promise.resolve(); });

@@ -195,7 +195,7 @@ export async function createPagesInvoice(page: Page, baseURL: string, o: PagesIn
 export async function configureRpc(page: Page, url: string): Promise<void> {
   await nav(page).getByRole('button', { name: 'Settings' }).click();
   await page.getByLabel('Base Sepolia RPC URL', { exact: true }).fill(url);
-  await page.getByRole('button', { name: 'Test Base Sepolia' }).click();
+  await page.getByRole('button', { name: 'Test primary RPC for Base Sepolia' }).click();
   await expect(page.getByText('Connected. The endpoint reports the expected chain id.')).toBeVisible({ timeout: 30_000 });
   await page.getByRole('button', { name: 'Save settings' }).click();
   await expect(page.getByText('Settings saved.', { exact: true })).toBeVisible();

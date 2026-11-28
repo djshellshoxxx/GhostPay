@@ -1,6 +1,6 @@
 import { findChain, tokensForChain } from '@ghostpay/chain-adapters';
 import { openFragment, type ParsedInvoice } from '@ghostpay/invoice-schema';
-import { useEffect, useRef, useState, type ReactNode } from 'react';
+import { useEffect, useId, useRef, useState, type ReactNode } from 'react';
 import { CopyButton, Field, Notice, downloadText, Mono } from './Common';
 import { QrFrame } from './QrFrame';
 import { ContextHelp } from './ContextHelp';
@@ -27,6 +27,8 @@ export interface ReceiptPanelProps {
 // openFragment's production KDF has no abort signal. Keep one permit across panels and unmounts until it settles.
 let invoiceValidationInFlight = false;
 
+const ARCHIVE_LABELS = { idle: 'receipt.archive', busy: 'receipt.archiving', done: 'receipt.archived' } as const;
+
 function amountLabel(match: ScanMatch, t: Translator['t']): string {
   const metadata = match.metadata;
   if (metadata === undefined) return t('receipt.amount.unavailable');
@@ -48,6 +50,8 @@ export function ReceiptPanel(props: ReceiptPanelProps): ReactNode {
   const [invoiceDigest, setInvoiceDigest] = useState('');
   const [receipt, setReceipt] = useState<SignedReceipt | undefined>(undefined);
   const [showReceiptQr, setShowReceiptQr] = useState(false);
+  const [downloadFailed, setDownloadFailed] = useState(false);
+  const receiptQrId = useId();
   const [error, setErrorMessage] = useState<DisplayMessage | undefined>(undefined);
   const setError = (cause: unknown): void => { setErrorMessage(cause === undefined ? undefined : captureUserMessage(cause)); };
   const [archive, setArchive] = useState<'idle' | 'busy' | 'done'>('idle');
@@ -204,6 +208,7 @@ export function ReceiptPanel(props: ReceiptPanelProps): ReactNode {
       });
       invalidateArchive();
       setReceipt(created);
+      setDownloadFailed(false);
       setReceiptBound(boundInvoice !== undefined);
       setShowReceiptQr(false);
     } catch (e) {
@@ -246,7 +251,20 @@ export function ReceiptPanel(props: ReceiptPanelProps): ReactNode {
   };
 
   const receiptText = receipt === undefined ? undefined : receiptJson(receipt);
-  const showQr = (): void => {
+  const downloadReceipt = (): void => {
+    if (receiptText === undefined) return;
+    try {
+      downloadText('ghostpay-receipt.json', receiptText, 'application/json');
+      setDownloadFailed(false);
+    } catch {
+      setDownloadFailed(true);
+    }
+  };
+  const toggleQr = (): void => {
+    if (showReceiptQr) {
+      setShowReceiptQr(false);
+      return;
+    }
     if (receiptText === undefined) return;
     try {
       // Check the actual payload before rendering/exporting it as a QR. The JSON remains available if it does not fit.
@@ -258,6 +276,8 @@ export function ReceiptPanel(props: ReceiptPanelProps): ReactNode {
       setError(new UserFacingError({ key: 'receipt.error.qrLarge' }));
     }
   };
+
+  const archiveLabel = archive === 'idle' && archivePending ? 'receipt.archiveWaiting' : ARCHIVE_LABELS[archive];
 
   return (
     <section className="receipt-panel" aria-label={t('receipt.title')}>
@@ -321,23 +341,33 @@ export function ReceiptPanel(props: ReceiptPanelProps): ReactNode {
                 <dt>{t('receipt.recipient')}</dt><dd><Mono>{receipt.stealthAddress}</Mono></dd>
                 <dt>{t('receipt.assetAmount')}</dt><dd>{t('receipt.amount.summary', { amount: amountLabel(match, t), units: receipt.amountMinorUnits })}</dd>
                 <dt>{t('receipt.digest')}</dt><dd><Mono>{receipt.invoiceDigest}</Mono> {receiptBound ? t('receipt.matched') : t('receipt.unmatched')}</dd>
-                <dt>{t('receipt.issued')}</dt><dd>{new Date(receipt.issuedAt * 1000).toISOString()}</dd>
+                <dt>{t('receipt.issued')}</dt>
+                <dd>
+                  <time dateTime={new Date(receipt.issuedAt * 1000).toISOString()}>
+                    {tr.date(receipt.issuedAt * 1000, { dateStyle: 'medium', timeStyle: 'long', timeZone: 'UTC' })}
+                  </time>
+                </dd>
                 <dt>{t('receipt.signerKey')}</dt><dd><Mono>{receipt.signerPublicKey}</Mono></dd>
               </dl>
               <Field label={t('receipt.json')}>{(id) => <textarea id={id} dir="ltr" className="mono receipt-json" readOnly rows={8} value={receiptText ?? ''} onFocus={(e) => { e.currentTarget.select(); }} />}</Field>
               <div className="actions receipt-actions">
                 <CopyButton text={receiptText ?? ''} label={t('receipt.copy')} />
-                <button type="button" className="btn" onClick={() => { downloadText('ghostpay-receipt.json', receiptText ?? '', 'application/json'); }}>{t('receipt.download')}</button>
-                <button type="button" className="btn" onClick={showQr}>{t('receipt.showQr')}</button>
+                <button type="button" className="btn" onClick={downloadReceipt}>{t('receipt.download')}</button>
+                {downloadFailed && <Notice kind="error">{t('receipt.downloadFailed')}</Notice>}
+                <button type="button" className="btn" aria-expanded={showReceiptQr} aria-controls={receiptQrId} onClick={toggleQr}>
+                  {showReceiptQr ? t('receipt.hideQr') : t('receipt.showQr')}
+                </button>
                 <button type="button" className="btn" onClick={() => { print(); }}>{t('receipt.print')}</button>
-                <button type="button" className="btn" onClick={archiveReceipt} disabled={archive !== 'idle' || archivePending}>
-                  {archive === 'done' ? t('receipt.archived') : t('receipt.archive')}
+                <button type="button" className="btn" aria-live="polite" onClick={archiveReceipt} disabled={archive !== 'idle' || archivePending}>
+                  {t(archiveLabel)}
                 </button>
               </div>
               <p className="hint">{t('receipt.archiveHint')}</p>
               <p className="hint">{t('receipt.qrHint')}</p>
               <ContextHelp label={t('help.about', { control: t('receipt.showQr') })}>{t('help.receiptQr')}</ContextHelp>
-              {showReceiptQr && receiptText !== undefined && <QrFrame kind="proof" text={receiptText} caption={t('receipt.qrCaption')} />}
+              <div id={receiptQrId} hidden={!showReceiptQr}>
+                {showReceiptQr && receiptText !== undefined && <QrFrame kind="proof" text={receiptText} caption={t('receipt.qrCaption')} />}
+              </div>
             </article>
           )}
         </>
@@ -346,4 +376,4 @@ export function ReceiptPanel(props: ReceiptPanelProps): ReactNode {
   );
 }
 
-// i18n-use: receipt.error.archiveFailed receipt.error.consent receipt.error.busy receipt.error.invoiceLarge receipt.error.passphrase receipt.error.keysUnavailable receipt.error.ineligible receipt.lean.refused receipt.error.signConsent receipt.error.scanChanged receipt.error.keysChanged receipt.error.archiveKeys receipt.error.qrLarge
+// i18n-use: receipt.archive receipt.archiving receipt.archived receipt.archiveWaiting receipt.error.archiveFailed receipt.error.consent receipt.error.busy receipt.error.invoiceLarge receipt.error.passphrase receipt.error.keysUnavailable receipt.error.ineligible receipt.lean.refused receipt.error.signConsent receipt.error.scanChanged receipt.error.keysChanged receipt.error.archiveKeys receipt.error.qrLarge

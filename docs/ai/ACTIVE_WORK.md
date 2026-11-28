@@ -1,3 +1,14 @@
+## Beta usability and recovery guide corrections
+
+Codex coordinates this work on `fix/beta-usability-recovery-guides` from
+`70458ebe3ae4a5502d7c39ae25d37342dbde971b`. The guide worker owns the recovery text,
+jump links and file table in the static Help and Privacy pages. The Settings worker owns
+draft feedback, timeout editing, validation focus and the primary RPC test label. The receipt
+worker owns local download feedback, QR visibility, archive feedback and issued-time display.
+The invoice worker owns line-item focus and limit feedback. Each owns its focused regressions.
+The coordinator owns shared locale catalogs, integration and verification. PR #768 owns the
+separate skip-link and footer navigation changes.
+
 # Recorded low residuals (web) — 2026-11-27 UTC
 
 Worker: local Claude Code worker W7 on the existing merged branch `claude/consolidation-stack-20261126`, fast-forwarded

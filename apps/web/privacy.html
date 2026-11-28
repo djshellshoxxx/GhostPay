@@ -30,6 +30,13 @@
     <main id="content" tabindex="-1">
       <aside class="notice" aria-label="Summary">
         <p><strong>In brief:</strong> the blockchain is public, your RPC provider sees your queries, and the sweep destination can link a payment to your wallet. GhostPay keeps seller keys in your browser and has no analytics. It does not promise anonymity or automatic refunds, and it has not been audited.</p>
+        <nav aria-label="Privacy topics">
+          <ul>
+            <li><a href="#local">What stays in this browser</a></li>
+            <li><a href="#services">Who receives requests</a></li>
+            <li><a href="#links">Links, QR codes and backups</a></li>
+          </ul>
+        </nav>
       </aside>
 
       <section aria-labelledby="matrix">
@@ -44,7 +51,7 @@
                 <th scope="row">Generate a seller key set <span class="status status-implemented">Implemented</span></th>
                 <td>Keys in memory only, until you export or save them</td>
                 <td>No network request carries the keys</td>
-                <td>Lost when the tab closes without a backup. Idle lock clears them from memory</td>
+                <td>Idle lock suspends protected operations. If GhostPay cannot confirm a recoverable copy, the keys stay in memory. Closing the tab loses its in-memory copy.</td>
               </tr>
               <tr>
                 <th scope="row">Download an encrypted keystore <span class="status status-implemented">Implemented</span></th>
@@ -154,7 +161,7 @@
       </section>
 
       <section aria-labelledby="services">
-        <h2 id="services">Who receives requests</h2>
+        <h2 id="services" tabindex="-1">Who receives requests</h2>
         <div class="table-wrap" tabindex="0" role="region" aria-labelledby="services-caption">
           <table>
             <caption id="services-caption">Recipients and what each can see</caption>
@@ -172,10 +179,10 @@
       </section>
 
       <section aria-labelledby="local">
-        <h2 id="local">What stays in this browser</h2>
+        <h2 id="local" tabindex="-1">What stays in this browser</h2>
         <ul>
           <li>Settings, including RPC endpoint URLs, relayer URL and pinned signer keys, are stored without encryption in localStorage. A credential inside an endpoint path or query is visible in the browser profile.</li>
-          <li>Seller private keys stay in memory while the key set is loaded. Saving the optional browser vault stores only the keystore ciphertext in IndexedDB. An exported keystore is a separate encrypted file.</li>
+          <li>Idle lock clears loaded seller keys when GhostPay confirms a recoverable copy. With only an unverified download and no other confirmed copy, the keys stay in memory for recovery. Verify the keystore before closing the tab. The optional browser vault stores the encrypted keystore in IndexedDB. A downloaded keystore is a separate file.</li>
           <li>Tags and reconciliation records are encrypted in IndexedDB. Some record existence and size may remain visible to anyone who can inspect the browser profile. Unlocked content is readable by the running page.</li>
           <li>Wallet and sweep attempt records keep transaction references and unresolved outcomes. They are not key backups, and clearing them cannot cancel an on-chain action.</li>
           <li>Imported historical observations and stored receipts do not gain independent payment verification merely by being stored or restored.</li>
@@ -185,7 +192,7 @@
       </section>
 
       <section aria-labelledby="links">
-        <h2 id="links">Links, QR codes and backups</h2>
+        <h2 id="links" tabindex="-1">Links, QR codes and backups</h2>
         <p>Clearing the address bar reduces exposure after an invoice has been read. It cannot remove the link from browser history, copied text, screenshots, device backups or extensions. Use the app's paste workflow when you do not want to open a link directly.</p>
         <p><strong>Preserve original receipt and backup files.</strong> A QR code is a representation, and its image can be incomplete or lose context. Public configuration cannot restore private keys. Keep the encrypted keystore and its passphrase separately from every other archive.</p>
       </section>
