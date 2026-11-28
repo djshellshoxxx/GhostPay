@@ -574,7 +574,7 @@ export function SellerKeys(props: { readonly archive?: ReactNode } = {}): ReactN
               <button type="submit" className="btn">{t('sellerKeys.loadKeys')}</button>
             </form>
           </details>
-          <details onToggle={(event) => { if (!event.currentTarget.open) cancelImport(); }}>
+          <details id="keystore-import" onToggle={(event) => { if (!event.currentTarget.open) cancelImport(); }}>
             <summary>{t('sellerKeys.importKeystore')}</summary>
             <form onSubmit={onImportKeystore} className="stack">
               <Field label={t('sellerKeys.keystoreFile')} help={{ label: t('help.about', { control: t('sellerKeys.keystoreFile') }), text: t('help.keystoreFile') }}>{(id, describedBy) => <>

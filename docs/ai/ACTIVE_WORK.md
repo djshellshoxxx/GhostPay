@@ -9,6 +9,10 @@ The follow-up on PR #768 starts at `0d7d069da7e0145b8a373e45de150e82744713ca` an
 the `<noscript>` navigation in `apps/web/index.html` to this claim. With JavaScript disabled,
 the first Tab must reveal the skip link, Enter must focus main, and the next Tab must reach the inline help guide.
 
+## Home recovery shortcut and sample invoice
+
+Codex owns branch `pages/recovery-sample-mobile-qa`, based on `0934ea094cb1db90293b74d2d1e9d9324e09a883`. Own the new Home controls, their small integration points in the Home and seller navigation, new locale keys and mobile journey tests. Acceptance covers opening the existing encrypted-keystore importer, a read-only sample with no wallet requests, and touch/browser qualification. Independent follow-up to the single approved Pages release.
+
 # Recorded low residuals (web) — 2026-11-27 UTC
 
 Worker: local Claude Code worker W7 on the existing merged branch `claude/consolidation-stack-20261126`, fast-forwarded

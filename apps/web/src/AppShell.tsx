@@ -105,7 +105,9 @@ export function AppShell(props: AppShellProps): ReactNode {
   const services = useServices();
   const [fragment, setFragment] = useState<string | undefined>(() => readInvoiceFragment(window.location));
   const [selectedView, setViewState] = useState<ViewId>(() => (readInvoiceFragment(window.location) === undefined ? 'home' : 'pay'));
-  const setView = useCallback((next: ViewId): void => {
+  const focusImport = useRef(false);
+  const setView = useCallback((next: ViewId, focus?: 'keystore-import'): void => {
+    focusImport.current = next === 'seller' && focus === 'keystore-import';
     setViewState(profile === 'lean' && !CORE_ORDER.includes(next) ? 'home' : next);
   }, [profile]);
   // The stored text this tab last read or wrote: a different one means another tab has saved since.
@@ -361,6 +363,16 @@ export function AppShell(props: AppShellProps): ReactNode {
     if (first.current) {
       first.current = false;
       return;
+    }
+    if (focusImport.current) {
+      focusImport.current = false;
+      const panel = main.current?.querySelector<HTMLDetailsElement>('#keystore-import');
+      const summary = panel?.querySelector('summary');
+      if (view === 'seller' && panel && summary) {
+        panel.open = true;
+        summary.focus();
+        return;
+      }
     }
     // A new invoice deep link must move focus even when Pay is already selected.
     // Benign anchor changes do not update fragment and must not steal focus.
