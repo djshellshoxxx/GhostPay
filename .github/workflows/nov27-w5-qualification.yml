@@ -140,6 +140,14 @@ jobs:
             const r = record.results.find(row => row.name === s.name);
             const isControl = s.name === control.name;
             const expectedControlDetected = isControl && control.expectViolations.every(id => r.violations.some(v => v.inv === id));
+            const incompleteTabComparisons = [];
+            for (const [i, step] of s.steps.entries()) {
+              if (step.op !== 'compareTabs') continue;
+              const observed = r.trace?.find(row => row.i === i);
+              const ready = tab => Array.isArray(observed?.obs?.[tab]?.cards) && observed.obs[tab].ledgerLocked === false;
+              if (observed?.step?.op !== 'compareTabs' || observed.error !== undefined ||
+                  observed.result?.compared !== true || !ready('S1') || !ready('S2')) incompleteTabComparisons.push(i);
+            }
             const declared = new Set(isControl ? control.expectViolations : []);
             const invariantCounts = {};
             const additionalControlInvariants = {};
@@ -149,12 +157,12 @@ jobs:
               if (isControl && !declared.has(inv)) additionalControlInvariants[id] = (additionalControlInvariants[id] ?? 0) + 1;
             }
             return { scenario: s.name, injectedPositiveControl: isControl, harnessError: r.harnessError !== null,
-              violations: r.violations.length, invariantCounts, requiredControlInvariants: [...declared],
+              violations: r.violations.length, invariantCounts, incompleteTabComparisons, requiredControlInvariants: [...declared],
               additionalControlInvariants, ordinaryViolations: isControl ? 0 : r.violations.length,
               ambiguities: r.ambiguities.length, blockedOrigins: r.blockedOrigins.length, expectedControlDetected };
           });
           const exitCode = Number(readFileSync(join(RUNNER_TEMP, 'w5-exit'), 'utf8').trim());
-          const passed = exitCode === 0 && outcomes.every(r => !r.harnessError && !r.ordinaryViolations && !r.blockedOrigins) &&
+          const passed = exitCode === 0 && outcomes.every(r => !r.harnessError && !r.ordinaryViolations && !r.blockedOrigins && r.incompleteTabComparisons.length === 0) &&
             outcomes.find(r => r.scenario === control.name).expectedControlDetected;
           const evidence = { lane: LANE, client: CLIENT, clientTree: CLIENT_TREE, harness: HARNESS, harnessTree: HARNESS_TREE,
             fixture: 'signed loopback lean Pages build', approvedOrigin: record.build.approvedFixtureOrigin, bundle: fingerprint, rawReportSha256: createHash('sha256').update(raw).digest('hex'),
