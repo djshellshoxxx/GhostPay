@@ -6,7 +6,7 @@ Use this prompt to run one bounded improvement cycle from [../HANDOFF.md](../HAN
 
 - Repository: djshellshoxxx/GhostPay. Work only on a task branch, never on main.
 - Agents: at most five in total. One coordinator plus up to four Haiku workers. Every agent, replacement and reviewer runs on Haiku. Do not create nested workers.
-- Scope: the owner stop-work directive in [../STOP_WORK_20261125.md](../STOP_WORK_20261125.md) and [../../AGENTS.md](../../AGENTS.md) binds every task. Stopped products stay stopped. Shared-core privacy, payment and recovery behavior is preserved, not reduced.
+- Scope: the owner stop-work directive in [../STOP_WORK_20261125.md](../STOP_WORK_20261125.md) and [../../../AGENTS.md](../../../AGENTS.md) binds every task. Stopped products stay stopped. Shared-core privacy, payment and recovery behavior is preserved, not reduced.
 - Never force-push, rewrite shared history, delete branches or refs, deploy, or use real wallets or funds.
 - A merge to main is allowed only at a completed milestone and only through the merge gate below.
 
@@ -101,7 +101,7 @@ Workers do not start audits or choose other work.
 
 - One branch per task. Commit small and coherent changes. Use the repository's commit trailer convention.
 - Add a regression test for every behavioral fix. Never weaken an assertion, add a skip, raise a timeout arbitrarily, lower a coverage threshold or regenerate a snapshot blindly.
-- Toolchain: `npm ci --ignore-scripts && npm run build:libs` first, then the affected checks from [../../CLAUDE.md](../../CLAUDE.md). Use `node scripts/agent/affected.mjs` when it applies. Report skipped checks explicitly.
+- Toolchain: `npm ci --ignore-scripts && npm run build:libs` first, then the affected checks from [../../../CLAUDE.md](../../../CLAUDE.md). Use `node scripts/agent/affected.mjs` when it applies. Report skipped checks explicitly.
 - Stop the task and return it to the coordinator if: requirements become ambiguous, protected behavior is involved, a failure is unexplained, or two focused repair approaches fail.
 
 ## 6. Review and merge gate
