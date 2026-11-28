@@ -314,6 +314,9 @@ vault-presence marker), LATE-L1. Acceptance: the regression fails on main and pa
 ever started for the rolled-back record; a record whose request reached the provider is never removed; web typecheck,
 lint, full tests; hosted CI; merge under the integration lock.
 
+Result (2026-11-27): merged as `bc1e1523` (PR #739) under lock generation 61 at exact head `463773ec`; 42 hosted checks green;
+main push CI green on `bc1e1523`. Claim closed. Handoff: `docs/handoffs/JOURNAL_REV_I5_AND_FOLLOWUPS_20261127.md`.
+
 ---
 
 # P14 finding F1: scan checkpoint ownership (mitigates stale-run overwrites of a newer checkpoint) — 2026-11-26 UTC
@@ -331,6 +334,9 @@ the #696 hunk ported verbatim plus the same wait in the sibling case; it failed 
 Acceptance: both PRIV-06 expected-fail regressions pass as plain tests; a scan that owns the slot can still move its own
 checkpoint backward (reorg, replay, user restart); non-persisting stores keep today's behaviour; seeded multi-writer store
 fuzz; web typecheck, lint, tests and build; full hosted CI; independent review; merge only under the integration lock.
+
+Result (2026-11-26): merged as `3603960c` (PR #723) under lock generation 50 at exact head `dc172e61`; 42 hosted checks green;
+main push CI green on `3603960c`. Claim closed (F1 mitigated; the cross-document race is documented in the evidence matrix).
 
 ---
 # Browser self-check: IndexedDB availability probe (2026-11-26 UTC)
