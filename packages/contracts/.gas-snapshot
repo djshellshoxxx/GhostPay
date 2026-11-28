@@ -277,6 +277,7 @@ MythrilFactoryDispositionsTest:test_replay_R11_twoCallerSequenceWaivesOnlyBecaus
 MythrilFactoryDispositionsTest:test_replay_R5_R9_R10_attackerTokenWithMythrilArguments() (gas: 1718389)
 MythrilFactoryDispositionsTest:test_replay_R7_R8_secondIdenticalDeployRevertsBeforeAnyTokenCall() (gas: 941797)
 MythrilFactoryDispositionsTest:test_replay_allMythrilCreationStepsAreInfeasible() (gas: 4910)
+MythrilFactoryPostFeeReadTest:test_postFailurePayerReadOutageRollsBackAndSameDeploymentCanRetry() (gas: 1253200)
 PolicyAccountFactoryTest:test_constructor_implementationWithoutCode_reverts() (gas: 9734)
 PolicyAccountFactoryTest:test_constructor_storesImmutables() (gas: 33225)
 PolicyAccountFactoryTest:test_constructor_zeroAddresses_revert() (gas: 8332)
