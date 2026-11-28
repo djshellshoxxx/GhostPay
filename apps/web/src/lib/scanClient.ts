@@ -69,6 +69,8 @@ export interface ScanProgress {
    * scanned; other announcements there were skipped. Reported with every page, so a later failure cannot hide them.
    */
   readonly routerOnlyBlocks?: readonly bigint[];
+  /** Saved observations are being fetched and verified again; no new durable range is claimed. */
+  readonly revalidating?: boolean;
 }
 
 /** The second RPC reported a head more than `finalityDepth` blocks below the scan RPC's: scans stop at its head. */
@@ -123,6 +125,12 @@ export interface ScanParams {
    * Omitted: the run reads the slot at entry, which suits callers that start right after reading it.
    */
   readonly checkpointSeen?: ScanCursor | null;
+  /** Atomically commits the safe cursor with ALL discovered observations, including replayed history. */
+  readonly onCheckpoint?: (cursor: ScanCursor, matches: readonly ScanMatch[], routerOnlyBlocks: readonly bigint[]) => Promise<void>;
+  /** Previously discovered blocks to re-fetch under the current RPC policy; stored receipt flags are never trusted. */
+  readonly replayBlocks?: readonly bigint[];
+  /** Rechecks the captured seller, network and selected-endpoint policy immediately before each RPC dispatch. */
+  readonly assertCurrent?: () => void;
   readonly onProgress?: (p: ScanProgress) => void;
   readonly onMatch?: (m: ScanMatch) => void;
   /** Preserve relevant evidence before a checkpoint can advance past it. */
@@ -208,15 +216,35 @@ export async function runScan(p: ScanParams): Promise<{ readonly matches: readon
   let progressed: ((scanned: number) => void) | undefined;
   const timeoutMs = p.replyTimeoutMs ?? 60_000;
   const ABORTED = new Error('scan cancelled');
-  // A fetch reads one block per announcement block, one at a time: a stopped run sends none of the remaining ones.
-  const assertRunning = (): void => { if (p.signal.aborted) throw ABORTED; };
-  const fetchClient: RpcClient = {
-    chainId: p.client.chainId,
-    request: async (method, params) => { assertRunning(); return p.client.request(method, params); },
-    blockNumber: async () => { assertRunning(); return p.client.blockNumber(); },
-    getBlock: async (n) => { assertRunning(); return p.client.getBlock(n); },
-    getLogs: async (f) => { assertRunning(); return p.client.getLogs(f); },
-  };
+  const operationFailure = (error: unknown): Error => p.signal.aborted
+    ? ABORTED
+    : error instanceof Error ? error : new Error('scan operation failed');
+  const active = <T>(operation: () => Promise<T>): Promise<T> => new Promise<T>((resolve, reject) => {
+    const onAbort = (): void => { reject(ABORTED); };
+    if (p.signal.aborted) { reject(ABORTED); return; }
+    p.signal.addEventListener('abort', onAbort, { once: true });
+    const finish = (): void => { p.signal.removeEventListener('abort', onAbort); };
+    try {
+      p.assertCurrent?.();
+      operation().then((value) => {
+        finish();
+        if (p.signal.aborted) reject(ABORTED);
+        else {
+          try { p.assertCurrent?.(); resolve(value); } catch (error) { reject(operationFailure(error)); }
+        }
+      }, (error: unknown) => { finish(); reject(operationFailure(error)); });
+    } catch (error) { finish(); reject(operationFailure(error)); }
+  });
+  const scopedClient = (client: RpcClient): RpcClient => ({
+    chainId: client.chainId,
+    request: (method, params, ...options) => active(() => client.request(method, params, ...options)),
+    blockNumber: () => active(() => client.blockNumber()),
+    getBlock: (number) => active(() => client.getBlock(number)),
+    getLogs: (filter, ...options) => active(() => client.getLogs(filter, ...options)),
+  });
+  // The adapter may issue many requests inside one page. Cancel settles the current await and prevents later dispatches;
+  // transport-specific deadlines and retry policies remain in the selected client. Already dispatched bytes cannot be recalled.
+  p = { ...p, client: scopedClient(p.client), ...(p.secondaryClient === undefined ? {} : { secondaryClient: scopedClient(p.secondaryClient) }) };
   // Settles on a reply, a worker error, the reply timeout, or Cancel: a hung worker can never block the caller.
   const wait = (register: (resolve: (m: FromWorker) => void) => void): Promise<FromWorker> =>
     new Promise<FromWorker>((resolve, reject) => {
@@ -253,19 +281,33 @@ export async function runScan(p: ScanParams): Promise<{ readonly matches: readon
   let backlog = 0;
   let trustedSeen = 0;
   let openSeen = 0;
+  let replayScanned = 0;
+  let incrementalScanned = 0;
+  let incrementalOpen = 0;
   let suspected = 0;
   const routerBlocks: bigint[] = [];
   const laneOptions: ScanLaneOptions = { ...(p.floodPerBlock === undefined ? {} : { floodPerBlock: p.floodPerBlock }), ...(p.spamScoring === undefined ? {} : { spamScoring: p.spamScoring }) };
   // Blocks too large to fetch whole: only their router-posted announcements were scanned (bounded list).
   const routerOnlyBlocks = new Set<bigint>();
+  const retainCoverage = (blocks: readonly bigint[]): void => {
+    for (const block of blocks) {
+      if (routerOnlyBlocks.has(block)) continue;
+      if (routerOnlyBlocks.size >= 1000) {
+        // Durable history must not silently lose knowledge that a completed range was only partially scanned.
+        if (p.onCheckpoint !== undefined) throw new UserFacingError({ key: 'scan.checkpoint.limit' });
+        continue;
+      }
+      routerOnlyBlocks.add(block);
+    }
+  };
   const narrowed = (): { readonly routerOnlyBlocks?: readonly bigint[] } => (routerOnlyBlocks.size === 0 ? {} : { routerOnlyBlocks: [...routerOnlyBlocks] });
   let secondaryLag: SecondaryLag | undefined;
   // The latest head this run could scan to (the lower of the two heads): the privacy-set window ends here.
   let reachableHead: bigint | undefined;
   // Index in `all` of the first record kept for a one-time address and ephemeral key. That pair recognises a free
   // replay posted at the announcer in another block; it does not identify a payment, because anyone can send a second
-  // router payment to the same pair. Keep this ledger per scan only: checkpoints never persist claimed payment data
-  // or RPC evidence.
+  // router payment to the same pair. Keep this evidence ledger per run: the encrypted journal retains public
+  // discoveries, while every receipt/evidence classification is established again by fresh scanning.
   const claimLedger = new Map<string, number>();
   const evidenceLedger = new Map<string, bigint>();
   // Blocks of cover payments seen as pending in this run: the replay rule treats them like pending matches.
@@ -299,6 +341,12 @@ export async function runScan(p: ScanParams): Promise<{ readonly matches: readon
   };
   try {
     if (p.signal.aborted) throw ABORTED;
+    if ((p.replayBlocks?.length ?? 0) > 10_000 || p.replayBlocks?.some((block) => typeof block !== 'bigint' || block < 0n || block > 10_000_000_000n)) {
+      throw new ChainAdapterError('RPC_FAILURE', 'invalid saved scan replay plan');
+    }
+    // The ordinary incremental pass revalidates the saved finality tail. Replaying it first could retain an orphan
+    // if that tail reorganizes between the replay and the ordinary fetch while the older saved anchor stays valid.
+    const replayBlocks = [...new Set(p.replayBlocks ?? [])].filter((block) => block < p.cursor.nextBlock).sort((a, b) => a < b ? -1 : a > b ? 1 : 0);
     // Created inside the try so a throwing factory still reaches the key wipe below (S3-15).
     const w = p.createWorker();
     worker = w;
@@ -319,12 +367,15 @@ export async function runScan(p: ScanParams): Promise<{ readonly matches: readon
       w.postMessage({ type: 'start', viewingKey: p.viewingKey, spendingPublicKey: p.spendingPublicKeyHex });
     });
     if (started.type !== 'ready') throw new UserFacingError({ key: 'error.scanClient.theScannerRejectedTheKeys' });
-    const maxPages = p.maxPages ?? 10_000;
+    const maxPages = Math.max(1, Math.min(10_000, Number.isSafeInteger(p.maxPages) ? p.maxPages! : 10_000));
     const maxAnnouncements = Math.max(1, Math.min(100_000, Number.isSafeInteger(p.maxAnnouncementsPerScan) ? p.maxAnnouncementsPerScan! : 100_000));
     const maxMatches = Math.max(1, Math.min(10_000, Number.isSafeInteger(p.maxMatchesPerScan) ? p.maxMatchesPerScan! : 10_000));
     const openBudget = Math.max(1, Math.min(100_000, Number.isSafeInteger(p.openLaneBudget) ? p.openLaneBudget! : 20_000));
-    for (let page = 0; page < maxPages; page++) {
+    for (let page = 0; page < maxPages + replayBlocks.length; page++) {
       if (p.signal.aborted) break;
+      const replayBlock = replayBlocks[page];
+      const replaying = replayBlock !== undefined;
+      const fetchCursor = replaying ? { nextBlock: replayBlock } : cursor;
       // With a second provider, end the page at the lower of the two heads: a second RPC a few blocks behind the
       // primary can then corroborate the page instead of withholding it on every run.
       let secondaryHead: bigint | undefined;
@@ -342,14 +393,14 @@ export async function runScan(p: ScanParams): Promise<{ readonly matches: readon
         if (p.signal.aborted) break;
       }
       const res = await fetchAnnouncements({
-        chain: p.chain, client: fetchClient, announcer: p.manifest.announcer, router: p.manifest.router, cursor,
-        ...(secondaryHead === undefined ? {} : { toBlock: secondaryHead }),
+        chain: p.chain, client: p.client, announcer: p.manifest.announcer, router: p.manifest.router, cursor: fetchCursor,
+        ...(replaying ? { toBlock: replayBlock } : secondaryHead === undefined ? {} : { toBlock: secondaryHead }),
       }).catch(async (cause: unknown) => {
         // A read refused or dropped because the run was stopped is the cancellation itself, not a provider failure.
         if (p.signal.aborted) throw ABORTED;
         if (p.onUnresolvedEvidence !== undefined) {
-          let from = cursor.nextBlock;
-          if (cursor.last !== undefined) {
+          let from = fetchCursor.nextBlock;
+          if (fetchCursor.last !== undefined) {
             // A missing checkpoint header is inconclusive. A reachable lower tip can still revoke depth.
             if (secondaryHead !== undefined) from = uncertainFrom(from, secondaryHead);
             try { from = uncertainFrom(from, await p.client.blockNumber()); } catch { /* Retain the known boundary. */ }
@@ -363,11 +414,15 @@ export async function runScan(p: ScanParams): Promise<{ readonly matches: readon
       secondaryLag = secondaryHead !== undefined && !res.truncated && res.head > secondaryHead + BigInt(p.chain.finalityDepth) ? { secondaryHead, head: res.head } : undefined;
       const pageRouterOnly = res.routerOnlyBlocks ?? [];
       const pageHead = secondaryHead !== undefined && secondaryHead < res.head ? secondaryHead : res.head;
+      // An absent/unreachable historical block is not proof its saved observations vanished. Keep the old journal.
+      if (replaying && (res.reorg !== undefined || pageHead < replayBlock || res.truncated || res.cursor.nextBlock !== replayBlock + 1n || pageRouterOnly.length > 0)) {
+        throw new ChainAdapterError('RPC_FAILURE', 'saved scan history could not be revalidated');
+      }
       reachableHead = pageHead;
       skipped += res.skipped;
       // A reorg can be reported at a block ABOVE this page's start (a later window's end changed hash after the logs
       // below it were read). The page still starts at the cursor; only a rollback below it moves the start back.
-      const pageFrom = res.reorg !== undefined && res.reorg.rolledBackTo < cursor.nextBlock ? res.reorg.rolledBackTo : cursor.nextBlock;
+      const pageFrom = res.reorg !== undefined && res.reorg.rolledBackTo < fetchCursor.nextBlock ? res.reorg.rolledBackTo : fetchCursor.nextBlock;
       if (res.reorg !== undefined) {
         // The floor only ever moves back. Raising it to a rollback point above the page start would save the
         // checkpoint past the finality tail and past pending matches, which the next session would never list.
@@ -420,7 +475,7 @@ export async function runScan(p: ScanParams): Promise<{ readonly matches: readon
         }
         if (p.signal.aborted) break;
       }
-      if (scanned + res.announcements.length > maxAnnouncements) {
+      if ((replaying ? replayScanned : incrementalScanned) + res.announcements.length > maxAnnouncements) {
         limitReached = true;
         if (res.reorg !== undefined) {
           cursor = { nextBlock: pageFrom };
@@ -435,7 +490,9 @@ export async function runScan(p: ScanParams): Promise<{ readonly matches: readon
       suspected += lanes.suspected;
       // The first page of a run is never deferred: with a budget below one page's open lane the cursor would
       // otherwise stay before that page on every run. Per-run work is then at most the budget plus one page.
-      const deferred = openSeen > 0 && openSeen + lanes.open.length > openBudget ? lanes.open.length : 0;
+      // History is bounded by its own announcement cap. It must not consume the new-range open-lane budget on every
+      // resume, or a handful of old matches in dense blocks can prevent the cursor from ever advancing again.
+      const deferred = !replaying && incrementalOpen > 0 && incrementalOpen + lanes.open.length > openBudget ? lanes.open.length : 0;
       const toScan = deferred > 0 ? lanes.trusted : [...lanes.trusted, ...lanes.open];
       const position = new Map(res.announcements.map((a, i) => [a.id, i] as const));
       for (const a of res.announcements) byId.set(a.id, a);
@@ -448,8 +505,13 @@ export async function runScan(p: ScanParams): Promise<{ readonly matches: readon
       if (p.signal.aborted) break;
       if (reply.type !== 'matches') throw new UserFacingError({ key: 'error.scanClient.theScannerReturnedAnUnexpectedReply' });
       scanned += toScan.length;
+      if (replaying) replayScanned += toScan.length;
+      else incrementalScanned += toScan.length;
       trustedSeen += lanes.trusted.length;
-      if (deferred === 0) openSeen += lanes.open.length;
+      if (deferred === 0) {
+        openSeen += lanes.open.length;
+        if (!replaying) incrementalOpen += lanes.open.length;
+      }
       for (const a of lanes.trusted) if (routerBlocks.length < 200_000) routerBlocks.push(a.blockNumber);
       const claims: { readonly stealthAddress: Address; readonly announcement: ScannedAnnouncement; readonly metadata: ParsedMetadata | undefined; readonly viaRouter: boolean }[] = [];
       // Back to chain order, so lane ordering never changes which duplicate or match comes first.
@@ -631,9 +693,16 @@ export async function runScan(p: ScanParams): Promise<{ readonly matches: readon
         p.onProgress?.({ nextBlock: cursor.nextBlock, scanned, matches: all.length, skipped, caughtUp: false, discrepancies: discrepancies.length, backlog });
         break;
       }
+      if (p.signal.aborted) break;
+      if (replaying) {
+        retainCoverage(pageRouterOnly);
+        // Revalidation has no independent checkpoint: cancellation/failure retains the complete previous journal.
+        p.onProgress?.({ nextBlock: cursor.nextBlock, scanned, matches: all.length, skipped, caughtUp: false, revalidating: true, ...narrowed() });
+        continue;
+      }
       cursor = res.cursor;
-      for (const block of pageRouterOnly) if (routerOnlyBlocks.size < 1000) routerOnlyBlocks.add(block);
-      if (canSaveCheckpoint && p.checkpoints !== undefined) {
+      retainCoverage(pageRouterOnly);
+      if (canSaveCheckpoint && (p.checkpoints !== undefined || p.onCheckpoint !== undefined)) {
         // With cover on, a failed claim that sends no request is left out: verifying it again cannot change it, and
         // its replay would read a block that only a payment of this seller leads to.
         const replayed = pageMatches.filter((m) => m.viaRouter && m.receipt === 'claimed' && (cover === undefined ||
@@ -653,7 +722,11 @@ export async function runScan(p: ScanParams): Promise<{ readonly matches: readon
           p.onProgress?.({ nextBlock: cursor.nextBlock, scanned, matches: all.length, skipped, caughtUp: false, discrepancies: discrepancies.length });
           break;
         }
-        if (saved !== undefined && !checkpointYielded) {
+        if (saved !== undefined && p.onCheckpoint !== undefined) {
+          await p.onCheckpoint(saved as ScanCursor, all, [...routerOnlyBlocks]);
+          if (p.signal.aborted) break;
+        }
+        if (saved !== undefined && p.checkpoints !== undefined && !checkpointYielded) {
           // Re-read, compare and write in one synchronous step. A store that does not round-trip reads undefined both here
           // and after its own writes, so it keeps saving.
           const stored = loadCheckpoint(p.checkpoints, p.chain.chainId, p.keyId);
@@ -765,7 +838,8 @@ interface ReplayChecks {
 
 /**
  * The cursor that is safe to persist: `finalityDepth` blocks behind the fetched position. Matches seen in that tail were only
- * `pending` and live in memory alone, so the next session re-scans (and re-verifies) the tail instead of skipping it.
+ * `pending`; the encrypted journal retains only non-authoritative observations, so the next session re-scans and
+ * re-verifies the tail instead of accepting a historical receipt classification.
  * Blocks already `finalityDepth` deep below `head` need no such tail, so when the scan is behind the head the checkpoint
  * moves up to the cursor itself: otherwise a run held by a budget a few pages in, each page narrower than `finalityDepth`,
  * would save the same checkpoint on every resume and never pass the spam (A5). Either way it never passes this run's
@@ -815,6 +889,10 @@ async function persistable(p: ScanParams, cursor: ScanCursor, floor: bigint, hea
     return typeof conflicts === 'string' ? { nextBlock: next, last: { number: height, hash: conflicts as `0x${string}` } } : conflicts;
   }
   const ref = await p.client.getBlock(height);
+  if (p.signal.aborted) return undefined;
+  if (p.onCheckpoint !== undefined && (ref === null || ref.number !== height || !/^0x[0-9a-f]{64}$/i.test(ref.hash))) {
+    throw new ChainAdapterError('RPC_FAILURE', 'checkpoint anchor unavailable');
+  }
   return ref === null ? { nextBlock: next } : { nextBlock: next, last: { number: height, hash: ref.hash } };
 }
 

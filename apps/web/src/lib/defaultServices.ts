@@ -8,6 +8,8 @@ import type { Services } from './services';
 import { TagVault, MemoryTagStore, type TagStore } from './tags';
 import { discoverWallets } from './wallet';
 import { createBrowserScanWorker } from './workerFactory';
+import { IdbReconciliationVaultStore } from './reconciliationVault';
+import { purgeLegacyPrivateScanHistory } from './privateScanLifecycle';
 
 function safeStorage(): Storage | undefined {
   try {
@@ -31,15 +33,17 @@ export function loadDefaultManifest(
 }
 
 export function createDefaultServices(): Services {
+  purgeLegacyPrivateScanHistory(safeStorage());
   return {
     nowMs: () => Date.now(),
     sleep: (ms) => new Promise((r) => setTimeout(r, ms)),
     fetchFn: (u, i) => fetch(u, i),
     loadManifest: (id) => loadDefaultManifest(id),
-    createRpc: (chain, url) => createClient(chain, url),
+    createRpc: createClient,
     discoverWallets: () => discoverWallets(window),
     createScanWorker: createBrowserScanWorker,
     checkpoints: localCheckpointStore(safeStorage()),
+    privateScanStore: new IdbReconciliationVaultStore(),
     vault: new TagVault(makeStore()),
     baseUrl: () => `${window.location.origin}${window.location.pathname}`,
     chains: CHAINS.filter((c) => c.enabled),

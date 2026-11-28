@@ -251,6 +251,40 @@ describe('verifyClaimedPayment', () => {
       { ...direct, receipt: { ...direct.receipt, status: '0x0' } },
     ]) expect((await verifyClaimedPayment(base(await node(bad), claim))).status).toBe('unverified-claim');
   });
+  it.each([false, true])('uses the tip after all receipt reads, including an independent provider (%s)', async (twoProviders) => {
+    const { claim } = make({ token: 'native' });
+    const world: World = { claim, head: 200n };
+    const primary = await node(world);
+    const reader = twoProviders ? await node({ claim, head: 161n }) : primary;
+    const duringReceipt: RpcClient = { ...reader, request: async (method, params) => {
+      const value = await reader.request(method, params);
+      if (method === 'eth_getTransactionReceipt') world.head = 162n;
+      return value;
+    } };
+    const input = twoProviders ? { ...base(primary, claim), secondaryClient: duringReceipt } : base(duringReceipt, claim);
+    expect(await verifyClaimedPayment(input)).toMatchObject({ status: 'received', confirmations: twoProviders ? 62n : 63n, final: false });
+  });
+
+  it('keeps a threshold disagreement unverified without consuming the evidence', async () => {
+    const { claim } = make({ token: 'native' });
+    const primary = await node({ claim, head: 163n });
+    const secondaryClient = await node({ claim, head: 162n });
+    const consumedTransfers = new Set<string>();
+    const result = await verifyClaimedPayment({ ...base(primary, claim), secondaryClient, consumedTransfers });
+    expect(result).toMatchObject({ status: 'unverified-claim', final: false });
+    expect(result.reason).toMatch(/did not agree/);
+    expect(consumedTransfers.size).toBe(0);
+  });
+
+  it.each([99n, 10_000_000_001n])('withholds a payment when the last tip is inconsistent (%s)', async (head) => {
+    const { claim } = make({ token: 'native' });
+    const consumedTransfers = new Set<string>();
+    const verified = await verifyClaimedPayment({ ...base(await node({ claim, head }), claim), consumedTransfers });
+    expect(verified).toMatchObject({ status: 'unverified-claim', confirmations: 0n, final: false });
+    expect(verified.evidenceId).toBeUndefined();
+    expect(consumedTransfers.size).toBe(0);
+  });
+
   it('does not accept evidence orphaned during receipt retrieval', async () => {
     const { claim } = make({ token: 'native' });
     const result = await verifyClaimedPayment(base(await node({ ...directEvidence(claim), reorgAfterEvidence: true }), claim));
@@ -258,7 +292,7 @@ describe('verifyClaimedPayment', () => {
   });
   it('sanitizes unexpected provider errors instead of leaking raw payloads', async () => {
     const { claim } = make();
-    const client = await node({});
+    const client = await node({ claim, transferLogs: [transferLog(claim)] });
     const broken = { ...client, blockNumber: () => Promise.reject(new Error('https://rpc.test/?apiKey=SECRET')) };
     const result = await verifyClaimedPayment(base(broken, claim));
     expect(result.status).toBe('unverified-claim');

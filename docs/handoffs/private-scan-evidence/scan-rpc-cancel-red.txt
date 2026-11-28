@@ -1,0 +1,33 @@
+
+ RUN  v5.0.5 /workspace/scratch/f3944b12cd1b/GhostPay/apps/web
+
+ ❯ src/lib/scanClient.test.ts (97 tests | 1 failed | 96 skipped) 1275ms
+   ❯ durable private scan discovery (6)
+     × settles cancellation during a stalled RPC and prevents subsequent page requests 1272ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/lib/scanClient.test.ts > durable private scan discovery > settles cancellation during a stalled RPC and prevents subsequent page requests
+AssertionError: expected false to be true // Object.is equality
+
+- Expected
++ Received
+
+- true
++ false
+
+ ❯ src/lib/scanClient.test.ts:176:46
+    174|       await vi.waitFor(() => expect(blockNumber).toHaveBeenCalled());
+    175|       ctl.abort();
+    176|       await vi.waitFor(() => expect(settled).toBe(true));
+       |                                              ^
+    177|       expect(base.calls).toEqual([]);
+    178|     } finally { release(2500n); await task; }
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 96 skipped (97)
+   Start at  22:03:57
+   Duration  4.49s (import 44%, tests 33%, transform 23%)

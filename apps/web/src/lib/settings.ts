@@ -134,14 +134,18 @@ export function sanitizeSettings(raw: unknown): Settings {
   };
 }
 
-/** Storage-failure-tolerant load. */
-export function loadSettings(storage: Pick<Storage, 'getItem'> | undefined = safeLocalStorage()): Settings {
+/** Parse one storage snapshot so the accepted preferences and their version describe the same read. */
+export function settingsFromText(text: string | null | undefined): Settings {
   try {
-    const text = storage?.getItem(SETTINGS_KEY);
-    return text === null || text === undefined ? DEFAULT_SETTINGS : sanitizeSettings(JSON.parse(text));
+    return text == null ? DEFAULT_SETTINGS : sanitizeSettings(JSON.parse(text));
   } catch {
     return DEFAULT_SETTINGS;
   }
+}
+
+/** Storage-failure-tolerant load. */
+export function loadSettings(storage: Pick<Storage, 'getItem'> | undefined = safeLocalStorage()): Settings {
+  return settingsFromText(storedSettingsText(storage));
 }
 
 /** The stored preference text as it is now: `null` when nothing is saved, `undefined` when storage cannot be read. */

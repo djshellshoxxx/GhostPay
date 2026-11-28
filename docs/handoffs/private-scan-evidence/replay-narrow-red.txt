@@ -1,0 +1,56 @@
+
+ RUN  v5.0.5 /workspace/scratch/f3944b12cd1b/GhostPay/apps/web
+
+ ❯ src/lib/scanClient.test.ts (96 tests | 1 failed | 95 skipped) 271ms
+   ❯ announcement spam and a second RPC (L4-01, L3-F2) (6)
+     × does not replace saved non-router discovery with a narrowed historical replay 248ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/lib/scanClient.test.ts > announcement spam and a second RPC (L4-01, L3-F2) > does not replace saved non-router discovery with a narrowed historical replay
+AssertionError: promise resolved "{ matches: [], cursor: { …(2) }, …(6) }" instead of rejecting
+
+- Expected
++ Received
+
+- Error {
+-   "message": "rejected promise",
++ {
++   "backlog": 0,
++   "cursor": {
++     "last": {
++       "hash": "0x00000000000000000000000000000000000000000000000000000000000009c4",
++       "number": 2500n,
++     },
++     "nextBlock": 2501n,
++   },
++   "discrepancies": [],
++   "limitReached": false,
++   "matches": [],
++   "routerOnlyBlocks": [
++     2100n,
++   ],
++   "scanned": 0,
++   "telemetry": {
++     "anonymity": undefined,
++     "open": 0,
++     "suspected": 0,
++     "trusted": 0,
++   },
+  }
+
+ ❯ src/lib/scanClient.test.ts:805:8
+    803|       client: capped(chainWith(2500, s.logs), 2100n), replayBlocks: [2…
+    804|       cursor: { nextBlock: 2400n, last: { number: 2399n, hash: blockHa…
+    805|     })).rejects.toThrow('saved scan history could not be revalidated');
+       |        ^
+    806|     expect(onCheckpoint).not.toHaveBeenCalled();
+    807|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 95 skipped (96)
+   Start at  22:02:34
+   Duration  6.84s (import 55%, transform 40%, tests 4%, worker 1%)

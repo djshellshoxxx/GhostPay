@@ -1,0 +1,52 @@
+
+ RUN  v5.0.5 /workspace/scratch/f3944b12cd1b/GhostPay/apps/web
+
+ ❯ src/lib/scanPrivacy.clients.test.ts (4 tests | 2 failed | 2 skipped) 313ms
+   ❯ openScanClients (4)
+     × rechecks context after window jitter before another RPC dispatch 56ms
+     × rejects a stale private-endpoint opening without contacting any provider 253ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/lib/scanPrivacy.clients.test.ts > openScanClients > rechecks context after window jitter before another RPC dispatch
+AssertionError: promise resolved "[]" instead of rejecting
+
+- Expected:
+Error {
+  "message": "rejected promise",
+}
+
++ Received:
+[]
+
+ ❯ src/lib/scanPrivacy.clients.test.ts:27:69
+     25|     const client = createWindowedScanClient(app, options);
+     26|     await expect(client.getLogs({ address: FAKE_ANNOUNCER, fromBlock: …
+     27|       topics: [ANNOUNCEMENT_TOPIC, `0x${'1'.padStart(64, '0')}`] })).r…
+       |                                                                     ^
+     28|     expect(app.calls.filter((call) => call.method === 'eth_getLogs')).…
+     29|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  src/lib/scanPrivacy.clients.test.ts > openScanClients > rejects a stale private-endpoint opening without contacting any provider
+AssertionError: expected [Function] to throw error including 'scope revoked' but got 'Scan blocked: the private scan endpoi…'
+
+Expected: "scope revoked"
+Received: "Scan blocked: the private scan endpoint could not be used (unreachable or wrong chain). GhostPay did not fall back to another RPC."
+
+ ❯ src/lib/scanPrivacy.clients.test.ts:35:43
+     33|     const options = { plan: ready({ endpoint: 'https://selected.invali…
+     34|       appRpc, fetchImpl, sleep, assertCurrent: () => { throw new Error…
+     35|     await expect(openScanClients(options)).rejects.toThrow('scope revo…
+       |                                           ^
+     36|     expect(fetchImpl).not.toHaveBeenCalled(); expect(appRpc).not.toHav…
+     37|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  2 failed | 2 skipped (4)
+   Start at  22:07:05
+   Duration  7.37s (transform 53%, import 41%, tests 5%)

@@ -14,6 +14,7 @@ import {
   ANNOUNCEMENT_TOPIC,
   ChainAdapterError,
   createClient,
+  fetchTransport,
   isLogLimitError,
   rawCallerTopic,
   validateRpcUrl,
@@ -399,6 +400,8 @@ export interface WindowedOptions {
   readonly policy: WindowPolicy;
   readonly sleep: (ms: number) => Promise<void>;
   readonly cryptoApi?: CryptoLike;
+  /** Recheck session and endpoint selection after jitter, before every underlying dispatch. */
+  readonly assertCurrent?: () => void;
 }
 
 /**
@@ -412,6 +415,7 @@ export interface WindowedOptions {
  * the scanner then re-reads for router-posted announcements (`router`, the one allowed caller filter).
  */
 export function createWindowedScanClient(inner: RpcClient, o: WindowedOptions): RpcClient {
+  if (o.assertCurrent !== undefined) inner = guardScanClient(inner, o.assertCurrent);
   const cryptoApi = o.cryptoApi ?? crypto;
   const [jMin, jMax] = o.policy.jitterMs;
   if (!Number.isSafeInteger(o.policy.windowBlocks) || o.policy.windowBlocks < 0) throw new RangeError('windowBlocks');
@@ -427,13 +431,14 @@ export function createWindowedScanClient(inner: RpcClient, o: WindowedOptions): 
   const SPLIT_MAX = 4096;
   const nodeKey = (f: LogFilter, start: bigint, end: bigint): string => `${String(f.topics[1])}|${String(f.topics[3] ?? '')}:${start.toString()}:${end.toString()}`;
 
-  async function fetchWindow(f: LogFilter, start: bigint, end: bigint): Promise<readonly RpcLog[]> {
+  async function fetchWindow(f: LogFilter, start: bigint, end: bigint, beforeSend?: () => void): Promise<readonly RpcLog[]> {
+    o.assertCurrent?.();
     const key = nodeKey(f, start, end);
     const hit = cache.get(key);
     if (hit !== undefined) return hit;
     if (networkRequests > 0 && jMax > 0) await o.sleep(randomDelayMs(jMin, jMax, cryptoApi));
     networkRequests++;
-    const logs = await inner.getLogs({ address: f.address, topics: f.topics, fromBlock: start, toBlock: end });
+    const logs = await inner.getLogs({ address: f.address, topics: f.topics, fromBlock: start, toBlock: end }, beforeSend);
     const list: unknown = logs;
     if (!Array.isArray(list)) throw new ChainAdapterError('RPC_FAILURE', 'logs not an array');
     const caller = f.topics[3];
@@ -456,7 +461,7 @@ export function createWindowedScanClient(inner: RpcClient, o: WindowedOptions): 
   }
 
   /** Collects the logs of grid window [start, end] that fall in [from, to], splitting refused windows into halves. */
-  async function fetchNode(f: LogFilter, start: bigint, end: bigint, out: RpcLog[]): Promise<void> {
+  async function fetchNode(f: LogFilter, start: bigint, end: bigint, out: RpcLog[], beforeSend?: () => void): Promise<void> {
     if (end < f.fromBlock || start > f.toBlock) return;
     const key = nodeKey(f, start, end);
     if (end > start && split.has(key)) {
@@ -464,18 +469,18 @@ export function createWindowedScanClient(inner: RpcClient, o: WindowedOptions): 
       const halves: [bigint, bigint][] = [[start, mid], [mid + 1n, end]];
       // CSPRNG order inside a split window as well.
       if (randomDelayMs(0, 1, cryptoApi) === 1) halves.reverse();
-      for (const [s, e] of halves) await fetchNode(f, s, e, out);
+      for (const [s, e] of halves) await fetchNode(f, s, e, out, beforeSend);
       return;
     }
     let logs: readonly RpcLog[];
     try {
-      logs = await fetchWindow(f, start, end);
+      logs = await fetchWindow(f, start, end, beforeSend);
     } catch (e) {
       // Too large: split this window and retry it. Only a single block too large to return is left to the scanner.
       if (!isLogLimitError(e) || end === start) throw e;
       if (split.size >= SPLIT_MAX) split.delete(split.values().next().value as string);
       split.add(key);
-      await fetchNode(f, start, end, out);
+      await fetchNode(f, start, end, out, beforeSend);
       return;
     }
     for (const l of logs) {
@@ -486,17 +491,17 @@ export function createWindowedScanClient(inner: RpcClient, o: WindowedOptions): 
 
   return {
     chainId: inner.chainId,
-    request: (m, p) => inner.request(m, p),
+    request: (...args) => inner.request(...args),
     getBlock: (n) => inner.getBlock(n),
     async blockNumber() {
       const h = await inner.blockNumber();
       head = h;
       return h;
     },
-    async getLogs(f) {
-      if (!isAnnouncerQuery(f, o.announcer)) return inner.getLogs(f);
+    async getLogs(f, beforeSend) {
+      if (!isAnnouncerQuery(f, o.announcer)) return inner.getLogs(f, beforeSend);
       assertScanFilter(f, o.router);
-      if (W === 0) return inner.getLogs(f);
+      if (W === 0) return inner.getLogs(f, beforeSend);
       if (f.fromBlock < 0n || f.toBlock < f.fromBlock) throw new ChainAdapterError('INVALID_INPUT', 'invalid scan range');
       head ??= await inner.blockNumber();
       const grid = padWindow(f.fromBlock, f.toBlock, W, W);
@@ -513,7 +518,7 @@ export function createWindowedScanClient(inner: RpcClient, o: WindowedOptions): 
         [windows[i], windows[j]] = [windows[j] as [bigint, bigint], windows[i] as [bigint, bigint]];
       }
       const out: RpcLog[] = [];
-      for (const [s, e] of windows) await fetchNode(f, s, e, out);
+      for (const [s, e] of windows) await fetchNode(f, s, e, out, beforeSend);
       const pos = (l: RpcLog): bigint => (BigInt(l.blockNumber) << 32n) + (parseHexNumber(l.logIndex) ?? 0n);
       out.sort((a, b) => (pos(a) < pos(b) ? -1 : pos(a) > pos(b) ? 1 : 0));
       return out;
@@ -654,14 +659,15 @@ export function createIndexerScanClient(inner: RpcClient, o: IndexerClientOption
   });
   return {
     chainId: inner.chainId,
-    request: (m, p) => inner.request(m, p),
+    request: (...args) => inner.request(...args),
     blockNumber: () => inner.blockNumber(),
     getBlock: (n) => inner.getBlock(n),
-    async getLogs(f) {
-      if (!isAnnouncerQuery(f, o.announcer)) return inner.getLogs(f);
+    async getLogs(f, beforeSend) {
+      if (!isAnnouncerQuery(f, o.announcer)) return inner.getLogs(f, beforeSend);
       assertScanFilter(f, o.router);
       let res;
       try {
+        beforeSend?.();
         res = await source.fetch({ chainId: o.chain.chainId, fromBlock: f.fromBlock, toBlock: f.toBlock }, o.signal);
       } catch (e) {
         if (e instanceof ChainAdapterError) throw e;
@@ -733,10 +739,16 @@ async function checkedCall<T>(assertCurrent: () => void, call: () => Promise<T>)
 export function guardScanClient(inner: RpcClient, assertCurrent: () => void): RpcClient {
   return {
     chainId: inner.chainId,
-    request: (method, params) => checkedCall(assertCurrent, () => inner.request(method, params)),
+    request: (method, params, signal, beforeSend) => checkedCall(assertCurrent, () => inner.request(method, params, signal, () => {
+      assertCurrent();
+      beforeSend?.();
+    })),
     blockNumber: () => checkedCall(assertCurrent, () => inner.blockNumber()),
     getBlock: (n) => checkedCall(assertCurrent, () => inner.getBlock(n)),
-    getLogs: (f) => checkedCall(assertCurrent, () => inner.getLogs(f)),
+    getLogs: (f, beforeSend) => checkedCall(assertCurrent, () => inner.getLogs(f, () => {
+      assertCurrent();
+      beforeSend?.();
+    })),
   };
 }
 
@@ -763,6 +775,15 @@ function guardTransport(inner: RpcTransport, assertCurrent: () => void): RpcTran
   };
 }
 
+/** Opens a per-scan Settings client. Recheck consent on the handshake, reconnects and transport retries. */
+export function openSettingsScanRpc(
+  chain: ChainConfig, url: string | undefined, createRpc: typeof createClient, assertCurrent: () => void,
+): Promise<RpcClient | undefined> {
+  return checkedCall(assertCurrent, () => url === undefined
+    ? Promise.resolve(undefined)
+    : createRpc(chain, url, { transport: guardTransport(fetchTransport, assertCurrent) }));
+}
+
 export interface ScanClients {
   /** Plain client on the chosen path: manifest checks and receipts. */
   readonly base: RpcClient;
@@ -777,6 +798,7 @@ export interface ScanClients {
  */
 export async function openScanClients(o: OpenScanOptions): Promise<ScanClients | undefined> {
   const { plan, assertCurrent } = o;
+  assertCurrent?.();
   const fetchImpl = assertCurrent === undefined
     ? o.fetchImpl
     : (url: string, init: RequestInit): Promise<Response> => checkedCall(assertCurrent, () => o.fetchImpl(url, init));
@@ -797,8 +819,9 @@ export async function openScanClients(o: OpenScanOptions): Promise<ScanClients |
     if (assertCurrent !== undefined) assertCurrent();
     base = await o.appRpc();
   }
+  o.assertCurrent?.();
   if (base === undefined) return undefined;
-  // The app's RPC is cached across views; guard this scan's use of it without changing the cached client.
+  // Guard this scan's use of the base client before each operation and when its answer arrives.
   if (assertCurrent !== undefined) base = guardScanClient(base, assertCurrent);
   const router = o.router === undefined ? {} : { router: o.router };
   const stop = o.signal === undefined ? {} : { signal: o.signal };
