@@ -33,6 +33,28 @@ head; independent review before any merge.
 
 ---
 
+# LATE-L1 reconciliation retry, then #569 masking-test dispositions — 2026-11-27 UTC
+
+Worker: Claude session 01Tj2YczQ3YKPiCBh2nFurEc; branch `claude/loving-brown-v8dlp6` (base main `6bc97fde`, #738).
+Owned paths, LATE-L1: the replay condition in `observeInvoicePayments` of `packages/ux-vault/src/reconciliation-portable.ts`
+(no change to quarantine, matching, records or the vault format), new cases in
+`apps/web/src/lib/reconciliationVault.invoices.test.ts`, the LATE-L1 row of `docs/engineering/SECURITY_FINDINGS.md`,
+and `apps/web/src/lib/reconciliationVault.replay.fuzz.test.ts` (ported from #751 `a27d7b80`; test model repaired per
+review 7221525657).
+Owned paths, #569 follow-up (PR comment 7202318339): new masking regressions under `apps/web/src` and `apps/web/e2e`
+ported from #569 `c30283d2` where main's #708 design applies, a disposition record for each of the six cases, and a
+narrow repair only if a ported case shows a real gap. Also the #355 follow-up (PR comments 7202320570, 7204906392):
+the quick-hide focus regressions ported to `apps/web/src/components/WalletDisclosure.quickHide.test.tsx` and the
+masked focus fallback in `DisclosureDialog` of `apps/web/src/components/WalletDisclosure.tsx`. Not claimed: #569's branch (kept), `privacyMode.tsx` design changes,
+REV-I6, QA-I1, IDLE-M1. LATE-M1 stays claimed by this worker: the owner approved a presence marker (2026-11-27); the first
+fix (`a530f96a`) was held by review 7215494772 for cross-tab serialization and reverted from #742 (`98d99a4f`); a
+redo with per-scope coordination follows in its own PR. Acceptance: LATE-L1 regression red on main and green with the fix; an unlinked candidate
+that was never verified (indirect router call, always `claimed`) is never replayed, so it cannot pin every later
+checkpoint; affected typecheck, lint and tests; hosted CI on the exact head; independent review; merge only under the
+integration lock.
+
+---
+
 # Consolidation stack 2 (#728): repair-train merge, replacement status, qualification port (2026-11-27 UTC)
 
 Worker: newghostpay-e3 worker W1; existing branch `claude/consolidation-stack-20261126`, previous head `298257fd`.
@@ -5356,6 +5378,37 @@ Observed: R5 requires unsafe redirect parameters to reject the whole HTTPS deep 
 # Bug-only receipt input snapshot — 2026-11-27
 
 Worker: sequential GhostPay bug-repair worker; isolated branch `automation/20261127/bug/receipt-input-snapshot`, base `fd5e591151765b2dafe6345501ca40393e0f176a`. Own only `packages/ux-receipts/src/verify.ts`, new `packages/ux-receipts/src/verify.receipt-snapshot.test.ts`, this additive claim and `docs/handoffs/RECEIPT_INPUT_SNAPSHOT_20261127.md`. All 145 open PR file lists in the refreshed census were checked; no proposed source or new regression path overlaps. Historical source owners #449/#663/#690 merged; #450/#664 closed. Other receipt tests and manifests remain untouched. Original verifier blob `88b696d05bca3f2692e29256285f849458b53bfe` remains unchanged from prior isolated reproduction. Acceptance: regression-first, consistent digest/query/comparison snapshot despite caller mutation during await; preserve valid and invalid receipt semantics, no activation of unmounted utility, no new dependencies or network/fund/contract/deployment work. Prior isolated exact-blob red/green 5/9 to 9/9; no native checkout available. Exact-head hosted CI and genuine independent review required. Generation 76 released, not acquired. Draft only until qualification.
+
+## November 27 audit — Pages deployment archive
+
+Worker `pages` on `audit/nov27-pages-87060`, base `b890a76603b924829fdbe2b4fb2c5626f0cf4e36`. Own the packaging, independent archive verification and deployment dependency in `.github/workflows/pages.yml` and the matching archive regression. Preserve other workers' smoke and origin changes. Acceptance requires a non-publishing build to verify the exact uploaded deployment tar against separately retained build checksums and the full triggering SHA. A tar missing `.nojekyll` must fail. Only the coordinator integrates.
+## November 27 audit · LATE-L1 integration qualification
+
+Worker: Codex, branch `audit/nov27-late-87060`, base `b890a76603b924829fdbe2b4fb2c5626f0cf4e36`.
+Qualify existing PR #742 head `2b4826e01d5238a7f581ddd11f6910df827d465e` against this main.
+Own only this additive claim, resolving integration conflicts and any missing audit regression in the
+reconciliation tests. Preserve the PR's reconciliation and masking changes and all main-side changes.
+Acceptance: ordinary resume rechecks formerly verified unlinked candidates, withholds credit until verification
+and explicit seller acceptance, and permits checkpoints past never-verified candidates. Exercise repeated
+resume, reorg and the merged masking behavior. The audit coordinator handles remote integration.
+## November 27 audit — inventory
+
+Worker: audit coordinator's inventory reviewer, branch `audit/nov27-inventory-87060`, base `b890a76603b924829fdbe2b4fb2c5626f0cf4e36`. Trace individual and archive recovery-export lookups. Own the recovery-export record in docs/privacy/network-egress-inventory.json, its corresponding exposure matrix in docs/privacy/browser-network-isolation.md, and the inventory or export regression needed to establish request counts. Preserve user warnings and authorization.
+## November 27 audit — idle
+
+Worker: audit coordinator's idle reviewer, branch `audit/nov27-idle-87060`, base `b890a76603b924829fdbe2b4fb2c5626f0cf4e36`. Confirm the current IDLE-M1 owner decision and reproduce idle expiry, credential boundaries, encrypted backup and fresh-profile recovery. Own only this claim and focused sole-copy browser acceptance. Preserve custody policy until an explicit owner decision.
+The owner accepted the walk-up encrypted-export risk on November 27. Scope now includes the existing suspended-session warning in all four catalogs, session-security guide, finding and readiness registers, and the independent-keystore browser journey. No custody implementation changes.
+## 2026-11-27 — audit qualification of existing verification harnesses
+
+Codex audit qualification worker, branch `audit/nov27-qualification-87060`, base
+`b890a76603b924829fdbe2b4fb2c5626f0cf4e36`. Own only this additive claim and
+`docs/audits/nov27-qualification.md`. Verify the ERC-20 artifacts from #753,
+exercise the #665 independent verifier on the selected local candidate, and
+trace the elliptic advisory. The original verifier branches remain with their
+respective owners. Use disposable fixtures and record only sanitized results.
+## November 27 audit — approved Pages payment origin
+
+Worker Codex origin, branch `audit/nov27-origin-87060`, base `b890a76603b924829fdbe2b4fb2c5626f0cf4e36`. Own the Pages build origin, lean manifest and wallet gates, smoke origin checks, corresponding workflow arguments, docs and regressions. Preserve the signed manifest, on-chain read-back, shared-testnet decision and explicit local fixture. Acceptance requires zero wallet requests on origin mismatch, working approved-origin payment and manifest-free demo, and an independent post-deployment origin check. Coordinate workflow hunks with the deployment archive worker.
 
 
 ---
