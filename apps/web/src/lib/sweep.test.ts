@@ -897,6 +897,25 @@ describe('L2-F2: a native direct sweep keeps back every fee the chain charges', 
       expect(seen.raw).toBeUndefined();
     });
 
+    it.each(['eth_getTransactionCount', 'eth_getBalance', 'eth_call'])('refuses handoff when the review expires during %s', async (delayedMethod) => {
+      const seen: Seen = {};
+      const rpc = chainRpc(84532, {}, seen);
+      const review = await sweepModule.reviewDirectSweep({ target, manifest, destination: DEST, amount: 777n, rpc, nowSeconds: NOW_S });
+      let now = NOW_S + sweepModule.DIRECT_SWEEP_REVIEW_TTL_SECONDS;
+      let recorded = false;
+      const request = async (method: string, params: readonly unknown[]): Promise<unknown> => {
+        const result = await rpc.request(method, params);
+        if (method === delayedMethod) now += 1;
+        return result;
+      };
+      await expect(sweepModule.signReviewedDirectSweep(review, {
+        target, manifest, rpc: { ...rpc, request }, nowSeconds: () => now, onBeforeHandoff: () => { recorded = true; },
+      })).rejects.toThrow(/too old to sign/);
+      expect(recorded).toBe(false);
+      expect(sends(rpc)).toBe(0);
+      expect(seen.raw).toBeUndefined();
+    });
+
     it('accepts a review exactly at the end of its window', async () => {
       const seen: Seen = {};
       const rpc = chainRpc(84532, {}, seen);
