@@ -111,6 +111,8 @@ jobs:
         run: ./node_modules/.bin/playwright install --with-deps chromium
       - name: Smoke the built Pages artifact locally
         timeout-minutes: 5
+        env:
+          APPROVED_ORIGIN: ${{ vars.GHOSTPAY_PAGES_ORIGIN || format('https://{0}.github.io', github.repository_owner) }}
         run: |
           set -euo pipefail
           GHOSTPAY_CHROMIUM="$(node --input-type=module -e "import { chromium } from '@playwright/test'; process.stdout.write(chromium.executablePath());")"
@@ -146,7 +148,7 @@ jobs:
             exit 1
           fi
 
-          node scripts/pages/smoke.mjs http://127.0.0.1:4194/GhostPay/ --commit "$GITHUB_SHA" --timeout-s 0 \
+          node scripts/pages/smoke.mjs http://127.0.0.1:4194/GhostPay/ --loopback-preview --approved-origin "$APPROVED_ORIGIN" --commit "$GITHUB_SHA" --timeout-s 0 \
             2>&1 | tee "$RUNNER_TEMP/pages/evidence/local-smoke.log"
       - name: Summary (served-file hashes and payment state)
         run: |
@@ -349,8 +351,9 @@ jobs:
       - run: ./node_modules/.bin/playwright install --with-deps chromium
       - name: Smoke test the published site
         env:
+          APPROVED_ORIGIN: ${{ vars.GHOSTPAY_PAGES_ORIGIN || format('https://{0}.github.io', github.repository_owner) }}
           PAGE_URL: ${{ needs.deploy.outputs.page_url }}
         run: |
           set -euo pipefail
           case "$PAGE_URL" in */) ;; *) PAGE_URL="$PAGE_URL/" ;; esac
-          node scripts/pages/smoke.mjs "$PAGE_URL" --commit "$GITHUB_SHA" --timeout-s 600
+          node scripts/pages/smoke.mjs "$PAGE_URL" --approved-origin "$APPROVED_ORIGIN" --commit "$GITHUB_SHA" --timeout-s 600

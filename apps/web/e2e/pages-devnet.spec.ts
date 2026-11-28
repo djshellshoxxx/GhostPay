@@ -856,6 +856,42 @@ async function checkServedSums(request: APIRequestContext, baseURL: string, sums
 // Negative cases: each in its own profiles, each asserting the user-visible refusal AND that nothing was sent.
 // ---------------------------------------------------------------------------------------------------------------------
 test.describe('GitHub Pages artifact: refusals', () => {
+  test('the approved hosting origin permits a wallet connection under the Pages project path', async ({ browser, baseURL }) => {
+    const net = new PagesNetwork(dn, siteOrigin(baseURL));
+    const context = await newContext(browser, baseURL, net, { presetRpc: false });
+    try {
+      const { page, wallet } = await openPayer(context, ACCOUNTS.rejectPayer);
+      wallet.chainOverride = '0x14a34'; // The wallet reports Base Sepolia. No chain or transaction is needed here.
+      await openSite(page);
+      await nav(page).getByRole('button', { name: 'Pay', exact: true }).click();
+      await recoverWalletHistory(page, wallet.name);
+      await expect.poll(() => wallet.requests).toContain('eth_requestAccounts');
+      expect(wallet.sends).toHaveLength(0);
+    } finally { await context.close(); }
+  });
+
+  test('a copied Pages artifact refuses wallet access on a different hosting origin', async ({ browser, baseURL }) => {
+    const copy = new URL(baseURL ?? '');
+    // Both hostnames reach the same local static server and identical /GhostPay/ bytes.
+    expect(copy.hostname).toBe('localhost');
+    copy.hostname = '127.0.0.1';
+    const net = new PagesNetwork(dn, copy.origin);
+    const context = await newContext(browser, copy.href, net, { presetRpc: false });
+    try {
+      const { page, wallet } = await openPayer(context, ACCOUNTS.rejectPayer);
+      await openSite(page);
+      await expect(page.getByText(/Payments are disabled because this site does not match the approved hosting origin/)).toBeVisible();
+      await nav(page).getByRole('button', { name: 'Pay', exact: true }).click();
+      const attempts = page.getByRole('region', { name: 'Wallet attempt journal' });
+      await attempts.getByLabel('Network for wallet history').selectOption('84532');
+      await attempts.getByRole('button', { name: 'Find wallet for history' }).click();
+      await attempts.getByRole('button', { name: `Connect ${wallet.name}`, exact: true }).click();
+      await expect(attempts.getByText(/approved hosting origin/)).toBeVisible();
+      expect(await shownWalletDisclosures(page)).toEqual([]);
+      expect(wallet.requests).toEqual([]);
+    } finally { await context.close(); }
+  });
+
   test('a same-nonce wallet cancellation never becomes a payment confirmation or permits a duplicate retry', async ({ browser, baseURL }) => {
     const net = new PagesNetwork(dn, siteOrigin(baseURL));
     const c = await newContext(browser, baseURL, net);
