@@ -56,7 +56,7 @@ push, created by PRIMARY 2026-11-28T02:08Z). Integration lock: `origin/automatio
 | sthr_01T3BKy1k9o8bn56ghpp73hG | analyst | A3a core-crypto/secret-box/address-safety | RESUMED ~02:45Z |
 | sthr_013jpfgfiS7zVA3tL5uqeJFt | analyst | A3b invoice-schema/payment-uri/scan-source | RESUMED ~02:45Z |
 | sthr_01QyRyvtpWCG3GzxCJ6oHCJB | analyst | A4 docs accuracy | DONE reports/A4-docs-accuracy.md |
-| sthr_01MvMaTZxmKogmZVKbm8izey | engineer | S-DOCS-ACCURACY | PR (draft) |
+| sthr_01MvMaTZxmKogmZVKbm8izey | engineer | S-DOCS-ACCURACY | PAUSED (rate limit ~02:55Z, no edits yet); resume when a slot frees (owner cap: 4 concurrent helpers) |
 
 ## Decisions / deferred
 
@@ -89,3 +89,9 @@ push, created by PRIMARY 2026-11-28T02:08Z). Integration lock: `origin/automatio
 `packages/confidential-contracts` test harness (GHSA-848j-6mx2-7j84 elliptic). No runtime/shipped dependency affected.
 The only fix is a semver-major Hardhat 3 migration of that research package: out of beta scope, not taken. Recorded as
 deferred (owner decision), not a release blocker for the static web client.
+
+## Owner instructions received mid-session
+
+- Back up to GitHub often; merge at every milestone (02:4xZ).
+- At most 4 concurrent helpers (any model except fable); avoid new branches/PRs from helpers where possible: future
+  SECONDARY fixes reuse an already-merged secondary branch fast-forwarded to main instead of a new branch (02:5xZ).
