@@ -486,7 +486,7 @@ export function createWindowedScanClient(inner: RpcClient, o: WindowedOptions): 
 
   return {
     chainId: inner.chainId,
-    request: (m, p) => inner.request(m, p),
+    request: (...args) => inner.request(...args),
     getBlock: (n) => inner.getBlock(n),
     async blockNumber() {
       const h = await inner.blockNumber();
@@ -654,7 +654,7 @@ export function createIndexerScanClient(inner: RpcClient, o: IndexerClientOption
   });
   return {
     chainId: inner.chainId,
-    request: (m, p) => inner.request(m, p),
+    request: (...args) => inner.request(...args),
     blockNumber: () => inner.blockNumber(),
     getBlock: (n) => inner.getBlock(n),
     async getLogs(f) {
@@ -733,7 +733,7 @@ async function checkedCall<T>(assertCurrent: () => void, call: () => Promise<T>)
 export function guardScanClient(inner: RpcClient, assertCurrent: () => void): RpcClient {
   return {
     chainId: inner.chainId,
-    request: (method, params) => checkedCall(assertCurrent, () => inner.request(method, params)),
+    request: (...args) => checkedCall(assertCurrent, () => inner.request(...args)),
     blockNumber: () => checkedCall(assertCurrent, () => inner.blockNumber()),
     getBlock: (n) => checkedCall(assertCurrent, () => inner.getBlock(n)),
     getLogs: (f) => checkedCall(assertCurrent, () => inner.getLogs(f)),

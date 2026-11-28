@@ -284,7 +284,7 @@ export function Scan(): ReactNode {
         };
         const exportRpc: ExportRpc = {
           chainId: rpc.chainId,
-          request: (method, params) => rpc.request(method, params),
+          request: (...args) => rpc.request(...args),
           assertCurrent: assertScanRoute,
         };
         setScanOwner({ ...scope, exportRpc });

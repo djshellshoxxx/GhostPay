@@ -34,10 +34,11 @@ export interface LogFilter {
 /**
  * Low-level transport: POST `body` to `url`, return the response text. Implementations MUST enforce
  * `timeoutMs` and `maxBytes` (throwing `ChainAdapterError` `RESPONSE_TOO_LARGE`/`RPC_FAILURE`) and
- * must signal HTTP failures by throwing {@link RpcHttpError}. Injected in tests: no network is used there.
+ * must signal HTTP failures by throwing {@link RpcHttpError}. Browser transports also abort in-flight fetches when
+ * the optional caller signal fires. Injected in tests: no network is used there.
  */
 export interface RpcTransport {
-  send(url: string, body: string, init: { readonly timeoutMs: number; readonly maxBytes: number }): Promise<string>;
+  send(url: string, body: string, init: { readonly timeoutMs: number; readonly maxBytes: number; readonly signal?: AbortSignal }): Promise<string>;
 }
 
 /** Thrown by transports for non-2xx statuses. `retryable` is true for 429 and 5xx. */
@@ -95,7 +96,10 @@ export function validateRpcUrl(raw: string, opts: UrlOptions = {}): string {
 export const fetchTransport: RpcTransport = {
   async send(url, body, init) {
     if (!url.startsWith('https:') && !url.startsWith('http:')) return fail('RPC_URL_REJECTED', 'fetch transport needs http(s)');
+    assertRequestActive(init.signal);
     const ctl = new AbortController();
+    const abort = (): void => { ctl.abort(); };
+    init.signal?.addEventListener('abort', abort, { once: true });
     const timer = setTimeout(() => {
       ctl.abort();
     }, init.timeoutMs);
@@ -138,6 +142,7 @@ export const fetchTransport: RpcTransport = {
       return fail('RPC_FAILURE', 'transport error or timeout');
     } finally {
       clearTimeout(timer);
+      init.signal?.removeEventListener('abort', abort);
     }
   },
 };
@@ -154,7 +159,7 @@ export interface ClientOptions extends UrlOptions {
   /** Base back-off in ms, default 200. */
   readonly baseDelayMs?: number;
   /** Injected sleep (tests). */
-  readonly sleep?: (ms: number) => Promise<void>;
+  readonly sleep?: (ms: number, signal?: AbortSignal) => Promise<void>;
   /** Injected uniform random in [0,1) for jitter (tests). Default: Web Crypto. */
   readonly random?: () => number;
   /**
@@ -169,8 +174,8 @@ export interface ClientOptions extends UrlOptions {
 /** Verified JSON-RPC client bound to one chain. */
 export interface RpcClient {
   readonly chainId: number;
-  /** Generic request; returns the `result` field. */
-  request(method: string, params: readonly unknown[]): Promise<unknown>;
+  /** Generic request; returns the `result` field. Cancellation also stops retries and their chain checks. */
+  request(method: string, params: readonly unknown[], signal?: AbortSignal): Promise<unknown>;
   blockNumber(): Promise<bigint>;
   getBlock(number: bigint): Promise<BlockRef | null>;
   getLogs(filter: LogFilter): Promise<readonly RpcLog[]>;
@@ -182,7 +187,23 @@ function cryptoRandom(): number {
   return (b[0] as number) / 2 ** 32;
 }
 
-const defaultSleep = (ms: number): Promise<void> => new Promise((r) => setTimeout(r, ms));
+function assertRequestActive(signal: AbortSignal | undefined): void {
+  if (signal?.aborted === true) fail('RPC_FAILURE', 'request cancelled');
+}
+
+/** Wake immediately on cancellation. The caller checks the signal before any further send. */
+function defaultSleep(ms: number, signal?: AbortSignal): Promise<void> {
+  return new Promise((resolve) => {
+    const done = (): void => {
+      clearTimeout(timer);
+      signal?.removeEventListener('abort', done);
+      resolve();
+    };
+    const timer = setTimeout(done, ms);
+    if (signal?.aborted === true) done();
+    else signal?.addEventListener('abort', done, { once: true });
+  });
+}
 const QUANTITY = /^0x(?:0|[1-9a-f][0-9a-f]{0,63})$/;
 const HASH = /^0x[0-9a-f]{64}$/;
 
@@ -238,20 +259,23 @@ export async function createClient(chain: ChainConfig, url: string, opts: Client
   let dirty = false;
   let failureGeneration = 0;
 
-  async function rawRequest(method: string, params: readonly unknown[]): Promise<{ readonly value: unknown; readonly generation: number }> {
+  async function rawRequest(method: string, params: readonly unknown[], signal?: AbortSignal): Promise<{ readonly value: unknown; readonly generation: number }> {
     const id = nextId++;
     const body = JSON.stringify({ jsonrpc: '2.0', id, method, params });
     let reconnect = false;
     for (let attempt = 0; ; attempt++) {
+      assertRequestActive(signal);
       // This flag belongs to this request: another concurrent chain check must not erase its recovery requirement.
       // Chain-id requests perform their own bounded retries and never recursively verify themselves.
       if (reconnect && method !== 'eth_chainId') {
-        await checkChain();
+        await checkChain(signal);
+        assertRequestActive(signal);
         reconnect = false;
       }
       const generation = failureGeneration;
       try {
-        const text = await transport.send(target, body, { timeoutMs, maxBytes });
+        const text = await transport.send(target, body, { timeoutMs, maxBytes, ...(signal === undefined ? {} : { signal }) });
+        assertRequestActive(signal);
         if (text.length > maxBytes) return fail('RESPONSE_TOO_LARGE', 'response exceeds cap');
         return { value: parseResponse(text, id), generation };
       } catch (e) {
@@ -262,14 +286,15 @@ export async function createClient(chain: ChainConfig, url: string, opts: Client
           reconnect = true;
           failureGeneration++;
         }
+        assertRequestActive(signal);
         if (attempt >= retries || !isRetryable(e)) return rethrow(e);
-        await sleep(Math.floor(random() * base * 2 ** attempt));
+        await sleep(Math.floor(random() * base * 2 ** attempt), signal);
       }
     }
   }
 
-  async function checkChain(): Promise<void> {
-    const response = await rawRequest('eth_chainId', []);
+  async function checkChain(signal?: AbortSignal): Promise<void> {
+    const response = await rawRequest('eth_chainId', [], signal);
     const reported = parseQuantity(response.value);
     if (reported !== BigInt(chain.chainId)) return fail('CHAIN_MISMATCH', 'endpoint reports a different chain id');
     // A response from a check started before another request lost its connection cannot clear that failure.
@@ -279,9 +304,9 @@ export async function createClient(chain: ChainConfig, url: string, opts: Client
   }
 
   /** Every request after the first connect is preceded by a chain id re-check when stale or after a failure. */
-  async function guarded(method: string, params: readonly unknown[]): Promise<unknown> {
-    if (method !== 'eth_chainId' && (dirty || (recheckMs > 0 && clock() - lastChainCheck >= recheckMs))) await checkChain();
-    return (await rawRequest(method, params)).value;
+  async function guarded(method: string, params: readonly unknown[], signal?: AbortSignal): Promise<unknown> {
+    if (method !== 'eth_chainId' && (dirty || (recheckMs > 0 && clock() - lastChainCheck >= recheckMs))) await checkChain(signal);
+    return (await rawRequest(method, params, signal)).value;
   }
 
   const client = clientFromRequest(chain.chainId, guarded);
@@ -413,6 +438,7 @@ function parseResponse(text: string, id: number): unknown {
  * @param b Secondary client (must be on the same chain id).
  * @param method JSON-RPC method.
  * @param params Params.
+ * @param signal Optional cancellation for both reads.
  * @returns The agreed result.
  * @throws {ChainAdapterError} `CHAIN_MISMATCH` for different chains, `RPC_FAILURE` on disagreement.
  */
@@ -421,9 +447,12 @@ export async function requestWithFallbackCheck(
   b: RpcClient,
   method: string,
   params: readonly unknown[],
+  signal?: AbortSignal,
 ): Promise<unknown> {
+  assertRequestActive(signal);
   if (a.chainId !== b.chainId) return fail('CHAIN_MISMATCH', 'clients target different chains');
-  const [ra, rb] = await Promise.all([a.request(method, params), b.request(method, params)]);
+  const [ra, rb] = await Promise.all([a.request(method, params, signal), b.request(method, params, signal)]);
+  assertRequestActive(signal);
   if (stableStringify(ra) !== stableStringify(rb)) return fail('RPC_FAILURE', 'providers disagree');
   return ra;
 }
@@ -454,7 +483,7 @@ export interface ReconcileOptions {
   /** Methods that must return identical results from both providers. Default {@link DEFAULT_RECONCILED_METHODS}. */
   readonly methods?: readonly string[];
   /** Sleep used between the first disagreement and the single re-try (tip races). Default 1000 ms. */
-  readonly sleep?: (ms: number) => Promise<void>;
+  readonly sleep?: (ms: number, signal?: AbortSignal) => Promise<void>;
   readonly retryDelayMs?: number;
 }
 
@@ -477,14 +506,15 @@ export function createReconciledClient(primary: RpcClient, secondary: RpcClient,
   const methods = new Set(opts.methods ?? DEFAULT_RECONCILED_METHODS);
   const sleep = opts.sleep ?? defaultSleep;
   const delay = opts.retryDelayMs ?? 1000;
-  const request = async (method: string, params: readonly unknown[]): Promise<unknown> => {
-    if (!methods.has(method)) return primary.request(method, params);
+  const request = async (method: string, params: readonly unknown[], signal?: AbortSignal): Promise<unknown> => {
+    assertRequestActive(signal);
+    if (!methods.has(method)) return primary.request(method, params, signal);
     try {
-      return await requestWithFallbackCheck(primary, secondary, method, params);
+      return await requestWithFallbackCheck(primary, secondary, method, params, signal);
     } catch (e) {
       if (!(e instanceof Error) || e.message !== 'RPC_FAILURE: providers disagree') throw e;
-      await sleep(delay);
-      return requestWithFallbackCheck(primary, secondary, method, params);
+      await sleep(delay, signal);
+      return requestWithFallbackCheck(primary, secondary, method, params, signal);
     }
   };
   return clientFromRequest(primary.chainId, request);
