@@ -1,3 +1,14 @@
+# Cancel seller payment-key export RPC reads — 2026-11-28 UTC
+
+Worker: Codex, branch `ux/nov28-export`, base main `70458ebe3ae4a5502d7c39ae25d37342dbde971b`.
+Owned paths: the export RPC binding in `apps/web/src/views/Scan.tsx`, request forwarding in
+`apps/web/src/lib/scanPrivacy.ts`, the JSON-RPC request/retry path in `packages/chain-adapters/src/rpc.ts`,
+the browser fetch transport in `packages/net-transport/src/fetchTransport.ts`, and focused synthetic tests.
+Acceptance: an aborted export cannot start another account read or reconnect check, either Pages fetch path
+aborts the in-flight browser request, and an independent later export may still use the verified client.
+Draft #269's network grant and stopped-scan export design are separate. No changes to that branch, financial
+operations, on-chain deployment, or release activation. The scan UX repair owns different Scan.tsx hunks.
+
 # Recorded low residuals (web) — 2026-11-27 UTC
 
 Worker: local Claude Code worker W7 on the existing merged branch `claude/consolidation-stack-20261126`, fast-forwarded
