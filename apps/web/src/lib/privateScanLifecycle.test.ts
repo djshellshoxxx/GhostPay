@@ -166,23 +166,25 @@ describe('invalidating unauthenticated legacy scan progress', () => {
     const legacy = [1, 2, 3, 4].map((version) => `ghostpay.scan.checkpoint.v${version}.old`);
     const keep = ['ghostpay.scan.checkpoint.v5.opaque', 'ghostpay.scan.checkpoint.v40.keep', 'ghostpay.scan.checkpoint.v3', 'another.preference'];
     const values = new Map([...legacy, ...keep].map((key) => [key, 'never-read']));
+    const getItem = vi.fn((key: string) => values.get(key) ?? null);
     const storage: Storage = {
       get length() { return values.size; }, key: (index) => [...values.keys()][index] ?? null,
-      getItem: vi.fn((key: string) => values.get(key) ?? null),
+      getItem,
       setItem: (key, value) => { values.set(key, value); }, removeItem: (key) => { values.delete(key); }, clear: () => { values.clear(); },
     };
     purgeLegacyPrivateScanHistory(storage);
-    expect(storage.getItem).not.toHaveBeenCalled(); expect([...values.keys()]).toEqual(keep);
+    expect(getItem).not.toHaveBeenCalled(); expect([...values.keys()]).toEqual(keep);
   });
 
   it('tolerates storage enumeration and deletion denial without accepting old progress', () => {
     const remove = vi.fn(() => { throw new Error('denied'); });
+    const getItem = vi.fn(() => 'should not read');
     const storage: Storage = {
       length: 2, key: (index) => { if (index === 1) throw new Error('denied'); return 'ghostpay.scan.checkpoint.v4.old'; },
-      getItem: vi.fn(() => 'should not read'), setItem: vi.fn(), removeItem: remove, clear: vi.fn(),
+      getItem, setItem: vi.fn(), removeItem: remove, clear: vi.fn(),
     };
     expect(() => purgeLegacyPrivateScanHistory(storage)).not.toThrow();
     expect(remove).toHaveBeenCalledExactlyOnceWith('ghostpay.scan.checkpoint.v4.old');
-    expect(storage.getItem).not.toHaveBeenCalled(); expect(() => purgeLegacyPrivateScanHistory(undefined)).not.toThrow();
+    expect(getItem).not.toHaveBeenCalled(); expect(() => purgeLegacyPrivateScanHistory(undefined)).not.toThrow();
   });
 });

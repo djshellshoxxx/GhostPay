@@ -362,14 +362,17 @@ export function Scan(): ReactNode {
           ctl.signal.removeEventListener('abort', cancelled);
           complete();
         };
+        const fail = (cause: unknown): void => {
+          finish(() => { reject(cause instanceof Error ? cause : new Error('scan operation failed')); });
+        };
         const cancelled = (): void => { finish(() => { reject(new DOMException('Scan cancelled', 'AbortError')); }); };
         ctl.signal.addEventListener('abort', cancelled, { once: true });
         void Promise.resolve().then(() => { assertScopeCurrent(); return work(); }).then((value) => {
           if (settled) { discard?.(value); return; }
           try { assertScopeCurrent(); }
-          catch (cause) { discard?.(value); finish(() => { reject(cause); }); return; }
+          catch (cause) { discard?.(value); fail(cause); return; }
           finish(() => { resolve(value); });
-        }, (cause: unknown) => { finish(() => { reject(cause); }); });
+        }, fail);
       });
     };
     void (async () => {
