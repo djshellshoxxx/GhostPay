@@ -255,6 +255,28 @@ test('cross-implementation: files freshly written by the built @ghostpay/ux-vaul
   for (const item of items) item.secret.fill(0);
 });
 
+test('cross-implementation: the built codec recognizes a later spec 18 format version exactly where this decoder does', async () => {
+  const { createStealthExportApi } = await import('@ghostpay/ux-vault/portable');
+  const api = createStealthExportApi();
+  const claim = (format) => JSON.stringify({ format, version: 2 }, null, 2);
+  const texts = [files.public.text, files.single.text, files.archive.text, files.master.text, files.rawPrivateKey.text, '', '{', 'null', '[]', '{"format":2}'];
+  for (const family of ['public', 'keypair', 'master', 'wallet']) {
+    for (const version of ['1', '2', '10', '0', '01', '', '2x', '-2']) texts.push(claim(`ghostpay-stealth-${family}-v${version}`));
+  }
+  texts.push(claim('GHOSTPAY-STEALTH-KEYPAIR-V2'), claim('ghostpay-stealth-keypair-v2 '), '{"format":"ghostpay-stealth-keypair-v2","format":"x"}');
+  texts.push('{"format":"ghostpay-stealth-keypair-v2","version":1.5}', `{"format":"ghostpay-stealth-keypair-v2","pad":"${'x'.repeat(LIMITS.keypairFileBytes)}"}`);
+  let later = 0;
+  for (const text of texts) {
+    const reference = detectFormat(text) === 'unsupported';
+    if (reference) later++;
+    assert.equal(api.isUnsupportedStealthExportVersion(text), reference, text.slice(0, 80));
+  }
+  assert.equal(later, 3 * 4);
+  // A seller keystore has no `format`: its own `v` check reports a later keystore version, outside the spec 18 helper.
+  assert.equal(detectFormat('{"v":2}'), 'unsupported');
+  assert.equal(api.isUnsupportedStealthExportVersion('{"v":2}'), false);
+});
+
 // --- CLI ------------------------------------------------------------------------------------------------------------
 
 const dir = mkdtempSync(join(tmpdir(), 'gp-recover-'));

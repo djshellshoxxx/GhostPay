@@ -241,5 +241,7 @@ discover other stealth payments.
 ## 9. Future migration
 
 A new version gets a new `format` identifier and a new AAD domain; readers never reinterpret an older identifier.
+A reader reports a file whose `format` is another `ghostpay-stealth-{public,keypair,master}-v<digits>` identifier, or
+whose v1 identifier carries another integer `version`, as an unsupported version rather than an invalid file.
 Raising the scrypt cost only changes header values within the import bounds; raising the bounds is a new reader
 release, documented here first.

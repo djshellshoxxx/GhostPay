@@ -288,6 +288,33 @@ describe('opening an export (recovery)', () => {
       for (const spy of spies) spy.mockRestore();
     }
   });
+
+  it('reports a later version of each export family as unsupported, not as an invalid file, before any decryption (UX-01)', async () => {
+    const refusal = async (text: string): Promise<unknown> => {
+      const error = await openStealthExport(text, VECTOR_PASS).then(() => undefined, (e: unknown) => e);
+      expect(error).toBeInstanceOf(UserFacingError);
+      return captureUserMessage(error);
+    };
+    const relabel = (text: string, change: Record<string, unknown>): string => JSON.stringify({ ...(JSON.parse(text) as object), ...change }, null, 2);
+    const payments = vi.spyOn(stealthExport, 'decryptPaymentKeys');
+    const master = vi.spyOn(stealthExport, 'decryptMasterBackup');
+    for (const text of [
+      relabel(VECTORS.files.public.text, { format: 'ghostpay-stealth-public-v2', version: 2 }),
+      relabel(VECTORS.files.archive.text, { format: 'ghostpay-stealth-keypair-v2', version: 2 }),
+      relabel(VECTORS.files.master.text, { format: 'ghostpay-stealth-master-v3', version: 3, futureField: true }),
+      '{"format":"ghostpay-stealth-keypair-v10"}',
+    ]) {
+      expect(await refusal(text)).toEqual({ key: 'error.stealthExport.unsupportedVersion' });
+      await expect(verifyStealthExport(text, VECTOR_PASS)).rejects.toThrow(/made by a newer GhostPay/);
+    }
+    expect(payments).not.toHaveBeenCalled();
+    expect(master).not.toHaveBeenCalled();
+    // A later `version` inside a v1 identifier is refused by the v1 parser, before its KDF; near misses stay invalid.
+    expect(await refusal(relabel(VECTORS.files.archive.text, { version: 2 }))).toEqual({ key: 'error.stealthExport.unsupportedVersion' });
+    for (const text of ['{"format":"ghostpay-stealth-keypair-v2x"}', '{"format":"ghostpay-stealth-wallet-v2"}', '{"v":2}', '\u00e9{"format":"ghostpay-stealth-keypair-v2"}']) {
+      expect(await refusal(text)).toEqual({ key: 'error.stealthExport.invalidFile' });
+    }
+  });
 });
 
 describe('verifying an export without importing', () => {

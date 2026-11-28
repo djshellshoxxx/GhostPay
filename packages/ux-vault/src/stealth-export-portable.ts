@@ -168,6 +168,9 @@ const KEYPAIR_FORMAT = 'ghostpay-stealth-keypair-v1';
 
 const MASTER_FORMAT = 'ghostpay-stealth-master-v1';
 
+/** Any version of the three format families, as the reference decoder routes them (format section 9). */
+const FAMILY_FORMAT = /^ghostpay-stealth-(?:public|keypair|master)-v[0-9]+$/;
+
 /** AAD domains; a new format version gets a new domain, so a file can never be opened as another format. */
 const KEYPAIR_DOMAIN = 'GhostPay.stealth-keypair.v1';
 
@@ -651,9 +654,10 @@ function parseKeypairFile(text: unknown): { header: StealthKeypairHeader; cipher
 }
 
 /**
- * Encrypts verified payment keys as one `ghostpay-stealth-keypair-v1` file (pretty JSON text). Entries for one
- * address collapse to the earliest locator; the same address with a different ephemeral key is a conflict and nothing
- * is exported. The caller keeps ownership of the input secrets.
+ * Encrypts verified payment keys as one `ghostpay-stealth-keypair-v1` file (pretty JSON text). Every input key is
+ * checked against its own record first, so a mismatched pair refuses the export even where deduplication would drop
+ * it. Entries for one address then collapse to the earliest locator; the same address with a different ephemeral key
+ * is a conflict and nothing is exported. The caller keeps ownership of the input secrets.
  */
 async function encryptPaymentKeys(items: readonly VerifiedStealthPayment[], options: PaymentKeysOptions): Promise<string> {
   requireWebCrypto();
@@ -665,6 +669,8 @@ async function encryptPaymentKeys(items: readonly VerifiedStealthPayment[], opti
   const entries = items.map((item) => ({ record: validateRecord(item.record, INVALID_RECORD), secret: item.secret }));
   const chainId = (entries[0] as (typeof entries)[number]).record.chainId;
   if (entries.some((e) => e.record.chainId !== chainId)) return refuse('error.stealthExport.mixedChains');
+  // Before deduplication, which keeps one entry per address and would never look at a dropped duplicate's key.
+  if (entries.some((e) => !sameKey(e.secret, e.record))) return refuse('error.stealthExport.keyDoesNotMatch');
   const kept = new Map<string, (typeof entries)[number]>();
   for (const entry of entries) {
     const address = entry.record.stealthAddress.toLowerCase();
@@ -677,7 +683,6 @@ async function encryptPaymentKeys(items: readonly VerifiedStealthPayment[], opti
   if (count > LIMITS.maxPayments) return refuse('error.stealthExport.tooMany', { maximum: String(LIMITS.maxPayments) });
   if (scope === 'single' && count !== 1) return refuse('error.stealthExport.scopeMismatch');
   const sorted = [...kept.entries()].sort(([x], [y]) => (x < y ? -1 : 1)).map(([, entry]) => entry);
-  if (sorted.some((e) => !sameKey(e.secret, e.record))) return refuse('error.stealthExport.keyDoesNotMatch');
   const { kdf, cipher } = freshEnvelope(N);
   const header: StealthKeypairHeader = { format: KEYPAIR_FORMAT, version: 1, scope, chainId, count, payments: sorted.map((e) => e.record), kdf, cipher };
   const ciphertext = await seal(KEYPAIR_DOMAIN, header, kdf, cipher, passphrase, bodyOf(keypairLiterals(count), sorted.map((e) => e.secret)));
@@ -817,17 +822,32 @@ function formatRawPrivateKey(record: StealthPublicRecord, secret: SecretScalar):
   }
 }
 
-/** Which stealth export a text claims to be; undefined for anything else. Bounded and never throws. */
-function detectStealthExportFormat(text: unknown): StealthExportFormat | undefined {
+/** The `format` member of a bounded, ASCII-only, strict-JSON object text; undefined for anything else. Never throws. */
+function claimedFormat(text: unknown): unknown {
   if (typeof text !== 'string' || text.length > LIMITS.keypairFileBytes || !ASCII.test(text)) return undefined;
   let value: unknown;
   try { value = parseStrictJson(text); } catch { return undefined; }
   if (typeof value !== 'object' || value === null || Array.isArray(value)) return undefined;
-  const format = (value as Record<string, unknown>)['format'];
+  return (value as Record<string, unknown>)['format'];
+}
+
+/** Which stealth export a text claims to be; undefined for anything else. Bounded and never throws. */
+function detectStealthExportFormat(text: unknown): StealthExportFormat | undefined {
+  const format = claimedFormat(text);
   if (format === PUBLIC_FORMAT) return 'public';
   if (format === KEYPAIR_FORMAT) return 'keypair';
   if (format === MASTER_FORMAT) return 'master';
   return undefined;
+}
+
+/**
+ * True when a text, under the same bounds as {@link detectStealthExportFormat}, claims another version of a spec 18
+ * export family (`ghostpay-stealth-{public,keypair,master}-v<digits>` other than the v1 identifiers; format section 9),
+ * so a reader reports an unsupported version instead of an invalid file and never reinterprets it. Never throws.
+ */
+function isUnsupportedStealthExportVersion(text: unknown): boolean {
+  const format = claimedFormat(text);
+  return typeof format === 'string' && FAMILY_FORMAT.test(format) && format !== PUBLIC_FORMAT && format !== KEYPAIR_FORMAT && format !== MASTER_FORMAT;
 }
 
   return {
@@ -851,5 +871,6 @@ function detectStealthExportFormat(text: unknown): StealthExportFormat | undefin
     decryptMasterBackup,
     formatRawPrivateKey,
     detectStealthExportFormat,
+    isUnsupportedStealthExportVersion,
   };
 }
