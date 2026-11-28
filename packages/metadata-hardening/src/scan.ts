@@ -6,6 +6,7 @@ import {
   requireInput,
   type RandomSource,
 } from './guard.js';
+import { fail, isRecord, requireArray, requireFunction, requireRecord } from './validate.js';
 
 /** Subset of an `eth_getLogs` filter relevant to privacy checks. */
 export interface LogFilterLike {
@@ -13,34 +14,107 @@ export interface LogFilterLike {
   readonly topics?: readonly (string | readonly string[] | null)[];
 }
 
-function pad32(addr: string): string {
-  return '0x' + addr.toLowerCase().replace(/^0x/, '').padStart(64, '0');
+const MAX_USER_ADDRESSES = 100_000;
+const MAX_TOPIC_SLOTS = 8;
+const MAX_TOPIC_OR_LIST = 1024;
+const MAX_FILTER_ADDRESSES = 1024;
+/** `0x` or `0X`: a node may accept either; an unrecognised form must never be skipped. */
+const ADDRESS_HEX = /^0[xX][0-9a-fA-F]{40}$/;
+const TOPIC_HEX = /^0[xX][0-9a-fA-F]{0,64}$/;
+
+/** 64-hex (32-byte) lowercase form of a user address, for topic comparison. */
+function topicForm(address40: string): string {
+  return '0'.repeat(24) + address40;
+}
+
+/** The caller's own addresses as lowercase 40-hex strings (no `0x`). Invalid entries are a caller bug. */
+function ownedAddresses(list: unknown): Set<string> {
+  requireArray(list, 'addresses', MAX_USER_ADDRESSES);
+  const out = new Set<string>();
+  for (const a of list) {
+    requireInput(typeof a === 'string' && ADDRESS_HEX.test(a), 'address must be 20-byte hex');
+    out.add(a.slice(2).toLowerCase());
+  }
+  return out;
+}
+
+/** Topic value as 64 lowercase hex digits (short values left-padded, as an RPC would). */
+function topicKey(v: string): string {
+  return v.slice(2).toLowerCase().padStart(64, '0');
+}
+
+interface ParsedFilter {
+  readonly addresses: readonly string[];
+  /** One entry per topic slot: `null` for a wildcard, otherwise the or-list. */
+  readonly topics: readonly (readonly string[] | null)[];
+}
+
+/** Validates the filter shape; `INVALID_INPUT` for anything an `eth_getLogs` filter could not be. */
+function readFilter(filter: unknown): ParsedFilter {
+  requireRecord(filter, 'filter');
+  const { address, topics } = filter;
+  let addresses: readonly string[] = [];
+  if (address !== undefined) {
+    const list = typeof address === 'string' ? [address] : address;
+    requireArray(list, 'filter address', MAX_FILTER_ADDRESSES, 'INVALID_INPUT');
+    requireInput(list.every((a) => typeof a === 'string' && ADDRESS_HEX.test(a)), 'filter address must be 20-byte hex');
+    addresses = list as readonly string[];
+  }
+  const slots: (readonly string[] | null)[] = [];
+  if (topics !== undefined) {
+    requireArray(topics, 'filter topics', MAX_TOPIC_SLOTS, 'INVALID_INPUT');
+    for (const t of topics) {
+      if (t === undefined || t === null) {
+        slots.push(null);
+        continue;
+      }
+      const vals = typeof t === 'string' ? [t] : t;
+      requireArray(vals, 'topic', MAX_TOPIC_OR_LIST, 'INVALID_INPUT');
+      requireInput(vals.every((v) => typeof v === 'string' && TOPIC_HEX.test(v)), 'topic must be hex of at most 32 bytes');
+      slots.push(vals as readonly string[]);
+    }
+  }
+  return { addresses, topics: slots };
+}
+
+/** True when any address or topic of the parsed filter names one of `mine`. */
+function namesOwned(f: ParsedFilter, mine: ReadonlySet<string>): boolean {
+  if (f.addresses.some((a) => mine.has(a.slice(2).toLowerCase()))) return true;
+  const mine32 = new Set([...mine].map(topicForm));
+  return f.topics.some((slot) => slot !== null && slot.some((v) => mine32.has(topicKey(v))));
 }
 
 /**
- * MH-SCAN-1 R1: no `topic2`/`topic3` filter may reference a user address.
+ * MH-SCAN-1 R1: no part of the `getLogs` filter may reference a user address.
+ *
+ * @remarks Spec R1 names `topic2`/`topic3`; this checks every place an address can appear (the
+ * contract `address`, and every topic slot, padded or not, any case, `0x`/`0X`, in or-lists), a
+ * strict superset: the announcer is never a user address, so there is no false positive. A value
+ * that is not hex of the right size is rejected (`INVALID_INPUT`), never skipped.
  *
  * @param filter The `getLogs` filter about to be sent.
  * @param userAddresses Addresses the user owns (stealth or otherwise); 20-byte hex.
  * @param strict When true any topic2/topic3 constraint is rejected.
- * @throws {MetadataHardeningError} `POLICY_REJECTED`.
+ * @throws {MetadataHardeningError} `POLICY_REJECTED`; `INVALID_INPUT` for a malformed filter or
+ * address list. Messages never contain an address.
  */
 export function assertNoUserAddressFilter(
   filter: LogFilterLike,
   userAddresses: readonly string[],
   strict = false,
 ): void {
-  const mine = new Set(userAddresses.map(pad32));
-  for (const idx of [2, 3]) {
-    const t = filter.topics?.[idx];
-    if (t === undefined || t === null) continue;
-    if (strict) throw new MetadataHardeningError('POLICY_REJECTED', 'topic2/topic3 filters are not allowed');
-    const vals = typeof t === 'string' ? [t] : t;
-    if (vals.some((v) => mine.has(v.toLowerCase()))) {
-      throw new MetadataHardeningError('POLICY_REJECTED', 'log filter would reveal a user address');
-    }
+  const mine = ownedAddresses(userAddresses);
+  const parsed = readFilter(filter);
+  if (strict && parsed.topics.some((slot, i) => i >= 2 && i <= 3 && slot !== null)) {
+    throw new MetadataHardeningError('POLICY_REJECTED', 'topic2/topic3 filters are not allowed');
+  }
+  if (namesOwned(parsed, mine)) {
+    throw new MetadataHardeningError('POLICY_REJECTED', 'log filter would reveal a user address');
   }
 }
+
+/** Largest request budget accepted: bounds the plan's memory and the scan's cost. */
+const MAX_REQUESTS = 10_000;
 
 /** Options for {@link alignedScanRange}. */
 export interface AlignedScanOptions {
@@ -79,6 +153,7 @@ export interface AlignedScan {
  * announcements. Cost: extra requests.
  */
 export function alignedScanRange(opts: AlignedScanOptions, rng?: RandomSource): AlignedScan {
+  requireRecord(opts, 'options');
   assertTestnetChain(opts.chainId);
   const grid = opts.grid ?? 10_000;
   const extra = opts.maxExtraGrids ?? 1;
@@ -87,15 +162,16 @@ export function alignedScanRange(opts: AlignedScanOptions, rng?: RandomSource): 
   requireInput(Number.isSafeInteger(grid) && grid >= 1, 'grid out of range');
   requireInput(Number.isSafeInteger(extra) && extra >= 0 && extra <= 100, 'lookback out of range');
   requireInput(Number.isSafeInteger(windowSize) && windowSize >= 1, 'window out of range');
-  requireInput(Number.isSafeInteger(maxRequests) && maxRequests >= 1, 'budget out of range');
+  requireInput(Number.isSafeInteger(maxRequests) && maxRequests >= 1 && maxRequests <= MAX_REQUESTS, 'budget out of range');
   requireInput(Number.isSafeInteger(opts.wantedFrom) && opts.wantedFrom >= 0, 'wantedFrom out of range');
   requireInput(Number.isSafeInteger(opts.head) && opts.head >= opts.wantedFrom, 'head must be >= wantedFrom');
   const back = extra === 0 ? 0 : randomInt(extra + 1, rng);
-  const fromBlock = Math.max(0, Math.floor(opts.wantedFrom / grid) * grid - back * grid);
+  // `%` is exact on safe integers; `Math.floor(a / b) * b` can round up past `a` near 2^53.
+  const fromBlock = Math.max(0, opts.wantedFrom - (opts.wantedFrom % grid) - back * grid);
   const windows: { from: number; to: number }[] = [];
   let cursor = fromBlock;
   while (cursor <= opts.head && windows.length < maxRequests) {
-    const to = Math.min(cursor + windowSize - 1, opts.head);
+    const to = cursor + Math.min(windowSize - 1, opts.head - cursor);
     windows.push({ from: cursor, to });
     cursor = to + 1;
   }
@@ -114,21 +190,44 @@ export function alignedScanRange(opts: AlignedScanOptions, rng?: RandomSource): 
  *
  * @param keyOf Stable unique key per log, e.g. `${txHash}:${logIndex}`.
  */
-export function dedupeLogs<T extends { readonly blockNumber: number }>(
+export function dedupeLogs<T extends { readonly blockNumber: number | bigint }>(
   logs: readonly T[],
   discardBefore: number,
   seen: Set<string>,
   keyOf: (l: T) => string,
 ): T[] {
-  const out: T[] = [];
+  requireArray(logs, 'logs', MAX_LOGS);
+  requireInput(Number.isSafeInteger(discardBefore) && discardBefore >= 0, 'discardBefore out of range');
+  if (Object.prototype.toString.call(seen) !== '[object Set]') fail('seen must be a Set');
+  requireFunction(keyOf, 'keyOf');
+  // Validate and key every log first so a bad entry leaves `seen` untouched.
+  const keyed: { log: T; key: string }[] = [];
   for (const l of logs) {
-    if (l.blockNumber < discardBefore) continue;
-    const k = keyOf(l);
-    if (seen.has(k)) continue;
-    seen.add(k);
-    out.push(l);
+    requireInput(isRecord(l) && isBlockNumber(l.blockNumber), 'log needs a block number');
+    let key: unknown;
+    try {
+      key = keyOf(l);
+    } catch {
+      throw new MetadataHardeningError('INVALID_INPUT', 'log key function failed');
+    }
+    requireInput(typeof key === 'string', 'log key must be a string');
+    keyed.push({ log: l, key });
+  }
+  const out: T[] = [];
+  for (const { log, key } of keyed) {
+    if (BigInt(log.blockNumber) < BigInt(discardBefore)) continue;
+    if (seen.has(key)) continue;
+    seen.add(key);
+    out.push(log);
   }
   return out;
+}
+
+const MAX_LOGS = 1_000_000;
+
+/** A block number as `number` (safe integer) or `bigint` (what `chain-adapters` logs carry), never negative. */
+function isBlockNumber(v: unknown): v is number | bigint {
+  return typeof v === 'bigint' ? v >= 0n : typeof v === 'number' && Number.isSafeInteger(v) && v >= 0;
 }
 
 /** RPC role: `scan` = bulk range reads; `query` = anything tied to a specific address, plus broadcast. */
@@ -145,18 +244,16 @@ export function roleForRequest(
   filter: LogFilterLike | undefined,
   userAddresses: readonly string[],
 ): RpcRole {
-  if (!SCAN_METHODS.has(method)) return 'query';
+  const mine = ownedAddresses(userAddresses);
+  if (typeof method !== 'string' || !SCAN_METHODS.has(method)) return 'query';
   if (method !== 'eth_getLogs' || filter === undefined) return 'scan';
-  const mine = new Set(userAddresses.map((a) => a.toLowerCase()));
-  const mine32 = new Set(userAddresses.map(pad32));
-  const addrs = filter.address === undefined ? [] : typeof filter.address === 'string' ? [filter.address] : filter.address;
-  if (addrs.some((a) => mine.has(a.toLowerCase()))) return 'query';
-  for (const t of filter.topics ?? []) {
-    if (t === null) continue;
-    const vals = typeof t === 'string' ? [t] : t;
-    if (vals.some((v) => mine32.has(v.toLowerCase()))) return 'query';
+  let parsed: ParsedFilter;
+  try {
+    parsed = readFilter(filter);
+  } catch {
+    return 'query'; // a filter we cannot read is never sent down the bulk-scan path
   }
-  return 'scan';
+  return namesOwned(parsed, mine) ? 'query' : 'scan';
 }
 
 /** Validated two-role RPC config. */
@@ -173,6 +270,7 @@ export interface RpcRoles {
  */
 export function validateRpcRoles(chainId: number, cfg: { scan: string; query: string }): RpcRoles {
   assertTestnetChain(chainId);
+  requireRecord(cfg, 'rpc config');
   const scan = parseEndpoint(cfg.scan);
   const query = parseEndpoint(cfg.query);
   return { scan, query, separated: scan !== query };

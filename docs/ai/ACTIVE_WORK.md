@@ -4257,7 +4257,6 @@ Worker: Claude Code cloud session, branch `nodata/gracious-meitner-0yy6do`, base
 Owned paths: `examples/pos-terminal/**` (new `pos-session.js`, `session.test.mjs`; `index.html`, `pos.js`, `pos.css`, `README.md`), `apps/web/e2e/pos-terminal.spec.ts` (additive scenarios; existing five scenarios unchanged), the POS parity line in `.github/workflows/ci.yml`, this entry, new `docs/handoffs/POS_TERMINAL_COMPLETION_20261125.md`. Not modified: `packages/merchant-hooks`, `packages/merchant-ledger`, `packages/invoice-schema`, `examples/pos-terminal/pos-logic.js` reducer semantics.
 Acceptance: pure lifecycle module with deterministic clock, mock storage and synthetic feed/mock-wallet fixtures covering creation, amount validation and exact precision, presentation, expiry/countdown, cancellation/reset, feed-sourced completion (strict webhook-event validation matching `parseWebhookEvent`, cumulative-to-delta, replay dedup, invoice/currency binding, late rejection, ledger `reconcile` agreement), customer display model, persistence/restore without the bearer link, corrupt-storage recovery; terminal UI keypad, customer screen, live status and focus handling; Playwright desktop and touch-tablet scenarios; existing parity and e2e unchanged and passing.
 
-
 ## Sweep balance consent integration — 2026-11-23
 
 - Coordinator: Codex engineering continuation. Branch: `codex/ghostpay-sweep-balance-integration-20261123`.
@@ -5420,3 +5419,10 @@ respective owners. Use disposable fixtures and record only sanitized results.
 ## November 27 audit — approved Pages payment origin
 
 Worker Codex origin, branch `audit/nov27-origin-87060`, base `b890a76603b924829fdbe2b4fb2c5626f0cf4e36`. Own the Pages build origin, lean manifest and wallet gates, smoke origin checks, corresponding workflow arguments, docs and regressions. Preserve the signed manifest, on-chain read-back, shared-testnet decision and explicit local fixture. Acceptance requires zero wallet requests on origin mismatch, working approved-origin payment and manifest-free demo, and an independent post-deployment origin check. Coordinate workflow hunks with the deployment archive worker.
+
+## 2026-11-25 — metadata-hardening package completion (standalone)
+
+- Worker: Claude Code session `01KtKj8iMVbZhvYZuvDaQyPS` (single lead; two read-only AI review agents). Branch `nodata/gracious-pascal-vdb581`, base `main` `c8e131c1402a96b5c9d5cd8dc5ae4f0c02188063`. This container is a dedicated single-worker clone, so no second worktree was created; the branch name is the one the harness permits pushing to.
+- Owned paths: `packages/metadata-hardening/**` (sources, tests, `scripts/browser-smoke.mjs`, README), `docs/remote/privacy-specs/audit-metadata-hardening.md`, `docs/remote/privacy-specs/wiring/metadata-hardening.md`, this entry, `docs/handoffs/METADATA_HARDENING_COMPLETION_20261125.md`. No shared dependency, contract, app route, lockfile, package.json or global config change.
+- Overlap check: no open or recent branch changes this package beyond one-line pin bumps; the anchor-attribute (R11) and 256-bit-noise fixes are already on `main` and preserved. No other `ACTIVE_WORK` claim covers these paths.
+- Acceptance: all standalone requirements in `docs/remote/privacy-specs/metadata-hardening.md` that are pure logic stay covered; runtime-type, serialization, URL/CSP, redaction, size-bound and mutation defects reproduced then fixed test-first; package typecheck, lint, build, tests and coverage thresholds pass; real-Chromium smoke run; draft PR only, no merge before hosted CI and independent human review.

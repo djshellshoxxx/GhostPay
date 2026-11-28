@@ -1,13 +1,15 @@
-import { MetadataHardeningError } from './guard.js';
+import { MetadataHardeningError, requireInput } from './guard.js';
+import { parseTagMode } from './tags.js';
+import { fail, requireRecord } from './validate.js';
 
 /** Every selectable MH-* id. MH-BTC-1..6 are listed individually. */
-export const MH_IDS = [
+export const MH_IDS = Object.freeze([
   'MH-FEE-1', 'MH-FEE-2', 'MH-ANN-1', 'MH-ANN-2', 'MH-ANN-3', 'MH-TAG-1', 'MH-TAG-2',
   'MH-AMT-1', 'MH-AMT-2', 'MH-WAL-1', 'MH-WAL-2', 'MH-REL-1', 'MH-REL-2', 'MH-REL-3',
   'MH-REL-4', 'MH-REL-5', 'MH-NET-1', 'MH-NET-2', 'MH-NET-3', 'MH-SCAN-1', 'MH-SCAN-2',
   'MH-SCAN-3', 'MH-INV-1', 'MH-INV-2', 'MH-INV-3', 'MH-WEB-1', 'MH-WEB-2', 'MH-WEB-3',
   'MH-ID-1', 'MH-ID-2', 'MH-BTC-1', 'MH-BTC-2', 'MH-BTC-3', 'MH-BTC-4', 'MH-BTC-5', 'MH-BTC-6',
-] as const;
+] as const);
 /** A feature id. */
 export type MhId = (typeof MH_IDS)[number];
 
@@ -19,11 +21,12 @@ export interface MhEntry {
   readonly doesNotProtect: string;
 }
 
-const row = (title: string, defaultOn: boolean, hides: string, doesNotProtect: string): MhEntry => ({ title, defaultOn, hides, doesNotProtect });
+const row = (title: string, defaultOn: boolean, hides: string, doesNotProtect: string): MhEntry =>
+  Object.freeze({ title, defaultOn, hides, doesNotProtect });
 const PUB = 'The payer, amount, token and time stay public.';
 
-/** Spec table, honest labels. No entry claims anonymity. */
-export const MH_CATALOGUE: Readonly<Record<MhId, MhEntry>> = {
+/** Spec table, honest labels. No entry claims anonymity. Frozen: it is normative UI copy. */
+export const MH_CATALOGUE: Readonly<Record<MhId, MhEntry>> = Object.freeze({
   'MH-FEE-1': row('Direct payment without the router', false, 'The fee transfer and router-topic enumeration.', `${PUB} No router protection; the receiver cannot verify the amount from the announcement.`),
   'MH-FEE-2': row('Router keeps the fee, recipient pulls in batches', false, 'Per-payment link to the fee address.', 'The transfer to the router still states the gross amount; the router holds token balances.'),
   'MH-ANN-1': row('Standard shared announcer (scheme 1)', true, 'Scheme id does not mark GhostPay.', 'The router address as caller and the fixed 57-byte metadata layout still mark router payments.'),
@@ -60,7 +63,7 @@ export const MH_CATALOGUE: Readonly<Record<MhId, MhEntry>> = {
   'MH-BTC-4': row('Bitcoin RBF signalling', true, 'The unusual look of non-RBF transactions.', 'Nothing else.'),
   'MH-BTC-5': row('Bitcoin input/output ordering', true, 'The "payment first, change last" heuristic.', 'Amount and script-type heuristics.'),
   'MH-BTC-6': row('Strip PSBT fingerprints', false, 'Wallet and path hints in shared PSBTs.', 'The transaction itself once broadcast.'),
-};
+});
 
 /** Settings object: one boolean per id plus the tag mode string (spec section 7 item 1). */
 export interface HardeningSettings {
@@ -77,10 +80,10 @@ export function defaultHardening(): HardeningSettings {
 }
 
 /** The spec's recommended "hardened" PoC preset. */
-export const HARDENED_PRESET: readonly MhId[] = [
+export const HARDENED_PRESET: readonly MhId[] = Object.freeze([
   'MH-ANN-1', 'MH-TAG-1', 'MH-AMT-1', 'MH-INV-2', 'MH-INV-3', 'MH-WEB-1', 'MH-WEB-2', 'MH-SCAN-1', 'MH-SCAN-2',
   'MH-NET-1', 'MH-REL-2', 'MH-REL-5', 'MH-BTC-1', 'MH-BTC-2', 'MH-BTC-3', 'MH-BTC-4', 'MH-BTC-5',
-];
+] as MhId[]);
 
 /** Builds the hardened preset (only these ids on). */
 export function hardenedSettings(): HardeningSettings {
@@ -98,12 +101,25 @@ export interface HardeningReport {
 /**
  * Spec section 6 conflict and dependency rules.
  *
- * @remarks Errors block (mutually exclusive or invalid pair); warnings are dependency notes.
+ * @remarks Errors block (mutually exclusive or invalid pair); warnings are dependency notes. Every
+ * id must be present as a real boolean (run {@link normalizeHardening} first to fill defaults); a
+ * string such as `"false"` is rejected, not treated as on.
+ * @throws {MetadataHardeningError} `INVALID_INPUT` for a malformed settings object, including a
+ * `tagMode` that is not `full`, `ignore` or `mask:1..7`.
  */
 export function validateHardening(s: HardeningSettings): HardeningReport {
-  const on = (id: MhId): boolean => s.enabled[id];
+  requireRecord(s, 'settings');
+  const enabled = s.enabled as unknown;
+  requireRecord(enabled, 'settings.enabled');
+  if (typeof s.tagMode !== 'string') fail('tagMode must be a string');
+  // Complete maps only: a missing id would be "off" here but a default in normalizeHardening.
+  for (const id of MH_IDS) {
+    if (!Object.hasOwn(enabled, id) || typeof enabled[id] !== 'boolean') fail('every id needs a boolean flag (use normalizeHardening to fill defaults)');
+  }
+  const on = (id: MhId): boolean => enabled[id] === true;
   const errors: string[] = [];
   const warnings: string[] = [];
+  parseTagMode(s.tagMode); // malformed settings: INVALID_INPUT, like every other wrong-typed field
   if (on('MH-AMT-1') && on('MH-AMT-2')) errors.push('MH-AMT-1 and MH-AMT-2: pick one.');
   if (on('MH-FEE-1') && on('MH-FEE-2')) errors.push('MH-FEE-1 and MH-FEE-2 are mutually exclusive.');
   if (on('MH-TAG-1') && on('MH-TAG-2')) errors.push('MH-TAG-1 (keep tag) and MH-TAG-2 (drop/mask tag) conflict.');
@@ -116,16 +132,74 @@ export function validateHardening(s: HardeningSettings): HardeningReport {
   if (on('MH-TAG-2')) warnings.push('MH-TAG-2: other wallets may not detect the payment.');
   if (on('MH-ID-1') && !on('MH-ID-2')) warnings.push('MH-ID-1 and MH-ID-2 share one seed derivation module.');
   if (on('MH-BTC-3')) warnings.push('MH-BTC-3 conflicts with PayJoin unless locktime stays unchanged.');
-  if (on('MH-REL-2') && on('MH-REL-1') === false) warnings.push('MH-REL-2 is timing only: still one tx per sweep.');
+  if (on('MH-REL-2') && !on('MH-REL-1')) warnings.push('MH-REL-2 is timing only: still one tx per sweep.');
   return { errors, warnings };
 }
 
 /**
  * Throws if the settings have blocking conflicts.
  *
- * @throws {MetadataHardeningError} `CONFLICT` with the first error.
+ * @throws {MetadataHardeningError} `CONFLICT` with the first error; `INVALID_INPUT` when malformed.
  */
 export function assertHardening(s: HardeningSettings): void {
   const r = validateHardening(s);
   if (r.errors.length > 0) throw new MetadataHardeningError('CONFLICT', r.errors[0] as string);
+}
+
+/** Largest settings JSON text accepted by {@link parseHardeningJson} (UTF-16 units). */
+export const MAX_SETTINGS_JSON_LENGTH = 65_536;
+
+/**
+ * Normalises persisted or migrated settings (wiring: `ghostpay.settings.v1` "fills it when
+ * missing"): missing ids take the spec default, unknown ids and members are dropped, wrong types
+ * are rejected (never coerced), and the result is validated.
+ *
+ * @param raw Parsed JSON, or `undefined`/`null` for "no settings yet" (returns the defaults).
+ * @returns A new frozen settings object; `raw` is never mutated or retained.
+ * @throws {MetadataHardeningError} `INVALID_INPUT` for a non-object, a non-boolean flag or an
+ * invalid `tagMode`; `CONFLICT` for a blocking rule from spec section 6.
+ */
+export function normalizeHardening(raw: unknown): HardeningSettings {
+  const enabled: Record<string, boolean> = {};
+  for (const id of MH_IDS) enabled[id] = MH_CATALOGUE[id].defaultOn;
+  let tagMode = 'full';
+  if (raw !== undefined && raw !== null) {
+    requireRecord(raw, 'settings');
+    if (raw.enabled !== undefined) {
+      const given = raw.enabled;
+      requireRecord(given, 'settings.enabled');
+      for (const id of MH_IDS) {
+        if (!Object.hasOwn(given, id) || given[id] === undefined) continue;
+        requireInput(typeof given[id] === 'boolean', 'every enabled flag must be a boolean');
+        enabled[id] = given[id];
+      }
+    }
+    if (raw.tagMode !== undefined) {
+      requireInput(typeof raw.tagMode === 'string', 'tagMode must be a string');
+      parseTagMode(raw.tagMode);
+      tagMode = raw.tagMode;
+    }
+  }
+  const out: HardeningSettings = Object.freeze({ enabled: Object.freeze(enabled) as Record<MhId, boolean>, tagMode });
+  assertHardening(out);
+  return out;
+}
+
+/**
+ * Parses persisted settings text: size-bounded, malformed JSON is a typed error that never echoes
+ * the text, then {@link normalizeHardening}.
+ *
+ * @throws {MetadataHardeningError} `INVALID_INPUT`, `LIMIT_EXCEEDED` (over 64 KiB), `CONFLICT`.
+ */
+export function parseHardeningJson(text: string): HardeningSettings {
+  if (typeof text !== 'string') fail('settings must be a string');
+  if (text.length > MAX_SETTINGS_JSON_LENGTH) throw new MetadataHardeningError('LIMIT_EXCEEDED', 'settings text is too large');
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(text);
+  } catch {
+    throw new MetadataHardeningError('INVALID_INPUT', 'settings are not valid JSON');
+  }
+  requireRecord(parsed, 'settings'); // JSON null / arrays / scalars are corrupt storage, not "no settings"
+  return normalizeHardening(parsed);
 }

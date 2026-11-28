@@ -11,6 +11,7 @@ import {
   type StealthKeySet,
 } from '@ghostpay/core-crypto';
 import { assertTestnetChain, MetadataHardeningError, requireInput } from './guard.js';
+import { checkRecord, isBytes } from './validate.js';
 
 const enc = new TextEncoder();
 const MAX_RANGE = 10_000;
@@ -55,8 +56,10 @@ export interface InvoiceKeys {
 }
 
 function checkSeed(seed: Uint8Array): void {
-  requireInput(seed instanceof Uint8Array && seed.length >= 32, 'seed must be at least 32 bytes');
+  requireInput(isBytes(seed) && seed.length >= 32, 'seed must be at least 32 bytes');
 }
+
+const SIGNER_MODES: readonly string[] = ['per-invoice', 'per-chain', 'long-lived'];
 
 function u32(n: number): Uint8Array {
   const b = new Uint8Array(4);
@@ -127,12 +130,31 @@ function deriveSigner(seed: Uint8Array, mode: SignerMode, chainId: number | unde
 export function deriveInvoiceKeys(seed: Uint8Array, index: number, options: DeriveOptions = {}): InvoiceKeys {
   checkSeed(seed);
   requireInput(Number.isInteger(index) && index >= 0 && index <= U32_MAX, 'index out of range');
+  const { chainId, signerMode } = checkOptions(options);
+  // Work on a private copy: the caller's buffer is never read after return and a cross-realm
+  // array is normalised to this realm's Uint8Array for the hash primitives.
+  const root = Uint8Array.from(seed);
+  try {
+    return derive(root, index, chainId, signerMode);
+  } finally {
+    root.fill(0);
+  }
+}
+
+/** Validates and defaults the option bag; shared so an empty range is checked exactly like a single key. */
+function checkOptions(options: DeriveOptions): { chainId: number | undefined; signerMode: SignerMode } {
+  checkRecord(options, 'options');
   const { chainId } = options;
   if (chainId !== undefined) assertTestnetChain(chainId);
-  const signerMode = options.signerMode ?? 'per-invoice';
+  const signerMode = options.signerMode === undefined ? 'per-invoice' : options.signerMode;
+  requireInput(SIGNER_MODES.includes(signerMode), 'unknown signer mode');
   if (signerMode === 'per-chain' && chainId === undefined) {
     throw new MetadataHardeningError('INVALID_INPUT', 'per-chain signer needs a chain id');
   }
+  return { chainId, signerMode };
+}
+
+function derive(seed: Uint8Array, index: number, chainId: number | undefined, signerMode: SignerMode): InvoiceKeys {
   const keys = deriveKeySet(seed, 'stealth', chainId, index);
   const signer = deriveSigner(seed, signerMode, chainId, index);
   const linkability: string[] = [];
@@ -174,6 +196,8 @@ export function deriveInvoiceKeyRange(
   count: number,
   options: DeriveOptions = {},
 ): InvoiceKeys[] {
+  checkSeed(seed);
+  checkOptions(options);
   requireInput(Number.isInteger(count) && count >= 0 && count <= MAX_RANGE, 'count out of range');
   requireInput(Number.isInteger(from) && from >= 0 && from + count - 1 <= U32_MAX, 'range out of bounds');
   const out: InvoiceKeys[] = [];
@@ -183,5 +207,6 @@ export function deriveInvoiceKeyRange(
 
 /** Hex form of a public key, for tests and display. */
 export function publicKeyHex(k: CompressedPoint): string {
-  return bytesToHex(k);
+  requireInput(isBytes(k) && k.length === 33, 'public key must be 33 bytes');
+  return bytesToHex(Uint8Array.from(k));
 }

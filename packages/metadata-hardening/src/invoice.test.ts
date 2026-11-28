@@ -16,7 +16,8 @@ const enc = new TextEncoder();
 
 describe('MH-INV-1 padding', () => {
   it('plans pad lengths', () => {
-    expect(padLengthFor(2)).toEqual({ target: 256, padChars: 245 });
+    // "{}" needs no comma before the pad member (pinned wrongly as 245 before; padPrivatePart({}) failed).
+    expect(padLengthFor(2)).toEqual({ target: 256, padChars: 246 });
     expect(padLengthFor(247)).toEqual({ target: 256, padChars: 0 });
     expect(padLengthFor(248)).toEqual({ target: 1024, padChars: 767 });
     expect(() => padLengthFor(4088)).toThrow(MetadataHardeningError);
