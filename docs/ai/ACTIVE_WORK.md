@@ -1,3 +1,9 @@
+# Direct sweep fee review — 2026-11-28 UTC
+
+Worker: Codex sweep review on `ux/nov28-sweep`, base `70458ebe3ae4a5502d7c39ae25d37342dbde971b`.
+Owned paths: web Direct Sweep view, transaction preparation and affected tests, sweep-specific locale entries and sweep user guide.
+Acceptance: preview source, destination, asset, maximum fee and net before a separate signing action; invalidate revised terms; preserve transaction safety, journal and replacement guards. Verify with local synthetic transactions.
+
 # Recorded low residuals (web) — 2026-11-27 UTC
 
 Worker: local Claude Code worker W7 on the existing merged branch `claude/consolidation-stack-20261126`, fast-forwarded
