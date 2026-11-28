@@ -4,7 +4,7 @@ import { recognizeRecoveryFile, type RecoveryFile } from '../lib/recoveryFile';
 import { loadedKeysRecoverable } from '../lib/keyVault';
 import { RecoveredMasterKeys, RecoveredPaymentKeys, openStealthExport, verifyStealthExport, type VerifiedStealthExport } from '../lib/paymentKeyExport';
 import { captureSessionVersionGuard, getSessionBackup, sessionHasExternalCopy } from '../lib/session';
-import { STEALTH_EXPORT_LIMITS, type StealthKeypairHeader, type StealthMasterHeader, type StealthPublicRecord } from '../lib/stealthExport';
+import type { StealthKeypairHeader, StealthMasterHeader, StealthPublicRecord } from '../lib/stealthExport';
 import type { MessageKey } from '../i18n/catalog';
 import { Field, Mono, Notice } from './Common';
 import { useExportOperation, useExportT, useLatestExportT, type ExportMessage } from './StealthExportCommon';
@@ -45,8 +45,6 @@ export function StealthExportRecovery(props: {
 }): ReactNode {
   const t = useExportT();
   const latestT = useLatestExportT(t);
-  const fileInput = useRef<HTMLInputElement | null>(null);
-  const [file, setFile] = useState<File | undefined>(undefined);
   const [recognized, setRecognized] = useState<RecoveryFile>();
   const [passphrase, setPassphrase] = useState('');
   const [busy, setBusy] = useState(false);
@@ -66,7 +64,7 @@ export function StealthExportRecovery(props: {
   };
   const reset = (): void => {
     wipeHeld();
-    setRecognized(undefined); setFile(undefined);
+    setRecognized(undefined);
     replacement.current = undefined;
     setShown(undefined); setVerified(undefined); setRawIndex(undefined); setConfirmReplace(undefined); setPassphrase(''); setBusy(false); setMessage(undefined);
   };
@@ -87,21 +85,15 @@ export function StealthExportRecovery(props: {
   };
 
   const openSelected = (mode: 'open' | 'verify'): void => {
-    if (file === undefined) { fail({ key: 'stealthExport.open.chooseFile' }); return; }
-    if (file.size > STEALTH_EXPORT_LIMITS.keypairFileBytes) { setPassphrase(''); fail({ key: 'error.stealthExport.tooLarge' }); return; }
+    if (recognized === undefined || recognized.kind === 'keystore') { fail({ key: 'stealthExport.open.chooseFile' }); return; }
     const controller = op.start();
     wipeHeld(); replacement.current = undefined;
     setShown(undefined); setVerified(undefined); setRawIndex(undefined); setConfirmReplace(undefined);
-    const selected = file; const pass = passphrase;
+    const text = recognized.text; const pass = passphrase;
     setBusy(true);
     setMessage({ kind: 'ok', text: { key: 'stealthExport.open.working' } });
     void (async () => {
       try {
-        const text = await selected.text();
-        if (!op.current(controller)) return;
-        // File.text() can strip a UTF-8 BOM. Portable exports are ASCII bytes; never certify a normalized file that the
-        // independent decoder would reject. The codec separately rejects every remaining non-ASCII character.
-        if (selected.size !== text.length) throw new UserFacingError({ key: 'error.stealthExport.invalidFile' });
         if (mode === 'verify') {
           const result = await verifyStealthExport(text, pass, { signal: controller.signal });
           if (!op.current(controller)) return;
@@ -137,9 +129,9 @@ export function StealthExportRecovery(props: {
     props.recovery?.cancelImport();
     const controller = op.start();
     setBusy(true);
-    void recognizeRecoveryFile(chosen).then((result) => {
+    void recognizeRecoveryFile(chosen, controller.signal).then((result) => {
       if (!op.current(controller)) return;
-      setRecognized(result); setFile(chosen); setBusy(false);
+      setRecognized(result); setBusy(false);
     }).catch((error: unknown) => {
       if (!op.current(controller)) return;
       setBusy(false); fail(captureUserMessage(error));
@@ -236,13 +228,13 @@ export function StealthExportRecovery(props: {
       {message !== undefined && <Notice kind={message.kind}>{displayMessage(message.text, t)}</Notice>}
       <form onSubmit={onOpen} className="stack" autoComplete="off">
         <Field label={t('stealthExport.open.file')}>{(id) => <>
-          <input id={id} aria-describedby={file === undefined ? undefined : `${id}-file`} ref={fileInput} type="file" accept="application/json,.json" onChange={(e) => {
+          <input id={id} aria-describedby={recognized === undefined ? undefined : `${id}-file`} type="file" accept="application/json,.json" onChange={(e) => {
             const chosen = e.currentTarget.files?.[0]; e.currentTarget.value = '';
             if (chosen === undefined) return;
             selectFile(chosen);
           }} />
           {/* Main convention (07722292): the chosen file's name is not echoed back. */}
-          {file !== undefined && <p className="hint" id={`${id}-file`}>{t('upload.selectedFile')}</p>}
+          {recognized !== undefined && <p className="hint" id={`${id}-file`}>{t('upload.selectedFile')}</p>}
         </>}</Field>
         {busy && recognized === undefined && <p role="status">{t('sellerKeys.verify.reading')}</p>}
         {recognized !== undefined && <p role="status">{t(RECOVERY_LABELS[recognized.kind])}</p>}
@@ -250,8 +242,8 @@ export function StealthExportRecovery(props: {
         {needsPassphrase && <Field label={t(keystore ? 'sellerKeys.passphrase' : 'stealthExport.open.passphrase')} hint={t('stealthExport.open.passphraseHint')}>
           {(id, d) => <input id={id} aria-describedby={d} type="password" autoComplete="off" name="ghostpay-stealth-export-open" disabled={working} value={passphrase} onChange={(e) => { setPassphrase(e.target.value); setVerified(undefined); setMessage(undefined); }} />}
         </Field>}
-        {canLoad && <button type="submit" className="btn" data-testid="stealth-export-open-submit" disabled={working || file === undefined || (keystore && passphrase === '')}>{t(keystore ? 'sellerKeys.decryptLoad' : 'stealthExport.open.submit')}</button>}
-        {!keystore && recognized?.kind !== 'public' && <button type="button" className="btn" data-testid="stealth-export-verify-submit" disabled={working || file === undefined} onClick={() => { openSelected('verify'); }}>{t('stealthExport.open.verify')}</button>}
+        {canLoad && <button type="submit" className="btn" data-testid="stealth-export-open-submit" disabled={working || recognized === undefined || (keystore && passphrase === '')}>{t(keystore ? 'sellerKeys.decryptLoad' : 'stealthExport.open.submit')}</button>}
+        {!keystore && recognized?.kind !== 'public' && <button type="button" className="btn" data-testid="stealth-export-verify-submit" disabled={working || recognized === undefined} onClick={() => { openSelected('verify'); }}>{t('stealthExport.open.verify')}</button>}
         {working && <button type="button" className="btn" onClick={() => { props.recovery?.cancelImport(); closeExport(); }}>{t('stealthExport.cancel')}</button>}
       </form>
 

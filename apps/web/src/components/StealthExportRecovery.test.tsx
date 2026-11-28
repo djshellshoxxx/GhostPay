@@ -116,8 +116,15 @@ describe('Open a stealth key export (spec 18 flow 4)', () => {
   it('shows a public record as unauthenticated and holding no key', async () => {
     const user = userEvent.setup();
     render(<StealthExportRecovery announce={announce} />);
-    await openFile(user, VECTORS.files.public.text, '');
+    const file = asFile(VECTORS.files.public.text);
+    const read = vi.spyOn(file, 'text');
+    const opened = vi.spyOn(exportModule, 'openStealthExport');
+    await user.upload(screen.getByLabelText('Recovery file'), file);
+    expect(await screen.findByText('Public payment record')).toBeTruthy();
+    expect(opened).not.toHaveBeenCalled();
+    await user.click(screen.getByRole('button', { name: 'Open export' }));
     expect(await screen.findByText(/holds no key and proves no ownership/)).toBeTruthy();
+    expect(read).toHaveBeenCalledTimes(1);
     expect(screen.getByText(A1.announcement.stealthAddress)).toBeTruthy();
   });
 

@@ -2,14 +2,19 @@ import { UserFacingError } from './errors';
 import { MAX_KEYSTORE_BYTES, validateKeystoreEnvelope } from './keystore';
 import { detectStealthExportFormat, inspectMasterBackup, inspectPaymentKeys, parsePublicRecord, STEALTH_EXPORT_LIMITS, type StealthExportFormat } from './stealthExport';
 
-export type RecoveryFile = { readonly kind: 'keystore'; readonly text: string } | { readonly kind: StealthExportFormat };
+export interface RecoveryFile {
+  readonly kind: 'keystore' | StealthExportFormat;
+  /** Exact public record or encrypted envelope inspected at selection time. */
+  readonly text: string;
+}
 
 /** Inspect only the public envelope. The selected importer's authenticated open still runs on explicit submission. */
-export async function recognizeRecoveryFile(file: File): Promise<RecoveryFile> {
+export async function recognizeRecoveryFile(file: File, signal?: AbortSignal): Promise<RecoveryFile> {
   if (file.size > Math.max(MAX_KEYSTORE_BYTES, STEALTH_EXPORT_LIMITS.keypairFileBytes)) {
     throw new UserFacingError({ key: 'error.stealthExport.tooLarge' });
   }
   const text = await file.text();
+  signal?.throwIfAborted();
   const kind = detectStealthExportFormat(text);
   if (kind !== undefined) {
     // File.text() may strip a BOM. A portable export must be ASCII and byte-exact.
@@ -17,7 +22,7 @@ export async function recognizeRecoveryFile(file: File): Promise<RecoveryFile> {
     if (kind === 'public') parsePublicRecord(text);
     else if (kind === 'keypair') inspectPaymentKeys(text);
     else inspectMasterBackup(text);
-    return { kind };
+    return { kind, text };
   }
   if (file.size <= MAX_KEYSTORE_BYTES) {
     try {

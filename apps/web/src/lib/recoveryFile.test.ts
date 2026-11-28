@@ -11,7 +11,7 @@ describe('recovery envelope recognition', () => {
     ['keypair', VECTORS.files.single.text],
     ['keypair', VECTORS.files.archive.text],
   ])('validates a %s envelope without relying on its name', async (kind, text) => {
-    await expect(recognizeRecoveryFile(new File([text], 'wrong-name'))).resolves.toEqual({ kind });
+    await expect(recognizeRecoveryFile(new File([text], 'wrong-name'))).resolves.toEqual({ kind, text });
   });
 
   it.each([
