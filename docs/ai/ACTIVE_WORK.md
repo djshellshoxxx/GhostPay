@@ -5409,3 +5409,7 @@ respective owners. Use disposable fixtures and record only sanitized results.
 ## November 27 audit — approved Pages payment origin
 
 Worker Codex origin, branch `audit/nov27-origin-87060`, base `b890a76603b924829fdbe2b4fb2c5626f0cf4e36`. Own the Pages build origin, lean manifest and wallet gates, smoke origin checks, corresponding workflow arguments, docs and regressions. Preserve the signed manifest, on-chain read-back, shared-testnet decision and explicit local fixture. Acceptance requires zero wallet requests on origin mismatch, working approved-origin payment and manifest-free demo, and an independent post-deployment origin check. Coordinate workflow hunks with the deployment archive worker.
+
+## November 28 UX audit — private navigation and mobile shell
+
+Owner: navigation reviewer, branch `ux/nov28-nav`, base `70458ebe`. Own view-only browser history, shell focus, compact mobile navigation and focused regression coverage. Coordinate Settings departure through its shared navigation guard. The existing help-link and tooltip reviewers retain ownership of their changes.
