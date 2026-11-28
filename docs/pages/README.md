@@ -161,7 +161,7 @@ Only the repository owner can do these. Each step names where it is done and wha
 **A. Decide hosting (once)**
 
 1. Read and accept or reject [ADR-0029](../adr/ADR-0029-github-pages-static-beta.md). To accept: change its `Status:` line to `Accepted (<date>, <name>)` in a reviewed pull request. Until then ADR-0015 forbids publishing.
-2. Choose a serving origin that no other site shares ([Serving origin](#serving-origin-read-before-publishing)):
+2. For the one payments-disabled #776 release accepted in ADR-0029, use the existing project URL on `https://djshellshoxxx.github.io`. For an isolated serving origin, choose one of the following ([Serving origin](#serving-origin-read-before-publishing)):
    - **Custom domain (recommended):**
      - Settings > Pages > Custom domain: enter e.g. `pay.example.org` and save.
      - At your DNS provider, add `CNAME pay.example.org -> djshellshoxxx.github.io` (no path).
@@ -179,7 +179,7 @@ Only the repository owner can do these. Each step names where it is done and wha
 6. Get the release onto `main`, because the deploy job runs only from `main`. Pull request #137 is stacked: #137 → #135 (`nodata/jolly-rubin-u4zd45`) → #98 (`integration/ghostpay-beta-consolidated-20261109`) → `main`. Either merge the stack in that order after review, or open one pull request from `claude/ghostpay-github-pages-up6cj6` to `main` (it contains the whole stack). Wait for CI to pass on the merge commit.
 7. Actions > **Pages** > Run workflow > Branch `main`, tick **deploy**, Run. The run builds and verifies the site and runs the real-chain acceptance plus the release gates (typecheck, lint, unit tests, mocked browser suite). Then it deploys, and the `smoke` job checks the live site.
 8. In the run summary, check:
-   - `pages-evidence.json`: `release: true`, your origin, `sharedOrigin: false`, and status `DEMO: payments disabled …`;
+   - `pages-evidence.json`: `release: true`, your approved origin and status `DEMO: payments disabled …` with an empty `paymentsEnabledChainIds`. Expect `sharedOrigin: true` for the one approved #776 release, or `false` for a dedicated origin;
    - the `SHA256SUMS` list;
    - that the `smoke` job passed.
 

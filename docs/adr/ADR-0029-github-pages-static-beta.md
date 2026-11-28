@@ -1,12 +1,14 @@
 # ADR-0029 GitHub Pages static EVM beta
 
-Status: **Proposed (2026-11-12).** Needs the owner's acceptance. Until it is accepted, ADR-0015 (hosting gating) still governs and the Pages workflow must not be dispatched with `deploy: true`.
+Status: **Accepted (2026-11-28, djshellshoxxx) for one payments-disabled demonstration release** containing the [updated homepage in PR #776](https://github.com/djshellshoxxx/GhostPay/pull/776) at [the existing Pages URL](https://djshellshoxxx.github.io/GhostPay/). Further publications require a separate owner decision.
+
+For this release, verify that the approved origin is `https://djshellshoxxx.github.io`, `sharedOrigin` is `true`, and `paymentsEnabledChainIds` is empty. Use the lean demo, its shared-origin warning and the existing Pages release gates. Record the deployed commit and successful live smoke check. Payment-enabled hosting remains subject to the open gates below.
 
 ## Context
 
 The owner's GitHub Pages release directive (2026-11-12) makes one static, client-side EVM testnet beta on GitHub Pages the only release target: no GhostPay backend, relayer, database or scheduled job. ADR-0015 says no public instance is operated "until all of [five gates] exist", and that enabling publication needs a new ADR. This is that ADR.
 
-## Decision (proposed)
+## Hosting design
 
 1. Publish only the **lean** EVM profile (`GHOSTPAY_LOCAL_BUILD_PROFILE=lean`), built by `scripts/pages/build-pages.sh` and independently verified by `scripts/pages/verify-pages-site.mjs`, through `.github/workflows/pages.yml` (manual dispatch on `main`, `github-pages` environment).
 2. The default site is a **demonstration**: no deployment manifest, so payments are disabled on every chain. A Pages build refuses mainnet manifests outright; enabling a mainnet needs a different host and a new ADR.
