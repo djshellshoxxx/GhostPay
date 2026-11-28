@@ -1,4 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
+import { configureRpc, mockNetwork, stageVerifiedErc20Payment, type MockNetworkState } from './flowMocks';
 import { generateKeys } from './helpers';
 
 async function expectControlHelp(page: Page): Promise<void> {
@@ -73,4 +74,31 @@ test.describe('inline help on touchscreens', () => {
     await expect(page.locator('.control-tip-inline')).toHaveCount(0);
     await expect(input).toHaveValue(privateText);
   });
+});
+
+test('explains both sweep radio choices before the seller selects a route or signs', async ({ page, context }) => {
+  const state: MockNetworkState = {};
+  await mockNetwork(context, state);
+  await configureRpc(page);
+  await page.goto('/');
+  stageVerifiedErc20Payment(state, await generateKeys(page));
+  await page.locator('[data-view="scan"]').click();
+  await page.getByLabel('Chain').selectOption({ label: 'Base Sepolia' });
+  await page.getByLabel('Start block').fill('0');
+  await page.getByRole('button', { name: 'Start scan' }).click();
+  const sweep = page.getByRole('button', { name: 'Sweep this payment' });
+  await expect(sweep).toBeVisible();
+  await expectControlHelp(page);
+  await sweep.click();
+  const direct = page.getByRole('radio', { name: /Directly/ });
+  const relay = page.getByRole('radio', { name: /Through the relayer/ });
+  const selected = await direct.isChecked();
+  await expect(direct).toHaveAccessibleDescription(/native coin to pay the network fee/);
+  await expect(relay).toHaveAccessibleDescription(/quoted fee before signing/);
+  await page.getByRole('checkbox', { name: 'Show control tips' }).check();
+  await expect(direct.locator('+ .control-tip-inline')).toBeVisible();
+  await expect(relay.locator('+ .control-tip-inline')).toBeVisible();
+  expect(await direct.isChecked()).toBe(selected);
+  expect(state.sent).toBeUndefined();
+  await expectControlHelp(page);
 });

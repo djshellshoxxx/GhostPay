@@ -48,6 +48,7 @@ function HoverTips(): ReactNode {
     let focused: Element | null = null;
     let owner: Element | null = null;
     let touch = false;
+    let pointerPressed = false;
     let pending: ReturnType<typeof setTimeout> | undefined;
     const cancelPending = (): void => { clearTimeout(pending); pending = undefined; };
     const hide = (): void => {
@@ -74,12 +75,14 @@ function HoverTips(): ReactNode {
       tip.style.top = `${Math.max(margin, Math.min(top, viewport.clientHeight - height - margin))}px`;
     };
     const reset = (): void => { cancelPending(); hovered = null; focused = null; hide(); };
-    const press = (event: PointerEvent): void => { touch = event.pointerType === 'touch'; reset(); };
+    const press = (event: PointerEvent): void => { touch = event.pointerType === 'touch'; pointerPressed = true; reset(); };
+    const release = (): void => { pointerPressed = false; };
     const reposition = (): void => { if (owner !== null) show(owner); };
     const pointer = (event: PointerEvent): void => {
       if (event.pointerType === 'touch') return;
       const next = event.type === 'pointerout' ? event.relatedTarget : event.target;
       if (next instanceof Node && tip.contains(next)) return;
+      if (next instanceof Element && next.closest('.context-help')) { reset(); return; }
       const target = tipTarget(next);
       if (target === hovered) return;
       cancelPending();
@@ -87,15 +90,18 @@ function HoverTips(): ReactNode {
       if (target === null) { show(focused); return; }
       // During pointer travel a brief crossing must not obscure the next control.
       if (owner !== focused) hide();
-      pending = setTimeout(() => { show(hovered ?? focused); }, 300);
+      pending = setTimeout(() => { pending = undefined; show(hovered ?? focused); }, 300);
     };
     const focus = (event: FocusEvent): void => {
       cancelPending();
-      focused = touch ? null : tipTarget(event.type === 'focusout' ? event.relatedTarget : event.target);
+      const next = event.type === 'focusout' ? event.relatedTarget : event.target;
+      if (next instanceof Element && next.closest('.context-help')) { reset(); return; }
+      focused = touch || pointerPressed ? null : tipTarget(next);
       show(focused ?? hovered);
     };
     const key = (event: KeyboardEvent): void => {
       touch = false;
+      pointerPressed = false;
       if (event.key === 'Escape' && (owner !== null || pending !== undefined)) {
         reset();
         // A passive tip must also let the same Escape cancel a dialog or close a disclosure.
@@ -108,6 +114,8 @@ function HoverTips(): ReactNode {
       else if (owner.getAttribute('aria-description') !== tip.textContent) show(owner);
     });
     document.addEventListener('pointerdown', press, true);
+    document.addEventListener('pointerup', release, true);
+    document.addEventListener('pointercancel', release, true);
     document.addEventListener('pointerover', pointer, true);
     document.addEventListener('pointerout', pointer, true);
     document.addEventListener('focusin', focus, true);
@@ -120,6 +128,8 @@ function HoverTips(): ReactNode {
       cancelPending();
       updates.disconnect();
       document.removeEventListener('pointerdown', press, true);
+      document.removeEventListener('pointerup', release, true);
+      document.removeEventListener('pointercancel', release, true);
       document.removeEventListener('pointerover', pointer, true);
       document.removeEventListener('pointerout', pointer, true);
       document.removeEventListener('focusin', focus, true);
