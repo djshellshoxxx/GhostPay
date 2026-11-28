@@ -3,8 +3,20 @@
 Worker: Codex recovery on `ux/nov28-recovery` from `70458ebe` for the UX audit recommendations.
 Owned paths: seller key recovery view and component, recovery-file recognition and tests, its localized strings, and the recovery acceptance spec.
 Acceptance: identify the supported seller backup before requesting a passphrase, preserve each importer's validation and key ownership safeguards, require explicit action, and reject unknown or ambiguous files.
+PR #773 qualification worker on `qa/773-picker-cases`, starting at `de411e8`, owns the recovery-file fixture and browser recovery cases. Check all four file types in fresh contexts and confirm their restored identities and key scopes.
 
 ---
+
+# Static guide footer keyboard navigation
+
+Codex owns the page heading and footer link in `apps/web/{help,privacy}.html` and the matching
+regression in `apps/web/e2e/static-help.spec.ts` on `fix/static-guides-back-to-top`.
+Base: `70458ebe3ae4a5502d7c39ae25d37342dbde971b`. With JavaScript disabled, Enter on
+“Back to top” must focus the page heading and the next Tab must focus “Open app” on both guides.
+
+The follow-up on PR #768 starts at `0d7d069da7e0145b8a373e45de150e82744713ca` and adds
+the `<noscript>` navigation in `apps/web/index.html` to this claim. With JavaScript disabled,
+the first Tab must reveal the skip link, Enter must focus main, and the next Tab must reach the inline help guide.
 
 # Recorded low residuals (web) — 2026-11-27 UTC
 

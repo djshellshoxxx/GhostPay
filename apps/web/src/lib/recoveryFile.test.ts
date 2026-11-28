@@ -17,8 +17,9 @@ describe('recovery envelope recognition', () => {
   it.each([
     '{}',
     '{"format":"ghostpay-stealth-master"}',
-    VECTORS.files.master.text.replace('{', '{"kdfParams": {},'),
-    VECTORS.files.public.text.replace('{', '{"version": 1,'),
+    // Each fixture adds one root member. Keep the duplicate version in the raw JSON.
+    `{"kdfParams": {},${VECTORS.files.master.text.slice(1)}`,
+    `{"version": 1,${VECTORS.files.public.text.slice(1)}`,
   ])('rejects unsupported, mixed and duplicate envelopes', async (text) => {
     await expect(recognizeRecoveryFile(new File([text], 'ghostpay-keystore.json'))).rejects.toThrow();
   });
