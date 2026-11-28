@@ -5409,3 +5409,12 @@ respective owners. Use disposable fixtures and record only sanitized results.
 ## November 27 audit — approved Pages payment origin
 
 Worker Codex origin, branch `audit/nov27-origin-87060`, base `b890a76603b924829fdbe2b4fb2c5626f0cf4e36`. Own the Pages build origin, lean manifest and wallet gates, smoke origin checks, corresponding workflow arguments, docs and regressions. Preserve the signed manifest, on-chain read-back, shared-testnet decision and explicit local fixture. Acceptance requires zero wallet requests on origin mismatch, working approved-origin payment and manifest-free demo, and an independent post-deployment origin check. Coordinate workflow hunks with the deployment archive worker.
+
+## November 27 integrated audit candidate ERC-20 qualification
+
+The audit integration coordinator owns the isolated test branch audit/nov27-hosted-erc20-87060. Candidate tree f7c3e630da8495670f0fed30579df6fac9e1cb32 is the browser source under test. Apply the qualification workflow and harness files from PR #753 head 1d7bd4ea632b41fee8fcece68d9a8fadd2b0b9a0. Run all six managed browser and payment-mode combinations against disposable loopback fixtures. The release artifact remains manifest-free.
+
+Qualification worker on `audit/nov27-hosted-w5-87060` owns the nonpublishing
+W5 workflow on the stacked verification branch. Run the unchanged #665 harness
+against the exact integration base SHA of each workflow event with all named payer
+and seller scenarios and eight seeds per lane. Retain sanitized results only.
