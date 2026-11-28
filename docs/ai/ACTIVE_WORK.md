@@ -5409,3 +5409,10 @@ respective owners. Use disposable fixtures and record only sanitized results.
 ## November 27 audit — approved Pages payment origin
 
 Worker Codex origin, branch `audit/nov27-origin-87060`, base `b890a76603b924829fdbe2b4fb2c5626f0cf4e36`. Own the Pages build origin, lean manifest and wallet gates, smoke origin checks, corresponding workflow arguments, docs and regressions. Preserve the signed manifest, on-chain read-back, shared-testnet decision and explicit local fixture. Acceptance requires zero wallet requests on origin mismatch, working approved-origin payment and manifest-free demo, and an independent post-deployment origin check. Coordinate workflow hunks with the deployment archive worker.
+
+
+---
+
+# Quick-hide donor #300 test recovery — 2026-11-27 UTC
+
+Worker: consolidation coordinator; isolated branch `test/quick-hide-donor-300-20261127`, base `fd5e591151765b2dafe6345501ca40393e0f176a`. Own only new `apps/web/src/components/PrivacyControls.donor300.test.tsx`, new `docs/handoffs/QUICK_HIDE_300_DISPOSITION_20261127.md` and this additive claim. #760 identifies #300 residual tests as unassigned; #742 owns separate masking and wallet focus files and is untouched. Donor #300 head `137628961463fc5abd8b7927b2efe6b18a0a206a` remains unchanged. Preserve current PrivacyControls implementation; adapt applicable test intent to #708 global reveal design, do not restore PrivateHistory or change product behavior. Exact-head hosted CI and independent review required; no main merge or lease acquisition. All ten exclusions remain binding.
