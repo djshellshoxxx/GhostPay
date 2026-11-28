@@ -22,6 +22,7 @@ jobs:
       CLIENT: ${{ github.event.pull_request.base.sha }}
       HARNESS: db6f3da67737346c28edf2ed9d8bae44e86bce56
       HARNESS_TREE: 7ddc2ff45fdfc35a2fc04c884246757f5adde3ce
+      OBSERVER: ${{ github.event.pull_request.head.sha }}
       BASE_REF: ${{ github.event.pull_request.base.ref }}
       LANE: ${{ matrix.lane }}
       W5_PORT: '4173'
@@ -51,6 +52,42 @@ jobs:
         with:
           node-version: '22'
           package-manager-cache: false
+      - name: Install the separately pinned seller-ledger observation supplement
+        working-directory: client
+        run: |
+          set -euo pipefail
+          [[ "$OBSERVER" =~ ^[0-9a-f]{40}$ ]]
+          node --input-type=module <<'JS'
+          import assert from 'node:assert/strict';
+          import { readFileSync, writeFileSync } from 'node:fs';
+          const replaceOnce = (source, before, after, label) => {
+            assert.equal(source.split(before).length - 1, 1, `observer source mismatch: ${label}`);
+            return source.replace(before, after);
+          };
+          const sellerPath = 'verification/independent-beta/harness/seller.mjs';
+          let seller = readFileSync(sellerPath, 'utf8');
+          seller = replaceOnce(seller,
+            `    return {\n      closed: false,\n      origin: location.origin,`,
+            `    return {\n      closed: false,\n      origin: location.origin,\n      ledgerPresent: ledger !== null,\n      ledgerVisible: ledger !== null && ledger.getClientRects().length > 0 &&\n        getComputedStyle(ledger).display !== 'none' && getComputedStyle(ledger).visibility !== 'hidden',`,
+            'seller ledger presence');
+          writeFileSync(sellerPath, seller);
+
+          const runnerPath = 'verification/independent-beta/harness/seller-run.mjs';
+          let runner = readFileSync(runnerPath, 'utf8');
+          runner = replaceOnce(runner,
+            `      rec.obs = Object.fromEntries(Object.entries(obs).map(([k, o]) => [k, o.closed ? 'closed' : { matches: o.matches, cards: o.cards.map((c) => c.text.slice(0, 400)), alerts: o.alerts, scanStatus: o.scanStatus, ledgerLocked: o.ledgerLocked }]));`,
+            `      rec.obs = Object.fromEntries(Object.entries(obs).map(([k, o]) => [k, o.closed ? 'closed' : { matches: o.matches, cards: o.cards.map((c) => c.text.slice(0, 400)), alerts: o.alerts, scanStatus: o.scanStatus, ledgerPresent: o.ledgerPresent, ledgerVisible: o.ledgerVisible, ledgerLocked: o.ledgerLocked }]));`,
+            'trace ledger presence');
+          runner = replaceOnce(runner,
+            `async function sellerReady(world, label) {\n  const page = world.tabs[label];\n  await unlockSellerKeys(page, world.origin);\n  await openScan(page);\n  return unlockLedger(page);\n}`,
+            `async function sellerReady(world, label) {\n  const page = world.tabs[label];\n  const keys = await unlockSellerKeys(page, world.origin);\n  await openScan(page);\n  const ledger = await unlockLedger(page);\n  const observed = await observeSeller(page);\n  return { keys, ledger, readback: { ledgerPresent: observed.ledgerPresent, ledgerVisible: observed.ledgerVisible,\n    ledgerLocked: observed.ledgerLocked, identities: observed.cards.map(({ digest, units }) => ({ digest, units })) } };\n}`,
+            'ready readback');
+          runner = replaceOnce(runner,
+            `      for (const label of ['S1', 'S2']) {\n        await world.tabs[label].reload();\n        await world.tabs[label].waitForTimeout(800);\n        await sellerReady(world, label);\n      }\n      return { compared: true };`,
+            `      const tabs = {};\n      for (const label of ['S1', 'S2']) {\n        await world.tabs[label].reload();\n        await world.tabs[label].waitForTimeout(800);\n        tabs[label] = await sellerReady(world, label);\n      }\n      return { compared: true, tabs };`,
+            'comparison readbacks');
+          writeFileSync(runnerPath, runner);
+          JS
       - name: Build clean client libraries and the signed loopback fixture
         working-directory: client
         run: |
@@ -117,7 +154,7 @@ jobs:
           import { distFingerprint } from './verification/independent-beta/harness/build.mjs';
           import { NAMED, CONTROLS, generated } from './verification/independent-beta/harness/scenarios.mjs';
           import { SELLER_NAMED, SELLER_CONTROLS, sellerGenerated } from './verification/independent-beta/harness/seller-scenarios.mjs';
-          const { LANE, CLIENT, CLIENT_TREE, HARNESS, HARNESS_TREE, RUNNER_TEMP } = process.env;
+          const { LANE, CLIENT, CLIENT_TREE, HARNESS, HARNESS_TREE, OBSERVER, RUNNER_TEMP } = process.env;
           const payer = LANE === 'payer';
           const seeds = Array.from({ length: 8 }, (_, i) => i + 1);
           const control = (payer ? CONTROLS : SELLER_CONTROLS)[0];
@@ -144,9 +181,27 @@ jobs:
             for (const [i, step] of s.steps.entries()) {
               if (step.op !== 'compareTabs') continue;
               const observed = r.trace?.find(row => row.i === i);
-              const ready = tab => Array.isArray(observed?.obs?.[tab]?.cards) && observed.obs[tab].ledgerLocked === false;
+              const expectedUnits = ['498750000000000000', '299250000000000000'];
+              const ready = tab => {
+                const view = observed?.obs?.[tab];
+                const result = observed?.result?.tabs?.[tab];
+                const identities = result?.readback?.identities;
+                const visibleIdentities = new Map((view?.cards ?? []).map(text => {
+                  const digest = (text.match(/Invoice (0x[0-9a-f]{64})/i) ?? [])[1]?.toLowerCase();
+                  const units = (text.match(/(\d{6,}) base units of native/) ?? [])[1];
+                  return [units, digest];
+                }));
+                return Array.isArray(view?.cards) && view.ledgerPresent === true && view.ledgerVisible === true &&
+                  view.ledgerLocked === false && ['unlocked', 'already-unlocked'].includes(result?.ledger) &&
+                  result?.readback?.ledgerPresent === true && result.readback.ledgerVisible === true &&
+                  result.readback.ledgerLocked === false && Array.isArray(identities) && identities.length === 2 &&
+                  expectedUnits.every(units => identities.some(id => id?.units === units && /^0x[0-9a-f]{64}$/.test(id?.digest ?? '') &&
+                    visibleIdentities.get(units) === id.digest));
+              };
+              const identities = tab => new Map((observed?.result?.tabs?.[tab]?.readback?.identities ?? []).map(id => [id.units, id.digest]));
+              const sameIdentities = () => expectedUnits.every(units => identities('S1').get(units) === identities('S2').get(units));
               if (observed?.step?.op !== 'compareTabs' || observed.error !== undefined ||
-                  observed.result?.compared !== true || !ready('S1') || !ready('S2')) incompleteTabComparisons.push(i);
+                  observed.result?.compared !== true || !ready('S1') || !ready('S2') || !sameIdentities()) incompleteTabComparisons.push(i);
             }
             const declared = new Set(isControl ? control.expectViolations : []);
             const invariantCounts = {};
@@ -164,7 +219,7 @@ jobs:
           const exitCode = Number(readFileSync(join(RUNNER_TEMP, 'w5-exit'), 'utf8').trim());
           const passed = exitCode === 0 && outcomes.every(r => !r.harnessError && !r.ordinaryViolations && !r.blockedOrigins && r.incompleteTabComparisons.length === 0) &&
             outcomes.find(r => r.scenario === control.name).expectedControlDetected;
-          const evidence = { lane: LANE, client: CLIENT, clientTree: CLIENT_TREE, harness: HARNESS, harnessTree: HARNESS_TREE,
+          const evidence = { lane: LANE, client: CLIENT, clientTree: CLIENT_TREE, harness: HARNESS, harnessTree: HARNESS_TREE, observer: OBSERVER,
             fixture: 'signed loopback lean Pages build', approvedOrigin: record.build.approvedFixtureOrigin, bundle: fingerprint, rawReportSha256: createHash('sha256').update(raw).digest('hex'),
             passed, exitCode, outcomes };
           writeFileSync(join(RUNNER_TEMP, 'w5-summary.json'), JSON.stringify(evidence, null, 2) + '\n', { mode: 0o600 });

@@ -9,9 +9,15 @@ import test from 'node:test';
 const workflow = readFileSync(new URL('../../.github/workflows/nov27-w5-qualification.yml', import.meta.url), 'utf8');
 const collector = workflow.split('      - name: Verify scenario membership')[1].split("<<'JS'\n")[1].split('\n          JS')[0];
 const env = { ...process.env, LANE: 'seller', CLIENT: 'a'.repeat(40), CLIENT_TREE: 'b'.repeat(40),
-  HARNESS: 'c'.repeat(40), HARNESS_TREE: 'd'.repeat(40), W5_PORT: '4173' };
-const good = { cards: [], ledgerLocked: false };
-const compared = { i: 0, step: { op: 'compareTabs' }, result: { compared: true }, obs: { S1: good, S2: good } };
+  HARNESS: 'c'.repeat(40), HARNESS_TREE: 'd'.repeat(40), OBSERVER: 'f'.repeat(40), W5_PORT: '4173' };
+const identities = [
+  { digest: `0x${'1'.repeat(64)}`, units: '498750000000000000' },
+  { digest: `0x${'2'.repeat(64)}`, units: '299250000000000000' },
+];
+const cards = identities.map(({ digest, units }) => `Invoice ${digest} ${units} base units of native; valid until 2027-01-01T00:00:00Z`);
+const good = { cards, ledgerPresent: true, ledgerVisible: true, ledgerLocked: false };
+const ready = { ledger: 'unlocked', readback: { ledgerPresent: true, ledgerVisible: true, ledgerLocked: false, identities } };
+const compared = { i: 0, step: { op: 'compareTabs' }, result: { compared: true, tabs: { S1: ready, S2: ready } }, obs: { S1: good, S2: good } };
 
 function exercise(trace, violations = []) {
   const cwd = mkdtempSync(join(tmpdir(), 'w5-collector-test-'));
@@ -44,7 +50,7 @@ function exercise(trace, violations = []) {
   } finally { rmSync(cwd, { recursive: true, force: true }); }
 }
 
-test('successful reload and two observed, empty ledgers qualify the comparison', () => {
+test('successful reload with both present ledgers and both expected identities qualifies', () => {
   const output = exercise([compared]);
   assert.equal(output.status, 0);
   assert.deepEqual(output.row.incompleteTabComparisons, []);
@@ -55,6 +61,19 @@ for (const [reason, trace] of [
   ['missing comparison step', []],
   ['reload never completed', [{ ...compared, result: undefined }]],
   ['second ledger locked', [{ ...compared, obs: { S1: good, S2: { ...good, ledgerLocked: true } } }]],
+  ['both absent ledgers represented as unlocked empty arrays', [{ ...compared,
+    result: { compared: true, tabs: { S1: { ...ready, readback: { ledgerPresent: false, ledgerVisible: false, ledgerLocked: false, identities: [] } }, S2: { ...ready, readback: { ledgerPresent: false, ledgerVisible: false, ledgerLocked: false, identities: [] } } } },
+    obs: { S1: { cards: [], ledgerPresent: false, ledgerVisible: false, ledgerLocked: false }, S2: { cards: [], ledgerPresent: false, ledgerVisible: false, ledgerLocked: false } } }]],
+  ['one absent ledger and one present empty ledger', [{ ...compared,
+    result: { compared: true, tabs: { S1: { ...ready, ledger: 'no-ledger', readback: { ledgerPresent: false, ledgerVisible: false, ledgerLocked: false, identities: [] } }, S2: { ...ready, readback: { ...ready.readback, identities: [] } } } },
+    obs: { S1: { cards: [], ledgerPresent: false, ledgerVisible: false, ledgerLocked: false }, S2: { ...good, cards: [] } } }]],
+  ['present unlocked ledgers with missing visible identities', [{ ...compared,
+    obs: { S1: { ...good, cards: [] }, S2: { ...good, cards: [] } } }]],
+  ['hidden second ledger', [{ ...compared, obs: { S1: good, S2: { ...good, ledgerVisible: false } } }]],
+  ['second invoice identity lost', [{ ...compared,
+    result: { ...compared.result, tabs: { S1: ready, S2: { ...ready, readback: { ...ready.readback, identities: identities.slice(0, 1) } } } } }]],
+  ['tabs disagree on an invoice identity', [{ ...compared,
+    result: { ...compared.result, tabs: { S1: ready, S2: { ...ready, readback: { ...ready.readback, identities: [identities[0], { ...identities[1], digest: `0x${'3'.repeat(64)}` }] } } } } }]],
 ]) {
   test(reason + ' keeps qualification red even if the original reporter returned zero', () => {
     const output = exercise(trace);
