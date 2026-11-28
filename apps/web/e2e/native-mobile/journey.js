@@ -19,6 +19,11 @@ const upload = (input, file) => {
   input.dispatchEvent(new Event('change', { bubbles: true }));
 };
 
+function imageFile(data, name) {
+  const gif = Uint8Array.from(atob(data.split(',')[1]), ch => ch.charCodeAt(0));
+  return new File([gif], name, { type: 'image/gif' });
+}
+
 async function run() {
   const restore = await find('button[aria-describedby="home-restore-help"]');
   const sample = await find('#home-sample');
@@ -47,8 +52,7 @@ async function run() {
   await wait(() => document.body.innerText.includes('Wrong passphrase, or the keystore was modified.'), 'wrong-passphrase rejection');
   assert(!document.body.innerText.includes(fixture.identity), 'Rejected restore installed keys');
   steps.push('keystore file and wrong passphrase');
-  const gif = Uint8Array.from(atob(fixture.qr.split(',')[1]), ch => ch.charCodeAt(0));
-  upload(panel.querySelector('input[accept*="image"]'), new File([gif], 'other-screen.gif', { type: 'image/gif' }));
+  upload(panel.querySelector('input[accept*="image"]'), imageFile(fixture.qr, 'other-screen.gif'));
   await wait(() => document.body.innerText.includes('Encrypted keystore received.'), 'decoded backup QR image');
   await submit(fixture.pass);
   await wait(() => Array.from(document.querySelectorAll('code')).some(n => n.textContent === fixture.identity), 'matching restored public identity');
@@ -56,6 +60,20 @@ async function run() {
   await wait(() => document.body.innerText.includes('Seller keys are already loaded.'), 'loaded identity preserved');
   assert(!document.querySelector('button[aria-describedby="home-restore-help"]') && calls.length === 0, 'Loaded-session and wallet guards');
   steps.push('QR file, correct passphrase, identity match, loaded-session guard');
+  document.querySelector('nav [data-view="pay"]').click();
+  const importer = await wait(() => Array.from(document.querySelectorAll('details')).find(el => el.querySelector('summary')?.textContent === 'Scan an invoice QR or open a request file'), 'invoice importer');
+  importer.querySelector('summary').click();
+  upload(importer.querySelector('input[accept*="gpr.json"]'), new File([fixture.request], 'invoice.gpr.json', { type: 'application/json' }));
+  await wait(() => document.body.innerText.includes('Review request file'), 'signed request file review');
+  assert(!document.body.innerText.includes('Review payment'), 'File opened without confirmation');
+  upload(importer.querySelector('input[accept*="image"]'), imageFile(fixture.invoiceQr, 'invoice.gif'));
+  const open = await wait(() => Array.from(importer.querySelectorAll('button')).find(b => b.textContent === 'Open scanned invoice'), 'signed invoice QR review');
+  assert(!document.body.innerText.includes('Review request file'), 'Old file preview survived QR replacement');
+  assert(calls.length === 0, 'Import contacted wallet');
+  open.click();
+  await wait(() => document.body.innerText.includes('Native QA sample'), 'confirmed invoice memo');
+  assert(!calls.some(method => method !== 'discovery'), 'Payment review requested wallet');
+  steps.push('request-file review, QR replacement, explicit open, signed memo, zero wallet requests');
 }
 let error;
 try { await run(); } catch (e) { error = String(e); }

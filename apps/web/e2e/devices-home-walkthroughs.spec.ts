@@ -61,3 +61,28 @@ test('returning to Home with keys loaded preserves the seller identity', async (
   await page.getByText(/Seller keys are already loaded/).getByRole('button', { name: 'Seller keys', exact: true }).tap();
   await expect(page.locator('#keys-h').locator('..').getByText(identity, { exact: true }).first()).toBeVisible();
 });
+
+test('translated homepage controls fit with doubled text, including right-to-left reading order', async ({ page }) => {
+  for (const locale of ['en', 'es', 'ja', 'ar']) {
+    await page.goto('/');
+    await page.evaluate(lang => localStorage.setItem('ghostpay.locale', lang), locale);
+    await page.reload();
+    await expect(page.locator('html')).toHaveAttribute('lang', locale);
+    if (locale === 'ar') await expect(page.locator('html')).toHaveAttribute('dir', 'rtl');
+    await page.evaluate(() => { document.documentElement.style.fontSize = '200%'; });
+    const summary = page.locator('#home-sample summary');
+    await summary.focus();
+    await page.keyboard.press('Enter');
+    await expect(page.locator('#home-sample')).toHaveJSProperty('open', true);
+    for (const control of [page.locator('#home-sample'), page.locator('#home-restore-help')]) {
+      const fits = await control.evaluate(el => {
+        const box = el.getBoundingClientRect();
+        return el.scrollWidth <= el.clientWidth + 1 && box.left >= -1 && box.right <= document.documentElement.clientWidth + 1;
+      });
+      expect(fits, locale).toBe(true);
+    }
+    await summary.focus();
+    await page.keyboard.press('Space');
+    await expect(page.locator('#home-sample')).toHaveJSProperty('open', false);
+  }
+});

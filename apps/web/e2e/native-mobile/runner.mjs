@@ -8,6 +8,7 @@ import { join } from 'node:path';
 import { once } from 'node:events';
 import { setTimeout as delay } from 'node:timers/promises';
 import qr from 'qrcode-generator';
+import { createInvoice, encodeFragment, serializePaymentRequestFile, signInvoice } from '@ghostpay/invoice-schema';
 
 const [dist, browser, command, ...args] = process.argv.slice(2);
 if (!command || !args.some(v => v.includes('{url}'))) throw new Error('Expected dist browser command and {url} argument.');
@@ -43,10 +44,27 @@ try {
   await cp(new URL('./journey.js', import.meta.url), join(scratch, 'journey.js'));
   const vector = JSON.parse(await readFile(new URL('../../../../test-vectors/seller-keystore-v1.json', import.meta.url)));
   const text = vector.files.valid.text;
-  const image = qr(0, 'L');
-  image.addData(text, 'Byte'); image.make();
+  const makeQr = value => {
+    const image = qr(0, 'L');
+    image.addData(value, 'Byte');
+    image.make();
+    return image.createDataURL(5);
+  };
+  const now = Math.floor(Date.now() / 1000);
+  const invoice = createInvoice({
+    chainId: 84532, metaAddress: vector.seller.metaAddress, signer: vector.seller.signer,
+    fiat: { currency: 'USD', minorUnits: '100' }, token: 'native',
+    amountPolicy: { mode: 'fixed_token', tokenAmount: '1000000000000000' },
+    quote: { source: 'synthetic', timestamp: now, expiresAt: now + 900, maxSlippageBps: 0 },
+    expiresAt: now + 900, feePolicy: 'payer_pays', memo: 'Native QA sample',
+    lineItems: [], tax: { rateBps: 0, minorUnits: '0' },
+  });
+  const key = Buffer.from(vector.seller.signingPrivateKey.slice(2), 'hex');
+  const fragment = await encodeFragment(signInvoice(invoice, key));
+  key.fill(0);
   await writeFile(join(scratch, 'qa-fixture.json'), JSON.stringify({
-    text, qr: image.createDataURL(5), pass: vector.passphrase, identity: vector.seller.metaAddress, reportPath,
+    text, qr: makeQr(text), pass: vector.passphrase, identity: vector.seller.metaAddress,
+    invoiceQr: makeQr(fragment), request: serializePaymentRequestFile(fragment), reportPath,
   }));
   server.listen(4178, '127.0.0.1');
   await once(server, 'listening');

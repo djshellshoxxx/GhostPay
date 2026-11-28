@@ -11,6 +11,10 @@ on:
 permissions:
   contents: read
 
+concurrency:
+  group: home-mobile-simulators-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   android:
     name: Android API ${{ matrix.api }} · ${{ matrix.browser }} · ${{ matrix.profile }}
@@ -31,7 +35,7 @@ jobs:
             firefox: '150.0'
             sha: 58c9d9dbde2c2b2f3ad1f227c0042ac4adf239d7dd0761f36da5874335e020bf
     steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
       - uses: ./.github/actions/setup-node-libs
@@ -40,7 +44,7 @@ jobs:
           GHOSTPAY_LOCAL_BUILD_PROFILE: lean
       - name: Enable runner access to KVM
         run: sudo chmod 666 /dev/kvm
-      - uses: reactivecircus/android-emulator-runner@324029e2f414c084d8b15ba075288885e74aef9c
+      - uses: reactivecircus/android-emulator-runner@324029e2f414c084d8b15ba075288885e74aef9c # v2.34.0
         with:
           api-level: ${{ matrix.api }}
           target: google_apis_playstore
@@ -65,7 +69,7 @@ jobs:
           - { os: macos-26, device: iPhone, runtime: newest, browser: fennec }
           - { os: macos-26, device: iPad, runtime: newest, browser: fennec }
     steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
       - uses: ./.github/actions/setup-node-libs
@@ -73,7 +77,7 @@ jobs:
         env:
           GHOSTPAY_LOCAL_BUILD_PROFILE: lean
       - if: matrix.browser == 'fennec'
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           repository: mozilla-mobile/firefox-ios
           ref: a931ff36e4b0152c6a0e9d98a5106fa849a5c1d3
