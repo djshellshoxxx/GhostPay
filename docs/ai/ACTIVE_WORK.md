@@ -1,3 +1,19 @@
+# PRIMARY coordinator — feature completion, integration and final qualification (2026-11-28 UTC)
+
+Worker: **PRIMARY** coordinator (Claude), base main `b890a76603b924829fdbe2b4fb2c5626f0cf4e36`. A SECONDARY coordinator
+works concurrently in the same scope. Atomic ownership registry: orphan branch `automation/ghostpay-work-claims`
+(`claims.json`, compare-and-swap by non-force push; protocol in its README). PRIMARY branches use the `primary/` prefix.
+Integration uses the existing lock `automation/ghostpay-integration-lock`.
+
+Owned now (details and exact paths in the registry): `docs/beta/FEATURE_COMPLETION_TRACKER.md` (new); P-M1 direct sweep
+review and gas-funding linkage warning (`Sweep.tsx` direct mode, `lib/sweep.ts`, sweep locale keys, sweep tests and the
+direct-sweep e2e steps, `docs/user/sweep-and-gas-privacy.md`); P-M2 cross-tab sweep lock (`state.tsx` sweep section,
+`lib/sweepAttemptJournal.ts`); P-M3 Create invoice stale-result invalidation (`CreateInvoice.tsx` result block); P-M4
+manifest read-back on the secondary RPC (`lib/manifest.ts`, `lib/deployment.ts`, two docs). PRIMARY also coordinates the
+final platform-wide stress test, code audit, independent bug audit and release qualification.
+Acceptance per milestone: regression test red before the fix and green after; affected typecheck/lint/tests; targeted
+fuzz, security and bug review; full hosted CI on the exact head; merge under the integration lock.
+
 # Recorded low residuals (web) — 2026-11-27 UTC
 
 Worker: local Claude Code worker W7 on the existing merged branch `claude/consolidation-stack-20261126`, fast-forwarded
