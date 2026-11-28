@@ -30,6 +30,8 @@ export interface AppState {
   readonly view: ViewId;
   readonly setView: (v: ViewId) => void;
   readonly settings: Settings;
+  /** Persistent preferences observed when an explicit tab-only save was refused. */
+  readonly sessionOnlyRpcBaseline?: Settings;
   /**
    * Persists settings; returns false if browser storage refused (settings still apply for this tab).
    * @throws {UserFacingError} when another tab saved since this tab last read them: those are taken over instead.

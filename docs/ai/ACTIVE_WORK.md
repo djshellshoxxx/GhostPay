@@ -1,5 +1,9 @@
 ## Scan consent and recovery-export cancellation — November 28, 2026
 
+## Scanner and recovery integration — 2026-11-28
+
+Codex owns the integration on `integration/scan-recovery-769-781-248` from #769 `3880670b`, #781 `549a71e4` and #248 `9105b219`. Work covers the Scan view, scan engine, RPC guards, durable scan storage and their core recovery tests. Preserve the individual PRs and their tests. Acceptance includes cancellation and consent, independent payment finality, durable discovery after reload, canonical replacement, archive key membership and stale-tab write rejection.
+
 Codex, branch `fix/scan-consent-and-export-cancel-70458ebe`, base `70458ebe3ae4a5502d7c39ae25d37342dbde971b`. Own the Scan route consent check, recovery export RPC signal forwarding, the corresponding chain-adapter and fetch transport code, and focused tests. Acceptance requires zero additional payment-address lookups after cancellation, ordinary retry success, and enforcement of the current transfer-estimate preference before optional token lookups. Use mock transports and synthetic local sessions. No release or contract changes.
 
 # Cancel seller payment-key export RPC reads — 2026-11-28 UTC
@@ -2245,6 +2249,31 @@ comparison/dependency. PR #235 seller checkpoint architecture and other feature 
 
 No main merge, deployment, publication, transaction signing/construction changes, unrelated dependencies,
 contracts, general checkpoint architecture, or broad consolidation. Tests retain all release gates.
+# November 28 — private checkpoint CI
+
+Codex CI qualification on `ci/248-checkpoint-qualification-nov28`, based on `18b367457103fb1731a5b4ef5c51faa37a010e47`. Scope covers private scan browser fixtures, scan error handling and affected lint/unit tests. Acceptance requires the original assertions, targeted test runs and an exact-head CI check.
+
+# Private seller scan completion — 2026-11-19
+
+Owner: ChatGPT coordinator with independent scan reviewer, encrypted-storage worker and scan UI worker.
+Branch: `chatgpt/ghostpay-private-scan-completion-20261119`.
+Base: PR #235 `a5076f4d4e8d2dc515bdc31f304b6c6ce75bf3b1`; main observed
+`dfc75ef2087fa6463ae59e0818abec01796c578d`. Updated main
+`58d89b39b27a66454ebf392bcd35d5c68b57b2f8` (#241 transport isolation and #237 log retention)
+was merged into this feature branch at `684eec18` before combined qualification.
+Owned paths: EVM `scanClient`, new `privateScanStore` and `privateScanLifecycle`, `views/Scan`,
+scan services, focused scanner/storage/lifecycle/browser tests, minimal seller-vault deletion integration,
+related locale strings and scoped user/developer/handoff documentation. The scanner's optional per-dispatch guard
+in `scanPrivacy.ts` is included; PR #241 transport implementations remain separate. Storage worker owns
+`privateScanStore.ts` and its tests; UI worker owns Scan/services and view/browser tests; coordinator owns
+engine/lifecycle/integration. Independent reviewer owns only
+`docs/handoffs/private-scan-independent-review.md` and otherwise remains read-only.
+Acceptance: atomic encrypted discovery+cursor persistence; seller/network/config/session isolation;
+safe interruption, recovery, cross-tab conflicts, deletion and reorg handling; bounded scan work;
+failing-first regression evidence; full/lean browser qualification and unchanged security gates.
+PR #238 is a read-only consolidation input; #241 transport modules, Spec 18 formats, contracts,
+dependency inputs, automation branches and unrelated work stay with their existing owners.
+No merge into main, deployment or release is authorized.
 
 # Browser network isolation: unowned transport gaps — 2026-11-18
 
@@ -5435,3 +5464,15 @@ respective owners. Use disposable fixtures and record only sanitized results.
 ## November 27 audit — approved Pages payment origin
 
 Worker Codex origin, branch `audit/nov27-origin-87060`, base `b890a76603b924829fdbe2b4fb2c5626f0cf4e36`. Own the Pages build origin, lean manifest and wallet gates, smoke origin checks, corresponding workflow arguments, docs and regressions. Preserve the signed manifest, on-chain read-back, shared-testnet decision and explicit local fixture. Acceptance requires zero wallet requests on origin mismatch, working approved-origin payment and manifest-free demo, and an independent post-deployment origin check. Coordinate workflow hunks with the deployment archive worker.
+
+## Seller payment finality and scan RPC consent
+
+Codex owns these two payment-client audit fixes on `fix/payment-finality-scan-consent`,
+based on `0934ea094cb1db90293b74d2d1e9d9324e09a883`. Paths cover the shared verifier
+and its tests in `packages/chain-adapters/src/payments*.ts`, the Settings snapshot in
+`apps/web/src/{AppShell,state}.tsx`, the scan client wiring in `views/Scan.tsx` and
+`lib/{settings,services,defaultServices,scanPrivacy}.ts`, and focused web regressions.
+Acceptance requires fresh bounded confirmation depth after reading evidence, zero sends
+to a retired scan provider before the storage event arrives, and a working session-only
+provider after a refused preference write. PR #769 owns token-lane revocation and abort
+propagation. PRs #248 and #775 cover durable discovery. Preserve those changes at integration.

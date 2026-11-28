@@ -83,12 +83,17 @@ The scan RPC (and a second RPC, if you configured one for cross-checking) learns
 - your IP address, unless you reach it through a path you control (see the scan transport options in Settings);
 - that you read GhostPay announcements, the block ranges you asked for, and when; fixed windows make the ranges coarser
   but still show roughly how far you have scanned;
-- the receipts and token transfer lookups used to verify a router payment that matched, which can reveal which public
+- exact checkpoint/header reads and, on resume, requests for blocks containing saved observations; window padding does
+  not hide these reads, and revisiting payment blocks can reveal renewed interest in them;
+- the transaction, receipt and token transfer lookups used to verify a payment that matched, which can reveal which public
   announcement is yours;
 - with the same-token estimate on, which token you were last paid in (not any address of yours).
 
 The Receive page lists this under "What each party learns with your scan privacy settings" for the options you chose.
-The viewing key never leaves the scanner worker and is never sent to a provider.
+The viewing key is used locally in the browser: the loaded session supplies copies to the scanner worker and for
+encrypted-vault key derivation. The app never sends viewing or spending keys to an RPC provider. Local encryption
+does not protect keys or history from compromised code in an unlocked frontend. See [Receive and scan](receive-and-scan.md)
+for checkpoint storage, recovery and the limits of historical revalidation.
 
 ## Rate-limited public endpoints
 

@@ -11,7 +11,7 @@ import type { ScanMatch } from './lib/scanClient';
 import { useServices } from './lib/services';
 import { captureSessionVersionGuard, clearSession, getSessionBackup, getSessionPublic, hasSession, isSessionSuspended, sessionHasExternalCopy, subscribeSession, subscribeSessionBackup, subscribeSessionExpiryCheck, suspendSession } from './lib/session';
 import { cancelClipboardCleanup } from './lib/clipboardPrivacy';
-import { loadSettings, mergeSettings, saveSettings, storedSettingsText, SETTINGS_KEY, type Settings as SettingsData } from './lib/settings';
+import { settingsFromText, mergeSettings, saveSettings, storedSettingsText, SETTINGS_KEY, type Settings as SettingsData } from './lib/settings';
 import { UserFacingError } from './lib/errors';
 import { AppContext, VIEW_LABELS, type AppState, type ViewId } from './state';
 import { RegistryView } from './features/registry/RegistryView';
@@ -112,8 +112,9 @@ export function AppShell(props: AppShellProps): ReactNode {
   const settingsText = useRef<string | null | undefined>(undefined);
   const [settings, setSettings] = useState<SettingsData>(() => {
     settingsText.current = storedSettingsText();
-    return loadSettings();
+    return settingsFromText(settingsText.current);
   });
+  const [sessionOnlyRpcBaseline, setSessionOnlyRpcBaseline] = useState<SettingsData>();
   const [matches, setMatches] = useState<readonly ScanMatch[]>([]);
   const [sweepTarget, selectForSweep] = useState<AppState['sweepTarget']>(undefined);
   const [live, setLive] = useState<string | { readonly key: MessageKey }>('');
@@ -136,7 +137,8 @@ export function AppShell(props: AppShellProps): ReactNode {
   const adoptStoredSettings = useCallback((): void => {
     settingsText.current = storedSettingsText();
     rpcCache.current.clear();
-    const stored = loadSettings();
+    const stored = settingsFromText(settingsText.current);
+    setSessionOnlyRpcBaseline(undefined);
     setSettings((current) => mergeSettings(current, stored));
   }, []);
   useEffect(() => {
@@ -393,6 +395,7 @@ export function AppShell(props: AppShellProps): ReactNode {
       view,
       setView,
       settings,
+      ...(sessionOnlyRpcBaseline === undefined ? {} : { sessionOnlyRpcBaseline }),
       updateSettings: (s) => {
         // Values chosen before another tab saved must not replace that tab's choice, even before its notice arrives.
         if (storedSettingsText() !== settingsText.current) {
@@ -402,7 +405,8 @@ export function AppShell(props: AppShellProps): ReactNode {
         if (s.invoiceLinkClipboardDelaySec !== settings.invoiceLinkClipboardDelaySec) cancelClipboardCleanup();
         setSettings(s);
         const saved = saveSettings(s);
-        settingsText.current = storedSettingsText();
+        setSessionOnlyRpcBaseline(saved ? undefined : settingsFromText(settingsText.current));
+        if (saved) settingsText.current = storedSettingsText();
         return saved;
       },
       session,
@@ -416,7 +420,7 @@ export function AppShell(props: AppShellProps): ReactNode {
       getSecondaryRpc,
       announce: setLive,
     }),
-    [view, setView, settings, session, fragment, matches, sweepTarget, getRpc, getSecondaryRpc, adoptStoredSettings],
+    [view, setView, settings, sessionOnlyRpcBaseline, session, fragment, matches, sweepTarget, getRpc, getSecondaryRpc, adoptStoredSettings],
   );
   // One gate scope for the life of the shell: a connected wallet keeps working across key or settings changes, which
   // each view's own authority checks handle. Such a change only cancels a review that is open at that moment.

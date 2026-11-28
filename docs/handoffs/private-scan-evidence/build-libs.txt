@@ -1,0 +1,69 @@
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> ghostpay@0.1.0 build:libs
+> node scripts/build-workspaces.mjs --libraries
+
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> @ghostpay/address-safety@0.1.0 build
+> tsc -p tsconfig.build.json
+
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> @ghostpay/core-crypto@0.1.0 build
+> tsc -p tsconfig.build.json
+
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> @ghostpay/invoice-schema@0.1.0 build
+> tsc -p tsconfig.build.json
+
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> @ghostpay/chain-adapters@0.1.0 build
+> npm run build -w @ghostpay/core-crypto -w @ghostpay/invoice-schema --if-present && tsc -p tsconfig.build.json
+
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> @ghostpay/core-crypto@0.1.0 build
+> tsc -p tsconfig.build.json
+
+
+> @ghostpay/invoice-schema@0.1.0 build
+> tsc -p tsconfig.build.json
+
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> @ghostpay/amount-blur@0.1.0 build
+> tsc -p tsconfig.build.json
+
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> @ghostpay/btc-family@0.1.0 build
+> tsc -p tsconfig.build.json
+
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> @ghostpay/btc-payjoin@0.1.0 build
+> tsc -p tsconfig.build.json
+
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> @ghostpay/btc-silent-payments@0.1.0 build
+> tsc -p tsconfig.build.json
+
+src/scan/blindbitGrpc.ts(1,83): error TS2307: Cannot find module '@bufbuild/protobuf' or its corresponding type declarations.
+src/scan/blindbitGrpc.ts(2,40): error TS2307: Cannot find module '@bufbuild/protobuf/wire' or its corresponding type declarations.
+src/scan/blindbitGrpc.ts(152,102): error TS7006: Parameter 'tx' implicitly has an 'any' type.
+src/scan/blindbitGrpc.ts(156,107): error TS7006: Parameter 'tx' implicitly has an 'any' type.
+src/scan/blindbitGrpc.ts(156,128): error TS7006: Parameter 'out' implicitly has an 'any' type.
+src/scan/proto/indexing_server_pb.ts(5,42): error TS2307: Cannot find module '@bufbuild/protobuf/codegenv2' or its corresponding type declarations.
+src/scan/proto/indexing_server_pb.ts(6,39): error TS2307: Cannot find module '@bufbuild/protobuf/codegenv2' or its corresponding type declarations.
+src/scan/proto/indexing_server_pb.ts(7,30): error TS2307: Cannot find module '@bufbuild/protobuf' or its corresponding type declarations.
+npm error Lifecycle script `build` failed with error:
+npm error code 2
+npm error path /workspace/scratch/f3944b12cd1b/GhostPay/packages/btc-silent-payments
+npm error workspace @ghostpay/btc-silent-payments@0.1.0
+npm error location /workspace/scratch/f3944b12cd1b/GhostPay/packages/btc-silent-payments
+npm error command failed
+npm error command sh -c tsc -p tsconfig.build.json

@@ -1,9 +1,10 @@
-import type { ChainConfig, RpcClient } from '@ghostpay/chain-adapters';
+import type { ChainConfig, ClientOptions, RpcClient } from '@ghostpay/chain-adapters';
 import { createContext, useContext } from 'react';
 import type { ManifestState } from './manifest';
 import type { CheckpointStore, ScanWorkerLike } from './scanClient';
 import type { TagVault } from './tags';
 import type { WalletInfo } from './wallet';
+import type { ReconciliationVaultStore } from './reconciliationVault';
 
 /** Everything with side effects that views use, injectable for tests. */
 export interface Services {
@@ -11,10 +12,12 @@ export interface Services {
   readonly sleep: (ms: number) => Promise<void>;
   readonly fetchFn: (url: string, init: RequestInit) => Promise<Response>;
   readonly loadManifest: (chainId: number) => Promise<ManifestState>;
-  readonly createRpc: (chain: ChainConfig, url: string) => Promise<RpcClient>;
+  readonly createRpc: (chain: ChainConfig, url: string, options?: Pick<ClientOptions, 'transport'>) => Promise<RpcClient>;
   readonly discoverWallets: () => Promise<readonly WalletInfo[]>;
   readonly createScanWorker: () => ScanWorkerLike;
   readonly checkpoints: CheckpointStore;
+  /** Production uses authenticated, atomic discovery+cursor storage. Omitted only by legacy injected fixtures. */
+  readonly privateScanStore?: ReconciliationVaultStore;
   readonly vault: TagVault;
   readonly baseUrl: () => string;
   readonly chains: readonly ChainConfig[];

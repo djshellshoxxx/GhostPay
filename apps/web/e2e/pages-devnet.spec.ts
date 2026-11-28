@@ -677,7 +677,8 @@ test.describe.serial('GitHub Pages artifact on a real devnet', () => {
     expect(sha256((await readSellerVault(sp)) ?? '')).toBe(vaultDigest);
     expect(await webStorageContains(sp, VAULT_PASS)).toBe(false);
 
-    // Scan state: the checkpoint persisted (localStorage); matches are in memory only, so none before a new scan.
+    // The authenticated encrypted journal persists discovery with its cursor. Restored history stays nonactionable
+    // until the real scanner rereads its blocks and revalidates payment evidence against this local chain.
     await nav(sp).getByRole('button', { name: 'Scan and receive' }).click();
     await sp.getByLabel('Chain', { exact: true }).selectOption({ label: 'Base Sepolia' });
     await expect(sp.getByText(/^A checkpoint exists at block \d+\.$/)).toBeVisible();
@@ -699,9 +700,10 @@ test.describe.serial('GitHub Pages artifact on a real devnet', () => {
     expect(reconciliationBackup).not.toContain(payHash.toLowerCase());
     expect(reconciliationBackup).not.toContain(digest);
 
-    // Resuming from the checkpoint finds nothing new; a full rescan finds the one payment, which is not counted twice.
+    // Resume revalidates the saved payment even when its block is behind the cursor; a full rescan also keeps one entry.
     await scanFromZero(sp, true);
-    await expect(sp.getByText(/^Finished\./)).toContainText(' 0 payments found');
+    await expect(sp.getByText(/^Finished\./)).toContainText(' 1 payments found');
+    await expect(scanMatches(sp)).toHaveCount(1);
     await scanFromZero(sp, false);
     await expect(sp.getByText(/^Finished\./)).toContainText(' 1 payments found');
     await expect(scanMatches(sp)).toHaveCount(1);

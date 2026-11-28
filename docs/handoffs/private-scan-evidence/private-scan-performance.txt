@@ -1,0 +1,18 @@
+(node:5) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "./vite.config" without a file extension (vitest.nocov.config.ts:2:18). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.5 /workspace/scratch/f3944b12cd1b/GhostPay-main-integration/apps/web
+
+(node:41) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+private-scan-performance {"phase":"cold","announcements":272,"matches":5,"replayBlocks":0,"workerBatches":1,"checkpointCommits":1,"rpcCalls":{"eth_blockNumber":6,"eth_getBlockByNumber":38,"eth_getLogs":5,"eth_getTransactionReceipt":5,"eth_getTransactionByHash":5},"envelopeBytes":6495,"milliseconds":{"openAndLoad":0.44,"scanIncludingSaves":2220.99,"encryptedSaves":2.78,"total":2221.43}}
+private-scan-performance {"phase":"historical-resume","announcements":80,"matches":5,"replayBlocks":4,"workerBatches":5,"checkpointCommits":1,"rpcCalls":{"eth_blockNumber":10,"eth_getBlockByNumber":23,"eth_getLogs":5,"eth_getTransactionReceipt":5,"eth_getTransactionByHash":5},"envelopeBytes":6495,"milliseconds":{"openAndLoad":2.27,"scanIncludingSaves":558.62,"encryptedSaves":9.72,"total":560.96}}
+ ✓ src/lib/privateScanPerformance.nocov.test.ts > deterministic private checkpoint performance observation > measures one empty-history scan and one encrypted-history resume with equal freshly verified discoveries 9319ms
+
+ Test Files  1 passed (1)
+      Tests  1 passed (1)
+   Start at  23:24:47
+   Duration  15.87s (tests 61%, transform 23%, import 16%)

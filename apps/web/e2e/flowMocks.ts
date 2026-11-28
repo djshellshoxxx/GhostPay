@@ -42,13 +42,15 @@ export interface SentTx {
 
 /** Serves the (test-only, fake) manifest and a tiny JSON-RPC node; everything else off-origin stays blocked. */
 export async function mockNetwork(
-  context: BrowserContext,
+  context: BrowserContext | Page,
   state: {
     sent?: SentTx;
     usdcCheckout?: 'already allowed' | 'permit' | 'approval';
     logs?: unknown[];
     /** Canonical header time in seconds, fixed for the staged payment rather than scan wall-clock time. */
     blockTimestamp?: number;
+    /** First replaced block of the synthetic canonical fork. Earlier block hashes stay unchanged. */
+    forkFromBlock?: number;
     /** Canonical transactions and receipts for staged verified ERC-20 payments, keyed by transaction hash. */
     evidence?: Map<string, { transaction: unknown; receipt: unknown }>;
   },
@@ -83,7 +85,10 @@ export async function mockNetwork(
         return reply('0x1f4');
       case 'eth_getBlockByNumber': {
         const n = parseInt(String(body.params[0]), 16);
-        const h = (x: number): string => `0x${x.toString(16).padStart(64, '0')}`;
+        const h = (height: number): string => {
+          const forkOffset = state.forkFromBlock !== undefined && height >= state.forkFromBlock ? 0x1000000 : 0;
+          return `0x${(height + forkOffset).toString(16).padStart(64, '0')}`;
+        };
         return reply({
           number: `0x${n.toString(16)}`, hash: h(n), parentHash: h(n - 1),
           ...(state.blockTimestamp === undefined ? {} : { timestamp: `0x${state.blockTimestamp.toString(16)}` }),

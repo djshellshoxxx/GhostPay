@@ -14,6 +14,7 @@ import {
   ANNOUNCEMENT_TOPIC,
   ChainAdapterError,
   createClient,
+  fetchTransport,
   isLogLimitError,
   rawCallerTopic,
   validateRpcUrl,
@@ -399,6 +400,8 @@ export interface WindowedOptions {
   readonly policy: WindowPolicy;
   readonly sleep: (ms: number) => Promise<void>;
   readonly cryptoApi?: CryptoLike;
+  /** Recheck session and endpoint selection after jitter, before every underlying dispatch. */
+  readonly assertCurrent?: () => void;
 }
 
 /**
@@ -412,6 +415,7 @@ export interface WindowedOptions {
  * the scanner then re-reads for router-posted announcements (`router`, the one allowed caller filter).
  */
 export function createWindowedScanClient(inner: RpcClient, o: WindowedOptions): RpcClient {
+  if (o.assertCurrent !== undefined) inner = guardScanClient(inner, o.assertCurrent);
   const cryptoApi = o.cryptoApi ?? crypto;
   const [jMin, jMax] = o.policy.jitterMs;
   if (!Number.isSafeInteger(o.policy.windowBlocks) || o.policy.windowBlocks < 0) throw new RangeError('windowBlocks');
@@ -428,6 +432,7 @@ export function createWindowedScanClient(inner: RpcClient, o: WindowedOptions): 
   const nodeKey = (f: LogFilter, start: bigint, end: bigint): string => `${String(f.topics[1])}|${String(f.topics[3] ?? '')}:${start.toString()}:${end.toString()}`;
 
   async function fetchWindow(f: LogFilter, start: bigint, end: bigint, beforeSend?: () => void): Promise<readonly RpcLog[]> {
+    o.assertCurrent?.();
     const key = nodeKey(f, start, end);
     const hit = cache.get(key);
     if (hit !== undefined) return hit;
@@ -770,6 +775,15 @@ function guardTransport(inner: RpcTransport, assertCurrent: () => void): RpcTran
   };
 }
 
+/** Opens a per-scan Settings client. Recheck consent on the handshake, reconnects and transport retries. */
+export function openSettingsScanRpc(
+  chain: ChainConfig, url: string | undefined, createRpc: typeof createClient, assertCurrent: () => void,
+): Promise<RpcClient | undefined> {
+  return checkedCall(assertCurrent, () => url === undefined
+    ? Promise.resolve(undefined)
+    : createRpc(chain, url, { transport: guardTransport(fetchTransport, assertCurrent) }));
+}
+
 export interface ScanClients {
   /** Plain client on the chosen path: manifest checks and receipts. */
   readonly base: RpcClient;
@@ -784,6 +798,7 @@ export interface ScanClients {
  */
 export async function openScanClients(o: OpenScanOptions): Promise<ScanClients | undefined> {
   const { plan, assertCurrent } = o;
+  assertCurrent?.();
   const fetchImpl = assertCurrent === undefined
     ? o.fetchImpl
     : (url: string, init: RequestInit): Promise<Response> => checkedCall(assertCurrent, () => o.fetchImpl(url, init));
@@ -804,8 +819,9 @@ export async function openScanClients(o: OpenScanOptions): Promise<ScanClients |
     if (assertCurrent !== undefined) assertCurrent();
     base = await o.appRpc();
   }
+  o.assertCurrent?.();
   if (base === undefined) return undefined;
-  // The app's RPC is cached across views; guard this scan's use of it without changing the cached client.
+  // Guard this scan's use of the base client before each operation and when its answer arrives.
   if (assertCurrent !== undefined) base = guardScanClient(base, assertCurrent);
   const router = o.router === undefined ? {} : { router: o.router };
   const stop = o.signal === undefined ? {} : { signal: o.signal };
