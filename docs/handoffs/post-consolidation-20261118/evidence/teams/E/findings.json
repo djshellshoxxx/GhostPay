@@ -1,0 +1,480 @@
+[
+  {
+    "id": "E-01",
+    "severity": "High",
+    "status": "CONFIRMED",
+    "area": "hosting / shared origin (GP-PAGES-01)",
+    "title": "Shared djshellshoxxx.github.io origin: 35 sibling Pages sites can read/rewrite all GhostPay storage and script the app (High once payments are enabled; Medium for a demo)",
+    "evidence": [
+      "scripts/pages/build-pages.sh:60-69,93-101@7a620ff1 (shared detection; manifests refused on shared origin unless GHOSTPAY_PAGES_ALLOW_SHARED_ORIGIN=testnet)",
+      "gh api -X GET search/repositories q='user:djshellshoxxx' (2026-11-18): 86 public repos, 36 has_pages=true incl. GhostPay; q='user:djshellshoxxx in:name github.io' -> 0 (no root user site)",
+      "packages/ux-vault/src/keystore-portable.ts:9-18@7a620ff1 (plaintext meta.metaAddress/signer in stored vault)",
+      "apps/web/src/lib/settings.ts:5-29,137-148@7a620ff1 (plaintext RPC URLs, pinnedSigners); apps/web/locales/en.json:2037 ('pinned by you' label)",
+      "built Pages index.html banner warns about shared origin ($SP/out/E/pages-demo/site/index.html)",
+      "docs/pages/RELEASE_MATRIX.md:53 (project rated Confirmed medium, owner action open)"
+    ],
+    "affected": [
+      "all lean features on Pages",
+      "encrypted seller vault",
+      "RPC/pin trust state",
+      "seller keys later reused on mainnet (keystore chain-agnostic)"
+    ],
+    "remediation": "Serve from a repo-level custom domain (CNAME on the GhostPay repo, not an account-wide user-site domain) or a dedicated account/org; keep payments refused on shared origin; warn that keys ever loaded on a shared origin are testnet-only; do not create a root <owner>.github.io site (root-scoped service worker risk).",
+    "verification": "Live: page origin == dedicated origin (see E-03); probe from a sibling path cannot read storage.",
+    "blocks": [
+      "Sepolia beta on github.io (unless written owner acceptance)",
+      "mainnet"
+    ],
+    "prior": "GP-PAGES-01 (docs/pages/RELEASE_MATRIX.md:53); ADR-0029 gate 'Origin isolation' Open"
+  },
+  {
+    "id": "E-02",
+    "severity": "Medium",
+    "status": "SUSPECTED",
+    "area": "deployment / live site",
+    "title": "Stale prototype (gh-pages cc8d0794, 2026-10-21) probably live on /GhostPay/: runtime unsigned manifest loading, no mirror banner, predates later fixes",
+    "evidence": [
+      "git: refs/remotes/origin/gh-pages = cc8d0794 'Publish GhostPay build with help, why, privacy options and how-it-works pages' (2026-10-21)",
+      "search API: djshellshoxxx/GhostPay has_pages=true",
+      "docs/pages/README.md:173@7a620ff1 ('Source: GitHub Actions. The prototype's gh-pages branch is then unused' => currently in use)",
+      "gh-pages:assets/index-Bmfq019n.js function Xg: fetch ./deployments/<id>.json -> {status:'loaded'} with schema check only, no signature verification",
+      "live fetch blocked by sandbox proxy (403 CONNECT) => live state UNVERIFIED"
+    ],
+    "affected": [
+      "anyone visiting https://djshellshoxxx.github.io/GhostPay/ today"
+    ],
+    "remediation": "Owner: Settings > Pages > Source = GitHub Actions (or unpublish); delete/archive gh-pages; then run scripts/pages/smoke.mjs against the live URL with --commit.",
+    "verification": "Live smoke: build-info.json names the dispatched commit; mirror banner present; no /deployments/ fetch.",
+    "blocks": [
+      "Sepolia beta"
+    ],
+    "prior": "none found"
+  },
+  {
+    "id": "E-03",
+    "severity": "Medium",
+    "status": "CONFIRMED",
+    "area": "deployment / origin gate",
+    "title": "Shared-origin gate trusts the declared GHOSTPAY_PAGES_ORIGIN (*.github.io suffix only); deployed page_url origin never asserted; account-wide custom domains pass as dedicated",
+    "evidence": [
+      "scripts/pages/build-pages.sh:60-69@7a620ff1",
+      ".github/workflows/pages.yml:100,213-261@7a620ff1 (no origin assertion in deploy/smoke)",
+      "scripts/pages/smoke.mjs:23-117@7a620ff1 (no origin check)"
+    ],
+    "affected": [
+      "Pages testnet beta"
+    ],
+    "remediation": "Assert new URL(page_url).origin === vars.GHOSTPAY_PAGES_ORIGIN in deploy/smoke; require repo-level cname + https_enforced from the Pages API; treat any origin that serves other project sites as shared.",
+    "verification": "Workflow test: mismatched origin fails the run.",
+    "blocks": [
+      "Sepolia beta"
+    ],
+    "prior": "extends GP-PAGES-01"
+  },
+  {
+    "id": "E-04",
+    "severity": "High",
+    "status": "UNVERIFIED",
+    "area": "deployment integrity / CI",
+    "title": "Deploy trust boundary not demonstrated: main reportedly unprotected; Pages artifact unsigned/unattested and not bound to the release trust root",
+    "evidence": [
+      ".github/workflows/ghostpay-codex-cloud.yml:57@7a620ff1 ('main has NO branch protection or rulesets (checked 2026-11-04 ...)')",
+      ".github/workflows/pages.yml:59-69,213-233@7a620ff1 (dispatch on main + github-pages env only)",
+      ".github/workflows/release.yml:39-66,194-197@7a620ff1 (signed-tag + attestation only for release tarball)",
+      ".github/release-signers/allowed_signers@7a620ff1 (no keys; release fails closed)",
+      ".github/workflows/ghostpay-codex-cloud.yml:21-28,35-52@7a620ff1 (contents:write + PAT; agent may change apps/*, packages/*)",
+      "ADR-0029: 'Branch protection and the github-pages environment rules are part of the security boundary'; gate 2 Open"
+    ],
+    "affected": [
+      "all code served to Pages users"
+    ],
+    "remediation": "Rulesets on main (required reviews + checks, no force push); github-pages env main-only + required reviewers; actions/attest-build-provenance on Pages SHA256SUMS; publish signed checksums out of band; optionally require dispatch from a signed tag verified by verify-tag.sh.",
+    "verification": "Owner provides rulesets/env API output; gh attestation verify on served files.",
+    "blocks": [
+      "Sepolia beta"
+    ],
+    "prior": "ADR-0029 gate 2; audit L7-M4 (cache) addressed"
+  },
+  {
+    "id": "E-05",
+    "severity": "Medium",
+    "status": "CONFIRMED",
+    "area": "scan privacy (spec 10 stage 1)",
+    "title": "'Local proxy' scan transport is unusable: Settings accepts http loopback endpoints but CSP connect-src blocks them in every shipped profile (fails closed)",
+    "evidence": [
+      "apps/web/src/lib/scanPrivacy.ts:72-98@7a620ff1 (http loopback accepted)",
+      "apps/web/index.html:13@7a620ff1; apps/web/public/_headers:5; deploy/nginx/security-headers.conf:3 (connect-src 'self' https: wss:)",
+      "docs/specs/10-feature5-stage1-private-scanning.md:7 (mode b http://127.0.0.1); docs/pages/README.md:49",
+      "Chromium probe on built Pages artifact: securitypolicyviolation 'connect-src http://127.0.0.1:47126/', proxyHits 0 ($SP/out/E/logs/csp_loopback_probe.json)",
+      "no e2e covers local-proxy (grep apps/web/e2e)"
+    ],
+    "affected": [
+      "private scanning for non-Tor-Browser users",
+      "Paranoid preset with local proxy",
+      "loopback indexer"
+    ],
+    "remediation": "Add http://127.0.0.1:* http://localhost:* http://[::1]:* to connect-src (meta, _headers, nginx) or require https loopback (mkcert) and say so; add Playwright test under the real meta CSP; fix docs.",
+    "verification": "e2e: scan through a local JSON-RPC forwarder succeeds and no direct RPC is contacted.",
+    "blocks": [
+      "Sepolia beta privacy claims (spec 10 acceptance)"
+    ],
+    "prior": "none found"
+  },
+  {
+    "id": "E-06",
+    "severity": "Low",
+    "status": "CONFIRMED",
+    "area": "RPC configuration",
+    "title": "wss:// RPC URLs are accepted and allowed by CSP but no transport supports them (always fail closed)",
+    "evidence": [
+      "packages/chain-adapters/src/rpc.ts:87,97@7a620ff1",
+      "packages/net-transport/src/fetchTransport.ts:32,39@7a620ff1",
+      "apps/web/locales/en.json:11; docs/pages/README.md:48"
+    ],
+    "affected": [
+      "Settings RPC"
+    ],
+    "remediation": "Reject wss in checkRpcUrl or implement a WebSocket transport; drop wss: from connect-src if unused; fix copy.",
+    "verification": "Unit test + copy review.",
+    "blocks": [],
+    "prior": "none found"
+  },
+  {
+    "id": "E-07",
+    "severity": "Low",
+    "status": "CONFIRMED",
+    "area": "RPC transport hygiene",
+    "title": "Default chain-adapters fetchTransport omits credentials:'omit', cache:'no-store', referrerPolicy:'no-referrer' (other transports set them)",
+    "evidence": [
+      "packages/chain-adapters/src/rpc.ts:103-109@7a620ff1",
+      "packages/net-transport/src/fetchTransport.ts:52-55@7a620ff1",
+      "apps/web/src/lib/relayerClient.ts:121-130@7a620ff1",
+      "apps/web/src/privacyInvariants.test.ts covers apps/web/src only"
+    ],
+    "affected": [
+      "all Settings-RPC traffic (pay, scan, sweep, registry)"
+    ],
+    "remediation": "Set the three options in fetchTransport; extend privacy invariants to packages/chain-adapters and net-transport.",
+    "verification": "Unit assertion on fetch init.",
+    "blocks": [],
+    "prior": "none found"
+  },
+  {
+    "id": "E-08",
+    "severity": "Low",
+    "status": "INTENDED",
+    "area": "URL / history",
+    "title": "Invoice bearer fragment persists in browser history/session/UKM DBs after address-bar clearing; docs omit history sync",
+    "evidence": [
+      "apps/web/src/lib/fragment.ts:20-26@7a620ff1; apps/web/src/AppShell.tsx:97-115@7a620ff1",
+      "Chromium persistent profile after auto-clear: '#gpi=v1.TEAME-PROBE...' in Default/History urls table, Sessions/*, Top Sites, segmentation_platform/ukm_db (Team E walk)",
+      "documented: apps/web/locales/en.json:766,908; apps/web/privacy.html:40; README.md:256 (audit S3-03)"
+    ],
+    "affected": [
+      "payers who click invoice links"
+    ],
+    "remediation": "Mention cloud history sync; keep promoting paste/passphrase links.",
+    "verification": "Copy review.",
+    "blocks": [],
+    "prior": "audit S3-03"
+  },
+  {
+    "id": "E-09",
+    "severity": "Low",
+    "status": "CONFIRMED",
+    "area": "storage linkability",
+    "title": "Plaintext linkable identifiers: checkpoint slots keyed by sha256(spend|view pub), vault meta-address/signer, reconciliation sellerKeyId, tag timestamps, tab journals with one-time owners",
+    "evidence": [
+      "apps/web/src/lib/scanClient.ts:661-700@7a620ff1; packages/ux-vault/src/seller-scope.ts:8-10@7a620ff1",
+      "packages/ux-vault/src/reconciliation-portable.ts:407-430@7a620ff1",
+      "apps/web/src/lib/tags.ts:8-20@7a620ff1",
+      "apps/web/src/lib/sweepAttemptJournal.ts:5-14@7a620ff1; apps/web/src/lib/duplicateAttemptJournal.ts:4-23@7a620ff1",
+      "documented: apps/web/locales/en.json:273; docs/user/privacy-limits.md:40"
+    ],
+    "affected": [
+      "device users",
+      "same-origin sibling sites (E-01)"
+    ],
+    "remediation": "Pseudonymize slot names with a viewing-key-derived key; minimize plaintext in vault record.",
+    "verification": "Storage-dump test asserts no meta-derived identifiers.",
+    "blocks": [],
+    "prior": "documented residual"
+  },
+  {
+    "id": "E-10",
+    "severity": "Low",
+    "status": "CONFIRMED",
+    "area": "storage retention",
+    "title": "No in-app 'erase all GhostPay data'; clearing site data on github.io wipes all 36 sites",
+    "evidence": [
+      "apps/web/locales/en.json:273",
+      "apps/web/src/lib/reconciliationLedger.ts:51-63@7a620ff1 (legacy ledger delete only)",
+      "grep: no deleteDatabase/localStorage.clear in apps/web/src"
+    ],
+    "affected": [
+      "all profiles"
+    ],
+    "remediation": "Confirmed wipe of ghostpay.* local/session keys and the three IndexedDB databases with backup warning.",
+    "verification": "e2e: storage empty after wipe.",
+    "blocks": [],
+    "prior": "none found"
+  },
+  {
+    "id": "E-11",
+    "severity": "Low",
+    "status": "CONFIRMED",
+    "area": "framing / COOP",
+    "title": "Pages cannot send frame-ancestors/XFO/COOP and lean has no JS frame guard; any site can frame the app, an opener can navigate it",
+    "evidence": [
+      "apps/web/index.html:11-14@7a620ff1 (meta CSP, no frame-ancestors possible)",
+      "apps/web/src/lib/embedHost.ts:144@7a620ff1 (only parent check in code)",
+      "ADR-0029 Consequences (no one-click fund movement)"
+    ],
+    "affected": [
+      "Pages lean"
+    ],
+    "remediation": "Lean-only frame guard refusing to render when framed; null window.opener at startup.",
+    "verification": "e2e: framed load shows 'open in its own tab'.",
+    "blocks": [],
+    "prior": "documented Pages limitation"
+  },
+  {
+    "id": "E-12",
+    "severity": "Info",
+    "status": "CONFIRMED",
+    "area": "UX safety",
+    "title": "Pages banner link navigates the same tab; no beforeunload guard while unsaved keys are loaded",
+    "evidence": [
+      "scripts/pages/build-pages.sh:148@7a620ff1",
+      "grep: no beforeunload/pagehide handler in apps/web/src"
+    ],
+    "affected": [
+      "Pages lean"
+    ],
+    "remediation": "target=_blank rel='noopener noreferrer' or beforeunload prompt while backup unverified.",
+    "verification": "e2e.",
+    "blocks": [],
+    "prior": "none found"
+  },
+  {
+    "id": "E-13",
+    "severity": "Low",
+    "status": "CONFIRMED",
+    "area": "build guards",
+    "title": "scan-bundle checks inline scripts/CSP only in index.html; lean exclusion lists differ between guard and Pages verifier (R-01 fix itself verified)",
+    "evidence": [
+      "apps/web/scripts/scan-bundle.mjs:153-183@7a620ff1",
+      "scripts/pages/verify-pages-site.mjs:51,238-241@7a620ff1",
+      "apps/web/scripts/localBuildProfile.mjs:122@7a620ff1",
+      "apps/web/src/scanBundle.test.ts:131 passes (vitest 14 files 239 tests)"
+    ],
+    "affected": [
+      "full/self-host release tarball"
+    ],
+    "remediation": "Scan every *.html; single shared exclusion list.",
+    "verification": "Unit tests.",
+    "blocks": [],
+    "prior": "R-01 (REVIEW_FINDINGS.md) resolved"
+  },
+  {
+    "id": "E-14",
+    "severity": "Low",
+    "status": "CONFIRMED",
+    "area": "supply chain (dev tree)",
+    "title": "npm audit: 30 dev-tree advisories (14 high picomatch<=4.0.7 ReDoS via vite/vitest/typescript-eslint/hardhat; 16 low elliptic/cookie/@sentry via hardhat); production 0",
+    "evidence": [
+      "npm audit --json (all): exit 1; high 14, low 16, critical 0 ($SP/out/E/logs/npm_audit_all.json)",
+      "npm audit --omit=dev --json: 0 ($SP/out/E/logs/npm_audit_prod.json)",
+      "npm view picomatch versions: latest 4.0.7 (no fix)",
+      ".github/workflows/ci.yml:114@7a620ff1; .github/workflows/release.yml:93@7a620ff1 (prod-only gate)"
+    ],
+    "affected": [
+      "CI/build hosts"
+    ],
+    "remediation": "Track; add overrides when picomatch fix ships; non-blocking full-tree audit report.",
+    "verification": "npm audit.",
+    "blocks": [],
+    "prior": "none found"
+  },
+  {
+    "id": "E-15",
+    "severity": "Low",
+    "status": "CONFIRMED",
+    "area": "self-host supply chain",
+    "title": "Self-host images pinned by tag only; dependabot lacks docker ecosystem; nginx sends no HSTS (relies on terminator)",
+    "evidence": [
+      "deploy/docker-compose.yml:53@7a620ff1",
+      "deploy/tor/Dockerfile:2@7a620ff1",
+      "infra/web/Dockerfile:9@7a620ff1",
+      ".github/dependabot.yml@7a620ff1",
+      "deploy/nginx/security-headers.conf:3-9@7a620ff1",
+      "apps/relayer/Dockerfile:14,26@7a620ff1 (digest pinned)"
+    ],
+    "affected": [
+      "full profile / self-host / onion"
+    ],
+    "remediation": "Digest pins + dependabot docker entries; HSTS at TLS terminator documented/tested.",
+    "verification": "Config review.",
+    "blocks": [],
+    "prior": "none found"
+  },
+  {
+    "id": "E-16",
+    "severity": "Low",
+    "status": "CONFIRMED",
+    "area": "docs accuracy",
+    "title": "PRIVACY_THREAT_MODEL says net-transport/scan-source are not imported by apps/web; they ship in the lean bundle",
+    "evidence": [
+      "docs/threat-model/PRIVACY_THREAT_MODEL.md:16@7a620ff1",
+      "apps/web/package.json@7a620ff1 deps; apps/web/src/lib/scanPrivacy.ts:27-28@7a620ff1",
+      "lean bundle: net-transport 2k, scan-source 8k ($SP/out/E/pages-demo/evidence/ghostpay-lean-build.json)"
+    ],
+    "affected": [
+      "docs"
+    ],
+    "remediation": "Refresh sections 1.1/5 and note E-05.",
+    "verification": "Doc review.",
+    "blocks": [],
+    "prior": "none found"
+  },
+  {
+    "id": "E-17",
+    "severity": "Low",
+    "status": "CONFIRMED",
+    "area": "privacy claims",
+    "title": "Overclaims/imprecise copy: unqualified 'hides which seller owns the one-time address', 'stay unlinkable', false local-proxy/wss statements",
+    "evidence": [
+      "apps/web/locales/en.json:1100",
+      "docs/developer/api/policy-scheme.md:233",
+      "docs/pages/README.md:48-49",
+      "apps/web/locales/en.json:11,2138",
+      "README.md:5"
+    ],
+    "affected": [
+      "UI/docs"
+    ],
+    "remediation": "Qualify per SECURITY_PRIVACY_BROWSER.md section 8.",
+    "verification": "Copy review.",
+    "blocks": [],
+    "prior": "GP-PAGES-06 (refuted for firstUseNotice)"
+  },
+  {
+    "id": "E-18",
+    "severity": "Info",
+    "status": "UNVERIFIED",
+    "area": "Tor Browser compatibility",
+    "title": "No WASM/WebGL/SAB/SW needed; Safest mode unusable (JS off); JIT-less scrypt ~28 s; canvas QR likely blocked; TB private mode drops vault/checkpoints; onion RPC unsupported; deploy/tor untested",
+    "evidence": [
+      "bundle token counts WebAssembly/webgl/SharedArrayBuffer/serviceWorker = 0",
+      "node jitless bench: scrypt N=2^17 28338 ms vs 512 ms; ECDH ~4 ms ($SP/out/E/logs/bench_*.txt)",
+      "packages/qr-exchange/src/readers.ts:31-36@7a620ff1 (getImageData)",
+      "packages/chain-adapters/src/rpc.ts:77-92@7a620ff1 (http only loopback)",
+      "deploy/TOR.md:8@7a620ff1 ('Not tested')",
+      "apps/web/DEVIATIONS.md:258@7a620ff1 (only Chromium)"
+    ],
+    "affected": [
+      "Tor Browser / Firefox users",
+      "onion self-host"
+    ],
+    "remediation": "Manual TB Standard/Safer QA; KDF progress text; document TB persistence; consider https onion RPC guidance.",
+    "verification": "QA record.",
+    "blocks": [
+      "Sepolia beta Tor claims"
+    ],
+    "prior": "none found"
+  },
+  {
+    "id": "E-19",
+    "severity": "Info",
+    "status": "CONFIRMED",
+    "area": "logging",
+    "title": "createRoot without onCaughtError/onUncaughtError: React logs caught render errors (may contain input snippets) to console",
+    "evidence": [
+      "apps/web/src/main.tsx:11@7a620ff1",
+      "bundle console.error only React internals (6); console.warn/log 0",
+      "apps/web/src/lib/errors.ts:68-80@7a620ff1 (UI never renders raw messages)"
+    ],
+    "affected": [
+      "local console"
+    ],
+    "remediation": "Pass sanitized root error handlers.",
+    "verification": "Unit.",
+    "blocks": [],
+    "prior": "none found"
+  },
+  {
+    "id": "E-20",
+    "severity": "Info",
+    "status": "CONFIRMED",
+    "area": "integrity / SRI",
+    "title": "No SRI; embed SDK SRI tooling unwired (full only); Pages SHA256SUMS only in run summary/14-day artifact, unsigned",
+    "evidence": [
+      "apps/web/README.md:57@7a620ff1",
+      ".github/workflows/pages.yml:106-122@7a620ff1",
+      "ADR-0029 gate 2 Open"
+    ],
+    "affected": [
+      "user verification of served files"
+    ],
+    "remediation": "See E-04 (attest + signed checksums).",
+    "verification": "\u2014",
+    "blocks": [],
+    "prior": "DEVIATIONS 6/20"
+  },
+  {
+    "id": "E-21",
+    "severity": "Info",
+    "status": "CONFIRMED",
+    "area": "release keys",
+    "title": "No denylist for the public Playwright manifest-signing key in GHOSTPAY_RELEASE_PUBKEYS parsing",
+    "evidence": [
+      "apps/web/scripts/validate-deployments.mjs:38-43@7a620ff1",
+      "apps/web/e2e/prepare-manifest.mjs:21-22@7a620ff1 (key = 0x07*32)"
+    ],
+    "affected": [
+      "Pages/release builds"
+    ],
+    "remediation": "Denylist known public test keys.",
+    "verification": "Unit.",
+    "blocks": [],
+    "prior": "none found"
+  },
+  {
+    "id": "E-22",
+    "severity": "Info",
+    "status": "INFERRED",
+    "area": "network metadata",
+    "title": "RPC can fingerprint GhostPay users: Origin header, UA, Accept-Language, sequential JSON-RPC ids, 60 s eth_chainId recheck, optional 60-90 s auto-scan",
+    "evidence": [
+      "packages/chain-adapters/src/rpc.ts:227-237@7a620ff1",
+      "docs/pages/README.md:41 (polling cadence documented); Origin header not documented (grep)"
+    ],
+    "affected": [
+      "all RPC users"
+    ],
+    "remediation": "Document; consider random request ids.",
+    "verification": "Doc.",
+    "blocks": [],
+    "prior": "none found"
+  },
+  {
+    "id": "E-23",
+    "severity": "Info",
+    "status": "CONFIRMED",
+    "area": "deploy smoke coverage",
+    "title": "Post-deploy smoke only idles on the home view for 3 s",
+    "evidence": [
+      "scripts/pages/smoke.mjs:100-112@7a620ff1",
+      "Team E local walk: all 9 lean / 12 full views, 0 foreign requests until explicit Test ($SP/out/E/logs/egress_walk*.json)"
+    ],
+    "affected": [
+      "Pages"
+    ],
+    "remediation": "Extend smoke to click every lean view and open a fixture invoice, then assert no request outside the site.",
+    "verification": "Smoke run log.",
+    "blocks": [
+      "Sepolia beta (live egress evidence)"
+    ],
+    "prior": "none found"
+  }
+]

@@ -1,0 +1,1154 @@
+[
+ {
+  "id": "H2-01",
+  "file": "GHOSTPAY_FEATURE_COMPLETION_EXECUTION_PROMPT.md",
+  "find": "   section 4 before trusting downstream sections.\n3. Choose START_SHA:",
+  "replace": "   section 4 before trusting downstream sections.\n2a. Concurrent-work census (mandatory; `docs/ai/WORKFLOW.md:17`: \"Prefer a nonoverlapping task rather than changing files\n   claimed by another worker\"). Other agent sessions write to this repository under the owner's account. Open at\n   2026-11-18T07:55Z (VERIFIED `git ls-remote` + PR search), all created after the audit snapshot: #206 (#204 agent tooling\n   re-integrated onto `main`), #207/#210 (Dependabot actions / npm minor-patch), #208 (another execution prompt), #209 and\n   #211 (completion runs with exclusive path claims in `docs/ai/ACTIVE_WORK.md`: transport/settings, Pages hosting\n   hardening, CI/release/supply chain, key-management docs, the qr-colors and seller-vault ports, scheme-2 client gates,\n   SOL/TRON seed reveal and meta-address format, storage linkability, ContextHelp/focus), #212 (Mythril/Echidna/fee-token review,\n   `validate:deployments`, owner packets), #213 ([WIP] spec 18 K01-K06 @ `a199c21`:\n   `packages/ux-vault/src/stealth-export-portable.ts`, `docs/specs/18-stealth-keypair-export-formats.md`,\n   `test-vectors/stealth-export.json`, `scripts/recovery/stealth-export-recover.mjs`, `scripts/recovery/raw-key-anvil.test.mjs`),\n   #214-#216 (docs rotation), #217 (DeployPolicy N1 guard). For every open PR created or updated since 2026-11-18 and every\n   claim section of `docs/ai/ACTIVE_WORK.md` on `main` and on those PR heads, map its paths, rows and findings to WS items\n   (section 12). An item another active session has claimed or is implementing is OWNED-ELSEWHERE: do not start it; review\n   that PR read-only at each checkpoint and adopt its result once it is on `main`; re-plan the item only if that PR is closed\n   unmerged or has had no commit for 24 h, and record the decision. Spec 18 formats are single-sourced: never create a\n   second format id, AAD domain, vector file or independent recovery tool next to one already on `main` or in an open PR;\n   WS-03/08/09/19/25 then become review-and-complete items against that format. Record the claim map in BASELINE.md, claim\n   only unclaimed paths in `docs/ai/ACTIVE_WORK.md` (insert your own section; never edit another session's section), and put\n   any real conflict in the PR body and HANDOFF.md as an owner question.\n3. Choose START_SHA:",
+  "reason": "At 07:55Z at least five other sessions had open PRs (#206, #209, #211, #212, #213) whose claims cover spec 18 (WS-03/08/09/19/25), the #204 port (WS-22.1), transport/CSP (WS-01), Pages/bundle hardening (WS-04/21/24), CI/release (WS-20), the WS-02 ports, ContextHelp (WS-12), SOL/TRON (WS-14) and storage linkability (WS-23). The prompt has no claims protocol, so a fresh session would duplicate them; two independent spec 18 codecs (#213 `stealth-export-portable.ts` + `test-vectors/stealth-export.json` vs WS-03 `stealth-export*.ts` + `stealth-export-v1.json`; #213 `scripts/recovery/` vs WS-19 `tools/independent-recovery/`) would give users incompatible backup formats (constraint 4).",
+  "severity": "blocker"
+ },
+ {
+  "id": "H2-02",
+  "file": "GHOSTPAY_FEATURE_COMPLETION_EXECUTION_PROMPT.md",
+  "find": "6. Re-census the open PRs/branches each checkpoint: new commits from external writers (the ChatGPT `chatgpt/zero-codex/*`\n   rotation is an active writer) are evaluated for recovery, never blindly merged.",
+  "replace": "6. Re-census the open PRs/branches and every `docs/ai/ACTIVE_WORK.md` claim at each checkpoint (section 5 step 2a): new\n   commits from external writers (the ChatGPT `chatgpt/zero-codex/*` rotation, Dependabot, and other Claude/Codex sessions\n   such as #206/#209/#211/#212/#213) are evaluated for recovery or adoption, never blindly merged and never duplicated.\n7. When `origin/main` has moved (another session's PR merged), merge it into the integration branch at the next checkpoint\n   (`git merge --no-ff origin/main`; never rebase the pushed branch), resolve conflicts per section 16, re-run G-FULL, and\n   re-check every item whose files or rows the merged work touched (mark it DONE-ELSEWHERE when its acceptance criteria\n   pass on the merged head). The frozen-path check then compares against the last merged `origin/main`.",
+  "reason": "Other sessions merge into `main` while this one runs; without a rule to merge `origin/main` the draft PR (base `main`) drifts into conflicts and the frozen-path diff against the original START_SHA reports other sessions' approved changes.",
+  "severity": "major"
+ },
+ {
+  "id": "H2-03",
+  "file": "GHOSTPAY_FEATURE_COMPLETION_EXECUTION_PROMPT.md",
+  "find": "| `main` | `cfaebeeae22f292cb0bb3074619b2603cb738367` (merge #189, 2026-11-16); **unprotected** per prior session (API 404 \"Branch not protected\") |",
+  "replace": "| `main` | `5467c158069c5bab264b6a653ac56e89e13f3e13` = the owner's merge commit of PR #203 (2026-11-18T06:56:49Z; parents `cfaebeea` + `71abc7e5`; tree `f17da552` == tree of `71abc7e5`, so product source == `7a620ff1`; VERIFIED `git ls-remote` 07:55Z). Before the merge: `cfaebeeae22f292cb0bb3074619b2603cb738367` (merge #189). Protection still UNVERIFIED (prior session: API 404 \"Branch not protected\") |",
+  "reason": "`main` moved to 5467c158 (PR #203 merged 06:56:49Z) before this package was finalized; BLOCKERS/README were updated (OA-02 done), the prompt was not.",
+  "severity": "major"
+ },
+ {
+  "id": "H2-04",
+  "file": "GHOSTPAY_FEATURE_COMPLETION_EXECUTION_PROMPT.md",
+  "find": "1,484 commits ahead of `main` (fast-forwardable); PR head `71abc7e55c25d45b206ac47e5ddd24e072805710` adds documentation only |",
+  "replace": "1,484 commits ahead of the old `main` `cfaebeea`; PR head `71abc7e55c25d45b206ac47e5ddd24e072805710` adds documentation only; **merged into `main` 2026-11-18T06:56:49Z** as merge commit `5467c158` (not squash) |",
+  "reason": "Same drift as H2-03.",
+  "severity": "major"
+ },
+ {
+  "id": "H2-05",
+  "file": "GHOSTPAY_FEATURE_COMPLETION_EXECUTION_PROMPT.md",
+  "find": "rotation keeps pushing docs-only commits (#139 `7af4b5ff`, #140 `400e20f1`, #153 `30f1604d` at audit time) |",
+  "replace": "rotation keeps pushing docs-only commits (#139 `7af4b5ff`, #140 `400e20f1`, #153 `30f1604d` at audit time). Opened after the snapshot (open at 07:55Z): #206 (#204 re-integrated onto main, conflicts resolved), #207/#210 Dependabot, #208 another execution prompt, #209/#211 completion runs, #212 security/release reconciliation, #213 spec 18 [WIP], #214-#216 docs rotation, #217 DeployPolicy N1 guard: see section 5 step 2a |",
+  "reason": "The baseline must name the concurrent writers the new step 2a acts on.",
+  "severity": "major"
+ },
+ {
+  "id": "H2-06",
+  "file": "GHOSTPAY_FEATURE_COMPLETION_EXECUTION_PROMPT.md",
+  "find": "202 PRs (145 open) + #205 |",
+  "replace": "202 PRs (145 open) + #205 at audit time; #206-#217 opened 2026-11-18 06:57-07:53Z |",
+  "reason": "PR census stale (VERIFIED search API 07:55Z).",
+  "severity": "minor"
+ },
+ {
+  "id": "H2-07",
+  "file": "GHOSTPAY_FEATURE_COMPLETION_EXECUTION_PROMPT.md",
+  "find": "- Merging into `main` or any protected/shared branch; marking PRs ready-for-review on behalf of the owner is allowed\n  only when every gate in section 13 passes, and merging is never allowed.",
+  "replace": "- Merging into `main` or any protected/shared branch (never allowed). Marking any PR other than your own draft\n  ready-for-review (readiness and merging of #203/#204/#206 and other sessions' PRs are owner actions, OA-02); your own PR\n  may be marked ready only when every gate of sections 13 and 17 passes.\n- Any other GitHub write: comments, reviews, approvals, labels or pushes on other PRs/branches, issues, releases,\n  environment approvals; dispatching `pages.yml` with `deploy=true`, `release.yml`, `ghostpay-codex-cloud.yml` or\n  `ghostpay-parallel-review.yml`. Allowed: `workflow_dispatch` of test-only workflows (`ci.yml`, `hosting-kit.yml`,\n  `cli-operator.yml`, `integration.yml`, `beta-acceptance.yml`, `nightly.yml`) on your own designated branch when path\n  filters skipped them (CP-7 needs their run ids).",
+  "reason": "The NOT AUTHORIZED list contained a permission ('marking PRs ready ... is allowed') that contradicts PLAN section 10 ('NO mark-ready/merge of PR #203/#204 (OA-02 is owner)'); the prompt also never forbade writes on other PRs (PLAN section 10 does) nor said whether path-filtered workflows may be dispatched although CP-7 requires their run ids.",
+  "severity": "major"
+ },
+ {
+  "id": "H2-08",
+  "file": "GHOSTPAY_FEATURE_COMPLETION_EXECUTION_PROMPT.md",
+  "find": "- Deleting, force-pushing or rewriting any branch other than your own designated branch; closing other PRs.",
+  "replace": "- Deleting, force-pushing or rewriting any branch; your designated branch may be reset once, before its first push\n  (section 5 step 3), and is never rewritten afterwards (bad merge: `git revert -m 1`, PLAN 9.9); closing other PRs.",
+  "reason": "As written it permits force-pushing the integration branch, contradicting PLAN 3.1/9.9 ('never force-push', 'integration branch never rewritten').",
+  "severity": "minor"
+ },
+ {
+  "id": "H2-09",
+  "file": "GHOSTPAY_FEATURE_COMPLETION_EXECUTION_PROMPT.md",
+  "find": "(the one named in this session's system\n  instructions); use it as the integration branch.",
+  "replace": "(the one named in this session's system\n  instructions; if none is named, ask the owner and push nothing); use it as the integration branch.",
+  "reason": "No fallback when the harness names no designated branch.",
+  "severity": "minor"
+ },
+ {
+  "id": "H2-10",
+  "file": "GHOSTPAY_FEATURE_COMPLETION_EXECUTION_PROMPT.md",
+  "find": "Experimental and future rows are not promoted (section\n7.4). You are done only when section 17 holds.",
+  "replace": "Experimental and future rows are not promoted (section\n7.4): they count as owner-gated (OD-20/OD-21 scope; each future row needs the owner to schedule it, NEXT_PHASE_QUEUE\nD07), not as technically unblocked. Rows whose chosen strategy is `defer`\nwhile their item is unblocked (F-CLI-06, F-DOC-01, F-KEY-13, F-OPS-03, F-RLY-04, F-WEB-04, F-WEB-06) and the owner-ack rows\n(F-WEB-04, F-WEB-06, F-WEB-26, F-CLI-06) are not complete when their item lands: implement every missing requirement\n(`feature_completion_matrix.json` `missing_requirements`) that is technically unblocked and inside constraints 1-5; a\nlimitation a constraint requires (F-CLI-06 refund execute would need hosted signing) is documented, never built. Accepting a\nlimitation is owner decision OD-23 (section 10); engineering never writes \"owner ack recorded\". You are done only when\nsection 17 holds.",
+  "reason": "The plan defers seven technically unblocked rows and has items that 'record owner ack (no canonical ID)' (WS-02.6, WS-10.3): that decides an owner item and treats silence as approval, against the owner brief ('implement every technically unblocked unfinished feature') and BLOCKERS' rule.",
+  "severity": "major"
+ },
+ {
+  "id": "H2-11",
+  "file": "GHOSTPAY_FEATURE_COMPLETION_EXECUTION_PROMPT.md",
+  "find": "- 192 distinct features: **37 VERIFIED_COMPLETE, 30 IMPLEMENTED_UNVERIFIED, 27 PARTIAL, 46 SPEC_ONLY, 45\n  EXPERIMENTAL, 7 BLOCKED** (155 unfinished). Beta-core (43): 18 complete, 11 implemented-unverified, 5 partial,\n  3 blocked, 6 spec-only (spec 18 K01–K06). Five rows (F-KEY-01, F-KEY-02, F-WEB-07, F-WEB-11, F-WEB-12) meet their\n  requirements but are held by open SEC-03/SEC-05/SEC-10 (security-hold rule).",
+  "replace": "- 192 distinct features: **38 VERIFIED_COMPLETE, 28 IMPLEMENTED_UNVERIFIED, 28 PARTIAL, 46 SPEC_ONLY, 45\n  EXPERIMENTAL, 7 BLOCKED** (154 unfinished; `evidence/features/stats.json` after the H1 rescoring: F-WEB-09 ->\n  VERIFIED_COMPLETE, F-NET-01 -> PARTIAL 80/65, F-WEB-07 -> 90/90, F-BTC-01/F-BTC-02/F-MER-05 -> full-profile).\n  Beta-core (42): 18 complete, 10 implemented-unverified, 5 partial, 3 blocked, 6 spec-only (spec 18 K01–K06). Five rows\n  (F-KEY-01, F-KEY-02, F-KEY-03, F-WEB-11, F-WEB-12) meet their requirements but are held by open SEC-03/SEC-05\n  (security-hold rule); the SEC-10 local-proxy gap is scored into F-WEB-07 and F-NET-01.",
+  "reason": "The package's matrix/stats/README were rescored at 08:01Z (154 unfinished, 38 complete); the prompt still carries the pre-H1 numbers, so the primary deliverable contradicts its own package.",
+  "severity": "major"
+ },
+ {
+  "id": "H2-12",
+  "file": "GHOSTPAY_FEATURE_COMPLETION_EXECUTION_PROMPT.md",
+  "find": "beta scope **87.9 % / 84.0 %**; all tiers excluding the future\n  roadmap 79.9 % / 75.0 %; all tiers 73.9 % / 69.3 %.",
+  "replace": "beta scope **87.2 % / 83.5 %**; all tiers excluding the future\n  roadmap 79.7 % / 74.8 %; all tiers 73.8 % / 69.1 %.",
+  "reason": "Same rescoring (stats.json aggregate_release_scope_beta / aggregate_all_excluding_future / aggregate_all).",
+  "severity": "major"
+ },
+ {
+  "id": "H2-13",
+  "file": "GHOSTPAY_FEATURE_COMPLETION_EXECUTION_PROMPT.md",
+  "find": "- Largest gap: spec 18 key portability has **zero code** (F-KEY-07..F-KEY-12),",
+  "replace": "- Largest gap: spec 18 key portability has **zero code on `main`** (F-KEY-07..F-KEY-12; open PR #213 [WIP] already carries a\n  K01/K02/K05/K06 codec, an independent recovery script and a K04 anvil test: section 5 step 2a),",
+  "reason": "VERIFIED: refs/pull/213/head a199c21 adds packages/ux-vault/src/stealth-export-portable.ts and scripts/recovery/*.",
+  "severity": "major"
+ },
+ {
+  "id": "H2-14",
+  "file": "GHOSTPAY_FEATURE_COMPLETION_EXECUTION_PROMPT.md",
+  "find": "### 7.2 Unfinished beta-core, beta-supporting and full-profile rows (68)",
+  "replace": "### 7.2 Unfinished beta-core, beta-supporting and full-profile rows (67)",
+  "reason": "24 + 24 + 19 after the rescoring.",
+  "severity": "major"
+ },
+ {
+  "id": "H2-15",
+  "file": "GHOSTPAY_FEATURE_COMPLETION_EXECUTION_PROMPT.md",
+  "find": "**beta-core: 25 unfinished**",
+  "replace": "**beta-core: 24 unfinished**",
+  "reason": "F-WEB-09 is VERIFIED_COMPLETE now.",
+  "severity": "major"
+ },
+ {
+  "id": "H2-16",
+  "file": "GHOSTPAY_FEATURE_COMPLETION_EXECUTION_PROMPT.md",
+  "find": "| F-KEY-03 | Keystore v1 backup/restore and verified-backup gate (GP-PAGES- | 100 / 100 | IMPLEMENTED_UNVERIFIED | recover | 5 | WS-02 (WS-02.7) | — |",
+  "replace": "| F-KEY-03 | Keystore v1 backup/restore and verified-backup gate (GP-PAGES- | 100 / 100 | IMPLEMENTED_UNVERIFIED (security hold: SEC-05, SEC-03) | recover | 5 | WS-02 (WS-02.7; hold released by WS-07.1 + WS-18.1) | OD-01, OD-09 |",
+  "reason": "completion_strategy.json F-KEY-03.security_hold = SEC-05, SEC-03 since 08:00Z.",
+  "severity": "major"
+ },
+ {
+  "id": "H2-17",
+  "file": "GHOSTPAY_FEATURE_COMPLETION_EXECUTION_PROMPT.md",
+  "find": "| F-WEB-09 | Payment history & reconciliation ledger (encrypted IndexedDB,  | 100 / 95 | IMPLEMENTED_UNVERIFIED | repair | 2 | WS-02 (WS-02.4) | — |\n",
+  "replace": "",
+  "reason": "Row is VERIFIED_COMPLETE (moves to 7.3); WS-02.4 stays as the TB-06 script fix.",
+  "severity": "major"
+ },
+ {
+  "id": "H2-18",
+  "file": "GHOSTPAY_FEATURE_COMPLETION_EXECUTION_PROMPT.md",
+  "find": "**beta-supporting: 25 unfinished**",
+  "replace": "**beta-supporting: 24 unfinished**",
+  "reason": "F-BTC-01 moved to full-profile.",
+  "severity": "major"
+ },
+ {
+  "id": "H2-19",
+  "file": "GHOSTPAY_FEATURE_COMPLETION_EXECUTION_PROMPT.md",
+  "find": "| F-BTC-01 | BIP-352 silent payments: keys, addresses, sender derive, recei | 100 / 80 | IMPLEMENTED_UNVERIFIED | defer | 8 | WS-14 (WS-14.4) | OD-02, OD-20 |\n",
+  "replace": "",
+  "reason": "Tier is full-profile after the rescoring (re-inserted by H2-23).",
+  "severity": "major"
+ },
+ {
+  "id": "H2-20",
+  "file": "GHOSTPAY_FEATURE_COMPLETION_EXECUTION_PROMPT.md",
+  "find": "| F-NET-01 | Transport profiles: direct/Tor SOCKS5h/local-proxy/OHTTP frami | 100 / 80 | IMPLEMENTED_UNVERIFIED |",
+  "replace": "| F-NET-01 | Transport profiles: direct/Tor SOCKS5h/local-proxy/OHTTP frami | 80 / 65 | PARTIAL |",
+  "reason": "Rescored row.",
+  "severity": "major"
+ },
+ {
+  "id": "H2-21",
+  "file": "GHOSTPAY_FEATURE_COMPLETION_EXECUTION_PROMPT.md",
+  "find": "| F-WEB-07 | Scan privacy modes (spec 10 UI: transport, private-required, w | 100 / 100 | IMPLEMENTED_UNVERIFIED (security hold) |",
+  "replace": "| F-WEB-07 | Scan privacy modes (spec 10 UI: transport, private-required, w | 90 / 90 | IMPLEMENTED_UNVERIFIED |",
+  "reason": "Rescored row; no longer a security-hold row.",
+  "severity": "major"
+ },
+ {
+  "id": "H2-22",
+  "file": "GHOSTPAY_FEATURE_COMPLETION_EXECUTION_PROMPT.md",
+  "find": "**full-profile: 18 unfinished**",
+  "replace": "**full-profile: 19 unfinished**",
+  "reason": "F-BTC-01 added.",
+  "severity": "major"
+ },
+ {
+  "id": "H2-23",
+  "file": "GHOSTPAY_FEATURE_COMPLETION_EXECUTION_PROMPT.md",
+  "find": "| F-BTC-03 | BTC light-client scanning: BlindBit HTTP + gRPC-Web, own-node  |",
+  "replace": "| F-BTC-01 | BIP-352 silent payments: keys, addresses, sender derive, recei | 100 / 80 | IMPLEMENTED_UNVERIFIED | defer | 8 | WS-14 (WS-14.4) | OD-02, OD-20 |\n| F-BTC-03 | BTC light-client scanning: BlindBit HTTP + gRPC-Web, own-node  |",
+  "reason": "Re-insert F-BTC-01 in the full-profile table.",
+  "severity": "major"
+ },
+ {
+  "id": "H2-24",
+  "file": "GHOSTPAY_FEATURE_COMPLETION_EXECUTION_PROMPT.md",
+  "find": "### 7.3 Do not regress (37 VERIFIED_COMPLETE rows and every currently green suite)\n- **VERIFIED_COMPLETE** (37):",
+  "replace": "### 7.3 Do not regress (38 VERIFIED_COMPLETE rows and every currently green suite)\n- **VERIFIED_COMPLETE** (38):",
+  "reason": "Rescored count.",
+  "severity": "major"
+ },
+ {
+  "id": "H2-25",
+  "file": "GHOSTPAY_FEATURE_COMPLETION_EXECUTION_PROMPT.md",
+  "find": ", F-WEB-08, F-WEB-10, F-WEB-13,",
+  "replace": ", F-WEB-08, F-WEB-09, F-WEB-10, F-WEB-13,",
+  "reason": "F-WEB-09 is complete.",
+  "severity": "major"
+ },
+ {
+  "id": "H2-26",
+  "file": "GHOSTPAY_FEATURE_COMPLETION_EXECUTION_PROMPT.md",
+  "find": "1. **#204 agent tooling** (class A, `nodata/eager-babbage-0w6sf6` @ `2693b08e`): new files apply cleanly; regenerate",
+  "replace": "1. **#204 agent tooling** (class A, `nodata/eager-babbage-0w6sf6` @ `2693b08e`) is **superseded** by open PR #206\n   (`c487f0fe`, #204 re-integrated onto `71abc7e5` with conflicts resolved and `PACKAGE_MAP.md` regenerated). Do not port it\n   again: WS-22.1 = run `node --test scripts/agent/workspaces.test.mjs` once #206 is on `main`. Only if #206 is closed\n   unmerged: new files apply cleanly; regenerate",
+  "reason": "VERIFIED refs/pull/206/head c487f0f (3 commits on 71abc7e5, the 11 #204 files). Porting again duplicates it and re-creates the CLAUDE.md/ci.yml conflicts (BLOCKERS OD-15 was updated, the prompt was not).",
+  "severity": "major"
+ },
+ {
+  "id": "H2-27",
+  "file": "GHOSTPAY_FEATURE_COMPLETION_EXECUTION_PROMPT.md",
+  "find": "3. **Dependency refresh** (class B, Dependabot #85/#87/#176): regenerate minor/patch updates on top of START_SHA",
+  "replace": "3. **Dependency refresh** (class B, Dependabot #85/#87/#176; superseded by the fresh Dependabot PRs #207 actions and #210 npm\n   minor/patch, open 2026-11-18): prefer the owner merging #207/#210 and verify them with G-FULL once on `main`; otherwise\n   regenerate minor/patch updates on top of START_SHA",
+  "reason": "Avoid a third, competing dependency refresh.",
+  "severity": "minor"
+ },
+ {
+  "id": "H2-28",
+  "file": "GHOSTPAY_FEATURE_COMPLETION_EXECUTION_PROMPT.md",
+  "find": "candidate lacks; selective file recovery + wire into `package.json`/CI.",
+  "replace": "candidate lacks; selective file recovery (the candidate already has a 75-line two-tab version; take the 228-line\n   `57dcf7e8` version, +157/-4: `git diff 7a620ff1 57dcf7e8 -- apps/web/scripts/test-seller-vault-idb.mjs`) + wire into\n   `package.json`/CI.",
+  "reason": "VERIFIED: the file exists at 7a620ff1 (75 lines); 'recover file' alone suggests it is missing.",
+  "severity": "minor"
+ },
+ {
+  "id": "H2-29",
+  "file": "GHOSTPAY_FEATURE_COMPLETION_EXECUTION_PROMPT.md",
+  "find": "| SEC-30 | Low | INTENDED | R-04 | #201 focus scope also focuses main after in-view paste/QR/Forget/cancel; comment names only dee |  |",
+  "replace": "| SEC-30 | Low | INTENDED | R-04 | #201 focus scope also focuses main after in-view paste/QR/Forget/cancel; comment names only dee |  |\n\nInfo findings, closed here too unless owner-gated (full rows: `security_findings.json`): SEC-31 policy-account owner-key\nfreeze race -> WS-90 (scheme 2); SEC-32 release trust roots empty (blocks sepolia-beta, release-tag) -> WS-05.4 after\nOD-07/OA-03; SEC-33 Mythril red by design -> WS-06.1, WS-06.3 (OD-03); SEC-34 relayer cannot steal (record) -> WS-11.2;\nSEC-35 7702 delegation persists -> WS-90 (OD-13); SEC-36 FEE_RECIPIENT must accept ETH -> WS-05.2 (OD-14); SEC-37\nbest-effort zeroization -> WS-03.2; SEC-38 independent scheme-1 check -> WS-03.1, WS-19.1; SEC-39 packet docs-only claim ->\nWS-00.5 (closed at `71abc7e5`); SEC-40 banner same-tab link, no beforeunload guard -> WS-04.3, WS-07.1; SEC-41 Tor\nBrowser/JIT-less scrypt (blocks sepolia-beta) -> WS-18.2, WS-17.2, EX-02; SEC-42 React root error logging -> WS-21.2; SEC-43\nno SRI, unsigned Pages checksums -> WS-01.3, WS-20.5; SEC-44 public Playwright key denylist -> WS-05.1; SEC-45 RPC\nfingerprinting -> WS-01.2; SEC-46 smoke idles 3 s (blocks sepolia-beta) -> WS-04.5, WS-04.6; SEC-47 release analysis gate\nunexercised (blocks release-tag) -> WS-06.3, WS-20.6; SEC-48 alert inventories unreadable (blocks mainnet) -> WS-20.4\n(OA-07); SEC-49 #204/#203 conflict -> #206 (OD-15). Owner-gated, no closure this phase: SEC-06, SEC-07, SEC-11, SEC-12,\nSEC-31, SEC-35 (scheme 2, WS-90: OD-04/05/11/12/13).",
+  "reason": "Section 9 says 'close every finding below' but lists only SEC-01..SEC-30; the 19 Info findings, six of which block sepolia-beta/release-tag/mainnet gates (SEC-32/33/41/46/47/48), are invisible to a session that has only the prompt, and the table has no closing-WS or owner-gate column (VERIFIED security_findings.json + ws_registry.json mapping).",
+  "severity": "major"
+ },
+ {
+  "id": "H2-30",
+  "file": "GHOSTPAY_FEATURE_COMPLETION_EXECUTION_PROMPT.md",
+  "find": "| OD-01 | Re-auth for vault-less seller sessions | Secret export refuses unless an encrypted vault exists (re-auth = vault passphrase); sweep warns |",
+  "replace": "| OD-01 | Re-auth for vault-less seller sessions | New spec-18 secret exports (K03–K06 encrypted and raw keys, archive) refuse in vault-less sessions (re-auth = vault passphrase via `requireStepUp`); the existing encrypted keystore v1 backup and vault creation stay available with disclosure (constraint 4: a vault-less seller must always be able to make an encrypted backup); sweep unchanged but warned |",
+  "reason": "VERIFIED apps/web/src/views/SellerKeys.tsx:205-231 @7a620ff1: the keystore v1 download (the only encrypted backup of in-memory keys, and the verified-backup gate) goes through authorizeKeyExport. 'Refuses unless a vault exists' blocks it or forces a vault on the shared github.io origin (SEC-01). BLOCKERS OD-01 and SEC-03 were corrected at 08:00Z; the prompt was not.",
+  "severity": "major"
+ },
+ {
+  "id": "H2-31",
+  "file": "GHOSTPAY_FEATURE_COMPLETION_EXECUTION_PROMPT.md",
+  "find": "| OD-15 | #204 scope / merge order | Port #204 as a separate reviewable commit (section 8.1) |",
+  "replace": "| OD-15 | #204 scope / merge order | #204 was re-integrated as open PR #206: do not port again; adopt #206 once the owner merges it; port per section 8.1 only if #206 is closed unmerged |",
+  "reason": "Aligns with BLOCKERS OD-15 (08:00Z) and H2-26.",
+  "severity": "major"
+ },
+ {
+  "id": "H2-32",
+  "file": "GHOSTPAY_FEATURE_COMPLETION_EXECUTION_PROMPT.md",
+  "find": "Keep today's behaviour (unshipped languages already labelled, `LanguagePicker.tsx:19-23`);",
+  "replace": "Keep today's behaviour (unshipped languages already labelled, `apps/web/src/i18n/LanguagePicker.tsx:19-23`; do not trim the selector, that is the owner's OD-16 choice);",
+  "reason": "Full path (VERIFIED) and explicit no-trim rule; PLAN/SEQUENCE/registry WS-12.3 currently say the opposite (H2-60..64).",
+  "severity": "minor"
+ },
+ {
+  "id": "H2-33",
+  "file": "GHOSTPAY_FEATURE_COMPLETION_EXECUTION_PROMPT.md",
+  "find": "| OD-21 | Operator-run optional services | Stay optional/experimental, out of lean |",
+  "replace": "| OD-21 | Operator-run optional services | Stay optional/experimental, out of lean |\n| OD-23 | Accept documented limitations (owner-ack rows F-WEB-04, F-WEB-06, F-WEB-26, F-CLI-06) | Document each limitation in docs/user and the spec; the row stays unfinished in the report; never record an owner acknowledgement on the owner's behalf |",
+  "reason": "The owner-ack rows have no canonical ID (IMPLEMENTATION_SEQUENCE section 0), so the owner cannot find or answer them; BLOCKERS gets the matching OD-23 row (H2-79).",
+  "severity": "major"
+ },
+ {
+  "id": "H2-34",
+  "file": "GHOSTPAY_FEATURE_COMPLETION_EXECUTION_PROMPT.md",
+  "find": "| OA-01..OA-07 | Branch protection/rulesets, merge #203, release keys,",
+  "replace": "| OA-01..OA-07 | Branch protection/rulesets, merge #203 (OA-02 done 2026-11-18T06:56:49Z, `5467c158`), release keys,",
+  "reason": "OA-02 is done (BLOCKERS 08:00Z).",
+  "severity": "minor"
+ },
+ {
+  "id": "H2-35",
+  "file": "GHOSTPAY_FEATURE_COMPLETION_EXECUTION_PROMPT.md",
+  "find": "owner chain (OD-06 → OD-07 → OA-03 → OD-08 → OA-01 → OA-02 → OA-05 → OA-04 →\nOA-06) → WS-05.4 evidence → WS-04.6 live smoke → CP-7.",
+  "replace": "owner chain (OD-06 → OD-07 → OA-03 → OD-08 → OA-01 → [OA-02 done] → OA-05 → OA-04 Sepolia\nbroadcast) → WS-05.4 evidence + owner-signed manifest bundled → OA-06 Pages dispatch → WS-04.6 live smoke → CP-7.",
+  "reason": "The Pages dispatch (OA-06) must come after WS-05.4 bundles the signed manifest (IMPLEMENTATION_SEQUENCE 3a order); the prompt put OA-06 before WS-05.4.",
+  "severity": "minor"
+ },
+ {
+  "id": "H2-36",
+  "file": "GHOSTPAY_FEATURE_COMPLETION_EXECUTION_PROMPT.md",
+  "find": "| BR-07 | Vault-less sweep/export: refuse or disclose (SEC-03 beta item) | OPEN (`authorizeKeyExport` returns undefined) | WS-07.1 (default: refuse secret export, warn sweep) |",
+  "replace": "| BR-07 | Vault-less sweep/export: refuse or disclose (SEC-03 beta item) | OPEN (`authorizeKeyExport` returns undefined) | WS-07.1/07.2 (default: new spec-18 secret exports refuse without a vault; keystore v1 backup stays available with disclosure; sweep warned) |",
+  "reason": "Same OD-01 alignment as H2-30.",
+  "severity": "major"
+ },
+ {
+  "id": "H2-37",
+  "file": "GHOSTPAY_FEATURE_COMPLETION_EXECUTION_PROMPT.md",
+  "find": "| BR-09 | Strict on-chain verifier for Pay/Scan/Sweep, CLI, relayer (G-NOTE-01) + dual-provider readback (F-WEB-17) |",
+  "replace": "| BR-09 | Strict on-chain verifier for Pay/Scan/Sweep, CLI, relayer (G-NOTE-01) + dual-provider readback when the user configured a secondary RPC (opt-in; never a built-in default or automatic fallback) (F-WEB-17) |",
+  "reason": "Constraint 3 (explicit RPC selection, no fallback): FEATURE_ACCEPTANCE_CRITERIA F-WEB-17 says 'with a secondary RPC configured'; the prompt/plan wording reads as a mandatory second provider.",
+  "severity": "minor"
+ },
+ {
+  "id": "H2-38",
+  "file": "GHOSTPAY_FEATURE_COMPLETION_EXECUTION_PROMPT.md",
+  "find": "| BR-21 | #203 merged (merge/ff, never squash) so pages.yml/release.yml on main carry the gates | OWNER | OA-01 then OA-02 |",
+  "replace": "| BR-21 | #203 merged (merge/ff, never squash) so pages.yml/release.yml on main carry the gates | DONE after the snapshot: merge commit `5467c158` 2026-11-18T06:56:49Z (tree == `71abc7e5`); OA-01 still UNVERIFIED | OA-02 done; OA-01 |",
+  "reason": "Drift (H2-03).",
+  "severity": "minor"
+ },
+ {
+  "id": "H2-39",
+  "file": "GHOSTPAY_FEATURE_COMPLETION_EXECUTION_PROMPT.md",
+  "find": "Count: 23 start + 9 exit items; 24 engineering-open/partial, 6 owner-only, 1 done (BR-11), BR-04 UNVERIFIED.",
+  "replace": "Count: 23 start + 9 exit items; 24 engineering-open/partial, 5 owner-only, 2 done (BR-11, BR-21), BR-04 UNVERIFIED.",
+  "reason": "Follows H2-38.",
+  "severity": "minor"
+ },
+ {
+  "id": "H2-40",
+  "file": "GHOSTPAY_FEATURE_COMPLETION_EXECUTION_PROMPT.md",
+  "find": "it executes only WS-00,\nWS-20 and WS-22 and never implements product features or reviews its own work.",
+  "replace": "it executes only WS-00,\nWS-20 and WS-22 and never implements product features or reviews its own work.\n**Tiers:** strongest = Claude Opus 5.5 (`claude-opus-5-5`) at effort `xhigh`; mid = Opus 5.5 at effort `high`; cheap = Opus\n5.5 at effort `medium`. The API default effort of Opus 5.5 is `medium`, so set the effort explicitly wherever the harness\nexposes it (sub-agents otherwise inherit the session setting: keep the session at `xhigh`); use a smaller model only if the\nowner allows it; RV-CRYPTO/RV-SEC/RV-REL reviews and both two-key reviews are always strongest; if a tier cannot be\nselected, use strongest.\n**Integration worktree:** the integration branch is your designated branch in the main checkout (section 5 step 3). Skip the\nplan's `git worktree add ../wt/WS-00-integration -b ws/WS-00-integration \"$START\"` (PLAN 2, WS-00.1) and the card branches\n`ws/WS-00-rebaseline`, `ws/WS-20-ci-release`, `ws/WS-22-tooling-deps`, which all point at that one worktree: coordinator\nWS work is committed on short-lived local branches cut from the integration tip (or directly on it) and merged `--no-ff`.",
+  "reason": "The registry/plan use strongest/mid/cheap tiers but nothing maps them to a model or effort (owner brief: Opus 5.5 / xhigh). PLAN 2 creates a second branch `ws/WS-00-integration` in `../wt/WS-00-integration`, which cannot hold the designated branch while the main checkout has it, and three coordinator WS share that worktree with three different branches (registry worktree/branch fields).",
+  "severity": "major"
+ },
+ {
+  "id": "H2-41",
+  "file": "GHOSTPAY_FEATURE_COMPLETION_EXECUTION_PROMPT.md",
+  "find": "Workers use local branches\n`ws/<WS-ID>-<slug>` in worktrees `../wt/<WS-ID>`;",
+  "replace": "Workers use local branches\n`ws/<WS-ID>-<slug>` in worktrees `../wt/<WS-ID>` (set up with `npm ci --ignore-scripts && npm run build:libs`; re-run\n`npm run build:libs` after every fast-forward to the integration tip, because workspace packages resolve each other through\ntheir built `dist`, `.github/actions/setup-node-libs/action.yml:20-22`);",
+  "reason": "A worker that fast-forwards onto another WS's library change (e.g. ux-vault) fails typecheck/tests without rebuilding dist.",
+  "severity": "minor"
+ },
+ {
+  "id": "H2-42",
+  "file": "GHOSTPAY_FEATURE_COMPLETION_EXECUTION_PROMPT.md",
+  "find": "(VERIFIED by run; negative test with injected overlaps detected 80 conflicts).\n- Frozen, nobody owns: `packages/contracts/src/**`, `packages/core-crypto/src/**`, `test-vectors/scheme1.json`.",
+  "replace": "(VERIFIED by run of the audit's unpackaged scratch `model.py`; its windows are per CP number, so items of CP-3 and CP-5 that\n  run concurrently are not compared; negative test with injected overlaps detected 80 conflicts).\n- A more specific owned path beats an overlapping glob of another WS: WS-09 `docs/user/master-backup-recovery.md` inside WS-02\n  `docs/user/**`; WS-08 `apps/web/src/views/PaymentDetails*.test.tsx` inside WS-10 `apps/web/src/views/Pay*.test.tsx`.\n- Frozen, nobody owns: `packages/contracts/src/**`, `packages/core-crypto/src/**`, `test-vectors/scheme1.json`. Changing one\n  needs owner approval + re-review (record an owner question). No K01-K06 item needs it: spec 18 uses only the exported\n  core-crypto API (`deriveStealthSecret`, `checkAnnouncement`, `unsafeRevealSecret`, `zeroize`, `secretScalarFromBytes`;\n  `packages/core-crypto/src/index.ts:7-15`, VERIFIED @7a620ff1).",
+  "reason": "Independent overlap check (H2 ownership_H2.py) found two glob overlaps between WS that the plan runs concurrently (CP-2->CP-4 window: WS-08 with WS-10; WS-02.7/02.8 with WS-09.1). The validator script is not in the package. The frozen-path rule lacked the escalation path; spec 18 needs no frozen-path edit (VERIFIED exports).",
+  "severity": "minor"
+ },
+ {
+  "id": "H2-43",
+  "file": "GHOSTPAY_FEATURE_COMPLETION_EXECUTION_PROMPT.md",
+  "find": "| WS-90 | Experimental (45) + future (43): keep separate / defer |",
+  "replace": "| WS-90 | Experimental (45 rows incl. complete F-NET-04; 44 unfinished) + future (43): keep separate / defer |",
+  "reason": "WS-90's experimental list includes the VERIFIED_COMPLETE F-NET-04 (registry check); section 7.4 says 44 unfinished.",
+  "severity": "minor"
+ },
+ {
+  "id": "H2-44",
+  "file": "GHOSTPAY_FEATURE_COMPLETION_EXECUTION_PROMPT.md",
+  "find": "weakened gate/verifier/CSP;",
+  "replace": "weakened gate/verifier/CSP (one reviewed exception: if WS-01.1 keeps local-proxy mode in the full/self-host profile,\n  that profile's CSP may add only `http://127.0.0.1:*`, `http://localhost:*`, `http://[::1]:*` to `connect-src` (BLOCKERS\n  TB-02); the lean CSP is never widened; the default is to remove the mode);",
+  "reason": "BLOCKERS TB-02 (08:00Z) now prescribes loopback origins with any port because a static meta CSP cannot be narrowed to the chosen port; the reviewer rule 'weakened CSP = blocking' would reject that fix. Make the single allowed widening explicit.",
+  "severity": "major"
+ },
+ {
+  "id": "H2-45",
+  "file": "GHOSTPAY_FEATURE_COMPLETION_EXECUTION_PROMPT.md",
+  "find": "# G-FULL — run from the worktree root on the exact SHA being qualified; record exit codes + pass/skip counts\nnpm run typecheck",
+  "replace": "# G-FULL — run from the worktree root on the exact SHA being qualified; record exit codes + pass/skip counts\n: \"${START:?set START to START_SHA or to the last origin/main merged into the integration branch}\"   # used by the frozen-path line\nnpm run typecheck",
+  "reason": "`$SOLC_0828` and `$START` were never defined in the prompt. With SOLC_BIN empty, apps/web/src/features/registry/registry.anvil.test.ts:16-18,61-62 fails under REQUIRE_ANVIL=1 (process.env value '' is not nullish), so G-FULL goes red for environment reasons.",
+  "severity": "major"
+ },
+ {
+  "id": "H2-46",
+  "file": "GHOSTPAY_FEATURE_COMPLETION_EXECUTION_PROMPT.md",
+  "find": "(cd packages/contracts && forge build --sizes && forge test && forge fmt --check && forge snapshot --check --no-match-test \"testFuzz|invariant\")\nnpm run ci:scan-secrets",
+  "replace": "(cd packages/contracts && forge build --sizes && forge test && forge fmt --check && forge snapshot --check --no-match-test \"testFuzz|invariant\")\n(cd packages/pool-contracts && forge build --sizes && forge test && forge fmt --check)    # ci.yml:473-506; baseline 86/0\n(cd packages/payer-hiding-contracts && bash scripts/fetch-entrypoint.sh && forge build --sizes && forge test && forge fmt --check)   # baseline 109/0\nnode --test examples/merchant-checkout/money.test.mjs examples/pos-terminal/parity.test.mjs   # ci.yml:111\npython3 scripts/tests/audit-permissions.test.py                                   # ci.yml:553\nnpm run ci:scan-secrets",
+  "reason": "G-FULL omitted three CI test steps (two Foundry projects that section 4's baseline cites as 86/0 and 109/0, the examples tests and the python audit test), so a local CP could pass while PR CI fails.",
+  "severity": "minor"
+ },
+ {
+  "id": "H2-47",
+  "file": "GHOSTPAY_FEATURE_COMPLETION_EXECUTION_PROMPT.md",
+  "find": "ANVIL_BIN=$(command -v anvil) npm test -w packages/confidential-contracts   # hardhat; needs binaries.soliditylang.org (blocked here: HH502)",
+  "replace": "ANVIL_BIN=$(command -v anvil) npm test -w packages/confidential-contracts   # hardhat; needs binaries.soliditylang.org (HH502 in the audit environment -> then CI-only, UNVERIFIED locally)",
+  "reason": "'blocked here' refers to the audit container, not the reader's.",
+  "severity": "minor"
+ },
+ {
+  "id": "H2-48",
+  "file": "GHOSTPAY_FEATURE_COMPLETION_EXECUTION_PROMPT.md",
+  "find": "| CP | Meaning | Gate = G-FULL + |\n|---|---|---|",
+  "replace": "Planned files (absent at `7a620ff1`, VERIFIED): `scripts/agent/workspaces.test.mjs` (#204/#206), `scripts/tests/privacy-claims.test.mjs`\n(WS-02.1), `tools/independent-recovery/` (WS-19.1; reconcile with #213 `scripts/recovery/` first), `scripts/testnet/sign-manifest.mjs`\n(WS-05.1), `check-chain-matrix.mjs --revalidate --rpc` (WS-05.3; today only `[--release]`), `apps/web/src/lib/stepUp.ts` (WS-07.2).\nA gate naming one of them applies once its item has merged.\n\n| CP | Meaning | Gate = G-FULL + |\n|---|---|---|",
+  "reason": "A fresh session running the CP table at START would see 'missing file' failures and could not tell planned from broken.",
+  "severity": "minor"
+ },
+ {
+  "id": "H2-49",
+  "file": "GHOSTPAY_FEATURE_COMPLETION_EXECUTION_PROMPT.md",
+  "find": "`python3 -I docs/handoffs/post-consolidation-20261118/evidence/scripts/branch_census.py` (needs the package files\nfrom `nodata/zealous-hopper-lr0nxe`)",
+  "replace": "`git show origin/nodata/zealous-hopper-lr0nxe:docs/handoffs/post-consolidation-20261118/evidence/scripts/branch_census.py >\n\"$TMPDIR/branch_census.py\" && python3 -I \"$TMPDIR/branch_census.py\" \"$PWD\" <START_SHA> \"$(git rev-parse origin/main)\"\n\"$TMPDIR/census.json\"` (usage `<repo> <candidate_sha> <main_sha> <out_json>`; needs `refs/remotes/pr/*` from section 5 step 1)",
+  "reason": "VERIFIED evidence/scripts/branch_census.py:3,10: four positional arguments are required; the documented call has none and the script is not in the integration branch's tree.",
+  "severity": "minor"
+ },
+ {
+  "id": "H2-50",
+  "file": "GHOSTPAY_FEATURE_COMPLETION_EXECUTION_PROMPT.md",
+  "find": "1. `git fetch --all --prune` and `git fetch origin '+refs/pull/*/head:refs/remotes/pr/*'`.",
+  "replace": "1. `git rev-parse --is-shallow-repository` (if `true`: `git fetch --unshallow origin`), then `git fetch --all --prune` and\n   `git fetch origin '+refs/pull/*/head:refs/remotes/pr/*'`.",
+  "reason": "The unshallow check sat only in the drift checks, after the first fetch; this audit's own census was wrong in a shallow clone.",
+  "severity": "minor"
+ },
+ {
+  "id": "H2-51",
+  "file": "GHOSTPAY_FEATURE_COMPLETION_EXECUTION_PROMPT.md",
+  "find": "only contract and devnet gates are blocked, not unrelated work.",
+  "replace": "only contract and devnet gates are blocked, not unrelated work (run the `REQUIRE_ANVIL=1` lines of G-FULL without\n   `REQUIRE_ANVIL`, record the anvil suites as UNVERIFIED locally and take them from the PR's CI run).",
+  "reason": "Without Foundry the apps/web REQUIRE_ANVIL line fails, so 'only contract gates are blocked' was not true as written.",
+  "severity": "minor"
+ },
+ {
+  "id": "H2-52",
+  "file": "GHOSTPAY_FEATURE_COMPLETION_EXECUTION_PROMPT.md",
+  "find": "`git show FETCH_HEAD:docs/handoffs/post-consolidation-20261118/<file>`).",
+  "replace": "`git show FETCH_HEAD:docs/handoffs/post-consolidation-20261118/<file>`; whole package: `mkdir -p \"$TMPDIR/pkg\" && git archive\nFETCH_HEAD docs/handoffs/post-consolidation-20261118 | tar -x -C \"$TMPDIR/pkg\"`; once PR #205 is merged, read the same path on\n`main`).",
+  "reason": "Most package files are needed as a set (registry, criteria, scripts); FETCH_HEAD is overwritten by later fetches.",
+  "severity": "minor"
+ },
+ {
+  "id": "H2-53",
+  "file": "GHOSTPAY_FEATURE_COMPLETION_EXECUTION_PROMPT.md",
+  "find": "- Checkpoint gate (every CP and before each push): `npm run typecheck`; `npm run lint`; `npm test`; lean + full web\n  builds; Playwright lean + full; `forge test` in `packages/contracts` when contracts or tooling changed;\n  `npm run ci:scan-secrets`; `npm run ci:check-actions`; `node --test` script suites touched; then the PR's GitHub CI\n  green on the pushed head.",
+  "replace": "- Checkpoint gate (every CP): G-FULL (section 12) on the exact SHA plus the CP row's extra commands. Before each push at\n  least `npm run typecheck`, `npm run lint`, the touched workspaces' tests with the G-FULL anvil policy,\n  `npm run ci:scan-secrets` and `npm run ci:check-actions`. Then the PR's GitHub CI green on the pushed head.",
+  "reason": "Two different 'checkpoint gate' definitions (section 12 G-FULL vs section 13 list with plain `npm test`, which silently skips the anvil suites).",
+  "severity": "minor"
+ },
+ {
+  "id": "H2-54",
+  "file": "GHOSTPAY_FEATURE_COMPLETION_EXECUTION_PROMPT.md",
+  "find": "workers send a\n   patch request in their handoff instead of editing.",
+  "replace": "workers request the\n   change as one separate `coord-request(<WS>)` commit of append-only hunks in their branch (section 12), which the\n   coordinator re-applies or merges.",
+  "reason": "Contradicted section 12 (coord-request commit) and PLAN 3.2.",
+  "severity": "minor"
+ },
+ {
+  "id": "H2-55",
+  "file": "GHOSTPAY_FEATURE_COMPLETION_EXECUTION_PROMPT.md",
+  "find": "4. Push the integration branch at every checkpoint.",
+  "replace": "4. Push the integration branch after every merge, not only at checkpoints: it is the only durable copy of the work (a\n   container restart lost Team G's results during this audit).",
+  "reason": "Checkpoints are days apart (CP-1 at 4-8 d); an unpushed rolling merge is lost on a container restart.",
+  "severity": "major"
+ },
+ {
+  "id": "H2-56",
+  "file": "GHOSTPAY_FEATURE_COMPLETION_EXECUTION_PROMPT.md",
+  "find": "Workers end with a handoff block in Caveman format: TASK | SCOPE | CONSTRAINTS | RESULT | EVIDENCE | BLOCKERS plus\ntheir branch head SHA.",
+  "replace": "Workers end every item with the section 12 HANDOFF block, Caveman-compressed (the `TASK | SCOPE | CONSTRAINTS | RESULT |\nEVIDENCE | BLOCKERS` layout is only the brief fallback of section 1). Worker branches are local and never pushed, so at least\nevery 4 hours of worker time, before any long step and before context compaction, export each active worker branch\n(`git -C ../wt/<WS-ID> format-patch <base>..HEAD -o <repo>/docs/handoffs/next-phase-20261118/wip/<WS-ID>/`), commit the patches\non the integration branch as documentation only (never applied before review; deleted when the item merges) and push;\nHANDOFF.md records the restore command (`git am`).",
+  "reason": "Two conflicting worker handoff formats; and multi-day worker items (WS-08.1 6-10 d) exist only in unpushed local worktrees, so a container restart loses them.",
+  "severity": "major"
+ },
+ {
+  "id": "H2-57",
+  "file": "GHOSTPAY_FEATURE_COMPLETION_EXECUTION_PROMPT.md",
+  "find": "- CI unavailable: run the equivalent local commands, record \"local only\", keep the gate open until CI confirms.",
+  "replace": "- CI unavailable: run the equivalent local commands, record \"local only\", keep the gate open until CI confirms.\n- Container restart / lost local state: re-clone (not shallow), redo section 5 steps 1-4 on the pushed integration branch,\n  restore worker WIP from `docs/handoffs/next-phase-20261118/wip/` with `git am`, re-read ACTIVE_WORK.md, HANDOFF.md and the\n  latest CP-n.md, then continue.",
+  "reason": "Owner brief asks for durable handoffs; restart recovery was absent from the prompt.",
+  "severity": "minor"
+ },
+ {
+  "id": "H2-58",
+  "file": "GHOSTPAY_FEATURE_COMPLETION_EXECUTION_PROMPT.md",
+  "find": "Final report: START_SHA,\nintegration HEAD, PR link,",
+  "replace": "Final report (also committed as\n`docs/handoffs/next-phase-20261118/FINAL.md` and summarized in the PR body): START_SHA, integration HEAD, PR link,",
+  "reason": "A chat-only final report is not durable.",
+  "severity": "minor"
+ },
+ {
+  "id": "H2-59",
+  "file": "PARALLEL_AGENT_EXECUTION_PLAN.md",
+  "find": "git worktree add ../wt/WS-00-integration -b ws/WS-00-integration \"$START\"\nmkdir -p ../wt/WS-00-integration/docs/handoffs/next-phase-20261118 && echo \"START=$START\" >> ../wt/WS-00-integration/docs/handoffs/next-phase-20261118/BASELINE.md",
+  "replace": "DESIGNATED=<the session's designated branch>   # the integration branch; never a second branch or worktree\ngit checkout -B \"$DESIGNATED\" \"$START\"          # main checkout; only before its first push\nmkdir -p docs/handoffs/next-phase-20261118 && echo \"START=$START\" >> docs/handoffs/next-phase-20261118/BASELINE.md",
+  "reason": "Not executable under the prompt's naming rule: the designated branch is already checked out in the main checkout, so `git worktree add ... -b <designated>` fails, and a literal `ws/WS-00-integration` branch would never be pushed.",
+  "severity": "major"
+ },
+ {
+  "id": "H2-60",
+  "file": "PARALLEL_AGENT_EXECUTION_PLAN.md",
+  "find": "selector lists only shipped locales (OD-16 default).",
+  "replace": "selector stays as today: every listed locale labelled machine-drafted/no catalog (`apps/web/src/i18n/LanguagePicker.tsx:19-23`); trimming it to shipped locales is the owner's OD-16 choice.",
+  "reason": "Contradicts the prompt's OD-16 default and BLOCKERS OD-16 ('Keep today's behaviour'); a worker following the card would decide an owner item (prompt section 3).",
+  "severity": "major"
+ },
+ {
+  "id": "H2-61",
+  "file": "PARALLEL_AGENT_EXECUTION_PLAN.md",
+  "find": "UB: OD-16 fail-closed default: selector lists only shipped locales; OD-20,OD-16",
+  "replace": "UB: OD-16 default = keep today's labelled selector (no trim); OD-20,OD-16",
+  "reason": "Same as H2-60.",
+  "severity": "major"
+ },
+ {
+  "id": "H2-62",
+  "file": "IMPLEMENTATION_SEQUENCE.md",
+  "find": "UB: OD-16 fail-closed default: selector lists only shipped locales; OD-20,OD-16",
+  "replace": "UB: OD-16 default = keep today's labelled selector (no trim); OD-20,OD-16",
+  "reason": "Same as H2-60.",
+  "severity": "major"
+ },
+ {
+  "id": "H2-63",
+  "file": "IMPLEMENTATION_SEQUENCE.md",
+  "find": "| OD-16 locales | Selector lists only shipped locales; es/ar/ja labelled drafts | WS-12.3 |",
+  "replace": "| OD-16 locales | Keep today's labelled selector (machine-drafted / no-catalog notes); es/ar/ja labelled drafts; no trim | WS-12.3 |",
+  "reason": "Same as H2-60.",
+  "severity": "major"
+ },
+ {
+  "id": "H2-64",
+  "file": "ws_registry.json",
+  "find": "selector lists only shipped locales (OD-16 default).",
+  "replace": "selector stays as today, every listed locale labelled machine-drafted or no catalog (apps/web/src/i18n/LanguagePicker.tsx:19-23); trimming it is the owner's OD-16 choice.",
+  "reason": "Same as H2-60 (registry objectives).",
+  "severity": "major"
+ },
+ {
+  "id": "H2-65",
+  "file": "ws_registry.json",
+  "find": "\"OD-16 fail-closed default: selector lists only shipped locales\"",
+  "replace": "\"OD-16 default: keep the labelled selector (no trim)\"",
+  "reason": "Same as H2-60 (registry WS-12.3 unblocked reason).",
+  "severity": "major"
+ },
+ {
+  "id": "H2-66",
+  "file": "FEATURE_DEPENDENCY_GRAPH.md",
+  "find": "| OD-16 | locale policy | selector lists only shipped locales |",
+  "replace": "| OD-16 | locale policy | keep today's labelled selector (no trim; `apps/web/src/i18n/LanguagePicker.tsx:19-23`) |",
+  "reason": "Same as H2-60.",
+  "severity": "major"
+ },
+ {
+  "id": "H2-67",
+  "file": "PARALLEL_AGENT_EXECUTION_PLAN.md",
+  "find": "UB: floor for new formats per OD-09 (default: score>=3 or generated); OD-09",
+  "replace": "UB: floor for new formats per OD-09 default (WS-18 `high` tier: generated diceware default or ≈80-bit estimate; never score>=3 alone); OD-09",
+  "reason": "WS-03.2's status text sets a weaker floor than OD-09's default (prompt section 10 and BLOCKERS: generated diceware, about 80 bits) and than WS-18's `high` tier; the same item text even says 'passphrase tier high from WS-18'. A K02 envelope built to 'score>=3' would ship master/raw-key exports below the decided floor.",
+  "severity": "major"
+ },
+ {
+  "id": "H2-68",
+  "file": "IMPLEMENTATION_SEQUENCE.md",
+  "find": "UB: floor for new formats per OD-09 (default: score>=3 or generated); OD-09",
+  "replace": "UB: floor for new formats per OD-09 default (WS-18 `high` tier: generated diceware default or ≈80-bit estimate; never score>=3 alone); OD-09",
+  "reason": "WS-03.2's status text sets a weaker floor than OD-09's default (prompt section 10 and BLOCKERS: generated diceware, about 80 bits) and than WS-18's `high` tier; the same item text even says 'passphrase tier high from WS-18'. A K02 envelope built to 'score>=3' would ship master/raw-key exports below the decided floor.",
+  "severity": "major"
+ },
+ {
+  "id": "H2-69",
+  "file": "ws_registry.json",
+  "find": "floor for new formats per OD-09 (default: score>=3 or generated)",
+  "replace": "floor for new formats per OD-09 default (WS-18 high tier: generated diceware default or ~80-bit estimate; never score>=3 alone)",
+  "reason": "WS-03.2's status text sets a weaker floor than OD-09's default (prompt section 10 and BLOCKERS: generated diceware, about 80 bits) and than WS-18's `high` tier; the same item text even says 'passphrase tier high from WS-18'. A K02 envelope built to 'score>=3' would ship master/raw-key exports below the decided floor.",
+  "severity": "major"
+ },
+ {
+  "id": "H2-70",
+  "file": "completion_strategy.json",
+  "find": "floor for new formats per OD-09 (default: score>=3 or generated)",
+  "replace": "floor for new formats per OD-09 default (WS-18 high tier: generated diceware default or ~80-bit estimate; never score>=3 alone)",
+  "reason": "WS-03.2's status text sets a weaker floor than OD-09's default (prompt section 10 and BLOCKERS: generated diceware, about 80 bits) and than WS-18's `high` tier; the same item text even says 'passphrase tier high from WS-18'. A K02 envelope built to 'score>=3' would ship master/raw-key exports below the decided floor.",
+  "severity": "major"
+ },
+ {
+  "id": "H2-71",
+  "file": "PARALLEL_AGENT_EXECUTION_PLAN.md",
+  "find": "authorizeKeyExport refuses when no vault (today returns undefined, keyVault.ts:257-266); keyVault.test.ts:241 \"no step-up\" pin replaced by refusal tests;",
+  "replace": "keep `authorizeKeyExport` returning undefined for the keystore v1 backup in vault-less sessions (keyVault.ts:257-266; it is the only encrypted backup of in-memory keys, BLOCKERS OD-01) and add a disclosure + typed confirmation before that download; keyVault.test.ts:241 pin kept and extended (vault-less v1 backup allowed after confirmation; keys tied to a vault need its passphrase); new spec-18 exports refuse without a vault through WS-07.2 `requireStepUp`;",
+  "reason": "VERIFIED SellerKeys.tsx:205-231 @7a620ff1: the keystore v1 download calls authorizeKeyExport; refusing without a vault blocks the first (and verified) backup of freshly generated or imported keys, or forces vault storage on the shared github.io origin (SEC-01). BLOCKERS OD-01 and SEC-03 were corrected at 08:00Z ('never block the keystore v1 backup').",
+  "severity": "major"
+ },
+ {
+  "id": "H2-72",
+  "file": "IMPLEMENTATION_SEQUENCE.md",
+  "find": "authorizeKeyExport refuses when no vault (today returns undefined, keyVault.ts:257-266); keyVault.test.ts:241 \"no step-up\" pin replaced by refusal tests;",
+  "replace": "keep `authorizeKeyExport` returning undefined for the keystore v1 backup in vault-less sessions (keyVault.ts:257-266; it is the only encrypted backup of in-memory keys, BLOCKERS OD-01) and add a disclosure + typed confirmation before that download; keyVault.test.ts:241 pin kept and extended (vault-less v1 backup allowed after confirmation; keys tied to a vault need its passphrase); new spec-18 exports refuse without a vault through WS-07.2 `requireStepUp`;",
+  "reason": "VERIFIED SellerKeys.tsx:205-231 @7a620ff1: the keystore v1 download calls authorizeKeyExport; refusing without a vault blocks the first (and verified) backup of freshly generated or imported keys, or forces vault storage on the shared github.io origin (SEC-01). BLOCKERS OD-01 and SEC-03 were corrected at 08:00Z ('never block the keystore v1 backup').",
+  "severity": "major"
+ },
+ {
+  "id": "H2-73",
+  "file": "ws_registry.json",
+  "find": "authorizeKeyExport refuses when no vault (today returns undefined, keyVault.ts:257-266); keyVault.test.ts:241 \\\"no step-up\\\" pin replaced by refusal tests;",
+  "replace": "keep authorizeKeyExport returning undefined for the keystore v1 backup in vault-less sessions (keyVault.ts:257-266; the only encrypted backup of in-memory keys, BLOCKERS OD-01) and add a disclosure + typed confirmation before that download; keyVault.test.ts:241 pin kept and extended; new spec-18 exports refuse without a vault through WS-07.2 requireStepUp;",
+  "reason": "Same as H2-71 (registry WS-07.1 'what').",
+  "severity": "major"
+ },
+ {
+  "id": "H2-74",
+  "file": "PARALLEL_AGENT_EXECUTION_PLAN.md",
+  "find": "No secret export without re-authentication: vault-less sessions refuse master-keystore/raw/archive export (OD-01 default (a)); sweep unchanged but warned; one step-up API that K03-K06 consume.",
+  "replace": "No new secret export without re-authentication: vault-less sessions refuse the spec-18 exports (K03-K06 encrypted and raw keys, archive) through one step-up API that K03-K06 consume (OD-01 default); the existing encrypted keystore v1 backup and vault creation stay available with disclosure (constraint 4; BLOCKERS OD-01); sweep unchanged but warned.",
+  "reason": "Same as H2-71 (WS-07 objective).",
+  "severity": "major"
+ },
+ {
+  "id": "H2-75",
+  "file": "ws_registry.json",
+  "find": "No secret export without re-authentication: vault-less sessions refuse master-keystore/raw/archive export (OD-01 default (a)); sweep unchanged but warned; one step-up API that K03-K06 consume.",
+  "replace": "No new secret export without re-authentication: vault-less sessions refuse the spec-18 exports (K03-K06 encrypted and raw keys, archive) through one step-up API that K03-K06 consume (OD-01 default); the existing encrypted keystore v1 backup and vault creation stay available with disclosure (constraint 4; BLOCKERS OD-01); sweep unchanged but warned.",
+  "reason": "Same as H2-74 (registry).",
+  "severity": "major"
+ },
+ {
+  "id": "H2-76",
+  "file": "PARALLEL_AGENT_EXECUTION_PLAN.md",
+  "find": "- **Handoff +** refusal matrix: session {vault, vault-less} × export {keystore, raw, archive, sweep} × factor {none, wrong, right}",
+  "replace": "- **Handoff +** refusal matrix: session {vault, vault-less} × export {keystore v1 backup, raw, archive, K03/K06, sweep} × factor {none, wrong, right}; vault-less keystore v1 backup = allowed after disclosure + typed confirmation (BLOCKERS OD-01), every other vault-less secret export = refused, sweep = warned",
+  "reason": "Same as H2-71.",
+  "severity": "major"
+ },
+ {
+  "id": "H2-77",
+  "file": "IMPLEMENTATION_SEQUENCE.md",
+  "find": "| OD-01 re-auth (vault-less) | Secret export (master keystore, raw key, archive, K03–K06) refuses without encrypted-vault re-auth; sweep unchanged but warned; disclosure copy |",
+  "replace": "| OD-01 re-auth (vault-less) | New spec-18 secret exports (K03–K06 encrypted and raw keys, archive) refuse without encrypted-vault re-auth; the keystore v1 backup and vault creation stay available with disclosure (BLOCKERS OD-01, constraint 4); sweep unchanged but warned |",
+  "reason": "Same as H2-71.",
+  "severity": "major"
+ },
+ {
+  "id": "H2-78",
+  "file": "IMPLEMENTATION_SEQUENCE.md",
+  "find": "| BR-07 | Vault-less sweep/export: refuse or disclose (SEC-03 beta item) | OPEN (`authorizeKeyExport` returns undefined) | WS-07.1 (default: refuse secret export, warn sweep) |",
+  "replace": "| BR-07 | Vault-less sweep/export: refuse or disclose (SEC-03 beta item) | OPEN (`authorizeKeyExport` returns undefined) | WS-07.1/07.2 (default: new spec-18 secret exports refuse without a vault; keystore v1 backup stays available with disclosure; sweep warned) |",
+  "reason": "Same as H2-71.",
+  "severity": "major"
+ },
+ {
+  "id": "H2-80",
+  "file": "completion_strategy.json",
+  "find": "Refuse secret export (and warn on sweep) in vault-less sessions per the OD-01 default; offer vault creation; regression tests pin refusal",
+  "replace": "Refuse new spec-18 secret exports (and warn on sweep) in vault-less sessions per the OD-01 default; keep the keystore v1 backup available after disclosure + typed confirmation; offer vault creation; regression tests pin both",
+  "reason": "Same as H2-71 (F-KEY-01 implementation criteria).",
+  "severity": "major"
+ },
+ {
+  "id": "H2-81",
+  "file": "completion_strategy.json",
+  "find": "Sweep in vault-less sessions requires the OD-01 step-up path or an explicit vault prompt; e2e covers refuse/warn",
+  "replace": "Sweep in vault-less sessions stays available and shows the OD-01 warning with a vault-creation offer (default: sweep unchanged but warned); e2e covers the warning",
+  "reason": "F-WEB-11 criterion required a step-up/vault prompt, contradicting the OD-01 default 'sweep unchanged but warned'.",
+  "severity": "minor"
+ },
+ {
+  "id": "H2-82",
+  "file": "FEATURE_ACCEPTANCE_CRITERIA.md",
+  "find": "Vault-less session: every secret export refuses with an explicit \"create an encrypted vault\" path",
+  "replace": "Vault-less session: every new spec-18 secret export (K03-K06) refuses with an explicit \"create an encrypted vault\" path, while the existing encrypted keystore v1 backup stays available after a disclosure + typed confirmation (BLOCKERS OD-01; constraint 4)",
+  "reason": "Same as H2-71 (criteria section 8, F-KEY-01).",
+  "severity": "major"
+ },
+ {
+  "id": "H2-83",
+  "file": "FEATURE_ACCEPTANCE_CRITERIA.md",
+  "find": "vault-less sweep requires the OD-01 step-up or explicit vault prompt; e2e refuse/warn",
+  "replace": "vault-less sweep stays available with the OD-01 warning and a vault-creation offer (default: sweep unchanged but warned); e2e covers the warning",
+  "reason": "Same as H2-81 (criteria section 8, F-WEB-11).",
+  "severity": "minor"
+ },
+ {
+  "id": "H2-84",
+  "file": "PARALLEL_AGENT_EXECUTION_PLAN.md",
+  "find": "owner ack recorded (no canonical ID)",
+  "replace": "owner acknowledgement requested as OD-23 (engineering never records it)",
+  "reason": "An item that 'records' an owner acknowledgement which has no canonical ID treats silence as approval (BLOCKERS rule) and decides an owner item (prompt section 3).",
+  "severity": "major"
+ },
+ {
+  "id": "H2-85",
+  "file": "IMPLEMENTATION_SEQUENCE.md",
+  "find": "owner ack recorded (no canonical ID)",
+  "replace": "owner acknowledgement requested as OD-23 (engineering never records it)",
+  "reason": "An item that 'records' an owner acknowledgement which has no canonical ID treats silence as approval (BLOCKERS rule) and decides an owner item (prompt section 3).",
+  "severity": "major"
+ },
+ {
+  "id": "H2-86",
+  "file": "ws_registry.json",
+  "find": "owner ack recorded (no canonical ID)",
+  "replace": "owner acknowledgement requested as OD-23 (engineering never records it)",
+  "reason": "An item that 'records' an owner acknowledgement which has no canonical ID treats silence as approval (BLOCKERS rule) and decides an owner item (prompt section 3).",
+  "severity": "major"
+ },
+ {
+  "id": "H2-87",
+  "file": "PARALLEL_AGENT_EXECUTION_PLAN.md",
+  "find": "export internal or wired with tests); owner ack (no canonical ID)",
+  "replace": "export internal or wired with tests); owner acknowledgement requested as OD-23 (engineering never records it)",
+  "reason": "An item that 'records' an owner acknowledgement which has no canonical ID treats silence as approval (BLOCKERS rule) and decides an owner item (prompt section 3).",
+  "severity": "major"
+ },
+ {
+  "id": "H2-88",
+  "file": "IMPLEMENTATION_SEQUENCE.md",
+  "find": "export internal or wired with tests); owner ack (no canonical ID)",
+  "replace": "export internal or wired with tests); owner acknowledgement requested as OD-23 (engineering never records it)",
+  "reason": "An item that 'records' an owner acknowledgement which has no canonical ID treats silence as approval (BLOCKERS rule) and decides an owner item (prompt section 3).",
+  "severity": "major"
+ },
+ {
+  "id": "H2-89",
+  "file": "ws_registry.json",
+  "find": "export internal or wired with tests); owner ack (no canonical ID)",
+  "replace": "export internal or wired with tests); owner acknowledgement requested as OD-23 (engineering never records it)",
+  "reason": "An item that 'records' an owner acknowledgement which has no canonical ID treats silence as approval (BLOCKERS rule) and decides an owner item (prompt section 3).",
+  "severity": "major"
+ },
+ {
+  "id": "H2-79",
+  "file": "BLOCKERS_AND_DECISIONS.md",
+  "find": "\n\n## 2. Owner actions (OA)",
+  "replace": "\n| OD-23 | Accept documented limitations instead of implementing them (rows marked owner-ack: F-WEB-04 multi-tab duplicate payment not prevented; F-WEB-06 spec 02 rule 2 invoice-driven fallback infeasible; F-WEB-26 payeeTrust unwired; F-CLI-06 refund execute unsupported because it would need hosted signing) | Accept each / require implementation | Accept F-CLI-06 (constraint 1 requires it) and F-WEB-06 (infeasible by protocol); decide F-WEB-04 and F-WEB-26 per row | Engineering documents each limitation and keeps the row unfinished; it never records an owner acknowledgement itself | `completion_strategy.json` `owner_ack`; IMPLEMENTATION_SEQUENCE §0 | F-WEB-04, F-WEB-06, F-WEB-26, F-CLI-06 |\n\n## 2. Owner actions (OA)",
+  "reason": "The owner-ack decision exists in the plan (lost-team OD-16, 'no canonical ID') but not in BLOCKERS, so the owner cannot see or answer it.",
+  "severity": "major"
+ },
+ {
+  "id": "H2-90",
+  "file": "README.md",
+  "find": "(22 owner decisions, 7 owner actions,",
+  "replace": "(23 owner decisions, 7 owner actions,",
+  "reason": "Follows H2-79 (OD-23).",
+  "severity": "minor"
+ },
+ {
+  "id": "H2-91",
+  "file": "IMPLEMENTATION_SEQUENCE.md",
+  "find": "**IDs**: canonical only (OD-01..22,",
+  "replace": "**IDs**: canonical only (OD-01..23,",
+  "reason": "Follows H2-79.",
+  "severity": "minor"
+ },
+ {
+  "id": "H2-92",
+  "file": "ws_registry.json",
+  "find": "Canonical IDs only (OD-01..OD-22,",
+  "replace": "Canonical IDs only (OD-01..OD-23,",
+  "reason": "Follows H2-79.",
+  "severity": "minor"
+ },
+ {
+  "id": "H2-93",
+  "file": "PARALLEL_AGENT_EXECUTION_PLAN.md",
+  "find": "affected-only lint/typecheck on PRs (scripts/agent/affected.mjs from #204); cost-balanced shards; Mythril on nightly + tag only; lean+full e2e share one install. Required checks unchanged (typescript, contracts)",
+  "replace": "affected-only lint/typecheck only as an extra fast pre-check (the full lint/typecheck still runs on every PR); cost-balanced shards; Mythril and Echidna stay on every PR that touches their paths (contract-analysis.yml:3-12) and on nightly/tag; lean+full e2e share one install. No job, analyzer, test file or required check may stop running on PRs (prompt section 3)",
+  "reason": "VERIFIED .github/workflows/contract-analysis.yml:3-12 runs Echidna+Mythril on pull_request; moving Mythril to nightly+tag and making lint/typecheck affected-only remove PR security/quality gates, which prompt section 3 and PLAN 10 forbid; the CP-4 'Mythril report-only comparison (CI run id)' and section 13's 'Mythril record diff' for contract changes would lose their PR evidence.",
+  "severity": "major"
+ },
+ {
+  "id": "H2-94",
+  "file": "IMPLEMENTATION_SEQUENCE.md",
+  "find": "affected-only lint/typecheck on PRs (scripts/agent/affected.mjs from #204); cost-balanced shards; Mythril on nightly + tag only; lean+full e2e share one install. Required checks unchanged (typescript, contracts)",
+  "replace": "affected-only lint/typecheck only as an extra fast pre-check (the full lint/typecheck still runs on every PR); cost-balanced shards; Mythril and Echidna stay on every PR that touches their paths (contract-analysis.yml:3-12) and on nightly/tag; lean+full e2e share one install. No job, analyzer, test file or required check may stop running on PRs (prompt section 3)",
+  "reason": "VERIFIED .github/workflows/contract-analysis.yml:3-12 runs Echidna+Mythril on pull_request; moving Mythril to nightly+tag and making lint/typecheck affected-only remove PR security/quality gates, which prompt section 3 and PLAN 10 forbid; the CP-4 'Mythril report-only comparison (CI run id)' and section 13's 'Mythril record diff' for contract changes would lose their PR evidence.",
+  "severity": "major"
+ },
+ {
+  "id": "H2-95",
+  "file": "ws_registry.json",
+  "find": "affected-only lint/typecheck on PRs (scripts/agent/affected.mjs from #204); cost-balanced shards; Mythril on nightly + tag only; lean+full e2e share one install. Required checks unchanged (typescript, contracts)",
+  "replace": "affected-only lint/typecheck only as an extra fast pre-check (the full lint/typecheck still runs on every PR); cost-balanced shards; Mythril and Echidna stay on every PR that touches their paths (contract-analysis.yml:3-12) and on nightly/tag; lean+full e2e share one install. No job, analyzer, test file or required check may stop running on PRs (prompt section 3)",
+  "reason": "VERIFIED .github/workflows/contract-analysis.yml:3-12 runs Echidna+Mythril on pull_request; moving Mythril to nightly+tag and making lint/typecheck affected-only remove PR security/quality gates, which prompt section 3 and PLAN 10 forbid; the CP-4 'Mythril report-only comparison (CI run id)' and section 13's 'Mythril record diff' for contract changes would lose their PR evidence.",
+  "severity": "major"
+ },
+ {
+  "id": "H2-96",
+  "file": "PARALLEL_AGENT_EXECUTION_PLAN.md",
+  "find": "K04 raw key -> EIP-55 address == announced; transfer signed by the tool accepted by anvil (Foundry 1.8.5, synthetic keys)",
+  "replace": "K04 raw key -> EIP-55 address == announced (computed by the tool); the transfer is signed and sent with pinned Foundry 1.8.5 `cast` (the independent EVM implementation NEXT_PHASE_QUEUE K04 names) and accepted by anvil; synthetic keys only; the tool implements no transaction signing",
+  "reason": "NEXT_PHASE_QUEUE K04 and prompt section 13 require the spend proof 'via the independent tool (pinned Foundry cast/anvil)'; WS-19.5 instead has the new zero-dependency tool sign the transfer, i.e. a hand-rolled BigInt ECDSA + transaction encoder that users would run on real recovered keys (nonce/signature bugs leak keys).",
+  "severity": "major"
+ },
+ {
+  "id": "H2-97",
+  "file": "IMPLEMENTATION_SEQUENCE.md",
+  "find": "K04 raw key -> EIP-55 address == announced; transfer signed by the tool accepted by anvil (Foundry 1.8.5, synthetic keys)",
+  "replace": "K04 raw key -> EIP-55 address == announced (computed by the tool); the transfer is signed and sent with pinned Foundry 1.8.5 `cast` (the independent EVM implementation NEXT_PHASE_QUEUE K04 names) and accepted by anvil; synthetic keys only; the tool implements no transaction signing",
+  "reason": "NEXT_PHASE_QUEUE K04 and prompt section 13 require the spend proof 'via the independent tool (pinned Foundry cast/anvil)'; WS-19.5 instead has the new zero-dependency tool sign the transfer, i.e. a hand-rolled BigInt ECDSA + transaction encoder that users would run on real recovered keys (nonce/signature bugs leak keys).",
+  "severity": "major"
+ },
+ {
+  "id": "H2-98",
+  "file": "ws_registry.json",
+  "find": "K04 raw key -> EIP-55 address == announced; transfer signed by the tool accepted by anvil (Foundry 1.8.5, synthetic keys)",
+  "replace": "K04 raw key -> EIP-55 address == announced (computed by the tool); the transfer is signed and sent with pinned Foundry 1.8.5 cast (the independent EVM implementation NEXT_PHASE_QUEUE K04 names) and accepted by anvil; synthetic keys only; the tool implements no transaction signing",
+  "reason": "Same as H2-96 (registry WS-19.5).",
+  "severity": "major"
+ },
+ {
+  "id": "H2-99",
+  "file": "PARALLEL_AGENT_EXECUTION_PLAN.md",
+  "find": "derives scheme-1 stealth keys; proves spend on anvil with pinned Foundry 1.8.5.",
+  "replace": "derives scheme-1 stealth keys and addresses; spend proofs use pinned Foundry 1.8.5 cast/anvil (no hand-rolled ECDSA or transaction signer in the tool).",
+  "reason": "Same as H2-96 (WS-19 objective).",
+  "severity": "major"
+ },
+ {
+  "id": "H2-100",
+  "file": "ws_registry.json",
+  "find": "derives scheme-1 stealth keys; proves spend on anvil with pinned Foundry 1.8.5.",
+  "replace": "derives scheme-1 stealth keys and addresses; spend proofs use pinned Foundry 1.8.5 cast/anvil (no hand-rolled ECDSA or transaction signer in the tool).",
+  "reason": "Same as H2-96 (WS-19 objective).",
+  "severity": "major"
+ },
+ {
+  "id": "H2-101",
+  "file": "IMPLEMENTATION_SEQUENCE.md",
+  "find": "- `WS-11.1` Per-log blockHash cross-check, fail closed",
+  "replace": "- `WS-11.1` Records only (~0.1 d): F-PROTO-03 is VERIFIED_COMPLETE; the per-log canonical blockHash check exists (`packages/chain-adapters/src/logs.ts:438-460`, tests `logs.test.ts:132-148`, `scanHardening.test.ts:82`); cite it, add no code",
+  "reason": "VERIFIED logs.ts:460 @7a620ff1 ('log block hash differs from canonical block'); completion_strategy/criteria/graph all say WS-11.1 shrinks to records (~0.1 d) but the sequence/plan/registry still schedule 0.7-1.5 d of new code.",
+  "severity": "minor"
+ },
+ {
+  "id": "H2-102",
+  "file": "PARALLEL_AGENT_EXECUTION_PLAN.md",
+  "find": "UB — Per-log blockHash cross-check, fail closed",
+  "replace": "UB — Records only (~0.1 d; F-PROTO-03 VERIFIED_COMPLETE): cite the existing per-log blockHash check `packages/chain-adapters/src/logs.ts:438-460` + `logs.test.ts:132-148`; add no code",
+  "reason": "Same as H2-101.",
+  "severity": "minor"
+ },
+ {
+  "id": "H2-103",
+  "file": "ws_registry.json",
+  "find": "\"what\": \"Per-log blockHash cross-check, fail closed\"",
+  "replace": "\"what\": \"Records only (~0.1 d; F-PROTO-03 VERIFIED_COMPLETE): cite the existing per-log blockHash check packages/chain-adapters/src/logs.ts:438-460 + logs.test.ts:132-148; add no code\"",
+  "reason": "Same as H2-101.",
+  "severity": "minor"
+ },
+ {
+  "id": "H2-104",
+  "file": "PARALLEL_AGENT_EXECUTION_PLAN.md",
+  "find": "Dual-provider readback reconciles both providers, fails closed on disagreement/unreachable; banner provider count",
+  "replace": "When the user has configured a secondary RPC (opt-in; never a built-in default or automatic fallback), readback reconciles both providers and fails closed on disagreement/unreachable; single-provider mode unchanged; banner provider count",
+  "reason": "Constraint 3 (explicit RPC selection, no fallback, no unnecessary third-party requests); matches FEATURE_ACCEPTANCE_CRITERIA F-WEB-17 ('with a secondary RPC configured', 'never a built-in fallback').",
+  "severity": "minor"
+ },
+ {
+  "id": "H2-105",
+  "file": "IMPLEMENTATION_SEQUENCE.md",
+  "find": "Dual-provider readback reconciles both providers, fails closed on disagreement/unreachable; banner provider count",
+  "replace": "When the user has configured a secondary RPC (opt-in; never a built-in default or automatic fallback), readback reconciles both providers and fails closed on disagreement/unreachable; single-provider mode unchanged; banner provider count",
+  "reason": "Constraint 3 (explicit RPC selection, no fallback, no unnecessary third-party requests); matches FEATURE_ACCEPTANCE_CRITERIA F-WEB-17 ('with a secondary RPC configured', 'never a built-in fallback').",
+  "severity": "minor"
+ },
+ {
+  "id": "H2-106",
+  "file": "ws_registry.json",
+  "find": "Dual-provider readback reconciles both providers, fails closed on disagreement/unreachable; banner provider count",
+  "replace": "When the user has configured a secondary RPC (opt-in; never a built-in default or automatic fallback), readback reconciles both providers and fails closed on disagreement/unreachable; single-provider mode unchanged; banner provider count",
+  "reason": "Constraint 3 (explicit RPC selection, no fallback, no unnecessary third-party requests); matches FEATURE_ACCEPTANCE_CRITERIA F-WEB-17 ('with a secondary RPC configured', 'never a built-in fallback').",
+  "severity": "minor"
+ },
+ {
+  "id": "H2-107",
+  "file": "PARALLEL_AGENT_EXECUTION_PLAN.md",
+  "find": "full/self-host: allow only http://127.0.0.1|localhost|[::1]:<port> of the selected endpoint (or remove);",
+  "replace": "full/self-host: remove the mode by default, or keep it with connect-src loopback entries http://127.0.0.1:*, http://localhost:*, http://[::1]:* (a static meta CSP cannot be narrowed to the chosen port; BLOCKERS TB-02) under RV-SEC review; lean CSP never widened;",
+  "reason": "BLOCKERS TB-02 (08:00Z) states the per-port narrowing is impossible in a static meta CSP; the item text still prescribes it.",
+  "severity": "minor"
+ },
+ {
+  "id": "H2-108",
+  "file": "IMPLEMENTATION_SEQUENCE.md",
+  "find": "full/self-host: allow only http://127.0.0.1|localhost|[::1]:<port> of the selected endpoint (or remove);",
+  "replace": "full/self-host: remove the mode by default, or keep it with connect-src loopback entries http://127.0.0.1:*, http://localhost:*, http://[::1]:* (a static meta CSP cannot be narrowed to the chosen port; BLOCKERS TB-02) under RV-SEC review; lean CSP never widened;",
+  "reason": "BLOCKERS TB-02 (08:00Z) states the per-port narrowing is impossible in a static meta CSP; the item text still prescribes it.",
+  "severity": "minor"
+ },
+ {
+  "id": "H2-109",
+  "file": "ws_registry.json",
+  "find": "full/self-host: allow only http://127.0.0.1|localhost|[::1]:<port> of the selected endpoint (or remove);",
+  "replace": "full/self-host: remove the mode by default, or keep it with connect-src loopback entries http://127.0.0.1:*, http://localhost:*, http://[::1]:* (a static meta CSP cannot be narrowed to the chosen port; BLOCKERS TB-02) under RV-SEC review; lean CSP never widened;",
+  "reason": "BLOCKERS TB-02 (08:00Z) states the per-port narrowing is impossible in a static meta CSP; the item text still prescribes it.",
+  "severity": "minor"
+ },
+ {
+  "id": "H2-110",
+  "file": "PARALLEL_AGENT_EXECUTION_PLAN.md",
+  "find": "local-proxy scan works under a CSP allowing only the selected loopback origin in the full/self-host profile,",
+  "replace": "local-proxy scan works under a CSP allowing http loopback origins (any port; BLOCKERS TB-02) in the full/self-host profile only,",
+  "reason": "Same as H2-107 (WS-01 objective).",
+  "severity": "minor"
+ },
+ {
+  "id": "H2-111",
+  "file": "ws_registry.json",
+  "find": "local-proxy scan works under a CSP allowing only the selected loopback origin in the full/self-host profile,",
+  "replace": "local-proxy scan works under a CSP allowing http loopback origins (any port; BLOCKERS TB-02) in the full/self-host profile only,",
+  "reason": "Same as H2-107 (WS-01 objective).",
+  "severity": "minor"
+ },
+ {
+  "id": "H2-112",
+  "file": "PARALLEL_AGENT_EXECUTION_PLAN.md",
+  "find": "`apps/web/src/views/Pay*.test.tsx`",
+  "replace": "`apps/web/src/views/Pay.test.tsx`, `apps/web/src/views/Pay.*.test.tsx`",
+  "reason": "VERIFIED ls apps/web/src/views: Pay.test.tsx, Pay.i18n/.invoiceQr/.supported.test.tsx; the glob Pay*.test.tsx also captures WS-08's new PaymentDetails*.test.tsx while both WS run in the CP-2->CP-4 window.",
+  "severity": "minor"
+ },
+ {
+  "id": "H2-113",
+  "file": "ws_registry.json",
+  "find": "    \"apps/web/src/views/Pay*.test.tsx\",",
+  "replace": "    \"apps/web/src/views/Pay.test.tsx\",\n    \"apps/web/src/views/Pay.*.test.tsx\",",
+  "reason": "Same as H2-112 (registry WS-10 owned_paths).",
+  "severity": "minor"
+ },
+ {
+  "id": "H2-114",
+  "file": "PARALLEL_AGENT_EXECUTION_PLAN.md",
+  "find": "`git worktree add ../wt/WS-00-integration -b ws/WS-00-integration $START`",
+  "replace": "`git checkout -B <designated branch> $START` in the main checkout (prompt section 5 step 3)",
+  "reason": "Same as H2-59 (WS-00.1).",
+  "severity": "major"
+ },
+ {
+  "id": "H2-115",
+  "file": "IMPLEMENTATION_SEQUENCE.md",
+  "find": "`git worktree add ../wt/WS-00-integration -b ws/WS-00-integration $START`",
+  "replace": "`git checkout -B <designated branch> $START` in the main checkout (prompt section 5 step 3)",
+  "reason": "Same as H2-59 (WS-00.1).",
+  "severity": "major"
+ },
+ {
+  "id": "H2-116",
+  "file": "ws_registry.json",
+  "find": "`git worktree add ../wt/WS-00-integration -b ws/WS-00-integration $START`",
+  "replace": "`git checkout -B <designated branch> $START` in the main checkout (prompt section 5 step 3)",
+  "reason": "Same as H2-59 (registry WS-00.1).",
+  "severity": "major"
+ },
+ {
+  "id": "H2-117",
+  "file": "PARALLEL_AGENT_EXECUTION_PLAN.md",
+  "find": "- **Worktree** `../wt/WS-00-integration` · **Branch** `ws/WS-00-rebaseline`",
+  "replace": "- **Worktree** main checkout (integration) · **Branch** the designated integration branch itself",
+  "reason": "Three coordinator WS shared one worktree with three different branches.",
+  "severity": "minor"
+ },
+ {
+  "id": "H2-118",
+  "file": "PARALLEL_AGENT_EXECUTION_PLAN.md",
+  "find": "- **Worktree** `../wt/WS-00-integration` · **Branch** `ws/WS-20-ci-release`",
+  "replace": "- **Worktree** main checkout (integration) · **Branch** short-lived local `ws/WS-20-ci-release` cut from the integration tip, merged `--no-ff`",
+  "reason": "Three coordinator WS shared one worktree with three different branches.",
+  "severity": "minor"
+ },
+ {
+  "id": "H2-119",
+  "file": "PARALLEL_AGENT_EXECUTION_PLAN.md",
+  "find": "- **Worktree** `../wt/WS-00-integration` · **Branch** `ws/WS-22-tooling-deps`",
+  "replace": "- **Worktree** main checkout (integration) · **Branch** short-lived local `ws/WS-22-tooling-deps` cut from the integration tip, merged `--no-ff`",
+  "reason": "Three coordinator WS shared one worktree with three different branches.",
+  "severity": "minor"
+ },
+ {
+  "id": "H2-120",
+  "file": "IMPLEMENTATION_SEQUENCE.md",
+  "find": "beta scope impl 87.8 / verif 83.9",
+  "replace": "beta scope impl 87.2 / verif 83.5",
+  "reason": "Stale vs evidence/features/stats.json (08:01Z).",
+  "severity": "minor"
+ },
+ {
+  "id": "H2-121",
+  "file": "IMPLEMENTATION_SEQUENCE.md",
+  "find": "Matrix headline \"beta scope 42.5–106 d\" counted rows only;",
+  "replace": "Matrix headline \"beta scope 41–104 d\" counted rows only;",
+  "reason": "Stale vs stats.json effort_days_unfinished_beta_scope [41, 104].",
+  "severity": "minor"
+ },
+ {
+  "id": "H2-122",
+  "file": "IMPLEMENTATION_SEQUENCE.md",
+  "find": "| BR-21 | #203 merged (merge/ff, never squash) so pages.yml/release.yml on main carry the gates | OWNER | OA-01 then OA-02 |",
+  "replace": "| BR-21 | #203 merged (merge/ff, never squash) so pages.yml/release.yml on main carry the gates | DONE after the snapshot: merge commit `5467c158` 2026-11-18T06:56:49Z (tree == `71abc7e5`); OA-01 still UNVERIFIED | OA-02 done; OA-01 |",
+  "reason": "Drift (H2-03).",
+  "severity": "minor"
+ },
+ {
+  "id": "H2-123",
+  "file": "IMPLEMENTATION_SEQUENCE.md",
+  "find": "Count: 23 start + 9 exit items; 24 engineering-open/partial, 6 owner-only, 1 done (BR-11), BR-04 UNVERIFIED.",
+  "replace": "Count: 23 start + 9 exit items; 24 engineering-open/partial, 5 owner-only, 2 done (BR-11, BR-21), BR-04 UNVERIFIED.",
+  "reason": "Follows H2-122.",
+  "severity": "minor"
+ },
+ {
+  "id": "H2-124",
+  "file": "FEATURE_DEPENDENCY_GRAPH.md",
+  "find": "the current unfinished set is 155 (151 − 1 + 5).",
+  "replace": "after the H1 rescoring (F-WEB-09 -> VERIFIED_COMPLETE; F-KEY-03 held by SEC-05/SEC-03; F-WEB-07 scored 90/90 instead of held) the current unfinished set is 154 (151 − 2 + 5).",
+  "reason": "stats.json 08:01Z: 154 unfinished.",
+  "severity": "minor"
+ },
+ {
+  "id": "H2-125",
+  "file": "README.md",
+  "find": "Six-way strategy per unfinished feature (155 + 1 resolved)",
+  "replace": "Six-way strategy per unfinished feature (154 + 2 resolved: F-PROTO-03, F-WEB-09)",
+  "reason": "VERIFIED completion_strategy.json: 156 rows, 2 VERIFIED_COMPLETE.",
+  "severity": "minor"
+ },
+ {
+  "id": "H2-126",
+  "file": "FEATURE_ACCEPTANCE_CRITERIA.md",
+  "find": "IMPLEMENTED_UNVERIFIED 100/80 · track B-START · WS-01 (WS-01.2)",
+  "replace": "PARTIAL 80/65 (H1 rescoring; was IMPLEMENTED_UNVERIFIED 100/80) · track B-START · WS-01 (WS-01.2)",
+  "reason": "Stale row header vs matrix.",
+  "severity": "minor"
+ },
+ {
+  "id": "H2-127",
+  "file": "FEATURE_ACCEPTANCE_CRITERIA.md",
+  "find": "IMPLEMENTED_UNVERIFIED 100/95 · track B-NONGATING · WS-02 (WS-02.4)",
+  "replace": "VERIFIED_COMPLETE 100/95 (H1 rescoring; WS-02.4 = TB-06 script fix + regression protection only) · track B-NONGATING · WS-02 (WS-02.4)",
+  "reason": "Stale row header vs matrix.",
+  "severity": "minor"
+ },
+ {
+  "id": "H2-128",
+  "file": "FEATURE_ACCEPTANCE_CRITERIA.md",
+  "find": "IMPLEMENTED_UNVERIFIED 100/80 · track POST-BETA · WS-14 (WS-14.4)",
+  "replace": "IMPLEMENTED_UNVERIFIED 100/80 (tier full-profile after H1 rescoring) · track POST-BETA · WS-14 (WS-14.4)",
+  "reason": "Stale tier (row sits in 4.2 beta-supporting).",
+  "severity": "minor"
+ },
+ {
+  "id": "H2-129",
+  "file": "FEATURE_ACCEPTANCE_CRITERIA.md",
+  "find": "full/self-host: only the selected loopback origin allowed in `connect-src`;",
+  "replace": "full/self-host: mode removed, or `connect-src` gains only `http://127.0.0.1:*`, `http://localhost:*`, `http://[::1]:*` (BLOCKERS TB-02);",
+  "reason": "Same as H2-107 (criteria section 8, F-WEB-07).",
+  "severity": "minor"
+ },
+ {
+  "id": "H2-130",
+  "file": "FEATURE_ACCEPTANCE_CRITERIA.md",
+  "find": "| F-WEB-11 Direct sweep | SEC-03 | WS-07.1 |",
+  "replace": "| F-KEY-03 Keystore v1 backup/restore + verified-backup gate (hold added by the H1 rescoring) | SEC-05, SEC-03 | WS-18.1 + WS-07.1 (WS-02.7 harness) | keystore export uses the WS-18 policy (`SellerKeys.tsx:207`); vault-less export keeps working after disclosure + typed confirmation (`SellerKeys.tsx:221-224`, OD-01 default); R1-R3 seller-vault harness green | OD-01 / OD-09 recorded; review |\n| F-WEB-11 Direct sweep | SEC-03 | WS-07.1 |",
+  "reason": "completion_strategy.json F-KEY-03.security_hold (08:00Z); section 8 table lacks it.",
+  "severity": "minor"
+ },
+ {
+  "id": "H2-131",
+  "file": "FEATURE_ACCEPTANCE_CRITERIA.md",
+  "find": "pattern `$SP/final/evidence/teams/E/scripts/egress_walk.mjs`",
+  "replace": "pattern `docs/handoffs/post-consolidation-20261118/evidence/teams/E/scripts/egress_walk.mjs`",
+  "reason": "`$SP` is the audit session's scratchpad; a fresh session cannot resolve it (the files are in the package's evidence/ or not packaged at all).",
+  "severity": "minor"
+ },
+ {
+  "id": "H2-132",
+  "file": "FEATURE_ACCEPTANCE_CRITERIA.md",
+  "find": "Reference pattern until it lands: `$SP/final/evidence/teams/D/scripts/indep-vectors.cjs`",
+  "replace": "Reference pattern until it lands: `docs/handoffs/post-consolidation-20261118/evidence/teams/D/scripts/indep-vectors.cjs`",
+  "reason": "`$SP` is the audit session's scratchpad; a fresh session cannot resolve it (the files are in the package's evidence/ or not packaged at all).",
+  "severity": "minor"
+ },
+ {
+  "id": "H2-133",
+  "file": "FEATURE_DEPENDENCY_GRAPH.md",
+  "find": "(SEC-38, `$SP/final/evidence/teams/D/scripts/indep-vectors.cjs`)",
+  "replace": "(SEC-38, `docs/handoffs/post-consolidation-20261118/evidence/teams/D/scripts/indep-vectors.cjs`)",
+  "reason": "`$SP` is the audit session's scratchpad; a fresh session cannot resolve it (the files are in the package's evidence/ or not packaged at all).",
+  "severity": "minor"
+ },
+ {
+  "id": "H2-134",
+  "file": "IMPLEMENTATION_SEQUENCE.md",
+  "find": "Script: `$SP/out/G-B-scratch/model.py` (`simulate`, `trace`, `check_ownership`).",
+  "replace": "Script: the audit's scratch `model.py` (`simulate`, `trace`, `check_ownership`), not packaged; reproduce from `ws_registry.json` estimates.",
+  "reason": "`$SP` is the audit session's scratchpad; a fresh session cannot resolve it (the files are in the package's evidence/ or not packaged at all).",
+  "severity": "minor"
+ },
+ {
+  "id": "H2-135",
+  "file": "ws_registry.json",
+  "find": "   \"name\": \"Step-up re-auth: OD-01 fail-closed default (SEC-03/TB-04) + archive export step-up (F-KEY-05)\",\n   \"features\": [\n    \"F-KEY-05\"\n   ],\n   \"contributes_to\": [],",
+  "replace": "   \"name\": \"Step-up re-auth: OD-01 fail-closed default (SEC-03/TB-04) + archive export step-up (F-KEY-05)\",\n   \"features\": [\n    \"F-KEY-05\"\n   ],\n   \"contributes_to\": [\n    \"F-KEY-01\",\n    \"F-KEY-03\",\n    \"F-WEB-11\",\n    \"F-WEB-12\"\n   ],",
+  "reason": "VERIFIED (check_registry_H2.py): five unfinished rows (F-KEY-01, F-KEY-02, F-WEB-07, F-WEB-11, F-WEB-12) are in no workstream's features/contributes_to, so the WS cards never tell the worker that closing SEC-03/SEC-05/SEC-10 completes them (the mapping exists only in the prompt table and completion_strategy.json).",
+  "severity": "minor"
+ },
+ {
+  "id": "H2-136",
+  "file": "ws_registry.json",
+  "find": "   \"name\": \"Passphrase/KDF floor: offline estimator, generated-passphrase default, high tier for new exports (SEC-05)\",\n   \"features\": [],\n   \"contributes_to\": [],",
+  "replace": "   \"name\": \"Passphrase/KDF floor: offline estimator, generated-passphrase default, high tier for new exports (SEC-05)\",\n   \"features\": [],\n   \"contributes_to\": [\n    \"F-KEY-02\",\n    \"F-KEY-03\"\n   ],",
+  "reason": "VERIFIED (check_registry_H2.py): five unfinished rows (F-KEY-01, F-KEY-02, F-WEB-07, F-WEB-11, F-WEB-12) are in no workstream's features/contributes_to, so the WS cards never tell the worker that closing SEC-03/SEC-05/SEC-10 completes them (the mapping exists only in the prompt table and completion_strategy.json).",
+  "severity": "minor"
+ },
+ {
+  "id": "H2-137",
+  "file": "ws_registry.json",
+  "find": "   \"name\": \"Transport honesty: local-proxy CSP (TB-02), wss rejection, fetch options, net-transport claims, embed SRI\",\n   \"features\": [\n    \"F-NET-01\",\n    \"F-WEB-18\"\n   ],\n   \"contributes_to\": [],",
+  "replace": "   \"name\": \"Transport honesty: local-proxy CSP (TB-02), wss rejection, fetch options, net-transport claims, embed SRI\",\n   \"features\": [\n    \"F-NET-01\",\n    \"F-WEB-18\"\n   ],\n   \"contributes_to\": [\n    \"F-WEB-07\"\n   ],",
+  "reason": "VERIFIED (check_registry_H2.py): five unfinished rows (F-KEY-01, F-KEY-02, F-WEB-07, F-WEB-11, F-WEB-12) are in no workstream's features/contributes_to, so the WS cards never tell the worker that closing SEC-03/SEC-05/SEC-10 completes them (the mapping exists only in the prompt table and completion_strategy.json).",
+  "severity": "minor"
+ },
+ {
+  "id": "H2-138",
+  "file": "PARALLEL_AGENT_EXECUTION_PLAN.md",
+  "find": "# G-FULL — run from the worktree root on the exact SHA being qualified; record exit codes + pass/skip counts\nnpm run typecheck",
+  "replace": "# G-FULL — run from the worktree root on the exact SHA being qualified; record exit codes + pass/skip counts\n: \"${START:?set START to START_SHA or to the last origin/main merged into the integration branch}\"   # used by the frozen-path line\nnpm run typecheck",
+  "reason": "Same as H2-45 (PLAN section 8 copy of G-FULL).",
+  "severity": "major"
+ },
+ {
+  "id": "H2-139",
+  "file": "PARALLEL_AGENT_EXECUTION_PLAN.md",
+  "find": "(cd packages/contracts && forge build --sizes && forge test && forge fmt --check && forge snapshot --check --no-match-test \"testFuzz|invariant\")\nnpm run ci:scan-secrets",
+  "replace": "(cd packages/contracts && forge build --sizes && forge test && forge fmt --check && forge snapshot --check --no-match-test \"testFuzz|invariant\")\n(cd packages/pool-contracts && forge build --sizes && forge test && forge fmt --check)    # ci.yml:473-506; baseline 86/0\n(cd packages/payer-hiding-contracts && bash scripts/fetch-entrypoint.sh && forge build --sizes && forge test && forge fmt --check)   # baseline 109/0\nnode --test examples/merchant-checkout/money.test.mjs examples/pos-terminal/parity.test.mjs   # ci.yml:111\npython3 scripts/tests/audit-permissions.test.py                                   # ci.yml:553\nnpm run ci:scan-secrets",
+  "reason": "Same as H2-46 (PLAN section 8).",
+  "severity": "minor"
+ },
+ {
+  "id": "H2-140",
+  "file": "PARALLEL_AGENT_EXECUTION_PLAN.md",
+  "find": "Validator `check_ownership()`: 0 overlaps among WS active in the same window, 0 worker overlaps with coordinator paths (VERIFIED by run; negative test with injected overlaps detected 80 conflicts).",
+  "replace": "Validator `check_ownership()` (audit scratch `model.py`, not packaged; windows are per CP number, so CP-3 and CP-5 items that run concurrently are not compared): 0 overlaps among WS active in the same window, 0 worker overlaps with coordinator paths (VERIFIED by run; negative test with injected overlaps detected 80 conflicts). A more specific owned path beats an overlapping glob of another WS (WS-09 `docs/user/master-backup-recovery.md` in WS-02 `docs/user/**`).",
+  "reason": "Same as H2-42 (PLAN 3.3).",
+  "severity": "minor"
+ },
+ {
+  "id": "H2-141",
+  "file": "BLOCKERS_AND_DECISIONS.md",
+  "find": "`apps/web/src/components/LanguagePicker.tsx:19-23`",
+  "replace": "`apps/web/src/i18n/LanguagePicker.tsx:19-23`",
+  "reason": "VERIFIED: the component is apps/web/src/i18n/LanguagePicker.tsx (lines 19-23 hold the machine-drafted/no-catalog notes); apps/web/src/components/LanguagePicker.tsx does not exist @7a620ff1.",
+  "severity": "minor"
+ },
+ {
+  "id": "H2-142",
+  "file": "completion_strategy.json",
+  "find": "blocked by the shipped CSP (SEC-10, TB-02); row is PARTIAL. Fix in WS-01.1.",
+  "replace": "blocked by the shipped CSP (SEC-10, TB-02); the requirement scores half, row is IMPLEMENTED_UNVERIFIED 90/90. Fix in WS-01.1.",
+  "reason": "F-WEB-07 rationale contradicts its own status field (IMPLEMENTED_UNVERIFIED 90/90).",
+  "severity": "minor"
+ },
+ {
+  "id": "H2-143",
+  "file": "GHOSTPAY_FEATURE_COMPLETION_EXECUTION_PROMPT.md",
+  "find": "(cd packages/contracts && forge build)                                     # artifacts for anvil suites",
+  "replace": "(cd packages/contracts && forge build)                                     # artifacts for anvil suites\nSOLC_0828=\"${SOLC_0828:-$HOME/.svm/0.8.28/solc-0.8.28}\"; test -x \"$SOLC_0828\"   # written by the forge build above (ci.yml:152, foundry.toml:8-10); else the solc-static-linux v0.8.28 release binary",
+  "reason": "`$SOLC_0828` is used two lines later but never defined in the prompt; with SOLC_BIN empty, apps/web/src/features/registry/registry.anvil.test.ts:16-18,61-62 fails under REQUIRE_ANVIL=1 ('' is not nullish), so G-FULL goes red for environment reasons. Defined after forge build because forge build installs solc into ~/.svm.",
+  "severity": "major"
+ },
+ {
+  "id": "H2-144",
+  "file": "PARALLEL_AGENT_EXECUTION_PLAN.md",
+  "find": "(cd packages/contracts && forge build)                                     # artifacts for anvil suites",
+  "replace": "(cd packages/contracts && forge build)                                     # artifacts for anvil suites\nSOLC_0828=\"${SOLC_0828:-$HOME/.svm/0.8.28/solc-0.8.28}\"; test -x \"$SOLC_0828\"   # written by the forge build above (ci.yml:152, foundry.toml:8-10); else the solc-static-linux v0.8.28 release binary",
+  "reason": "Same as H2-143 (PLAN section 8 copy).",
+  "severity": "major"
+ }
+]

@@ -1,0 +1,5009 @@
+{
+ "meta": {
+  "generated_by": "Team G-B",
+  "date": "2026-11-18",
+  "audited_source": "7a620ff19ecf4e43ec568896c34188f5b2dcd3fc",
+  "id_policy": "Canonical IDs only (OD-01..OD-23, OA-01..OA-07, EX-01..EX-07, TB-01..TB-10, SEC-01..SEC-49). Lost-team OD numbers remapped per coordinator 2026-11-18; lost-team OD-16 used as a generic owner acknowledgement on F-KEY-05/F-WEB-06/F-WEB-26/F-WEB-04/F-CLI-06 is NOT mapped to TB-07 (recorded as owner-ack, no canonical ID).",
+  "coordinator_owned_paths": [
+   "package-lock.json",
+   "package.json",
+   "tsconfig.base.json",
+   ".github/workflows/**",
+   ".github/dependabot.yml",
+   ".github/actions/**",
+   "CLAUDE.md",
+   "AGENTS.md",
+   "docs/ai/**",
+   "apps/web/src/App.tsx",
+   "apps/web/src/AppLean.tsx",
+   "apps/web/src/AppShell.tsx",
+   "apps/web/locales/**",
+   "apps/web/playwright.config.ts",
+   "apps/web/vite.config.ts",
+   "apps/web/vitest.config.ts",
+   "apps/web/vitest.nocov.config.ts",
+   "eslint.config.js",
+   "docs/handoffs/**",
+   ".claude/skills/**",
+   "scripts/agent/**",
+   "docs/adr/README.md",
+   "packages/ux-vault/src/portable.ts",
+   "packages/ux-vault/src/index.ts"
+  ],
+  "coordinator_note": "Coordinator-owned (brief list + shared harness config added by G-B: playwright/vite/vitest configs, eslint.config.js, docs/handoffs/**, .claude/skills/**, scripts/agent/** after #204 port, ux-vault re-export barrels portable.ts/index.ts). Workers request changes via one separate commit `coord-request(<WS>): ...` (append-only hunks, never reformat, never dependency or lockfile edits). A path no active WS owns in a window is coordinator-merged the same way.",
+  "unblocked_semantics": "unblocked = WS can start now (first item unblocked); unblocked_scope = all|partial|none of its items; blocked_items lists reason + owner IDs.",
+  "ownership_rule": "owned_paths are EXCLUSIVE while the WS is active; a path changes owner only via handover_in at a checkpoint; validator: no overlap among WS active in the same checkpoint window and no worker overlap with coordinator paths.",
+  "frozen_paths": [
+   "packages/contracts/src/**",
+   "test-vectors/scheme1.json",
+   "packages/core-crypto/src/**"
+  ],
+  "frozen_note": "No WS owns these. contracts unchanged since beb525dd (Sepolia deploys exact reviewed source); scheme-1 derivation and vectors unchanged (F-KEY-07 REG). Changing them needs owner approval + re-review.",
+  "checkpoints": {
+   "CP-0": "Rebaseline: start commit fixed, toolchain, baseline gates recorded",
+   "CP-1": "Wave 1-2 closed: critical security/correctness defects + consolidation regressions + doc drift; #204 tooling ported; minor/patch deps refreshed",
+   "CP-2": "Spec 18 format freeze (K01/K02) + step-up API (WS-07.2) + shared foundations (independent tool, CI wiring/speed)",
+   "CP-3": "Wave 4 nearly-complete features + wave 5 recovered harness/doc hunk",
+   "CP-4": "Browser beta engineering-ready (waves 5-6): strict verifier, dual readback, rehearsal, smoke, shell hardening",
+   "CP-5": "KC: spec 18 K01-K06 acceptance on one exact integrated SHA (+ independent recovery proof)",
+   "CP-6": "Wave 8 optional advanced merged (never blocks CP-7/CP-8)",
+   "CP-7": "Sepolia static beta START qualification (owner-gated: OD-06/07/08, OA-01..06)",
+   "CP-8": "Beta EXIT qualification: CP-5 + B06 acceptance incl. 3q export + independent recovery on Sepolia",
+   "CP-9": "Release-tag qualification (owner-gated: OD-03, OD-07/OA-03 keys, OA-01 tag ruleset); mainnet out of scope"
+  },
+  "checkpoint_order": {
+   "CP-1": [
+    "CP-0"
+   ],
+   "CP-2": [
+    "CP-1"
+   ],
+   "CP-3": [
+    "CP-2"
+   ],
+   "CP-4": [
+    "CP-1"
+   ],
+   "CP-5": [
+    "CP-2"
+   ],
+   "CP-6": [
+    "CP-5"
+   ],
+   "CP-7": [
+    "CP-4"
+   ],
+   "CP-8": [
+    "CP-5",
+    "CP-7"
+   ],
+   "CP-9": [
+    "CP-7"
+   ]
+  },
+  "est_unit": "engineer-days [lo, hi] ESTIMATE; rows from lost-team registry, new items G-B",
+  "features_semantics": "features = rows this WS owns (each of the 64 lost-team rows primary in exactly one WS); contributes_to = features whose acceptance this WS supplies evidence for (e.g. WS-19 proofs).",
+  "row_ws_moves": {
+   "F-DEP-02": {
+    "lost_team_ws": "WS-05",
+    "now": "WS-24"
+   },
+   "F-WEB-17": {
+    "lost_team_ws": "WS-05",
+    "now": "WS-24"
+   },
+   "F-CTR-04": {
+    "lost_team_ws": "WS-05",
+    "now": "WS-24"
+   },
+   "F-KEY-11": {
+    "lost_team_ws": "WS-08",
+    "now": "WS-25"
+   }
+  },
+  "wave8_note": "WS-90 features = experimental 45 + future 43 (F-FUT-40 duplicate of spec 18 excluded)."
+ },
+ "workstreams": [
+  {
+   "ws": "WS-00",
+   "name": "Rebaseline + integration start (coordinator)",
+   "features": [],
+   "contributes_to": [],
+   "findings": [
+    "SEC-39"
+   ],
+   "tb": [
+    "TB-10"
+   ],
+   "wave": 0,
+   "waves": [
+    0,
+    1
+   ],
+   "checkpoints": [
+    "CP-0"
+   ],
+   "depends_on_ws": [],
+   "owned_paths": [
+    "docs/handoffs/next-phase-20261118/**"
+   ],
+   "handover_in": [],
+   "model_tier": "strongest",
+   "reviewer_tier": "strongest",
+   "security_review": true,
+   "executor": "coordinator",
+   "unblocked": true,
+   "unblocked_scope": "all",
+   "blocked_items": [],
+   "owner_gate": [],
+   "external": [],
+   "est_days": [
+    0.75,
+    1.6
+   ],
+   "worktree": "../wt/WS-00-integration",
+   "branch": "ws/WS-00-rebaseline",
+   "mapping": "",
+   "objectives": "Fix start commit by rule; bootstrap toolchain; record baseline gate numbers; fresh census; create integration branch ws/WS-00-integration; erratum for packet docs-only claim (SEC-39).",
+   "items": [
+    {
+     "id": "WS-00.1",
+     "refs": [
+      "start-commit rule"
+     ],
+     "wave": 0,
+     "cp": "CP-0",
+     "est": [
+      0.1,
+      0.25
+     ],
+     "strategy": "implement",
+     "deps": [],
+     "gate": "none",
+     "owner": [],
+     "ext": [],
+     "unblocked": [
+      true,
+      ""
+     ],
+     "parallel": false,
+     "what": "Apply start-commit rule (PLAN \u00a72); `git checkout -B <designated branch> $START` in the main checkout (prompt section 5 step 3); record SHA + tree in BASELINE.md"
+    },
+    {
+     "id": "WS-00.2",
+     "refs": [
+      "toolchain"
+     ],
+     "wave": 0,
+     "cp": "CP-0",
+     "est": [
+      0.25,
+      0.5
+     ],
+     "strategy": "implement",
+     "deps": [],
+     "gate": "none",
+     "owner": [],
+     "ext": [],
+     "unblocked": [
+      true,
+      ""
+     ],
+     "parallel": false,
+     "what": "Foundry v1.8.5 from GitHub release tarball (sha256 recorded; foundry.paradigm.xyz blocked), solc 0.8.28 solc-static-linux via FOUNDRY_SOLC (binaries.soliditylang.org blocked), Chromium path, `npm ci --ignore-scripts`, `npm run build:libs`"
+    },
+    {
+     "id": "WS-00.3",
+     "refs": [
+      "baseline gates"
+     ],
+     "wave": 0,
+     "cp": "CP-0",
+     "est": [
+      0.25,
+      0.5
+     ],
+     "strategy": "implement",
+     "deps": [],
+     "gate": "none",
+     "owner": [],
+     "ext": [],
+     "unblocked": [
+      true,
+      ""
+     ],
+     "parallel": false,
+     "what": "Run G-FULL on start commit; compare with CI 44242366118 (web 2,749 passed/1 skipped; e2e full 78/1, lean 66/3; forge 490 passed); record in BASELINE.md"
+    },
+    {
+     "id": "WS-00.4",
+     "refs": [
+      "census"
+     ],
+     "wave": 0,
+     "cp": "CP-0",
+     "est": [
+      0.1,
+      0.25
+     ],
+     "strategy": "implement",
+     "deps": [],
+     "gate": "none",
+     "owner": [],
+     "ext": [],
+     "unblocked": [
+      true,
+      ""
+     ],
+     "parallel": false,
+     "what": "Fresh read-only branch census (refs at time T) before any retirement talk (OD-19 stays pending)"
+    },
+    {
+     "id": "WS-00.5",
+     "refs": [
+      "SEC-39"
+     ],
+     "wave": 1,
+     "cp": "CP-0",
+     "est": [
+      0.05,
+      0.1
+     ],
+     "strategy": "repair",
+     "deps": [],
+     "gate": "none",
+     "owner": [],
+     "ext": [],
+     "unblocked": [
+      true,
+      ""
+     ],
+     "parallel": true,
+     "what": "Verify packet at start commit: at 71abc7e5 PROMOTION_PACKET.md:15-16 already names 7a620ff1 + the R-18 SellerKeys.test.tsx delta (VERIFIED) -> SEC-39 closed by the #203 head; record in BASELINE.md, add erratum only if the start commit differs"
+    }
+   ]
+  },
+  {
+   "ws": "WS-01",
+   "name": "Transport honesty: local-proxy CSP (TB-02), wss rejection, fetch options, net-transport claims, embed SRI",
+   "features": [
+    "F-NET-01",
+    "F-WEB-18"
+   ],
+   "contributes_to": [
+    "F-WEB-07"
+   ],
+   "findings": [
+    "SEC-10",
+    "SEC-19",
+    "SEC-27",
+    "SEC-20",
+    "SEC-45",
+    "SEC-43"
+   ],
+   "tb": [
+    "TB-02"
+   ],
+   "wave": 1,
+   "waves": [
+    1,
+    9
+   ],
+   "checkpoints": [
+    "CP-1",
+    "CP-9"
+   ],
+   "depends_on_ws": [
+    "WS-00"
+   ],
+   "owned_paths": [
+    "packages/net-transport/**",
+    "packages/chain-adapters/src/rpc.ts",
+    "packages/chain-adapters/src/rpc*.test.ts",
+    "apps/web/src/lib/scanPrivacy.ts",
+    "apps/web/src/lib/scanPrivacy*.test.ts",
+    "apps/web/src/lib/settings.ts",
+    "apps/web/src/lib/settings*.test.ts",
+    "apps/web/src/lib/settingsExchange.ts",
+    "apps/web/src/lib/settingsExchange*.test.ts",
+    "apps/web/src/views/Settings.tsx",
+    "apps/web/src/views/Settings*.test.tsx",
+    "apps/web/index.html",
+    "apps/web/public/_headers",
+    "apps/web/scripts/csp.mjs",
+    "apps/web/src/buildScripts.test.ts",
+    "apps/web/src/privacyInvariants.test.ts",
+    "deploy/nginx/security-headers.conf",
+    "deploy/nginx/security-headers-embed.conf",
+    "infra/proxy/ghostpay-headers.conf",
+    "infra/proxy/Caddyfile",
+    "infra/web/Caddyfile.static",
+    "apps/web/src/lib/embedHost.ts",
+    "apps/web/scripts/embed-sri.mjs",
+    "apps/web/public/ghostpay-embed-v2.js",
+    "docs/specs/10-feature5-stage1-private-scanning.md",
+    "docs/threat-model/PRIVACY_THREAT_MODEL.md",
+    "apps/web/e2e/scan-transport-csp.spec.ts"
+   ],
+   "handover_in": [],
+   "model_tier": "mid",
+   "reviewer_tier": "strongest",
+   "security_review": true,
+   "executor": "worker",
+   "unblocked": true,
+   "unblocked_scope": "partial",
+   "blocked_items": [
+    {
+     "item": "WS-01.3",
+     "reason": "release trust root",
+     "owner": [
+      "OD-07"
+     ]
+    }
+   ],
+   "owner_gate": [
+    "OD-07"
+   ],
+   "external": [],
+   "est_days": [
+    3.15,
+    6.25
+   ],
+   "worktree": "../wt/WS-01",
+   "branch": "ws/WS-01-transport-honesty",
+   "mapping": "WS-01 (F-NET-01, F-WEB-18)",
+   "objectives": "Make every transport claim true: local-proxy scan works under a CSP allowing http loopback origins (any port; BLOCKERS TB-02) in the full/self-host profile only, or is removed from lean UI + docs (coordinator default: remove from lean, fix-or-remove in full); reject wss://; fetch transports omit credentials/cache/referrer; docs match.",
+   "items": [
+    {
+     "id": "WS-01.1",
+     "refs": [
+      "SEC-10",
+      "SEC-19"
+     ],
+     "wave": 1,
+     "cp": "CP-1",
+     "est": [
+      1.0,
+      2.0
+     ],
+     "strategy": "repair",
+     "deps": [],
+     "gate": "start",
+     "owner": [],
+     "ext": [],
+     "unblocked": [
+      true,
+      ""
+     ],
+     "parallel": true,
+     "what": "Lean: remove local-proxy mode from UI + docs; full/self-host: remove the mode by default, or keep it with connect-src loopback entries http://127.0.0.1:*, http://localhost:*, http://[::1]:* (a static meta CSP cannot be narrowed to the chosen port; BLOCKERS TB-02) under RV-SEC review; lean CSP never widened; reject wss:// in checkRpcUrl and drop `wss:` from connect-src (index.html, _headers, nginx, infra proxies, csp.mjs); Playwright test under the real meta CSP; fix docs/specs/10 mode b (docs/pages/README.md:49 via WS-04.4)"
+    },
+    {
+     "id": "WS-01.2",
+     "refs": [
+      "F-NET-01",
+      "SEC-20",
+      "SEC-27",
+      "SEC-45"
+     ],
+     "wave": 1,
+     "cp": "CP-1",
+     "est": [
+      1.6,
+      3.0
+     ],
+     "strategy": "repair",
+     "deps": [],
+     "gate": "start",
+     "owner": [],
+     "ext": [],
+     "unblocked": [
+      true,
+      ""
+     ],
+     "parallel": true,
+     "what": "F-NET-01 rows IC (OHTTP vectors; credentials omit/no-store/no-referrer in chain-adapters rpc.ts + net-transport; Tor copy); PRIVACY_THREAT_MODEL 1.1/5 refreshed (SEC-27); random JSON-RPC ids or documented (SEC-45); embedHost.ts:8 comment fix; privacyInvariants extended to chain-adapters + net-transport"
+    },
+    {
+     "id": "WS-01.3",
+     "refs": [
+      "F-WEB-18",
+      "SEC-43"
+     ],
+     "wave": 9,
+     "cp": "CP-9",
+     "est": [
+      0.55,
+      1.25
+     ],
+     "strategy": "defer",
+     "deps": [
+      "CP-4"
+     ],
+     "gate": "none",
+     "owner": [
+      "OD-07"
+     ],
+     "ext": [],
+     "unblocked": [
+      false,
+      "release trust root"
+     ],
+     "parallel": true,
+     "what": "Publish embed v2 SHA-384 SRI + hash in signed release notes after OD-07 trust root (owner key)"
+    }
+   ]
+  },
+  {
+   "ws": "WS-02",
+   "name": "Honest copy + doc drift (TB-10, E-17, E-08) + regression scripts (TB-06) + recovered harness/doc hunk",
+   "features": [
+    "F-WEB-23",
+    "F-DOC-01",
+    "F-WEB-09",
+    "F-DEP-05",
+    "F-WEB-06",
+    "F-KEY-03",
+    "F-DOC-02"
+   ],
+   "contributes_to": [],
+   "findings": [
+    "SEC-28",
+    "SEC-21",
+    "SEC-17",
+    "SEC-15"
+   ],
+   "tb": [
+    "TB-10",
+    "TB-06"
+   ],
+   "wave": 1,
+   "waves": [
+    1,
+    2,
+    4,
+    5
+   ],
+   "checkpoints": [
+    "CP-1",
+    "CP-3"
+   ],
+   "depends_on_ws": [
+    "WS-00"
+   ],
+   "owned_paths": [
+    "README.md",
+    "docs/user/**",
+    "docs/guides/**",
+    "docs/wiki/**",
+    "docs/developer/api/policy-scheme.md",
+    "docs/developer/security-model.md",
+    "docs/audits/00-slither-triage.md",
+    "docs/design/qr-colors.md",
+    "docs/specs/02-*.md",
+    "packages/chain-adapters/README.md",
+    "packages/chain-adapters/TODO-VERIFY.md",
+    "apps/web/help.html",
+    "apps/web/privacy.html",
+    "apps/web/src/views/About.tsx",
+    "apps/web/src/views/Home.tsx",
+    "apps/web/src/views/About*.test.tsx",
+    "apps/web/src/views/Home*.test.tsx",
+    "apps/web/scripts/test-reconciliation-idb.mjs",
+    "apps/web/scripts/test-seller-vault-idb.mjs",
+    "scripts/tests/privacy-claims.test.mjs"
+   ],
+   "handover_in": [],
+   "model_tier": "mid",
+   "reviewer_tier": "mid",
+   "security_review": false,
+   "executor": "worker",
+   "unblocked": true,
+   "unblocked_scope": "all",
+   "blocked_items": [],
+   "owner_gate": [
+    "OD-20",
+    "OD-16",
+    "OA-04"
+   ],
+   "external": [],
+   "est_days": [
+    4.15,
+    8.8
+   ],
+   "worktree": "../wt/WS-02",
+   "branch": "ws/WS-02-honest-docs",
+   "mapping": "WS-02",
+   "objectives": "Remove overclaims, fix doc/code drift, repair the broken IndexedDB reconciliation script, recover the 57dcf7e8 seller-vault Chromium harness and the 400e20f1 qr-colors hunk; banned-phrase test.",
+   "items": [
+    {
+     "id": "WS-02.1",
+     "refs": [
+      "F-WEB-23",
+      "SEC-28"
+     ],
+     "wave": 1,
+     "cp": "CP-1",
+     "est": [
+      0.75,
+      1.1
+     ],
+     "strategy": "repair",
+     "deps": [],
+     "gate": "start",
+     "owner": [],
+     "ext": [],
+     "unblocked": [
+      true,
+      ""
+     ],
+     "parallel": true,
+     "what": "E-17 strings (en.json via coord-request; policy-scheme.md:233; README.md:5; docs/pages via WS-04.4) + scripts/tests/privacy-claims.test.mjs banned-phrase test"
+    },
+    {
+     "id": "WS-02.2",
+     "refs": [
+      "F-DOC-01",
+      "SEC-21"
+     ],
+     "wave": 1,
+     "cp": "CP-1",
+     "est": [
+      0.25,
+      0.85
+     ],
+     "strategy": "defer",
+     "deps": [],
+     "gate": "start",
+     "owner": [
+      "OD-20",
+      "OD-16"
+     ],
+     "ext": [],
+     "unblocked": [
+      true,
+      "copy fixes now; translation later"
+     ],
+     "parallel": true,
+     "what": "docs/user: browser/cloud history sync of invoice fragments (E-08); translated docs stay OD-16/EX-04 gated"
+    },
+    {
+     "id": "WS-02.3",
+     "refs": [
+      "TB-10",
+      "SEC-17"
+     ],
+     "wave": 1,
+     "cp": "CP-1",
+     "est": [
+      0.25,
+      0.75
+     ],
+     "strategy": "repair",
+     "deps": [],
+     "gate": "none",
+     "owner": [],
+     "ext": [],
+     "unblocked": [
+      true,
+      ""
+     ],
+     "parallel": true,
+     "what": "TB-10 remainder: stale chain-adapters README text; Slither \"no detector exclusions\" claim (docs/developer/security-model.md, docs/audits/00-slither-triage.md) corrected to the CI reality (Low/Info excluded)"
+    },
+    {
+     "id": "WS-02.4",
+     "refs": [
+      "F-WEB-09"
+     ],
+     "wave": 2,
+     "cp": "CP-1",
+     "est": [
+      0.75,
+      1.1
+     ],
+     "strategy": "repair",
+     "deps": [],
+     "gate": "none",
+     "owner": [],
+     "ext": [],
+     "unblocked": [
+      true,
+      ""
+     ],
+     "parallel": true,
+     "what": "apps/web/scripts/test-reconciliation-idb.mjs:71 -> invalidateFrom(block, observed, canonicalHash); CI wiring by WS-20.2"
+    },
+    {
+     "id": "WS-02.5",
+     "refs": [
+      "F-DEP-05"
+     ],
+     "wave": 2,
+     "cp": "CP-1",
+     "est": [
+      0.6,
+      1.35
+     ],
+     "strategy": "repair",
+     "deps": [],
+     "gate": "none",
+     "owner": [
+      "OA-04"
+     ],
+     "ext": [],
+     "unblocked": [
+      true,
+      ""
+     ],
+     "parallel": true,
+     "what": "chain-adapters README/TODO-VERIFY consistent with quote.ts FEEDS (4 testnet feeds)"
+    },
+    {
+     "id": "WS-02.6",
+     "refs": [
+      "F-WEB-06"
+     ],
+     "wave": 4,
+     "cp": "CP-3",
+     "est": [
+      0,
+      0.45
+     ],
+     "strategy": "defer",
+     "deps": [],
+     "gate": "none",
+     "owner": [],
+     "ext": [],
+     "unblocked": [
+      true,
+      ""
+     ],
+     "parallel": true,
+     "what": "docs/specs/02-* disposition note for rule 2 citing negative.test.ts:200,314; owner acknowledgement requested as OD-23 (engineering never records it)"
+    },
+    {
+     "id": "WS-02.7",
+     "refs": [
+      "F-KEY-03"
+     ],
+     "wave": 5,
+     "cp": "CP-3",
+     "est": [
+      0.85,
+      1.75
+     ],
+     "strategy": "recover",
+     "deps": [
+      "WS-02.6"
+     ],
+     "gate": "exit",
+     "owner": [],
+     "ext": [],
+     "unblocked": [
+      true,
+      ""
+     ],
+     "parallel": true,
+     "what": "Recover 57dcf7e8 apps/web/scripts/test-seller-vault-idb.mjs (R1-R3 + two-tab); independent decode vector moves to WS-19.1"
+    },
+    {
+     "id": "WS-02.8",
+     "refs": [
+      "F-DOC-02"
+     ],
+     "wave": 5,
+     "cp": "CP-3",
+     "est": [
+      0.7,
+      1.45
+     ],
+     "strategy": "repair",
+     "deps": [
+      "WS-02.7"
+     ],
+     "gate": "none",
+     "owner": [],
+     "ext": [],
+     "unblocked": [
+      true,
+      ""
+     ],
+     "parallel": true,
+     "what": "docs/design/qr-colors.md hunk from 400e20f1 (bearer precedence matches qrKinds.test.ts:40-42); #140 wiki text not imported"
+    }
+   ]
+  },
+  {
+   "ws": "WS-03",
+   "name": "Spec 18 core formats: K01 schemas + verified derivation, K02 single-keypair envelope (+F-KEY-13 later)",
+   "features": [
+    "F-KEY-07",
+    "F-KEY-08",
+    "F-KEY-13"
+   ],
+   "contributes_to": [],
+   "findings": [
+    "SEC-04",
+    "SEC-38",
+    "SEC-05",
+    "SEC-37",
+    "SEC-15"
+   ],
+   "tb": [],
+   "wave": 3,
+   "waves": [
+    3,
+    8
+   ],
+   "checkpoints": [
+    "CP-2",
+    "CP-6"
+   ],
+   "depends_on_ws": [
+    "WS-00",
+    "WS-18"
+   ],
+   "owned_paths": [
+    "packages/ux-vault/src/stealth-export*.ts",
+    "packages/ux-vault/src/keystore-portable.ts",
+    "packages/ux-vault/src/portable-parity.test.ts",
+    "packages/ux-vault/src/portable-errors.ts",
+    "test-vectors/stealth-export-v1.json",
+    "test-vectors/keystore-v1-golden.json",
+    "docs/developer/key-portability-formats.md",
+    "docs/developer/byte-layouts.md",
+    "docs/specs/18-stealth-keypair-export.md",
+    "packages/secret-box/**"
+   ],
+   "handover_in": [
+    {
+     "paths": [
+      "packages/ux-vault/src/keystore-portable.ts",
+      "packages/ux-vault/src/portable-parity.test.ts",
+      "packages/ux-vault/src/portable-errors.ts"
+     ],
+     "from": "WS-18",
+     "at": "CP-1"
+    }
+   ],
+   "model_tier": "strongest",
+   "reviewer_tier": "strongest",
+   "security_review": true,
+   "executor": "worker",
+   "unblocked": true,
+   "unblocked_scope": "all",
+   "blocked_items": [],
+   "owner_gate": [
+    "OD-10",
+    "OD-09"
+   ],
+   "external": [],
+   "est_days": [
+    9.6,
+    14.75
+   ],
+   "worktree": "../wt/WS-03",
+   "branch": "ws/WS-03-spec18-formats",
+   "mapping": "WS-03",
+   "objectives": "Freeze K01/K02 (CP-2): strict typed formats, verified derivation, new AAD domain envelope, golden v1 vector; legacy keystore v1 byte-identical; no secret JSON-hex plaintext.",
+   "items": [
+    {
+     "id": "WS-03.1",
+     "refs": [
+      "F-KEY-07",
+      "SEC-38",
+      "OD-10"
+     ],
+     "wave": 3,
+     "cp": "CP-2",
+     "est": [
+      4.25,
+      6.0
+     ],
+     "strategy": "implement",
+     "deps": [
+      "CP-0"
+     ],
+     "gate": "exit",
+     "owner": [
+      "OD-10"
+     ],
+     "ext": [],
+     "unblocked": [
+      true,
+      ""
+     ],
+     "parallel": false,
+     "what": "K01 per rows IC; OD-10 recommendation applied + recorded in spec 18 for owner sign-off; D-21 hash convention recorded"
+    },
+    {
+     "id": "WS-03.2",
+     "refs": [
+      "F-KEY-08",
+      "SEC-15",
+      "SEC-37"
+     ],
+     "wave": 3,
+     "cp": "CP-2",
+     "est": [
+      4.25,
+      6.5
+     ],
+     "strategy": "implement",
+     "deps": [
+      "WS-03.1",
+      "WS-18.2"
+     ],
+     "gate": "exit",
+     "owner": [
+      "OD-09"
+     ],
+     "ext": [],
+     "unblocked": [
+      true,
+      "floor for new formats per OD-09 default (WS-18 high tier: generated diceware default or ~80-bit estimate; never score>=3 alone)"
+     ],
+     "parallel": false,
+     "what": "K02 per rows IC; golden keystore v1 vector first (test-vectors/keystore-v1-golden.json, injected salt/IV, test-only); docs/developer/byte-layouts.md:195-198 drift fixed (SEC-15); passphrase tier `high` from WS-18 (OD-09 default)"
+    },
+    {
+     "id": "WS-03.3",
+     "refs": [
+      "F-KEY-13"
+     ],
+     "wave": 8,
+     "cp": "CP-6",
+     "est": [
+      1.1,
+      2.25
+     ],
+     "strategy": "defer",
+     "deps": [
+      "CP-5"
+     ],
+     "gate": "none",
+     "owner": [],
+     "ext": [],
+     "unblocked": [
+      true,
+      ""
+     ],
+     "parallel": true,
+     "what": "secret-box wiring revisit after KC (deferred; suites stay green)"
+    }
+   ]
+  },
+  {
+   "ws": "WS-04",
+   "name": "Pages origin gate (TB-03) + bundle/egress checks + static-beta deploy prep (F-WEB-21)",
+   "features": [
+    "F-WEB-21"
+   ],
+   "contributes_to": [],
+   "findings": [
+    "SEC-09",
+    "SEC-24",
+    "SEC-40",
+    "SEC-10",
+    "SEC-28",
+    "SEC-46",
+    "SEC-01",
+    "SEC-08",
+    "SEC-02"
+   ],
+   "tb": [
+    "TB-03",
+    "TB-07"
+   ],
+   "wave": 1,
+   "waves": [
+    1,
+    2,
+    6,
+    9
+   ],
+   "checkpoints": [
+    "CP-1",
+    "CP-4",
+    "CP-7"
+   ],
+   "depends_on_ws": [
+    "WS-00",
+    "WS-01",
+    "WS-05",
+    "WS-20",
+    "WS-24"
+   ],
+   "owned_paths": [
+    "scripts/pages/**",
+    "apps/web/scripts/scan-bundle.mjs",
+    "apps/web/src/scanBundle.test.ts",
+    "apps/web/scripts/localBuildProfile.mjs",
+    "apps/web/scripts/localBuildProfile.test.mjs",
+    "scripts/qualify-lean.sh",
+    "docs/pages/**",
+    "docs/adr/ADR-0029-github-pages-static-beta.md"
+   ],
+   "handover_in": [],
+   "model_tier": "mid",
+   "reviewer_tier": "strongest",
+   "security_review": true,
+   "executor": "worker",
+   "unblocked": true,
+   "unblocked_scope": "partial",
+   "blocked_items": [
+    {
+     "item": "WS-04.6",
+     "reason": "prep only",
+     "owner": [
+      "OA-02",
+      "OD-08",
+      "OD-06",
+      "OD-07",
+      "OA-01",
+      "OA-05",
+      "OA-06"
+     ]
+    }
+   ],
+   "owner_gate": [
+    "OA-02",
+    "OD-08",
+    "OD-06",
+    "OD-07",
+    "OA-01",
+    "OA-05",
+    "OA-06"
+   ],
+   "external": [],
+   "est_days": [
+    3.6,
+    7.25
+   ],
+   "worktree": "../wt/WS-04",
+   "branch": "ws/WS-04-pages-gate",
+   "mapping": "WS-04 (F-WEB-21)",
+   "objectives": "Origin gate checks the deployed origin, not the declared one; every *.html scanned; one lean exclusion list; extended egress smoke; deploy prep short of owner dispatch.",
+   "items": [
+    {
+     "id": "WS-04.1",
+     "refs": [
+      "SEC-09"
+     ],
+     "wave": 1,
+     "cp": "CP-1",
+     "est": [
+      0.5,
+      1.0
+     ],
+     "strategy": "repair",
+     "deps": [],
+     "gate": "start",
+     "owner": [],
+     "ext": [],
+     "unblocked": [
+      true,
+      ""
+     ],
+     "parallel": true,
+     "what": "smoke.mjs/smoke-url.mjs/build-pages.sh: assert new URL(page_url).origin === GHOSTPAY_PAGES_ORIGIN; any origin serving other project sites = shared; pages.yml assertion + cname/https_enforced check via coord-request (WS-20)"
+    },
+    {
+     "id": "WS-04.2",
+     "refs": [
+      "SEC-24"
+     ],
+     "wave": 1,
+     "cp": "CP-1",
+     "est": [
+      0.5,
+      1.0
+     ],
+     "strategy": "repair",
+     "deps": [],
+     "gate": "start",
+     "owner": [],
+     "ext": [],
+     "unblocked": [
+      true,
+      ""
+     ],
+     "parallel": true,
+     "what": "scan-bundle.mjs checks every emitted *.html (inline script/CSP); single exported lean exclusion list used by localBuildProfile.mjs and scripts/pages/verify-pages-site.mjs"
+    },
+    {
+     "id": "WS-04.3",
+     "refs": [
+      "SEC-40"
+     ],
+     "wave": 1,
+     "cp": "CP-1",
+     "est": [
+      0.1,
+      0.25
+     ],
+     "strategy": "repair",
+     "deps": [],
+     "gate": "none",
+     "owner": [],
+     "ext": [],
+     "unblocked": [
+      true,
+      ""
+     ],
+     "parallel": true,
+     "what": "Pages banner link (build-pages.sh) target=_blank rel=\"noopener noreferrer\""
+    },
+    {
+     "id": "WS-04.4",
+     "refs": [
+      "TB-07",
+      "SEC-10",
+      "SEC-28"
+     ],
+     "wave": 2,
+     "cp": "CP-1",
+     "est": [
+      0.25,
+      0.5
+     ],
+     "strategy": "repair",
+     "deps": [],
+     "gate": "none",
+     "owner": [],
+     "ext": [],
+     "unblocked": [
+      true,
+      ""
+     ],
+     "parallel": true,
+     "what": "docs/pages: TB-07 default (lean keeps v1 payer buffer) in README/RELEASE_MATRIX; E-17 lines 48-49; local-proxy claim :49"
+    },
+    {
+     "id": "WS-04.5",
+     "refs": [
+      "SEC-46"
+     ],
+     "wave": 6,
+     "cp": "CP-4",
+     "est": [
+      0.75,
+      1.5
+     ],
+     "strategy": "implement",
+     "deps": [
+      "WS-04.4"
+     ],
+     "gate": "start",
+     "owner": [],
+     "ext": [],
+     "unblocked": [
+      true,
+      ""
+     ],
+     "parallel": true,
+     "what": "smoke.mjs walks every lean view + opens a fixture invoice; asserts zero requests outside the site; run on local Pages artifact (`bash scripts/pages/build-pages.sh` + `node scripts/pages/serve-pages.mjs`)"
+    },
+    {
+     "id": "WS-04.6",
+     "refs": [
+      "F-WEB-21",
+      "SEC-01",
+      "SEC-02",
+      "SEC-08"
+     ],
+     "wave": 9,
+     "cp": "CP-7",
+     "est": [
+      1.5,
+      3.0
+     ],
+     "strategy": "defer",
+     "deps": [
+      "CP-4",
+      "WS-05.4"
+     ],
+     "gate": "start",
+     "owner": [
+      "OA-02",
+      "OD-08",
+      "OD-06",
+      "OD-07",
+      "OA-01",
+      "OA-05",
+      "OA-06"
+     ],
+     "ext": [],
+     "unblocked": [
+      false,
+      "prep only"
+     ],
+     "parallel": true,
+     "what": "After OD-06/OD-07/OD-08/OA-01/OA-02/OA-05/OA-06: live `node scripts/pages/smoke.mjs <url> --commit <sha>` incl. origin assertion + extended egress walk; deployment and release recorded as separate states"
+    }
+   ]
+  },
+  {
+   "ws": "WS-05",
+   "name": "Deployment of record: manifest signing helper, anvil rehearsal, matrix revalidation, B02-B04 evidence",
+   "features": [
+    "F-DEP-01",
+    "F-DEP-04",
+    "F-DEP-03"
+   ],
+   "contributes_to": [],
+   "findings": [
+    "SEC-32",
+    "SEC-44",
+    "SEC-36"
+   ],
+   "tb": [
+    "TB-06"
+   ],
+   "wave": 2,
+   "waves": [
+    2,
+    6,
+    9
+   ],
+   "checkpoints": [
+    "CP-1",
+    "CP-4",
+    "CP-7"
+   ],
+   "depends_on_ws": [
+    "WS-00"
+   ],
+   "owned_paths": [
+    "apps/web/deployments/**",
+    "apps/web/scripts/validate-deployments.mjs",
+    "apps/web/e2e/prepare-manifest.mjs",
+    "apps/web/src/lib/bundledManifests.ts",
+    "apps/web/src/lib/releaseKeys.ts",
+    "apps/web/src/lib/releaseKeys*.test.ts",
+    "packages/chain-adapters/src/config/chains.ts",
+    "packages/chain-adapters/config/matrix.json",
+    "scripts/check-chain-matrix.mjs",
+    "scripts/lib/chain-matrix.mjs",
+    "scripts/tests/chain-matrix*.test.mjs",
+    "scripts/testnet/**",
+    "packages/contracts/script/SmokeSepolia.s.sol",
+    "packages/contracts/scripts/pre-deploy-check.sh",
+    "docs/operators/testnet-runbook.md"
+   ],
+   "handover_in": [],
+   "model_tier": "strongest",
+   "reviewer_tier": "strongest",
+   "security_review": true,
+   "executor": "worker",
+   "unblocked": true,
+   "unblocked_scope": "partial",
+   "blocked_items": [
+    {
+     "item": "WS-05.4",
+     "reason": "owner broadcast + key",
+     "owner": [
+      "OD-07",
+      "OA-03",
+      "OA-04"
+     ]
+    }
+   ],
+   "owner_gate": [
+    "OD-07",
+    "OD-14",
+    "OA-04",
+    "OD-08",
+    "OA-03"
+   ],
+   "external": [
+    "EX-06"
+   ],
+   "est_days": [
+    6.75,
+    12.5
+   ],
+   "worktree": "../wt/WS-05",
+   "branch": "ws/WS-05-deploy-record",
+   "mapping": "WS-05 (split: F-DEP-02, F-WEB-17, F-CTR-04 -> WS-24)",
+   "objectives": "Everything short of the owner broadcast proven on local anvil; offline signing helper; strict matrix gate unchanged; evidence ingestion after OA-04.",
+   "items": [
+    {
+     "id": "WS-05.1",
+     "refs": [
+      "F-DEP-01",
+      "SEC-44"
+     ],
+     "wave": 2,
+     "cp": "CP-1",
+     "est": [
+      1.25,
+      2.5
+     ],
+     "strategy": "repair",
+     "deps": [],
+     "gate": "start",
+     "owner": [
+      "OD-07"
+     ],
+     "ext": [],
+     "unblocked": [
+      true,
+      "repair now; owner signing later"
+     ],
+     "parallel": true,
+     "what": "README:37 drift; scripts/testnet/sign-manifest.mjs offline helper (stdin/encrypted keystore, no argv secret, no network); validate-deployments refuses the public Playwright key 0x0707..07"
+    },
+    {
+     "id": "WS-05.2",
+     "refs": [
+      "F-DEP-04",
+      "SEC-36",
+      "OD-14"
+     ],
+     "wave": 6,
+     "cp": "CP-4",
+     "est": [
+      2.25,
+      4.0
+     ],
+     "strategy": "implement",
+     "deps": [
+      "WS-05.1"
+     ],
+     "gate": "start",
+     "owner": [
+      "OD-14",
+      "OA-04",
+      "OD-08"
+     ],
+     "ext": [],
+     "unblocked": [
+      true,
+      "broadcast blocked on OA-04"
+     ],
+     "parallel": true,
+     "what": "Deploy driver network list == enabled testnet set; rehearse on anvil network-free; FEE_RECIPIENT accepts ETH (readback smoke); OD-14 default EOA recorded in manifest; hoodi resolved"
+    },
+    {
+     "id": "WS-05.3",
+     "refs": [
+      "F-DEP-03"
+     ],
+     "wave": 6,
+     "cp": "CP-4",
+     "est": [
+      2.25,
+      4.0
+     ],
+     "strategy": "implement",
+     "deps": [
+      "WS-05.2"
+     ],
+     "gate": "start",
+     "owner": [
+      "OA-04"
+     ],
+     "ext": [
+      "EX-06"
+     ],
+     "unblocked": [
+      true,
+      "cells need B02 evidence"
+     ],
+     "parallel": true,
+     "what": "`node scripts/check-chain-matrix.mjs --revalidate --rpc <user url>` read-only codehash re-read + diff; never edits matrix.json"
+    },
+    {
+     "id": "WS-05.4",
+     "refs": [
+      "B02",
+      "B03",
+      "B04",
+      "SEC-32"
+     ],
+     "wave": 9,
+     "cp": "CP-7",
+     "est": [
+      1.0,
+      2.0
+     ],
+     "strategy": "implement",
+     "deps": [
+      "CP-4"
+     ],
+     "gate": "start",
+     "owner": [
+      "OD-07",
+      "OA-03",
+      "OA-04"
+     ],
+     "ext": [],
+     "unblocked": [
+      false,
+      "owner broadcast + key"
+     ],
+     "parallel": true,
+     "what": "Ingest owner Sepolia broadcast: tx hashes, blocks, verify-sources, runtime codehash read-back (CLI as 2nd impl), owner-signed manifest bundled, `GHOSTPAY_RELEASE_PUBKEYS=<key> node apps/web/scripts/validate-deployments.mjs`, Sepolia matrix cells pinned"
+    }
+   ]
+  },
+  {
+   "ws": "WS-06",
+   "name": "Mythril keyed disposition mechanism (OD-03 option a prototype) + analyzer extensions (D-12)",
+   "features": [
+    "F-CTR-07"
+   ],
+   "contributes_to": [],
+   "findings": [
+    "SEC-33",
+    "SEC-17",
+    "SEC-47"
+   ],
+   "tb": [],
+   "wave": 6,
+   "waves": [
+    6,
+    8,
+    9
+   ],
+   "checkpoints": [
+    "CP-4",
+    "CP-6",
+    "CP-9"
+   ],
+   "depends_on_ws": [
+    "WS-00"
+   ],
+   "owned_paths": [
+    "packages/contracts/scripts/run-mythril.sh",
+    "packages/contracts/scripts/run-echidna.sh",
+    "packages/contracts/scripts/mythril-compat.py",
+    "packages/contracts/scripts/collect-analysis-report.py",
+    "packages/contracts/test/MythrilExpiryDispositions.t.sol",
+    "packages/contracts/test/MythrilFactoryDispositions.t.sol",
+    "packages/contracts/test/echidna/**",
+    "packages/contracts/echidna.yaml",
+    "docs/audits/mythril-*",
+    "docs/audits/analyzer-*",
+    "scripts/audit/**",
+    "scripts/tests/mythril-runner.test.mjs",
+    "scripts/tests/echidna-runner.test.mjs"
+   ],
+   "handover_in": [],
+   "model_tier": "strongest",
+   "reviewer_tier": "strongest",
+   "security_review": true,
+   "executor": "worker",
+   "unblocked": true,
+   "unblocked_scope": "partial",
+   "blocked_items": [
+    {
+     "item": "WS-06.3",
+     "reason": "OD-03",
+     "owner": [
+      "OD-03",
+      "OA-01"
+     ]
+    }
+   ],
+   "owner_gate": [
+    "OD-03",
+    "OA-01"
+   ],
+   "external": [],
+   "est_days": [
+    4.75,
+    9.0
+   ],
+   "worktree": "../wt/WS-06",
+   "branch": "ws/WS-06-analyzer-gate",
+   "mapping": "WS-06 (F-CTR-07)",
+   "objectives": "Make OD-03 concrete without weakening the gate: keyed, source-matched disposition file; report-only comparison for the Sepolia gate (\"no record beyond the 11\"); D-12 Echidna/Slither extensions; enable only after OD-03. packages/contracts/src/** is frozen (no WS owns it).",
+   "items": [
+    {
+     "id": "WS-06.1",
+     "refs": [
+      "SEC-33",
+      "F-CTR-07"
+     ],
+     "wave": 6,
+     "cp": "CP-4",
+     "est": [
+      2.0,
+      3.5
+     ],
+     "strategy": "refactor",
+     "deps": [
+      "CP-0"
+     ],
+     "gate": "start",
+     "owner": [],
+     "ext": [],
+     "unblocked": [
+      true,
+      ""
+     ],
+     "parallel": true,
+     "what": "Disposition file keyed (contract, function, SWC, PC/source map, solc, source keccak) + checker in REPORT-ONLY mode; any unmatched/new/changed record reported; R8 timeout behaviour recorded; release.yml untouched"
+    },
+    {
+     "id": "WS-06.2",
+     "refs": [
+      "F-CTR-07",
+      "SEC-17"
+     ],
+     "wave": 8,
+     "cp": "CP-6",
+     "est": [
+      2.5,
+      5.0
+     ],
+     "strategy": "refactor",
+     "deps": [
+      "WS-06.1"
+     ],
+     "gate": "none",
+     "owner": [
+      "OD-03",
+      "OA-01"
+     ],
+     "ext": [],
+     "unblocked": [
+      true,
+      "analyzer extensions unblocked"
+     ],
+     "parallel": true,
+     "what": "D-12: Echidna actions (permit paths, forged signers, hostile tokens, factory deploy/fee, PolicyRouter, L2 timestamp model); one-time full-severity Slither triage report; Mythril complete runs Router/PolicyRouter"
+    },
+    {
+     "id": "WS-06.3",
+     "refs": [
+      "F-CTR-07",
+      "OD-03",
+      "SEC-47"
+     ],
+     "wave": 9,
+     "cp": "CP-9",
+     "est": [
+      0.25,
+      0.5
+     ],
+     "strategy": "refactor",
+     "deps": [
+      "WS-06.2"
+     ],
+     "gate": "none",
+     "owner": [
+      "OD-03",
+      "OA-01"
+     ],
+     "ext": [],
+     "unblocked": [
+      false,
+      "OD-03"
+     ],
+     "parallel": true,
+     "what": "Enable the keyed gate in release.yml/contract-analysis.yml (coord applies) only after OD-03 approval; rehearsal per WS-20.6"
+    }
+   ]
+  },
+  {
+   "ws": "WS-07",
+   "name": "Step-up re-auth: OD-01 fail-closed default (SEC-03/TB-04) + archive export step-up (F-KEY-05)",
+   "features": [
+    "F-KEY-05"
+   ],
+   "contributes_to": [
+    "F-KEY-01",
+    "F-KEY-03",
+    "F-WEB-11",
+    "F-WEB-12"
+   ],
+   "findings": [
+    "SEC-03",
+    "SEC-40"
+   ],
+   "tb": [
+    "TB-04"
+   ],
+   "wave": 1,
+   "waves": [
+    1,
+    3
+   ],
+   "checkpoints": [
+    "CP-1",
+    "CP-2"
+   ],
+   "depends_on_ws": [
+    "WS-00"
+   ],
+   "owned_paths": [
+    "apps/web/src/lib/keyVault.ts",
+    "apps/web/src/lib/keyVault*.test.ts",
+    "apps/web/src/lib/session.ts",
+    "apps/web/src/lib/session*.test.ts",
+    "apps/web/src/lib/stepUp.ts",
+    "apps/web/src/lib/stepUp*.test.ts",
+    "apps/web/src/views/SellerKeys.tsx",
+    "apps/web/src/views/SellerKeys*.test.tsx",
+    "apps/web/src/views/Sweep.tsx",
+    "apps/web/src/views/Sweep*.test.tsx",
+    "apps/web/src/components/BackupPanel.tsx",
+    "apps/web/src/components/BackupPanel*.test.tsx",
+    "apps/web/src/components/TagArchive.tsx",
+    "apps/web/src/components/TagArchive*.test.tsx",
+    "apps/web/src/lib/tagArchive.ts",
+    "apps/web/e2e/backup-panel.spec.ts"
+   ],
+   "handover_in": [],
+   "model_tier": "strongest",
+   "reviewer_tier": "strongest",
+   "security_review": true,
+   "executor": "worker",
+   "unblocked": true,
+   "unblocked_scope": "all",
+   "blocked_items": [],
+   "owner_gate": [
+    "OD-01"
+   ],
+   "external": [],
+   "est_days": [
+    2.95,
+    6.0
+   ],
+   "worktree": "../wt/WS-07",
+   "branch": "ws/WS-07-step-up",
+   "mapping": "WS-07 (F-KEY-05)",
+   "objectives": "No new secret export without re-authentication: vault-less sessions refuse the spec-18 exports (K03-K06 encrypted and raw keys, archive) through one step-up API that K03-K06 consume (OD-01 default); the existing encrypted keystore v1 backup and vault creation stay available with disclosure (constraint 4; BLOCKERS OD-01); sweep unchanged but warned.",
+   "items": [
+    {
+     "id": "WS-07.1",
+     "refs": [
+      "SEC-03",
+      "SEC-40",
+      "TB-04"
+     ],
+     "wave": 1,
+     "cp": "CP-1",
+     "est": [
+      1.25,
+      2.5
+     ],
+     "strategy": "repair",
+     "deps": [],
+     "gate": "start",
+     "owner": [
+      "OD-01"
+     ],
+     "ext": [],
+     "unblocked": [
+      true,
+      "fail-closed default; model choice OD-01 later"
+     ],
+     "parallel": true,
+     "what": "keep authorizeKeyExport returning undefined for the keystore v1 backup in vault-less sessions (keyVault.ts:257-266; the only encrypted backup of in-memory keys, BLOCKERS OD-01) and add a disclosure + typed confirmation before that download; keyVault.test.ts:241 pin kept and extended; new spec-18 exports refuse without a vault through WS-07.2 requireStepUp; vault-less sweep warning + beta disclosure copy (coord en.json); beforeunload guard while backup unverified (SEC-40 part 2)"
+    },
+    {
+     "id": "WS-07.2",
+     "refs": [
+      "F-KEY-05",
+      "TB-04"
+     ],
+     "wave": 3,
+     "cp": "CP-2",
+     "est": [
+      1.7,
+      3.5
+     ],
+     "strategy": "repair",
+     "deps": [
+      "WS-07.1"
+     ],
+     "gate": "none",
+     "owner": [
+      "OD-01"
+     ],
+     "ext": [],
+     "unblocked": [
+      true,
+      "implements OD-01 choice if recorded, else default (a)"
+     ],
+     "parallel": true,
+     "what": "requireStepUp(kind) API (vault passphrase re-entry; pluggable for OD-01 (c) WebAuthn UV); tag-archive export uses it"
+    }
+   ]
+  },
+  {
+   "ws": "WS-08",
+   "name": "Spec 18 K03-K04: Payment details export UI (public + encrypted keypair), raw single-key export",
+   "features": [
+    "F-KEY-09",
+    "F-KEY-10"
+   ],
+   "contributes_to": [
+    "F-KEY-11"
+   ],
+   "findings": [
+    "SEC-03",
+    "SEC-13"
+   ],
+   "tb": [],
+   "wave": 7,
+   "waves": [
+    7
+   ],
+   "checkpoints": [
+    "CP-5"
+   ],
+   "depends_on_ws": [
+    "WS-00",
+    "WS-03",
+    "WS-07",
+    "WS-18",
+    "WS-19",
+    "WS-25"
+   ],
+   "owned_paths": [
+    "apps/web/src/views/PaymentDetails.tsx",
+    "apps/web/src/views/PaymentDetails*.test.tsx",
+    "apps/web/src/lib/stealthExport.ts",
+    "apps/web/src/lib/stealthExport*.test.ts",
+    "apps/web/src/views/Scan.tsx",
+    "apps/web/src/views/Scan*.test.tsx",
+    "apps/web/src/components/RawKeyReveal.tsx",
+    "apps/web/src/components/RawKeyReveal*.test.tsx",
+    "apps/web/e2e/stealth-export.spec.ts"
+   ],
+   "handover_in": [],
+   "model_tier": "strongest",
+   "reviewer_tier": "strongest",
+   "security_review": true,
+   "executor": "worker",
+   "unblocked": true,
+   "unblocked_scope": "all",
+   "blocked_items": [],
+   "owner_gate": [
+    "OD-01",
+    "OD-02"
+   ],
+   "external": [],
+   "est_days": [
+    10.25,
+    16.5
+   ],
+   "worktree": "../wt/WS-08",
+   "branch": "ws/WS-08-spec18-export-ui",
+   "mapping": "WS-08 (F-KEY-11/K05 split -> WS-25)",
+   "objectives": "K03 seller-only export with re-auth and explicit chain/EOA/scope; K04 raw key behind re-auth + second confirmation, no clipboard (OD-02 default), anvil interop proof (WS-19.5); mounts the K05 panel from WS-25.",
+   "items": [
+    {
+     "id": "WS-08.1",
+     "refs": [
+      "F-KEY-09"
+     ],
+     "wave": 7,
+     "cp": "CP-5",
+     "est": [
+      6.0,
+      10.0
+     ],
+     "strategy": "implement",
+     "deps": [
+      "CP-2"
+     ],
+     "gate": "exit",
+     "owner": [
+      "OD-01",
+      "OD-02"
+     ],
+     "ext": [],
+     "unblocked": [
+      true,
+      "with OD-01/OD-02 fail-closed defaults (vault required, no clipboard)"
+     ],
+     "parallel": false,
+     "what": "K03 per rows IC (Payment details > Export from Scan row; ownership label separate from receipt status)"
+    },
+    {
+     "id": "WS-08.2",
+     "refs": [
+      "F-KEY-10"
+     ],
+     "wave": 7,
+     "cp": "CP-5",
+     "est": [
+      4.0,
+      6.0
+     ],
+     "strategy": "implement",
+     "deps": [
+      "WS-08.1"
+     ],
+     "gate": "exit",
+     "owner": [
+      "OD-02",
+      "OD-01"
+     ],
+     "ext": [],
+     "unblocked": [
+      true,
+      "OD-02 default: no clipboard; file download + held reveal"
+     ],
+     "parallel": false,
+     "what": "K04 per rows IC; independent proof via pinned Foundry 1.8.5 cast/anvil + WS-19.5"
+    },
+    {
+     "id": "WS-08.3",
+     "refs": [
+      "F-KEY-11"
+     ],
+     "wave": 7,
+     "cp": "CP-5",
+     "est": [
+      0.25,
+      0.5
+     ],
+     "strategy": "implement",
+     "deps": [
+      "WS-08.2",
+      "WS-25.2"
+     ],
+     "gate": "exit",
+     "owner": [],
+     "ext": [],
+     "unblocked": [
+      true,
+      ""
+     ],
+     "parallel": true,
+     "what": "Mount the WS-25 K05 archive panel in Payment details/Scan; e2e covers the mounted flow"
+    }
+   ]
+  },
+  {
+   "ws": "WS-09",
+   "name": "Spec 18 K06: encrypted master spend/view backup; legacy keystore v1 unchanged and distinct",
+   "features": [
+    "F-KEY-12"
+   ],
+   "contributes_to": [],
+   "findings": [
+    "SEC-04",
+    "SEC-15"
+   ],
+   "tb": [],
+   "wave": 7,
+   "waves": [
+    7
+   ],
+   "checkpoints": [
+    "CP-5"
+   ],
+   "depends_on_ws": [
+    "WS-00",
+    "WS-03",
+    "WS-07",
+    "WS-18",
+    "WS-19"
+   ],
+   "owned_paths": [
+    "packages/ux-vault/src/stealth-master*.ts",
+    "apps/web/src/lib/keystore.ts",
+    "apps/web/src/lib/keystore*.test.ts",
+    "apps/web/e2e/master-backup.spec.ts",
+    "docs/user/master-backup-recovery.md"
+   ],
+   "handover_in": [
+    {
+     "paths": [
+      "apps/web/src/lib/session.ts",
+      "apps/web/src/lib/session*.test.ts",
+      "apps/web/src/views/SellerKeys.tsx",
+      "apps/web/src/views/SellerKeys*.test.tsx"
+     ],
+     "from": "WS-07",
+     "at": "CP-2"
+    },
+    {
+     "paths": [
+      "apps/web/src/lib/keystore.ts",
+      "apps/web/src/lib/keystore*.test.ts"
+     ],
+     "from": "WS-18",
+     "at": "CP-1"
+    }
+   ],
+   "model_tier": "strongest",
+   "reviewer_tier": "strongest",
+   "security_review": true,
+   "executor": "worker",
+   "unblocked": true,
+   "unblocked_scope": "all",
+   "blocked_items": [],
+   "owner_gate": [
+    "OD-09",
+    "OD-01"
+   ],
+   "external": [],
+   "est_days": [
+    6.75,
+    9.75
+   ],
+   "worktree": "../wt/WS-09",
+   "branch": "ws/WS-09-spec18-master",
+   "mapping": "WS-09",
+   "objectives": "K06 master backup with scheme/version + recovery instructions; invoice-signing key never included; v1 keystore byte-identical; offline recovery of an omitted historic announcement.",
+   "items": [
+    {
+     "id": "WS-09.1",
+     "refs": [
+      "F-KEY-12"
+     ],
+     "wave": 7,
+     "cp": "CP-5",
+     "est": [
+      6.75,
+      9.75
+     ],
+     "strategy": "implement",
+     "deps": [
+      "CP-2"
+     ],
+     "gate": "exit",
+     "owner": [
+      "OD-09",
+      "OD-01"
+     ],
+     "ext": [],
+     "unblocked": [
+      true,
+      "after CP-2 (formats + step-up); OD-01 default"
+     ],
+     "parallel": false,
+     "what": "K06 per rows IC (format + UI + recovery instructions)"
+    }
+   ]
+  },
+  {
+   "ws": "WS-10",
+   "name": "Payer UX + v2 buffer journey + fiat guards (TB-07 lean test)",
+   "features": [
+    "F-WEB-05",
+    "F-PROTO-05",
+    "F-WEB-26",
+    "F-WEB-02",
+    "F-CTR-06",
+    "F-WEB-04"
+   ],
+   "contributes_to": [],
+   "findings": [],
+   "tb": [
+    "TB-07"
+   ],
+   "wave": 4,
+   "waves": [
+    4,
+    8
+   ],
+   "checkpoints": [
+    "CP-3",
+    "CP-6"
+   ],
+   "depends_on_ws": [
+    "WS-00",
+    "WS-02",
+    "WS-04"
+   ],
+   "owned_paths": [
+    "apps/web/src/lib/pay.ts",
+    "apps/web/src/lib/pay*.test.ts",
+    "apps/web/src/lib/payExec.ts",
+    "apps/web/src/lib/payExec*.test.ts",
+    "apps/web/src/lib/displayText.ts",
+    "apps/web/src/lib/transactionOutcome.ts",
+    "apps/web/src/lib/scanSpam.ts",
+    "apps/web/src/views/Pay.tsx",
+    "apps/web/src/views/Pay.test.tsx",
+    "apps/web/src/views/Pay.*.test.tsx",
+    "apps/web/src/views/CreateInvoice.tsx",
+    "apps/web/src/views/CreateInvoice*.test.tsx",
+    "packages/address-safety/**",
+    "packages/chain-adapters/src/quote.ts",
+    "packages/chain-adapters/src/quote*.test.ts",
+    "apps/web/src/lib/duplicateAttemptJournal.ts",
+    "docs/user/seller-privacy.md"
+   ],
+   "handover_in": [
+    {
+     "paths": [
+      "docs/user/seller-privacy.md"
+     ],
+     "from": "WS-02",
+     "at": "CP-1"
+    }
+   ],
+   "model_tier": "mid",
+   "reviewer_tier": "strongest",
+   "security_review": true,
+   "executor": "worker",
+   "unblocked": true,
+   "unblocked_scope": "all",
+   "blocked_items": [],
+   "owner_gate": [],
+   "external": [],
+   "est_days": [
+    6.9,
+    12.2
+   ],
+   "worktree": "../wt/WS-10",
+   "branch": "ws/WS-10-payer-ux",
+   "mapping": "WS-10",
+   "objectives": "Close the payer-side gaps: lean payer-buffer test (TB-07 default), spec 05 2C hint, payeeTrust decision, OP-stack sequencer guard, v2 buffer anvil journey.",
+   "items": [
+    {
+     "id": "WS-10.1",
+     "refs": [
+      "F-WEB-05",
+      "TB-07"
+     ],
+     "wave": 4,
+     "cp": "CP-3",
+     "est": [
+      0.45,
+      1.1
+     ],
+     "strategy": "repair",
+     "deps": [
+      "WS-04.4"
+     ],
+     "gate": "start",
+     "owner": [],
+     "ext": [],
+     "unblocked": [
+      true,
+      ""
+     ],
+     "parallel": true,
+     "what": "Lean + full payer-buffer unit tests (keep v1 buffer in lean; docs fixed in WS-04.4)"
+    },
+    {
+     "id": "WS-10.2",
+     "refs": [
+      "F-PROTO-05"
+     ],
+     "wave": 4,
+     "cp": "CP-3",
+     "est": [
+      0.75,
+      1.35
+     ],
+     "strategy": "implement",
+     "deps": [
+      "WS-10.1"
+     ],
+     "gate": "exit",
+     "owner": [],
+     "ext": [],
+     "unblocked": [
+      true,
+      ""
+     ],
+     "parallel": true,
+     "what": "Spec 05 2C hint on Pay; no network call"
+    },
+    {
+     "id": "WS-10.3",
+     "refs": [
+      "F-WEB-26"
+     ],
+     "wave": 4,
+     "cp": "CP-3",
+     "est": [
+      0.7,
+      1.5
+     ],
+     "strategy": "repair",
+     "deps": [
+      "WS-10.2"
+     ],
+     "gate": "none",
+     "owner": [],
+     "ext": [],
+     "unblocked": [
+      true,
+      ""
+     ],
+     "parallel": true,
+     "what": "payeeTrust decision (ADR note; export internal or wired with tests); owner acknowledgement requested as OD-23 (engineering never records it)"
+    },
+    {
+     "id": "WS-10.4",
+     "refs": [
+      "F-WEB-02"
+     ],
+     "wave": 4,
+     "cp": "CP-3",
+     "est": [
+      1.5,
+      2.5
+     ],
+     "strategy": "repair",
+     "deps": [
+      "WS-10.3"
+     ],
+     "gate": "none",
+     "owner": [],
+     "ext": [],
+     "unblocked": [
+      true,
+      ""
+     ],
+     "parallel": true,
+     "what": "OP-stack sequencer-uptime + grace guard; deviation/USD-peg checks when configured (full profile)"
+    },
+    {
+     "id": "WS-10.5",
+     "refs": [
+      "F-CTR-06"
+     ],
+     "wave": 4,
+     "cp": "CP-3",
+     "est": [
+      1.5,
+      2.0
+     ],
+     "strategy": "implement",
+     "deps": [
+      "WS-10.4"
+     ],
+     "gate": "none",
+     "owner": [],
+     "ext": [],
+     "unblocked": [
+      true,
+      ""
+     ],
+     "parallel": true,
+     "what": "Anvil journey: v2 bufferPolicy -> payment with buffer -> direct sweep paid only from buffer; net asserted"
+    },
+    {
+     "id": "WS-10.6",
+     "refs": [
+      "F-WEB-04"
+     ],
+     "wave": 8,
+     "cp": "CP-6",
+     "est": [
+      2.0,
+      3.75
+     ],
+     "strategy": "defer",
+     "deps": [
+      "CP-5"
+     ],
+     "gate": "none",
+     "owner": [],
+     "ext": [],
+     "unblocked": [
+      true,
+      ""
+     ],
+     "parallel": true,
+     "what": "Confirm disclosure present (deferred)"
+    }
+   ]
+  },
+  {
+   "ws": "WS-11",
+   "name": "Scanner reorg cross-check + CLI/relayer evidence + CLI backup independent decode",
+   "features": [
+    "F-PROTO-03",
+    "F-RLY-01",
+    "F-CLI-01",
+    "F-CLI-03"
+   ],
+   "contributes_to": [],
+   "findings": [
+    "SEC-34",
+    "SEC-04"
+   ],
+   "tb": [],
+   "wave": 4,
+   "waves": [
+    4
+   ],
+   "checkpoints": [
+    "CP-3"
+   ],
+   "depends_on_ws": [
+    "WS-00",
+    "WS-19"
+   ],
+   "owned_paths": [
+    "packages/chain-adapters/src/logs.ts",
+    "packages/chain-adapters/src/logs*.test.ts",
+    "packages/chain-adapters/src/scanVerify.ts",
+    "packages/chain-adapters/src/scanVerify*.test.ts",
+    "packages/chain-adapters/src/scanHardening.test.ts",
+    "apps/web/src/lib/scannerCore.fuzz.test.ts",
+    "packages/cli/src/backup-data.ts",
+    "packages/cli/src/commands/backup.ts",
+    "packages/cli/test/compiled.test.mjs",
+    "packages/cli/test/backup-independent.test.mjs",
+    "docs/developer/relayer-privacy.md"
+   ],
+   "handover_in": [],
+   "model_tier": "mid",
+   "reviewer_tier": "strongest",
+   "security_review": true,
+   "executor": "worker",
+   "unblocked": true,
+   "unblocked_scope": "all",
+   "blocked_items": [],
+   "owner_gate": [],
+   "external": [],
+   "est_days": [
+    2.2,
+    4.45
+   ],
+   "worktree": "../wt/WS-11",
+   "branch": "ws/WS-11-scanner-cli",
+   "mapping": "WS-11",
+   "objectives": "Fail-closed per-log blockHash check; relayer + CLI compiled evidence; CLI backup decrypted by the independent tool.",
+   "items": [
+    {
+     "id": "WS-11.1",
+     "refs": [
+      "F-PROTO-03"
+     ],
+     "wave": 4,
+     "cp": "CP-3",
+     "est": [
+      0.7,
+      1.5
+     ],
+     "strategy": "repair",
+     "deps": [
+      "CP-0"
+     ],
+     "gate": "none",
+     "owner": [],
+     "ext": [],
+     "unblocked": [
+      true,
+      ""
+     ],
+     "parallel": true,
+     "what": "Records only (~0.1 d; F-PROTO-03 VERIFIED_COMPLETE): cite the existing per-log blockHash check packages/chain-adapters/src/logs.ts:438-460 + logs.test.ts:132-148; add no code"
+    },
+    {
+     "id": "WS-11.2",
+     "refs": [
+      "F-RLY-01",
+      "SEC-34"
+     ],
+     "wave": 4,
+     "cp": "CP-3",
+     "est": [
+      0.25,
+      0.35
+     ],
+     "strategy": "repair",
+     "deps": [
+      "WS-11.1"
+     ],
+     "gate": "none",
+     "owner": [],
+     "ext": [],
+     "unblocked": [
+      true,
+      ""
+     ],
+     "parallel": true,
+     "what": "REQUIRE_ANVIL=1 relayer suite evidence; relayer metadata/fallback privacy note (SEC-34)"
+    },
+    {
+     "id": "WS-11.3",
+     "refs": [
+      "F-CLI-01"
+     ],
+     "wave": 4,
+     "cp": "CP-3",
+     "est": [
+      0.25,
+      0.35
+     ],
+     "strategy": "repair",
+     "deps": [
+      "WS-11.2"
+     ],
+     "gate": "none",
+     "owner": [],
+     "ext": [],
+     "unblocked": [
+      true,
+      ""
+     ],
+     "parallel": true,
+     "what": "CLI compiled tests evidence"
+    },
+    {
+     "id": "WS-11.4",
+     "refs": [
+      "F-CLI-03"
+     ],
+     "wave": 4,
+     "cp": "CP-3",
+     "est": [
+      1.0,
+      2.25
+     ],
+     "strategy": "implement",
+     "deps": [
+      "WS-11.3",
+      "WS-19.1"
+     ],
+     "gate": "exit",
+     "owner": [],
+     "ext": [],
+     "unblocked": [
+      true,
+      "after WS-19.1 (independent tool) rolling-merges"
+     ],
+     "parallel": true,
+     "what": "`ghostpay backup create` output decrypted by tools/independent-recovery (no GhostPay code); keys match"
+    }
+   ]
+  },
+  {
+   "ws": "WS-12",
+   "name": "Accessibility + i18n enforcement + #201/#202 browser-regression recheck",
+   "features": [
+    "F-A11Y-01",
+    "F-I18N-02",
+    "F-I18N-01",
+    "F-A11Y-03",
+    "F-I18N-03",
+    "F-DOC-04"
+   ],
+   "contributes_to": [],
+   "findings": [
+    "SEC-29",
+    "SEC-30"
+   ],
+   "tb": [],
+   "wave": 2,
+   "waves": [
+    2,
+    4,
+    8
+   ],
+   "checkpoints": [
+    "CP-1",
+    "CP-3",
+    "CP-6"
+   ],
+   "depends_on_ws": [
+    "WS-00"
+   ],
+   "owned_paths": [
+    "apps/web/e2e/accessibility-audit.ts",
+    "apps/web/e2e/accessibility.spec.ts",
+    "apps/web/e2e/contextual-help.spec.ts",
+    "apps/web/e2e/focus-scope.spec.ts",
+    "apps/web/src/i18n/**",
+    "packages/i18n/**",
+    "packages/ux-i18n/**",
+    "scripts/i18n/**",
+    "docs/accessibility/**",
+    "apps/web/src/components/ContextHelp.tsx",
+    "apps/web/src/components/ContextHelp*.test.tsx",
+    "apps/web/src/AppShell.i18n.test.tsx"
+   ],
+   "handover_in": [],
+   "model_tier": "mid",
+   "reviewer_tier": "mid",
+   "security_review": false,
+   "executor": "worker",
+   "unblocked": true,
+   "unblocked_scope": "partial",
+   "blocked_items": [
+    {
+     "item": "WS-12.7",
+     "reason": "waits for locale scope + native reviewers",
+     "owner": [
+      "OD-20",
+      "OD-16"
+     ]
+    }
+   ],
+   "owner_gate": [
+    "OD-20",
+    "OD-16"
+   ],
+   "external": [
+    "EX-03",
+    "EX-04"
+   ],
+   "est_days": [
+    7.6,
+    14.25
+   ],
+   "worktree": "../wt/WS-12",
+   "branch": "ws/WS-12-a11y-i18n",
+   "mapping": "WS-12",
+   "objectives": "Prove #201/#202 browser fixes hold; axe coverage of every dialog/theme; screen-reader protocol; literal checker (allowlist -> 0 by CP-5, each WS fixes its own files); selector stays as today, every listed locale labelled machine-drafted or no catalog (apps/web/src/i18n/LanguagePicker.tsx:19-23); trimming it is the owner's OD-16 choice.",
+   "items": [
+    {
+     "id": "WS-12.1",
+     "refs": [
+      "SEC-29",
+      "SEC-30",
+      "#201/#202 recheck"
+     ],
+     "wave": 2,
+     "cp": "CP-1",
+     "est": [
+      0.75,
+      1.5
+     ],
+     "strategy": "repair",
+     "deps": [
+      "CP-0"
+     ],
+     "gate": "none",
+     "owner": [],
+     "ext": [],
+     "unblocked": [
+      true,
+      ""
+     ],
+     "parallel": true,
+     "what": "Playwright re-run of #201/#202 lost-click/focus paths (POST_CONSOLIDATION_AUDIT \u00a77); ContextHelp hover-leave collapse (SEC-29, UNVERIFIED) reproduce-then-fix; paste-submit focus test (SEC-30)"
+    },
+    {
+     "id": "WS-12.2",
+     "refs": [
+      "F-A11Y-01"
+     ],
+     "wave": 4,
+     "cp": "CP-3",
+     "est": [
+      1.25,
+      2.5
+     ],
+     "strategy": "repair",
+     "deps": [
+      "WS-12.1"
+     ],
+     "gate": "exit",
+     "owner": [],
+     "ext": [],
+     "unblocked": [
+      true,
+      ""
+     ],
+     "parallel": true,
+     "what": ""
+    },
+    {
+     "id": "WS-12.3",
+     "refs": [
+      "F-I18N-02"
+     ],
+     "wave": 4,
+     "cp": "CP-3",
+     "est": [
+      0.75,
+      1.0
+     ],
+     "strategy": "repair",
+     "deps": [
+      "WS-12.2"
+     ],
+     "gate": "exit",
+     "owner": [
+      "OD-20",
+      "OD-16"
+     ],
+     "ext": [],
+     "unblocked": [
+      true,
+      "OD-16 default: keep the labelled selector (no trim)"
+     ],
+     "parallel": true,
+     "what": ""
+    },
+    {
+     "id": "WS-12.4",
+     "refs": [
+      "F-I18N-01"
+     ],
+     "wave": 4,
+     "cp": "CP-3",
+     "est": [
+      2.0,
+      4.25
+     ],
+     "strategy": "repair",
+     "deps": [
+      "WS-12.3"
+     ],
+     "gate": "exit",
+     "owner": [],
+     "ext": [],
+     "unblocked": [
+      true,
+      ""
+     ],
+     "parallel": true,
+     "what": "literals.test.ts in report mode; allowlist shrinks per CP; 0 by CP-5"
+    },
+    {
+     "id": "WS-12.5",
+     "refs": [
+      "F-A11Y-03"
+     ],
+     "wave": 4,
+     "cp": "CP-3",
+     "est": [
+      1.5,
+      2.5
+     ],
+     "strategy": "implement",
+     "deps": [
+      "WS-12.4"
+     ],
+     "gate": "exit",
+     "owner": [],
+     "ext": [
+      "EX-03"
+     ],
+     "unblocked": [
+      true,
+      "protocol now; run is human"
+     ],
+     "parallel": true,
+     "what": "Screen-reader protocol doc + log template; AT runs are EX-03"
+    },
+    {
+     "id": "WS-12.6",
+     "refs": [
+      "F-I18N-03"
+     ],
+     "wave": 8,
+     "cp": "CP-6",
+     "est": [
+      0.75,
+      1.5
+     ],
+     "strategy": "consolidate",
+     "deps": [
+      "CP-5"
+     ],
+     "gate": "none",
+     "owner": [
+      "OD-20",
+      "OD-16"
+     ],
+     "ext": [],
+     "unblocked": [
+      true,
+      ""
+     ],
+     "parallel": true,
+     "what": "Ownership ADR for the two i18n stacks"
+    },
+    {
+     "id": "WS-12.7",
+     "refs": [
+      "F-DOC-04"
+     ],
+     "wave": 8,
+     "cp": "CP-6",
+     "est": [
+      0.6,
+      1.0
+     ],
+     "strategy": "defer",
+     "deps": [
+      "WS-12.6"
+     ],
+     "gate": "none",
+     "owner": [
+      "OD-20",
+      "OD-16"
+     ],
+     "ext": [
+      "EX-04"
+     ],
+     "unblocked": [
+      false,
+      "waits for locale scope + native reviewers"
+     ],
+     "parallel": true,
+     "what": ""
+    }
+   ]
+  },
+  {
+   "ws": "WS-13",
+   "name": "Hosting/ops verification: digest pins, HSTS at terminator, Tor image, compose/header checks",
+   "features": [
+    "F-HOST-01",
+    "F-HOST-02",
+    "F-HOST-04",
+    "F-HOST-03",
+    "F-DOC-03",
+    "F-OPS-01"
+   ],
+   "contributes_to": [],
+   "findings": [
+    "SEC-26",
+    "SEC-41"
+   ],
+   "tb": [],
+   "wave": 8,
+   "waves": [
+    8,
+    9
+   ],
+   "checkpoints": [
+    "CP-6",
+    "CP-9"
+   ],
+   "depends_on_ws": [
+    "WS-00",
+    "WS-01",
+    "WS-05"
+   ],
+   "owned_paths": [
+    "deploy/**",
+    "infra/**",
+    "tools/portable-hosting-kit/**",
+    "packages/ops-monitor/**",
+    "docs/operators/**",
+    "apps/relayer/Dockerfile"
+   ],
+   "handover_in": [
+    {
+     "paths": [
+      "deploy/nginx/security-headers.conf",
+      "deploy/nginx/security-headers-embed.conf",
+      "infra/proxy/ghostpay-headers.conf",
+      "infra/proxy/Caddyfile",
+      "infra/web/Caddyfile.static"
+     ],
+     "from": "WS-01",
+     "at": "CP-1"
+    },
+    {
+     "paths": [
+      "docs/operators/testnet-runbook.md"
+     ],
+     "from": "WS-05",
+     "at": "CP-7"
+    }
+   ],
+   "model_tier": "mid",
+   "reviewer_tier": "strongest",
+   "security_review": true,
+   "executor": "worker",
+   "unblocked": true,
+   "unblocked_scope": "partial",
+   "blocked_items": [
+    {
+     "item": "WS-13.4",
+     "reason": "owner gates",
+     "owner": [
+      "OD-07",
+      "OD-22",
+      "OD-06"
+     ]
+    },
+    {
+     "item": "WS-13.5",
+     "reason": "real infra",
+     "owner": [
+      "OA-04"
+     ]
+    },
+    {
+     "item": "WS-13.6",
+     "reason": "after B02",
+     "owner": [
+      "OA-04"
+     ]
+    }
+   ],
+   "owner_gate": [
+    "OD-07",
+    "OD-22",
+    "OD-06",
+    "OA-04"
+   ],
+   "external": [],
+   "est_days": [
+    4.0,
+    9.5
+   ],
+   "worktree": "../wt/WS-13",
+   "branch": "ws/WS-13-hosting-ops",
+   "mapping": "WS-13",
+   "objectives": "Supply-chain and verification debt of the optional self-host/Tor/hosting-kit paths; never required by lean.",
+   "items": [
+    {
+     "id": "WS-13.1",
+     "refs": [
+      "F-HOST-01",
+      "SEC-26"
+     ],
+     "wave": 8,
+     "cp": "CP-6",
+     "est": [
+      1.25,
+      2.25
+     ],
+     "strategy": "repair",
+     "deps": [
+      "WS-01.2"
+     ],
+     "gate": "none",
+     "owner": [],
+     "ext": [],
+     "unblocked": [
+      true,
+      ""
+     ],
+     "parallel": true,
+     "what": ""
+    },
+    {
+     "id": "WS-13.2",
+     "refs": [
+      "F-HOST-02",
+      "SEC-41"
+     ],
+     "wave": 8,
+     "cp": "CP-6",
+     "est": [
+      1.25,
+      2.0
+     ],
+     "strategy": "repair",
+     "deps": [
+      "WS-13.1"
+     ],
+     "gate": "none",
+     "owner": [],
+     "ext": [],
+     "unblocked": [
+      true,
+      ""
+     ],
+     "parallel": true,
+     "what": ""
+    },
+    {
+     "id": "WS-13.3",
+     "refs": [
+      "F-HOST-04"
+     ],
+     "wave": 8,
+     "cp": "CP-6",
+     "est": [
+      0.75,
+      2.0
+     ],
+     "strategy": "repair",
+     "deps": [
+      "WS-13.2"
+     ],
+     "gate": "none",
+     "owner": [],
+     "ext": [],
+     "unblocked": [
+      true,
+      ""
+     ],
+     "parallel": true,
+     "what": "compose config -q; check-headers.sh; HSTS at terminator"
+    },
+    {
+     "id": "WS-13.4",
+     "refs": [
+      "F-HOST-03"
+     ],
+     "wave": 8,
+     "cp": "CP-6",
+     "est": [
+      0,
+      0.75
+     ],
+     "strategy": "defer",
+     "deps": [
+      "WS-13.3"
+     ],
+     "gate": "none",
+     "owner": [
+      "OD-07",
+      "OD-22",
+      "OD-06"
+     ],
+     "ext": [],
+     "unblocked": [
+      false,
+      "owner gates"
+     ],
+     "parallel": true,
+     "what": ""
+    },
+    {
+     "id": "WS-13.5",
+     "refs": [
+      "F-DOC-03"
+     ],
+     "wave": 9,
+     "cp": "CP-9",
+     "est": [
+      0,
+      0.75
+     ],
+     "strategy": "defer",
+     "deps": [
+      "WS-05.4"
+     ],
+     "gate": "none",
+     "owner": [
+      "OA-04"
+     ],
+     "ext": [],
+     "unblocked": [
+      false,
+      "real infra"
+     ],
+     "parallel": true,
+     "what": ""
+    },
+    {
+     "id": "WS-13.6",
+     "refs": [
+      "F-OPS-01"
+     ],
+     "wave": 9,
+     "cp": "CP-9",
+     "est": [
+      0.75,
+      1.75
+     ],
+     "strategy": "defer",
+     "deps": [
+      "WS-05.4"
+     ],
+     "gate": "none",
+     "owner": [
+      "OA-04"
+     ],
+     "ext": [],
+     "unblocked": [
+      false,
+      "after B02"
+     ],
+     "parallel": true,
+     "what": ""
+    }
+   ]
+  },
+  {
+   "ws": "WS-14",
+   "name": "Full-profile chains: TB-08 SOL/TRON meta-address format consolidation, seed-reveal parity, BTC regtest",
+   "features": [
+    "F-SOL-01",
+    "F-TRX-01",
+    "F-BTC-01",
+    "F-BTC-03"
+   ],
+   "contributes_to": [],
+   "findings": [
+    "SEC-13"
+   ],
+   "tb": [
+    "TB-08"
+   ],
+   "wave": 8,
+   "waves": [
+    8
+   ],
+   "checkpoints": [
+    "CP-6"
+   ],
+   "depends_on_ws": [
+    "WS-00",
+    "WS-07"
+   ],
+   "owned_paths": [
+    "packages/chain-solana/**",
+    "packages/chain-tron/**",
+    "packages/solana-stealth/**",
+    "packages/tron-adapter/**",
+    "packages/btc-silent-payments/**",
+    "apps/web/src/features/btc/**",
+    "apps/web/src/features/solana/**",
+    "apps/web/src/features/tron/**",
+    "test-vectors/solana-stealth.json",
+    "test-vectors/tron-stealth.json"
+   ],
+   "handover_in": [],
+   "model_tier": "strongest",
+   "reviewer_tier": "strongest",
+   "security_review": true,
+   "executor": "worker",
+   "unblocked": true,
+   "unblocked_scope": "partial",
+   "blocked_items": [
+    {
+     "item": "WS-14.4",
+     "reason": "scope decision",
+     "owner": [
+      "OD-20",
+      "OD-02"
+     ]
+    },
+    {
+     "item": "WS-14.5",
+     "reason": "scope",
+     "owner": [
+      "OD-20"
+     ]
+    }
+   ],
+   "owner_gate": [
+    "OD-20",
+    "OD-02"
+   ],
+   "external": [
+    "EX-07"
+   ],
+   "est_days": [
+    13.25,
+    25.5
+   ],
+   "worktree": "../wt/WS-14",
+   "branch": "ws/WS-14-multichain-format",
+   "mapping": "WS-14",
+   "objectives": "One meta-address format per chain with cross-implementation vectors (CLI <-> web); TRON backup not plaintext; raw-seed reveal aligned with K04 controls; promotion beyond experimental stays OD-20.",
+   "items": [
+    {
+     "id": "WS-14.1",
+     "refs": [
+      "F-SOL-01",
+      "TB-08"
+     ],
+     "wave": 8,
+     "cp": "CP-6",
+     "est": [
+      4.5,
+      8.5
+     ],
+     "strategy": "consolidate",
+     "deps": [
+      "CP-1"
+     ],
+     "gate": "none",
+     "owner": [
+      "OD-20",
+      "OD-02"
+     ],
+     "ext": [],
+     "unblocked": [
+      true,
+      "TB-08 defect fix unblocked; promotion OD-20"
+     ],
+     "parallel": true,
+     "what": "Consolidate chain-solana on solana-stealth format + vectors"
+    },
+    {
+     "id": "WS-14.2",
+     "refs": [
+      "F-TRX-01",
+      "TB-08"
+     ],
+     "wave": 8,
+     "cp": "CP-6",
+     "est": [
+      4.5,
+      8.5
+     ],
+     "strategy": "consolidate",
+     "deps": [
+      "WS-14.1"
+     ],
+     "gate": "none",
+     "owner": [
+      "OD-20",
+      "OD-02"
+     ],
+     "ext": [],
+     "unblocked": [
+      true,
+      "TB-08 defect fix unblocked; promotion OD-20"
+     ],
+     "parallel": true,
+     "what": "Consolidate chain-tron tag on tron-adapter; encrypted backup"
+    },
+    {
+     "id": "WS-14.3",
+     "refs": [
+      "SEC-13"
+     ],
+     "wave": 8,
+     "cp": "CP-6",
+     "est": [
+      0.5,
+      1.0
+     ],
+     "strategy": "repair",
+     "deps": [
+      "WS-14.2"
+     ],
+     "gate": "none",
+     "owner": [
+      "OD-02"
+     ],
+     "ext": [],
+     "unblocked": [
+      true,
+      ""
+     ],
+     "parallel": true,
+     "what": "BTC/SOL/TRON seed reveal: re-auth + second confirmation, no clipboard (OD-02 default)"
+    },
+    {
+     "id": "WS-14.4",
+     "refs": [
+      "F-BTC-01"
+     ],
+     "wave": 8,
+     "cp": "CP-6",
+     "est": [
+      2.0,
+      4.0
+     ],
+     "strategy": "defer",
+     "deps": [
+      "WS-14.3"
+     ],
+     "gate": "none",
+     "owner": [
+      "OD-20",
+      "OD-02"
+     ],
+     "ext": [
+      "EX-07"
+     ],
+     "unblocked": [
+      false,
+      "scope decision"
+     ],
+     "parallel": true,
+     "what": ""
+    },
+    {
+     "id": "WS-14.5",
+     "refs": [
+      "F-BTC-03"
+     ],
+     "wave": 8,
+     "cp": "CP-6",
+     "est": [
+      1.75,
+      3.5
+     ],
+     "strategy": "defer",
+     "deps": [
+      "WS-14.4"
+     ],
+     "gate": "none",
+     "owner": [
+      "OD-20"
+     ],
+     "ext": [],
+     "unblocked": [
+      false,
+      "scope"
+     ],
+     "parallel": true,
+     "what": ""
+    }
+   ]
+  },
+  {
+   "ws": "WS-15",
+   "name": "Merchant/integration/SDK (scope-gated, OD-20/OD-17)",
+   "features": [
+    "F-CLI-06",
+    "F-MER-02",
+    "F-INT-01",
+    "F-INT-02",
+    "F-MER-01",
+    "F-MER-04",
+    "F-PROTO-12"
+   ],
+   "contributes_to": [],
+   "findings": [],
+   "tb": [],
+   "wave": 8,
+   "waves": [
+    8
+   ],
+   "checkpoints": [
+    "CP-6"
+   ],
+   "depends_on_ws": [
+    "WS-00",
+    "WS-23"
+   ],
+   "owned_paths": [
+    "integrations/**",
+    "packages/merchant-billing/**",
+    "packages/merchant-ledger/**",
+    "packages/merchant-multisig/**",
+    "packages/sdk/**",
+    "packages/cli/src/commands/merchant-refund.ts",
+    "packages/cli/src/commands/merchant.ts",
+    "packages/ux-vault/src/reconciliation-portable.ts"
+   ],
+   "handover_in": [
+    {
+     "paths": [
+      "packages/ux-vault/src/reconciliation-portable.ts"
+     ],
+     "from": "WS-23",
+     "at": "CP-5"
+    }
+   ],
+   "model_tier": "mid",
+   "reviewer_tier": "mid",
+   "security_review": false,
+   "executor": "worker",
+   "unblocked": true,
+   "unblocked_scope": "partial",
+   "blocked_items": [
+    {
+     "item": "WS-15.3",
+     "reason": "scope",
+     "owner": [
+      "OD-20"
+     ]
+    },
+    {
+     "item": "WS-15.4",
+     "reason": "scope",
+     "owner": [
+      "OD-20"
+     ]
+    },
+    {
+     "item": "WS-15.5",
+     "reason": "scope",
+     "owner": [
+      "OD-20"
+     ]
+    },
+    {
+     "item": "WS-15.6",
+     "reason": "scope",
+     "owner": [
+      "OD-20"
+     ]
+    },
+    {
+     "item": "WS-15.7",
+     "reason": "owner",
+     "owner": [
+      "OD-20"
+     ]
+    }
+   ],
+   "owner_gate": [
+    "OD-20"
+   ],
+   "external": [],
+   "est_days": [
+    14.75,
+    28.6
+   ],
+   "worktree": "../wt/WS-15",
+   "branch": "ws/WS-15-merchant",
+   "mapping": "WS-15",
+   "objectives": "Only F-MER-02 consolidation and the F-CLI-06 exit-code test are unblocked; everything else waits for OD-20.",
+   "items": [
+    {
+     "id": "WS-15.1",
+     "refs": [
+      "F-CLI-06"
+     ],
+     "wave": 8,
+     "cp": "CP-6",
+     "est": [
+      0,
+      0.1
+     ],
+     "strategy": "defer",
+     "deps": [
+      "CP-1"
+     ],
+     "gate": "none",
+     "owner": [],
+     "ext": [],
+     "unblocked": [
+      true,
+      ""
+     ],
+     "parallel": true,
+     "what": ""
+    },
+    {
+     "id": "WS-15.2",
+     "refs": [
+      "F-MER-02"
+     ],
+     "wave": 8,
+     "cp": "CP-6",
+     "est": [
+      2.25,
+      3.75
+     ],
+     "strategy": "consolidate",
+     "deps": [
+      "CP-5",
+      "WS-15.1"
+     ],
+     "gate": "none",
+     "owner": [
+      "OD-20"
+     ],
+     "ext": [],
+     "unblocked": [
+      true,
+      ""
+     ],
+     "parallel": true,
+     "what": ""
+    },
+    {
+     "id": "WS-15.3",
+     "refs": [
+      "F-INT-01"
+     ],
+     "wave": 8,
+     "cp": "CP-6",
+     "est": [
+      2.75,
+      5.5
+     ],
+     "strategy": "defer",
+     "deps": [
+      "WS-15.2"
+     ],
+     "gate": "none",
+     "owner": [
+      "OD-20"
+     ],
+     "ext": [],
+     "unblocked": [
+      false,
+      "scope"
+     ],
+     "parallel": true,
+     "what": ""
+    },
+    {
+     "id": "WS-15.4",
+     "refs": [
+      "F-INT-02"
+     ],
+     "wave": 8,
+     "cp": "CP-6",
+     "est": [
+      2.25,
+      3.75
+     ],
+     "strategy": "defer",
+     "deps": [
+      "WS-15.3"
+     ],
+     "gate": "none",
+     "owner": [
+      "OD-20"
+     ],
+     "ext": [],
+     "unblocked": [
+      false,
+      "scope"
+     ],
+     "parallel": true,
+     "what": ""
+    },
+    {
+     "id": "WS-15.5",
+     "refs": [
+      "F-MER-01"
+     ],
+     "wave": 8,
+     "cp": "CP-6",
+     "est": [
+      3.75,
+      7.5
+     ],
+     "strategy": "defer",
+     "deps": [
+      "WS-15.4"
+     ],
+     "gate": "none",
+     "owner": [
+      "OD-20"
+     ],
+     "ext": [],
+     "unblocked": [
+      false,
+      "scope"
+     ],
+     "parallel": true,
+     "what": ""
+    },
+    {
+     "id": "WS-15.6",
+     "refs": [
+      "F-MER-04"
+     ],
+     "wave": 8,
+     "cp": "CP-6",
+     "est": [
+      2.5,
+      4.5
+     ],
+     "strategy": "defer",
+     "deps": [
+      "WS-15.5"
+     ],
+     "gate": "none",
+     "owner": [
+      "OD-20"
+     ],
+     "ext": [],
+     "unblocked": [
+      false,
+      "scope"
+     ],
+     "parallel": true,
+     "what": ""
+    },
+    {
+     "id": "WS-15.7",
+     "refs": [
+      "F-PROTO-12"
+     ],
+     "wave": 8,
+     "cp": "CP-6",
+     "est": [
+      1.25,
+      3.5
+     ],
+     "strategy": "defer",
+     "deps": [
+      "WS-15.6"
+     ],
+     "gate": "none",
+     "owner": [
+      "OD-20"
+     ],
+     "ext": [],
+     "unblocked": [
+      false,
+      "owner"
+     ],
+     "parallel": true,
+     "what": ""
+    }
+   ]
+  },
+  {
+   "ws": "WS-16",
+   "name": "Optional operator services (OD-21) + pool-sdk backup KDF parity (SEC-16)",
+   "features": [
+    "F-RLY-04",
+    "F-OPS-03",
+    "F-PROTO-11",
+    "F-POOL-04"
+   ],
+   "contributes_to": [
+    "F-POOL-03"
+   ],
+   "findings": [
+    "SEC-16",
+    "SEC-27",
+    "SEC-17"
+   ],
+   "tb": [],
+   "wave": 8,
+   "waves": [
+    8
+   ],
+   "checkpoints": [
+    "CP-6"
+   ],
+   "depends_on_ws": [
+    "WS-00",
+    "WS-18"
+   ],
+   "owned_paths": [
+    "packages/pool-relayer/**",
+    "packages/relayer-guard/**",
+    "packages/sandbox/**",
+    "packages/scan-source/**",
+    "packages/pool-sdk/**"
+   ],
+   "handover_in": [],
+   "model_tier": "mid",
+   "reviewer_tier": "strongest",
+   "security_review": true,
+   "executor": "worker",
+   "unblocked": true,
+   "unblocked_scope": "partial",
+   "blocked_items": [
+    {
+     "item": "WS-16.4",
+     "reason": "operator backends",
+     "owner": [
+      "OD-21"
+     ]
+    },
+    {
+     "item": "WS-16.5",
+     "reason": "experimental",
+     "owner": [
+      "OD-21"
+     ]
+    }
+   ],
+   "owner_gate": [
+    "OD-21"
+   ],
+   "external": [],
+   "est_days": [
+    12.75,
+    27.5
+   ],
+   "worktree": "../wt/WS-16",
+   "branch": "ws/WS-16-operator-optional",
+   "mapping": "WS-16",
+   "objectives": "Operator services stay optional/experimental and never required by lean; confirmed pool-sdk KDF defect fixed.",
+   "items": [
+    {
+     "id": "WS-16.1",
+     "refs": [
+      "SEC-16",
+      "F-POOL-03"
+     ],
+     "wave": 8,
+     "cp": "CP-6",
+     "est": [
+      0.5,
+      1.0
+     ],
+     "strategy": "repair",
+     "deps": [
+      "WS-18.1"
+     ],
+     "gate": "none",
+     "owner": [],
+     "ext": [],
+     "unblocked": [
+      true,
+      ""
+     ],
+     "parallel": true,
+     "what": "pool-sdk seed backup reuses ux-vault KDF/estimator/bounds (N 2^17, max 2^18), NFKC, version/params in AAD"
+    },
+    {
+     "id": "WS-16.2",
+     "refs": [
+      "F-RLY-04"
+     ],
+     "wave": 8,
+     "cp": "CP-6",
+     "est": [
+      1.5,
+      2.75
+     ],
+     "strategy": "defer",
+     "deps": [
+      "WS-16.1"
+     ],
+     "gate": "none",
+     "owner": [],
+     "ext": [],
+     "unblocked": [
+      true,
+      ""
+     ],
+     "parallel": true,
+     "what": ""
+    },
+    {
+     "id": "WS-16.3",
+     "refs": [
+      "F-OPS-03"
+     ],
+     "wave": 8,
+     "cp": "CP-6",
+     "est": [
+      1.75,
+      3.75
+     ],
+     "strategy": "defer",
+     "deps": [
+      "WS-16.2"
+     ],
+     "gate": "none",
+     "owner": [],
+     "ext": [],
+     "unblocked": [
+      true,
+      ""
+     ],
+     "parallel": true,
+     "what": ""
+    },
+    {
+     "id": "WS-16.4",
+     "refs": [
+      "F-PROTO-11"
+     ],
+     "wave": 8,
+     "cp": "CP-6",
+     "est": [
+      4.0,
+      10
+     ],
+     "strategy": "defer",
+     "deps": [
+      "WS-16.3"
+     ],
+     "gate": "none",
+     "owner": [
+      "OD-21"
+     ],
+     "ext": [],
+     "unblocked": [
+      false,
+      "operator backends"
+     ],
+     "parallel": true,
+     "what": ""
+    },
+    {
+     "id": "WS-16.5",
+     "refs": [
+      "F-POOL-04"
+     ],
+     "wave": 8,
+     "cp": "CP-6",
+     "est": [
+      5.0,
+      10.0
+     ],
+     "strategy": "defer",
+     "deps": [
+      "WS-16.4"
+     ],
+     "gate": "none",
+     "owner": [
+      "OD-21"
+     ],
+     "ext": [],
+     "unblocked": [
+      false,
+      "experimental"
+     ],
+     "parallel": true,
+     "what": ""
+    }
+   ]
+  },
+  {
+   "ws": "WS-17",
+   "name": "Device/browser evidence records + CLI post-B02 cross-check + B06 run records",
+   "features": [
+    "F-CLI-05",
+    "F-A11Y-02"
+   ],
+   "contributes_to": [],
+   "findings": [
+    "SEC-41"
+   ],
+   "tb": [],
+   "wave": 9,
+   "waves": [
+    9
+   ],
+   "checkpoints": [
+    "CP-7",
+    "CP-8"
+   ],
+   "depends_on_ws": [
+    "WS-00",
+    "WS-04",
+    "WS-05",
+    "WS-08",
+    "WS-09",
+    "WS-19",
+    "WS-25"
+   ],
+   "owned_paths": [
+    "apps/web/e2e/devices.spec.ts",
+    "packages/cli/src/commands/chain.ts",
+    "packages/cli/src/commands/payment.ts",
+    "packages/cli/src/commands/scan.ts",
+    "packages/cli/src/commands/registry.ts",
+    "docs/beta/**"
+   ],
+   "handover_in": [],
+   "model_tier": "cheap",
+   "reviewer_tier": "mid",
+   "security_review": false,
+   "executor": "worker",
+   "unblocked": false,
+   "unblocked_scope": "none",
+   "blocked_items": [
+    {
+     "item": "WS-17.1",
+     "reason": "after B02",
+     "owner": [
+      "OA-04"
+     ]
+    },
+    {
+     "item": "WS-17.2",
+     "reason": "needs physical devices",
+     "owner": []
+    },
+    {
+     "item": "WS-17.3",
+     "reason": "owner + external runs",
+     "owner": []
+    }
+   ],
+   "owner_gate": [
+    "OA-04"
+   ],
+   "external": [
+    "EX-02",
+    "EX-01",
+    "EX-03"
+   ],
+   "est_days": [
+    1.5,
+    3.0
+   ],
+   "worktree": "../wt/WS-17",
+   "branch": "ws/WS-17-device-evidence",
+   "mapping": "WS-17",
+   "objectives": "Honest emulation labels; CLI as second implementation for Sepolia read-back; B06 per-run records.",
+   "items": [
+    {
+     "id": "WS-17.1",
+     "refs": [
+      "F-CLI-05"
+     ],
+     "wave": 9,
+     "cp": "CP-7",
+     "est": [
+      0.5,
+      0.75
+     ],
+     "strategy": "defer",
+     "deps": [
+      "WS-05.4"
+     ],
+     "gate": "none",
+     "owner": [
+      "OA-04"
+     ],
+     "ext": [],
+     "unblocked": [
+      false,
+      "after B02"
+     ],
+     "parallel": true,
+     "what": ""
+    },
+    {
+     "id": "WS-17.2",
+     "refs": [
+      "F-A11Y-02",
+      "SEC-41"
+     ],
+     "wave": 9,
+     "cp": "CP-8",
+     "est": [
+      0.5,
+      1.25
+     ],
+     "strategy": "defer",
+     "deps": [
+      "WS-17.1"
+     ],
+     "gate": "exit",
+     "owner": [],
+     "ext": [
+      "EX-02"
+     ],
+     "unblocked": [
+      false,
+      "needs physical devices"
+     ],
+     "parallel": true,
+     "what": "Emulation labels; Firefox + Tor Browser Standard/Safer manual run records (KDF time) per EX-02"
+    },
+    {
+     "id": "WS-17.3",
+     "refs": [
+      "B06"
+     ],
+     "wave": 9,
+     "cp": "CP-8",
+     "est": [
+      0.5,
+      1.0
+     ],
+     "strategy": "implement",
+     "deps": [
+      "CP-5",
+      "CP-7"
+     ],
+     "gate": "exit",
+     "owner": [],
+     "ext": [
+      "EX-01",
+      "EX-02",
+      "EX-03"
+     ],
+     "unblocked": [
+      false,
+      "owner + external runs"
+     ],
+     "parallel": true,
+     "what": "B06 records: SHA, browser/device/wallet versions, pass/fail per step incl. 3q export + independent recovery"
+    }
+   ]
+  },
+  {
+   "ws": "WS-18",
+   "name": "Passphrase/KDF floor: offline estimator, generated-passphrase default, high tier for new exports (SEC-05)",
+   "features": [],
+   "contributes_to": [
+    "F-KEY-02",
+    "F-KEY-03"
+   ],
+   "findings": [
+    "SEC-05",
+    "SEC-41"
+   ],
+   "tb": [],
+   "wave": 1,
+   "waves": [
+    1
+   ],
+   "checkpoints": [
+    "CP-1"
+   ],
+   "depends_on_ws": [
+    "WS-00"
+   ],
+   "owned_paths": [
+    "packages/ux-vault/src/passphrase-policy.ts",
+    "packages/ux-vault/src/passphrase-policy*.test.ts",
+    "packages/ux-vault/src/keystore-portable.ts",
+    "packages/ux-vault/src/portable-parity.test.ts",
+    "packages/ux-vault/src/portable-errors.ts",
+    "packages/ux-vault/src/envelope.ts",
+    "packages/ux-vault/src/envelope*.test.ts",
+    "apps/web/src/lib/keystore.ts",
+    "apps/web/src/lib/keystore*.test.ts",
+    "apps/web/e2e/passphrase-vault.spec.ts"
+   ],
+   "handover_in": [],
+   "model_tier": "strongest",
+   "reviewer_tier": "strongest",
+   "security_review": true,
+   "executor": "worker",
+   "unblocked": true,
+   "unblocked_scope": "all",
+   "blocked_items": [],
+   "owner_gate": [
+    "OD-09"
+   ],
+   "external": [],
+   "est_days": [
+    2.0,
+    4.0
+   ],
+   "worktree": "../wt/WS-18",
+   "branch": "ws/WS-18-passphrase-floor",
+   "mapping": "new (G-B)",
+   "objectives": "Offline policy module with tiers `standard` (current) and `high` (generated 6-7 word default or ~80-bit estimate, NFKC); high tier mandatory for every new spec 18 export (OD-09 fail-closed default); existing flows keep `standard` until OD-09; KDF progress text.",
+   "items": [
+    {
+     "id": "WS-18.1",
+     "refs": [
+      "SEC-05",
+      "OD-09"
+     ],
+     "wave": 1,
+     "cp": "CP-1",
+     "est": [
+      1.75,
+      3.5
+     ],
+     "strategy": "implement",
+     "deps": [],
+     "gate": "exit",
+     "owner": [
+      "OD-09"
+     ],
+     "ext": [],
+     "unblocked": [
+      true,
+      "stricter floor for new exports is the OD-09 default; existing-flow floor waits for OD-09"
+     ],
+     "parallel": true,
+     "what": "Extract estimator (keystore-portable.ts:182-216) to passphrase-policy.ts; add `high` tier; generated passphrase offered as default in keystore/vault creation with explicit override; no network, bundled wordlist, lean size checked"
+    },
+    {
+     "id": "WS-18.2",
+     "refs": [
+      "SEC-41"
+     ],
+     "wave": 1,
+     "cp": "CP-1",
+     "est": [
+      0.25,
+      0.5
+     ],
+     "strategy": "repair",
+     "deps": [
+      "WS-18.1"
+     ],
+     "gate": "none",
+     "owner": [],
+     "ext": [],
+     "unblocked": [
+      true,
+      ""
+     ],
+     "parallel": true,
+     "what": "KDF progress text for slow (JIT-less ~28 s) scrypt in keystore/vault flows"
+    }
+   ]
+  },
+  {
+   "ws": "WS-19",
+   "name": "Independent GhostPay-free recovery tool (spec 18 / req 3q; SEC-04, TB-05)",
+   "features": [],
+   "contributes_to": [
+    "F-KEY-07",
+    "F-KEY-08",
+    "F-KEY-11",
+    "F-KEY-12",
+    "F-KEY-10"
+   ],
+   "findings": [
+    "SEC-04",
+    "SEC-15",
+    "SEC-38"
+   ],
+   "tb": [
+    "TB-05"
+   ],
+   "wave": 3,
+   "waves": [
+    3,
+    7
+   ],
+   "checkpoints": [
+    "CP-2",
+    "CP-5"
+   ],
+   "depends_on_ws": [
+    "WS-00",
+    "WS-03",
+    "WS-08",
+    "WS-09",
+    "WS-25"
+   ],
+   "owned_paths": [
+    "tools/independent-recovery/**",
+    "docs/recovery/independent-recovery.md",
+    "test-vectors/independent-recovery/**"
+   ],
+   "handover_in": [],
+   "model_tier": "strongest",
+   "reviewer_tier": "strongest",
+   "security_review": true,
+   "executor": "worker",
+   "unblocked": true,
+   "unblocked_scope": "all",
+   "blocked_items": [],
+   "owner_gate": [],
+   "external": [],
+   "est_days": [
+    5.0,
+    9.5
+   ],
+   "worktree": "../wt/WS-19",
+   "branch": "ws/WS-19-independent-recovery",
+   "mapping": "new (G-B)",
+   "objectives": "Clean-room tool (author != WS-03/08/09 author) built from spec 18 text + vectors only: zero @ghostpay/* imports, zero npm deps (node>=22 scrypt/aes-256-gcm + vendored keccak-f[1600] and secp256k1 BigInt arithmetic checked against published vectors); decodes keystore v1, K02, K05, K06; derives scheme-1 stealth keys and addresses; spend proofs use pinned Foundry 1.8.5 cast/anvil (no hand-rolled ECDSA or transaction signer in the tool).",
+   "items": [
+    {
+     "id": "WS-19.1",
+     "refs": [
+      "SEC-04",
+      "SEC-15",
+      "SEC-38",
+      "TB-05"
+     ],
+     "wave": 3,
+     "cp": "CP-2",
+     "est": [
+      3.0,
+      5.0
+     ],
+     "strategy": "implement",
+     "deps": [
+      "CP-0"
+     ],
+     "gate": "exit",
+     "owner": [],
+     "ext": [],
+     "unblocked": [
+      true,
+      ""
+     ],
+     "parallel": true,
+     "what": "v1 keystore + CLI backup decode; scheme-1 derivation recomputes 100% of test-vectors/scheme1.json (second 5564 implementation, SEC-38); CI job via coord-request"
+    },
+    {
+     "id": "WS-19.2",
+     "refs": [
+      "F-KEY-07",
+      "F-KEY-08"
+     ],
+     "wave": 3,
+     "cp": "CP-2",
+     "est": [
+      0.5,
+      1.5
+     ],
+     "strategy": "implement",
+     "deps": [
+      "WS-19.1",
+      "WS-03.2"
+     ],
+     "gate": "exit",
+     "owner": [],
+     "ext": [],
+     "unblocked": [
+      true,
+      ""
+     ],
+     "parallel": true,
+     "what": "Decode K01/K02 vectors (stealth-export-v1.json, fixed-salt/IV K02 vectors) at format freeze"
+    },
+    {
+     "id": "WS-19.3",
+     "refs": [
+      "F-KEY-11"
+     ],
+     "wave": 7,
+     "cp": "CP-5",
+     "est": [
+      0.25,
+      0.5
+     ],
+     "strategy": "implement",
+     "deps": [
+      "WS-25.1"
+     ],
+     "gate": "exit",
+     "owner": [],
+     "ext": [],
+     "unblocked": [
+      true,
+      ""
+     ],
+     "parallel": true,
+     "what": "K05 archive decode + per-record address check"
+    },
+    {
+     "id": "WS-19.4",
+     "refs": [
+      "F-KEY-12"
+     ],
+     "wave": 7,
+     "cp": "CP-5",
+     "est": [
+      0.5,
+      1.0
+     ],
+     "strategy": "implement",
+     "deps": [
+      "WS-09.1"
+     ],
+     "gate": "exit",
+     "owner": [],
+     "ext": [],
+     "unblocked": [
+      true,
+      ""
+     ],
+     "parallel": true,
+     "what": "K06 master backup recovers an announcement omitted from the K05 archive (offline scan of a fixture log set)"
+    },
+    {
+     "id": "WS-19.5",
+     "refs": [
+      "F-KEY-10"
+     ],
+     "wave": 7,
+     "cp": "CP-5",
+     "est": [
+      0.75,
+      1.5
+     ],
+     "strategy": "implement",
+     "deps": [
+      "WS-08.2"
+     ],
+     "gate": "exit",
+     "owner": [],
+     "ext": [],
+     "unblocked": [
+      true,
+      ""
+     ],
+     "parallel": true,
+     "what": "K04 raw key -> EIP-55 address == announced (computed by the tool); the transfer is signed and sent with pinned Foundry 1.8.5 cast (the independent EVM implementation NEXT_PHASE_QUEUE K04 names) and accepted by anvil; synthetic keys only; the tool implements no transaction signing"
+    }
+   ]
+  },
+  {
+   "ws": "WS-20",
+   "name": "CI/release pipeline: release verify anvil policy (TB-01), test-gap wiring (TB-09/TB-06), CI speed, attestation",
+   "features": [],
+   "contributes_to": [
+    "F-AA-05"
+   ],
+   "findings": [
+    "SEC-26",
+    "SEC-48",
+    "SEC-02",
+    "SEC-43",
+    "SEC-47"
+   ],
+   "tb": [
+    "TB-01",
+    "TB-09",
+    "TB-06"
+   ],
+   "wave": 1,
+   "waves": [
+    1,
+    2,
+    3,
+    9
+   ],
+   "checkpoints": [
+    "CP-1",
+    "CP-2",
+    "CP-7",
+    "CP-9"
+   ],
+   "depends_on_ws": [
+    "WS-00",
+    "WS-02",
+    "WS-19",
+    "WS-22"
+   ],
+   "owned_paths": [
+    ".github/workflows/**",
+    ".github/dependabot.yml",
+    ".github/actions/**",
+    "scripts/ci/**",
+    "scripts/tests/workflows.test.mjs",
+    "scripts/tests/workflow-files.test.mjs",
+    "scripts/tests/contract-analysis-workflow.test.mjs",
+    "scripts/tests/release-verify*.test.mjs"
+   ],
+   "handover_in": [],
+   "model_tier": "strongest",
+   "reviewer_tier": "strongest",
+   "security_review": true,
+   "executor": "coordinator",
+   "unblocked": true,
+   "unblocked_scope": "partial",
+   "blocked_items": [
+    {
+     "item": "WS-20.4",
+     "reason": "owner exports or grants read access",
+     "owner": [
+      "OA-07"
+     ]
+    },
+    {
+     "item": "WS-20.5",
+     "reason": "owner key + protection",
+     "owner": [
+      "OD-07",
+      "OA-03",
+      "OA-01"
+     ]
+    },
+    {
+     "item": "WS-20.6",
+     "reason": "owner runs the tag rehearsal",
+     "owner": [
+      "OA-01",
+      "OA-03"
+     ]
+    }
+   ],
+   "owner_gate": [
+    "OA-07",
+    "OD-07",
+    "OA-03",
+    "OA-01"
+   ],
+   "external": [],
+   "est_days": [
+    4.45,
+    9.0
+   ],
+   "worktree": "../wt/WS-00-integration",
+   "branch": "ws/WS-20-ci-release",
+   "mapping": "new (G-B)",
+   "objectives": "Release verify cannot fail for env reasons; every existing test suite runs somewhere; PR critical path shorter without third-party actions; attestation ready for the owner key.",
+   "items": [
+    {
+     "id": "WS-20.1",
+     "refs": [
+      "TB-01"
+     ],
+     "wave": 1,
+     "cp": "CP-1",
+     "est": [
+      0.5,
+      1.0
+     ],
+     "strategy": "repair",
+     "deps": [
+      "CP-0"
+     ],
+     "gate": "none",
+     "owner": [],
+     "ext": [],
+     "unblocked": [
+      true,
+      ""
+     ],
+     "parallel": true,
+     "what": "release.yml verify: per-workspace anvil policy identical to ci.yml (no global REQUIRE_ANVIL for payer-sponsor, external-pools-railgun/privacypools); local reproduction of the exact verify command list. Also applies the WS-04.1 coord-request: pages.yml deployed-origin assertion + cname/https_enforced check (C-08) at CP-1"
+    },
+    {
+     "id": "WS-20.2",
+     "refs": [
+      "TB-09",
+      "TB-06",
+      "F-AA-05",
+      "SEC-26"
+     ],
+     "wave": 2,
+     "cp": "CP-2",
+     "est": [
+      1.1,
+      2.25
+     ],
+     "strategy": "implement",
+     "deps": [
+      "WS-02.4"
+     ],
+     "gate": "none",
+     "owner": [],
+     "ext": [],
+     "unblocked": [
+      true,
+      ""
+     ],
+     "parallel": true,
+     "what": "Nightly/path-filtered job: 56 examples/ tests, anvil/circuit suites (payer-sponsor, railgun, privacypools, pool-relayer, pool-circuits), policy-recovery model tests (F-AA-05 Info), test-reconciliation-idb + seller-vault harness, `npm run test:compiled -w @ghostpay/cli`, independent-recovery vectors (WS-19); dependabot docker ecosystem entries (SEC-26)"
+    },
+    {
+     "id": "WS-20.3",
+     "refs": [
+      "CI speed (F \u00a76)"
+     ],
+     "wave": 3,
+     "cp": "CP-2",
+     "est": [
+      2.0,
+      4.0
+     ],
+     "strategy": "refactor",
+     "deps": [
+      "WS-20.2"
+     ],
+     "gate": "none",
+     "owner": [],
+     "ext": [],
+     "unblocked": [
+      true,
+      ""
+     ],
+     "parallel": true,
+     "what": "Step-timing summary; single coverage pass; build web once per profile, share dist with e2e + lean-candidate; affected-only lint/typecheck only as an extra fast pre-check (the full lint/typecheck still runs on every PR); cost-balanced shards; Mythril and Echidna stay on every PR that touches their paths (contract-analysis.yml:3-12) and on nightly/tag; lean+full e2e share one install. No job, analyzer, test file or required check may stop running on PRs (prompt section 3)"
+    },
+    {
+     "id": "WS-20.4",
+     "refs": [
+      "SEC-48"
+     ],
+     "wave": 9,
+     "cp": "CP-7",
+     "est": [
+      0.1,
+      0.25
+     ],
+     "strategy": "implement",
+     "deps": [
+      "CP-4"
+     ],
+     "gate": "none",
+     "owner": [
+      "OA-07"
+     ],
+     "ext": [],
+     "unblocked": [
+      false,
+      "owner exports or grants read access"
+     ],
+     "parallel": true,
+     "what": "Review CodeQL / Dependabot / secret-scanning alert inventories once OA-07 lands; record counts + dispositions in CP-7.md"
+    },
+    {
+     "id": "WS-20.5",
+     "refs": [
+      "SEC-02",
+      "SEC-43"
+     ],
+     "wave": 9,
+     "cp": "CP-7",
+     "est": [
+      0.5,
+      1.0
+     ],
+     "strategy": "implement",
+     "deps": [
+      "CP-4"
+     ],
+     "gate": "start",
+     "owner": [
+      "OD-07",
+      "OA-03",
+      "OA-01"
+     ],
+     "ext": [],
+     "unblocked": [
+      false,
+      "owner key + protection"
+     ],
+     "parallel": true,
+     "what": "pages.yml: actions/attest-build-provenance on Pages SHA256SUMS; signed checksum publication path (owner signs); deployed-origin assertion (C-08) already landed at CP-1 via WS-20.1"
+    },
+    {
+     "id": "WS-20.6",
+     "refs": [
+      "SEC-47"
+     ],
+     "wave": 9,
+     "cp": "CP-9",
+     "est": [
+      0.25,
+      0.5
+     ],
+     "strategy": "implement",
+     "deps": [
+      "WS-20.5"
+     ],
+     "gate": "none",
+     "owner": [
+      "OA-01",
+      "OA-03"
+     ],
+     "ext": [],
+     "unblocked": [
+      false,
+      "owner runs the tag rehearsal"
+     ],
+     "parallel": true,
+     "what": "Runbook for a signed pre-release tag rehearsal in a sandbox repo; OWNER executes (agents never tag)"
+    }
+   ]
+  },
+  {
+   "ws": "WS-21",
+   "name": "Lean shell hardening: anti-framing guard, opener nulling, sanitized root error handlers",
+   "features": [],
+   "contributes_to": [],
+   "findings": [
+    "SEC-18",
+    "SEC-42"
+   ],
+   "tb": [],
+   "wave": 6,
+   "waves": [
+    6
+   ],
+   "checkpoints": [
+    "CP-4"
+   ],
+   "depends_on_ws": [
+    "WS-00"
+   ],
+   "owned_paths": [
+    "apps/web/src/main.tsx",
+    "apps/web/src/lib/frameGuard.ts",
+    "apps/web/src/lib/frameGuard*.test.ts",
+    "apps/web/src/lib/rootErrors.ts",
+    "apps/web/src/lib/rootErrors*.test.ts",
+    "apps/web/e2e/framing.spec.ts"
+   ],
+   "handover_in": [],
+   "model_tier": "mid",
+   "reviewer_tier": "strongest",
+   "security_review": true,
+   "executor": "worker",
+   "unblocked": true,
+   "unblocked_scope": "all",
+   "blocked_items": [],
+   "owner_gate": [],
+   "external": [],
+   "est_days": [
+    0.75,
+    1.5
+   ],
+   "worktree": "../wt/WS-21",
+   "branch": "ws/WS-21-shell-hardening",
+   "mapping": "new (G-B)",
+   "objectives": "Pages cannot send frame-ancestors: refuse key/sweep/export views when framed unless the embed protocol is active; null window.opener; React root errors never logged with input snippets.",
+   "items": [
+    {
+     "id": "WS-21.1",
+     "refs": [
+      "SEC-18"
+     ],
+     "wave": 6,
+     "cp": "CP-4",
+     "est": [
+      0.5,
+      1.0
+     ],
+     "strategy": "implement",
+     "deps": [
+      "CP-0"
+     ],
+     "gate": "start",
+     "owner": [],
+     "ext": [],
+     "unblocked": [
+      true,
+      ""
+     ],
+     "parallel": true,
+     "what": "frameGuard: window.top !== window.self -> refuse sensitive views unless embed protocol active; opener nulled at startup"
+    },
+    {
+     "id": "WS-21.2",
+     "refs": [
+      "SEC-42"
+     ],
+     "wave": 6,
+     "cp": "CP-4",
+     "est": [
+      0.25,
+      0.5
+     ],
+     "strategy": "repair",
+     "deps": [
+      "WS-21.1"
+     ],
+     "gate": "none",
+     "owner": [],
+     "ext": [],
+     "unblocked": [
+      true,
+      ""
+     ],
+     "parallel": true,
+     "what": "createRoot onCaughtError/onUncaughtError sanitized (main.tsx:11)"
+    }
+   ]
+  },
+  {
+   "ws": "WS-22",
+   "name": "Repo tooling + dependency refresh: #204 port (OD-15 default), minor/patch refresh (OD-18 default)",
+   "features": [],
+   "contributes_to": [],
+   "findings": [
+    "SEC-49",
+    "SEC-25"
+   ],
+   "tb": [],
+   "wave": 5,
+   "waves": [
+    5
+   ],
+   "checkpoints": [
+    "CP-1"
+   ],
+   "depends_on_ws": [
+    "WS-00"
+   ],
+   "owned_paths": [
+    "CLAUDE.md",
+    "AGENTS.md",
+    "docs/ai/**",
+    ".claude/skills/**",
+    "scripts/agent/**",
+    "package.json",
+    "package-lock.json"
+   ],
+   "handover_in": [],
+   "model_tier": "strongest",
+   "reviewer_tier": "mid",
+   "security_review": false,
+   "executor": "coordinator",
+   "unblocked": true,
+   "unblocked_scope": "all",
+   "blocked_items": [],
+   "owner_gate": [
+    "OD-15",
+    "OD-18"
+   ],
+   "external": [],
+   "est_days": [
+    1.5,
+    3.5
+   ],
+   "worktree": "../wt/WS-00-integration",
+   "branch": "ws/WS-22-tooling-deps",
+   "mapping": "new (G-B)",
+   "objectives": "Port #204 as one separate reviewable commit (regenerated PACKAGE_MAP.md, merged CLAUDE.md, ci.yml line); refresh minor/patch deps once, early, with full gates; majors deferred.",
+   "items": [
+    {
+     "id": "WS-22.1",
+     "refs": [
+      "#204",
+      "OD-15",
+      "SEC-49"
+     ],
+     "wave": 5,
+     "cp": "CP-1",
+     "est": [
+      0.5,
+      1.5
+     ],
+     "strategy": "recover",
+     "deps": [
+      "CP-0"
+     ],
+     "gate": "none",
+     "owner": [
+      "OD-15"
+     ],
+     "ext": [],
+     "unblocked": [
+      true,
+      "OD-15 default: port as separate reviewable commit"
+     ],
+     "parallel": false,
+     "what": "First coordinator task after CP-0 (agents started earlier use their WS card). Port 2693b08e content: .claude/skills/{ghostpay-affected-checks,ghostpay-package-map,ghostpay-security-invariants}, scripts/agent/{affected,package-map,workspaces}.mjs + workspaces.test.mjs; regenerate PACKAGE_MAP.md on start commit; CLAUDE.md content merge; ci.yml 1-line re-apply"
+    },
+    {
+     "id": "WS-22.2",
+     "refs": [
+      "dependency refresh",
+      "SEC-25",
+      "OD-18"
+     ],
+     "wave": 5,
+     "cp": "CP-1",
+     "est": [
+      1.0,
+      2.0
+     ],
+     "strategy": "recover",
+     "deps": [
+      "WS-22.1"
+     ],
+     "gate": "none",
+     "owner": [
+      "OD-18"
+     ],
+     "ext": [],
+     "unblocked": [
+      true,
+      "OD-18 default: minor/patch only"
+     ],
+     "parallel": false,
+     "what": "viem 2.57.19, vitest + @vitest/coverage 5.1.0, vite 8.3.8, prettier 3.10.1, @playwright/test 1.65 (browser availability checked), create-pull-request 8 (SHA-pinned); @scure/* 2.x, TypeScript 7, hardhat 3 deferred; picomatch override when the fix ships; full gates + lean bundle diff; rollback to CP-4 slot if triage > 0.5 d"
+    }
+   ]
+  },
+  {
+   "ws": "WS-23",
+   "name": "Local data privacy: confirmed erase-all + linkable storage identifiers pseudonymized (SEC-23, SEC-22)",
+   "features": [],
+   "contributes_to": [],
+   "findings": [
+    "SEC-23",
+    "SEC-22"
+   ],
+   "tb": [],
+   "wave": 7,
+   "waves": [
+    7
+   ],
+   "checkpoints": [
+    "CP-5"
+   ],
+   "depends_on_ws": [
+    "WS-00",
+    "WS-01",
+    "WS-07",
+    "WS-10"
+   ],
+   "owned_paths": [
+    "apps/web/src/lib/eraseAll.ts",
+    "apps/web/src/lib/eraseAll*.test.ts",
+    "apps/web/src/lib/scanClient.ts",
+    "apps/web/src/lib/scanClient*.test.ts",
+    "packages/ux-vault/src/seller-scope.ts",
+    "apps/web/src/lib/tags.ts",
+    "apps/web/src/lib/sweepAttemptJournal.ts",
+    "apps/web/src/lib/reconciliationLedger.ts",
+    "packages/ux-vault/src/reconciliation-portable.ts",
+    "apps/web/e2e/erase-all.spec.ts"
+   ],
+   "handover_in": [
+    {
+     "paths": [
+      "apps/web/src/views/Settings.tsx",
+      "apps/web/src/views/Settings*.test.tsx"
+     ],
+     "from": "WS-01",
+     "at": "CP-1"
+    },
+    {
+     "paths": [
+      "apps/web/src/lib/duplicateAttemptJournal.ts"
+     ],
+     "from": "WS-10",
+     "at": "CP-3"
+    },
+    {
+     "paths": [
+      "apps/web/src/lib/keyVault.ts",
+      "apps/web/src/lib/keyVault*.test.ts"
+     ],
+     "from": "WS-07",
+     "at": "CP-2"
+    }
+   ],
+   "model_tier": "strongest",
+   "reviewer_tier": "strongest",
+   "security_review": true,
+   "executor": "worker",
+   "unblocked": true,
+   "unblocked_scope": "all",
+   "blocked_items": [],
+   "owner_gate": [],
+   "external": [],
+   "est_days": [
+    3.0,
+    6.0
+   ],
+   "worktree": "../wt/WS-23",
+   "branch": "ws/WS-23-local-privacy",
+   "mapping": "new (G-B)",
+   "objectives": "In-app confirmed wipe of ghostpay.* storage + the three IndexedDB databases with backup warning; checkpoint slots/journals keyed by a viewing-key-derived pseudonym; minimal plaintext in the vault record (keystore v1 file format frozen); migration tested.",
+   "items": [
+    {
+     "id": "WS-23.1",
+     "refs": [
+      "SEC-23"
+     ],
+     "wave": 7,
+     "cp": "CP-5",
+     "est": [
+      1.0,
+      2.0
+     ],
+     "strategy": "implement",
+     "deps": [
+      "CP-3"
+     ],
+     "gate": "none",
+     "owner": [],
+     "ext": [],
+     "unblocked": [
+      true,
+      ""
+     ],
+     "parallel": true,
+     "what": "Settings > Erase all GhostPay data: confirmed, backup warning, clears ghostpay.* local/session + 3 IndexedDB DBs; e2e"
+    },
+    {
+     "id": "WS-23.2",
+     "refs": [
+      "SEC-22"
+     ],
+     "wave": 7,
+     "cp": "CP-5",
+     "est": [
+      2.0,
+      4.0
+     ],
+     "strategy": "refactor",
+     "deps": [
+      "WS-23.1"
+     ],
+     "gate": "none",
+     "owner": [],
+     "ext": [],
+     "unblocked": [
+      true,
+      ""
+     ],
+     "parallel": true,
+     "what": "Pseudonymize slot/journal names with a viewing-key-derived key; minimize plaintext meta in the IndexedDB vault record; one-time migration with tests; keystore v1 bytes unchanged"
+    }
+   ]
+  },
+  {
+   "ws": "WS-24",
+   "name": "Strict on-chain verifier for web/CLI/relayer + dual-provider readback + registry pin; legacy manifest path removed",
+   "features": [
+    "F-DEP-02",
+    "F-WEB-17",
+    "F-CTR-04"
+   ],
+   "contributes_to": [],
+   "findings": [
+    "SEC-14",
+    "G-NOTE-01"
+   ],
+   "tb": [
+    "TB-10"
+   ],
+   "wave": 2,
+   "waves": [
+    2,
+    6
+   ],
+   "checkpoints": [
+    "CP-2",
+    "CP-4"
+   ],
+   "depends_on_ws": [
+    "WS-00",
+    "WS-05"
+   ],
+   "owned_paths": [
+    "apps/web/src/lib/manifest.ts",
+    "apps/web/src/lib/manifest*.test.ts",
+    "apps/web/src/lib/deployment.ts",
+    "apps/web/src/lib/deployment*.test.ts",
+    "apps/web/src/components/ManifestBanner.tsx",
+    "apps/web/src/components/ManifestBanner*.test.tsx",
+    "packages/chain-adapters/src/deploymentsVerify.ts",
+    "packages/chain-adapters/src/deploymentsVerify*.test.ts",
+    "packages/chain-adapters/src/deploymentsSignature.ts",
+    "packages/chain-adapters/src/deploymentsSignature*.test.ts",
+    "packages/chain-adapters/src/verify.ts",
+    "packages/chain-adapters/src/verify*.test.ts",
+    "packages/chain-adapters/src/registry.ts",
+    "packages/chain-adapters/src/registry*.test.ts",
+    "packages/cli/src/payment-context.ts",
+    "apps/relayer/src/runtime.ts",
+    "docs/adr/ADR-0018-erc6538.md"
+   ],
+   "handover_in": [],
+   "model_tier": "strongest",
+   "reviewer_tier": "strongest",
+   "security_review": true,
+   "executor": "worker",
+   "unblocked": true,
+   "unblocked_scope": "all",
+   "blocked_items": [],
+   "owner_gate": [
+    "OD-07",
+    "OA-04"
+   ],
+   "external": [],
+   "est_days": [
+    6.75,
+    11.25
+   ],
+   "worktree": "../wt/WS-24",
+   "branch": "ws/WS-24-strict-verifier",
+   "mapping": "split from WS-05",
+   "objectives": "One exported strict verifier (canonical announcer, codehash pins, fixed 25 bps) used by Pay/Scan/Sweep, CLI and relayer; secondary-provider reconciliation fails closed; ERC-6538 singleton pin; no unsigned/legacy manifest path in any build.",
+   "items": [
+    {
+     "id": "WS-24.1",
+     "refs": [
+      "SEC-14"
+     ],
+     "wave": 2,
+     "cp": "CP-2",
+     "est": [
+      0.5,
+      1.0
+     ],
+     "strategy": "repair",
+     "deps": [
+      "CP-0"
+     ],
+     "gate": "none",
+     "owner": [],
+     "ext": [],
+     "unblocked": [
+      true,
+      ""
+     ],
+     "parallel": true,
+     "what": "Move loadManifest (manifest.ts:52-101) + verifyTextManifestSignature to test utilities; unit test that no production module exports them; bundle-scan rule line in scan-bundle.mjs via coord-request (no WS owns it in window 2)"
+    },
+    {
+     "id": "WS-24.2",
+     "refs": [
+      "F-DEP-02",
+      "G-NOTE-01"
+     ],
+     "wave": 6,
+     "cp": "CP-4",
+     "est": [
+      3.0,
+      5.5
+     ],
+     "strategy": "refactor",
+     "deps": [
+      "WS-24.1",
+      "WS-05.1"
+     ],
+     "gate": "start",
+     "owner": [],
+     "ext": [],
+     "unblocked": [
+      true,
+      "announcer codehash pin waits for B02/B04 evidence"
+     ],
+     "parallel": false,
+     "what": "Rows IC: web verifyManifestForFlow + CLI payment-context.ts + relayer runtime.ts call one strict verifier (G-NOTE-01)"
+    },
+    {
+     "id": "WS-24.3",
+     "refs": [
+      "F-WEB-17"
+     ],
+     "wave": 6,
+     "cp": "CP-4",
+     "est": [
+      1.75,
+      3.0
+     ],
+     "strategy": "repair",
+     "deps": [
+      "WS-24.2"
+     ],
+     "gate": "start",
+     "owner": [
+      "OD-07"
+     ],
+     "ext": [],
+     "unblocked": [
+      true,
+      "bundling of the real manifest owner-gated"
+     ],
+     "parallel": false,
+     "what": "When the user has configured a secondary RPC (opt-in; never a built-in default or automatic fallback), readback reconciles both providers and fails closed on disagreement/unreachable; single-provider mode unchanged; banner provider count"
+    },
+    {
+     "id": "WS-24.4",
+     "refs": [
+      "F-CTR-04",
+      "TB-10"
+     ],
+     "wave": 6,
+     "cp": "CP-4",
+     "est": [
+      1.5,
+      1.75
+     ],
+     "strategy": "repair",
+     "deps": [
+      "WS-24.3",
+      "WS-05.3"
+     ],
+     "gate": "none",
+     "owner": [
+      "OA-04"
+     ],
+     "ext": [],
+     "unblocked": [
+      true,
+      "pin values after B04"
+     ],
+     "parallel": true,
+     "what": "ERC-6538 singleton runtime codehash per-chain pin; unknown/mismatch disables registry features; ADR-0018 stale text"
+    }
+   ]
+  },
+  {
+   "ws": "WS-25",
+   "name": "Spec 18 K05: encrypted bounded bulk archive of validated one-time keys (format, import, panel)",
+   "features": [
+    "F-KEY-11"
+   ],
+   "contributes_to": [],
+   "findings": [],
+   "tb": [],
+   "wave": 7,
+   "waves": [
+    7
+   ],
+   "checkpoints": [
+    "CP-5"
+   ],
+   "depends_on_ws": [
+    "WS-00",
+    "WS-03",
+    "WS-07",
+    "WS-08",
+    "WS-18",
+    "WS-19"
+   ],
+   "owned_paths": [
+    "packages/ux-vault/src/stealth-archive*.ts",
+    "apps/web/src/components/StealthArchive*.tsx",
+    "apps/web/e2e/stealth-archive.spec.ts"
+   ],
+   "handover_in": [],
+   "model_tier": "strongest",
+   "reviewer_tier": "strongest",
+   "security_review": true,
+   "executor": "worker",
+   "unblocked": true,
+   "unblocked_scope": "all",
+   "blocked_items": [],
+   "owner_gate": [],
+   "external": [],
+   "est_days": [
+    3.25,
+    4.25
+   ],
+   "worktree": "../wt/WS-25",
+   "branch": "ws/WS-25-spec18-archive",
+   "mapping": "split from WS-08",
+   "objectives": "Encrypted only; header count/chain/scope; no master keys; deterministic order (chainId, blockNumber, logIndex, stealthAddress); caps mirror tag-archive; atomic reject on any malformed/duplicate record.",
+   "items": [
+    {
+     "id": "WS-25.1",
+     "refs": [
+      "F-KEY-11"
+     ],
+     "wave": 7,
+     "cp": "CP-5",
+     "est": [
+      2.25,
+      3.0
+     ],
+     "strategy": "implement",
+     "deps": [
+      "CP-2"
+     ],
+     "gate": "exit",
+     "owner": [],
+     "ext": [],
+     "unblocked": [
+      true,
+      "format after CP-2"
+     ],
+     "parallel": true,
+     "what": "K05 container format + strict atomic import + fixed vectors for WS-19"
+    },
+    {
+     "id": "WS-25.2",
+     "refs": [
+      "F-KEY-11"
+     ],
+     "wave": 7,
+     "cp": "CP-5",
+     "est": [
+      1.0,
+      1.25
+     ],
+     "strategy": "implement",
+     "deps": [
+      "WS-25.1",
+      "WS-08.1"
+     ],
+     "gate": "exit",
+     "owner": [],
+     "ext": [],
+     "unblocked": [
+      true,
+      "UI after K03 (rolling merge of WS-08.1)"
+     ],
+     "parallel": true,
+     "what": "StealthArchivePanel component using the K03 export controls (re-auth via requireStepUp, scope display)"
+    }
+   ]
+  },
+  {
+   "ws": "WS-90",
+   "name": "Experimental (45) + future (43): keep separate / defer",
+   "features": [
+    "F-AA-01",
+    "F-AA-02",
+    "F-AA-03",
+    "F-AA-04",
+    "F-AA-05",
+    "F-BTC-04",
+    "F-BTC-05",
+    "F-EVMX-01",
+    "F-INT-04",
+    "F-MER-07",
+    "F-NET-03",
+    "F-NET-04",
+    "F-OPS-02",
+    "F-POOL-01",
+    "F-POOL-02",
+    "F-POOL-03",
+    "F-POOL-05",
+    "F-POOL-06",
+    "F-POOL-07",
+    "F-POOL-08",
+    "F-POOL-09",
+    "F-PRIV-01",
+    "F-PRIV-02",
+    "F-PRIV-03",
+    "F-PRIV-04",
+    "F-PRIV-05",
+    "F-RLY-05",
+    "F-SOL-02",
+    "F-TRX-02",
+    "F-UX-01",
+    "F-UX-02",
+    "F-UX-03",
+    "F-UX-04",
+    "F-UX-05",
+    "F-UX-06",
+    "F-UX-07",
+    "F-UX-08",
+    "F-UX-09",
+    "F-UX-10",
+    "F-UX-11",
+    "F-UX-12",
+    "F-UX-13",
+    "F-UX-14",
+    "F-UX-15",
+    "F-WEB-15",
+    "F-AA-06",
+    "F-FUT-01",
+    "F-FUT-02",
+    "F-FUT-03",
+    "F-FUT-04",
+    "F-FUT-05",
+    "F-FUT-06",
+    "F-FUT-07",
+    "F-FUT-08",
+    "F-FUT-09",
+    "F-FUT-10",
+    "F-FUT-11",
+    "F-FUT-12",
+    "F-FUT-13",
+    "F-FUT-14",
+    "F-FUT-15",
+    "F-FUT-16",
+    "F-FUT-17",
+    "F-FUT-18",
+    "F-FUT-19",
+    "F-FUT-20",
+    "F-FUT-21",
+    "F-FUT-22",
+    "F-FUT-23",
+    "F-FUT-24",
+    "F-FUT-25",
+    "F-FUT-26",
+    "F-FUT-27",
+    "F-FUT-28",
+    "F-FUT-29",
+    "F-FUT-30",
+    "F-FUT-31",
+    "F-FUT-32",
+    "F-FUT-33",
+    "F-FUT-34",
+    "F-FUT-35",
+    "F-FUT-36",
+    "F-FUT-37",
+    "F-FUT-38",
+    "F-FUT-39",
+    "F-FUT-41",
+    "F-INT-03",
+    "F-KEY-14"
+   ],
+   "contributes_to": [],
+   "findings": [
+    "SEC-06",
+    "SEC-07",
+    "SEC-11",
+    "SEC-12",
+    "SEC-31",
+    "SEC-35"
+   ],
+   "tb": [],
+   "wave": 9,
+   "waves": [
+    9
+   ],
+   "checkpoints": [],
+   "depends_on_ws": [],
+   "owned_paths": [],
+   "handover_in": [],
+   "model_tier": "cheap",
+   "reviewer_tier": "mid",
+   "security_review": false,
+   "executor": "none",
+   "unblocked": false,
+   "unblocked_scope": "all",
+   "blocked_items": [],
+   "owner_gate": [
+    "OD-04",
+    "OD-05",
+    "OD-11",
+    "OD-12",
+    "OD-13",
+    "OD-20",
+    "OD-21",
+    "OD-22",
+    "OD-17"
+   ],
+   "external": [],
+   "est_days": [
+    0.0,
+    0.0
+   ],
+   "worktree": null,
+   "branch": null,
+   "mapping": "new (G-B)",
+   "objectives": "No work this phase. Stay out of the lean build (CORE_ORDER/VITE flag guard tests green). Confirmed-defect fixes are executed elsewhere: TB-08 F-SOL-02/F-TRX-02 format split -> WS-14; SEC-16 F-POOL-03 -> WS-16.1; F-AA-05 CI wiring -> WS-20.2. Scheme-2 (F-AA-*, F-WEB-15, F-POOL-08) waits for OD-04/OD-05/OD-11/OD-12/OD-13 + SEC-06/07/11/12/31/35; contracts frozen.",
+   "items": []
+  }
+ ]
+}
