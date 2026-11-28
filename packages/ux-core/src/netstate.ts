@@ -164,7 +164,7 @@ export function reduceNet(state: NetState, event: NetEvent, nowMs: number): NetS
     case 'browser-offline':
       return { ...state, browserOnline: false };
     case 'browser-online': {
-      const reset = (e: EndpointState): EndpointState => ({ ...e, failures: 0, reachability: 'unknown' });
+      const reset = (e: EndpointState): EndpointState => ({ ...e, failures: 0, reachability: 'unknown', clockSkewSec: undefined });
       const rpc: Record<number, EndpointState> = {};
       for (const [k, v] of Object.entries(state.rpc)) rpc[Number(k)] = reset(v);
       return { ...state, browserOnline: true, rpc, relayer: reset(state.relayer) };
