@@ -1,0 +1,13 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GhostPay compatibility check</title><style>
+*{box-sizing:border-box}body{margin:0;color:#132932;background:#f5f8f8;font:16px/1.45 system-ui,sans-serif}main{max-width:55rem;margin:auto;padding:1rem}h1{font-size:1.65rem}button,a{font:inherit}button{padding:.55rem 1rem;color:white;background:#11586a;border:0;border-radius:4px}button:focus,a:focus,input:focus{outline:3px solid #cb7100}input,select{display:block;font:inherit;width:100%;padding:.35rem}label{display:block;margin:.4rem 0}details{margin:.7rem 0}pre{white-space:pre-wrap;overflow-wrap:anywhere}iframe{display:block;border:0;width:100%;height:75vh;background:white}fieldset{border:1px solid #a0b6bb}a{color:#11586a}
+</style><main><h1>GhostPay compatibility check</h1>
+<p>Use a fresh English-language test profile. This check opens the bundled GhostPay build, visits its main views and reads its own capability checks. Open the app full screen for keyboard, wallet, camera and file-picker cases.</p>
+<details><summary>Record a hardware or VM run</summary><fieldset>
+<label>Matrix target ID <input id="target"></label><label>Model and CPU architecture <input id="model"></label>
+<label>OS edition, architecture, build and patch level <input id="os"></label><label>Browser product and full version from About <input id="browser"></label>
+<label>Environment <select id="kind"><option value="unspecified">Choose an environment</option><option>Physical device</option><option>Desktop VM</option><option>OS simulator or emulator</option><option>Device farm, physical</option><option>Device farm, virtual</option></select></label></fieldset></details>
+<button id="run" type="button">Run checks</button> <a href="/" target="_blank" rel="noopener">Open GhostPay full screen</a>
+<p id="status" role="status">Ready</p><p><a id="save" hidden download="ghostpay-run.json">Download run record</a></p>
+<details><summary>Result details</summary><pre id="result"></pre></details><noscript>JavaScript is required for the automated checks. Record the observed startup result in the matrix.</noscript></main>
+<iframe id="app" title="GhostPay test view" src="about:blank"></iframe><script src="check.js"></script></html>

@@ -1,0 +1,20 @@
+ID,Applies to,Exercise,Pass evidence
+S1,All,Open the pinned application in a fresh profile,Home heading appears and build digest is recorded
+S2,Core and Mobile,Read the four GhostPay footer diagnostics,"Secure context, known-answer SHA-256, local storage and IndexedDB each pass in normal mode"
+S3,Core and Mobile,Navigate all nine views,Each expected heading and selected tab appears without horizontal overflow or clipped primary controls in the QA frame
+C1,Core and Mobile,Create a disposable seller identity and export an encrypted backup,The OS saves a file and the app verifies it against the same identity
+C2,Core and Mobile,Restore the synthetic backup into a fresh profile then close reopen and unlock,"Expected identity survives; wrong passphrase and damaged fixture fail without replacing prior state"
+C3,Core and Mobile,Create a synthetic signed invoice then open it from a new tab,"Expected amount and chain render; cancellation preserves unpaid status"
+C4,Core and Mobile,Use the repo signed fixture and mock wallet to review then cancel or confirm,"Expected transaction only after consent; cancelled or repeated action creates no duplicate request"
+C5,Core and Mobile,Open the same synthetic invoice in two tabs and try the second while first is pending,Second tab makes zero wallet requests; unrelated invoice still opens
+C6,Core and Mobile,Reload in a private profile or with storage denied then inspect footer,Status reflects the actual available APIs and no false success appears
+C7,Core and Mobile,Use keyboard to open nav and controls at 200 percent zoom,Focus visible and logical; no trapped control or overlap that prevents use
+M1,Mobile,Rotate with keyboard open then background app and return,Input and invoice review survive according to lock policy; controls remain reachable
+M2,Mobile,Scan printed synthetic QR then deny camera and select a saved image,Camera stops on leaving scan; import and manual alternatives work
+M3,Mobile,Open OS file picker and restore from a second physical device,Restored test identity matches; path and share sheet work on the named OS
+M4,Mobile,Launch test wallet then cancel and return using app switcher,Original invoice restored and no payment reported
+M5,Mobile foldable or tablet,Fold/unfold or open split view during invoice review,Review remains reachable and focus and amount survive
+T1,TV remote,Open fixture in officially available TV browser using D-pad only,Focus visible; Select and Back work; controls reachable without simulated mouse
+T2,TV remote,Inspect at 720p and 1080p/4K display settings and check overscan,Critical labels visible at viewing distance; scroll and focus work at screen edges
+T3,TV remote,Open read-only invoice review without a wallet or camera,Unavailable action is explained; QR/manual handoff only where available; no paid state
+L1,Legacy startup,Open isolated fixture and static help with JavaScript on and off,Record render or failure with exact versions; check static fallback and no false success

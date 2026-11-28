@@ -5420,3 +5420,10 @@ respective owners. Use disposable fixtures and record only sanitized results.
 ## November 27 audit — approved Pages payment origin
 
 Worker Codex origin, branch `audit/nov27-origin-87060`, base `b890a76603b924829fdbe2b4fb2c5626f0cf4e36`. Own the Pages build origin, lean manifest and wallet gates, smoke origin checks, corresponding workflow arguments, docs and regressions. Preserve the signed manifest, on-chain read-back, shared-testnet decision and explicit local fixture. Acceptance requires zero wallet requests on origin mismatch, working approved-origin payment and manifest-free demo, and an independent post-deployment origin check. Coordinate workflow hunks with the deployment archive worker.
+
+## Device and browser compatibility testing
+
+Codex owns tools/device-compatibility and .github/workflows/device-compatibility.yml on
+qa/device-browser-matrix-20261128, based on 0934ea094cb1db90293b74d2d1e9d9324e09a883.
+Acceptance covers a ranked hardware, OS and browser inventory, a build-identifying smoke
+runner and distinct device, desktop VM and viewport evidence.
