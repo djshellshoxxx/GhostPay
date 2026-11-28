@@ -641,6 +641,36 @@ describe('K05 bulk export rules', () => {
     expect(scrypt).not.toHaveBeenCalled();
   });
 
+  it('checks every input key against its own record before deduplication, whatever the input order (CR-1)', async () => {
+    const good = verified('a1');
+    const other = verified('a2');
+    const later = verified('a1', { blockNumber: 6000005n, logIndex: 0, blockHash: `0x${'e5'.repeat(32)}` });
+    // Each `bad` names one of good's records (or a replay of it) with a key that does not control it; deduplication
+    // would drop it beside `good`, so only a check of every input entry can see it.
+    const bads: VerifiedStealthPayment[] = [
+      { record: good.record, secret: other.secret },
+      { record: good.record, secret: 'secret' as unknown as SecretScalar },
+      { record: good.record, secret: new Uint8Array(32) as SecretScalar },
+      { record: later.record, secret: other.secret },
+    ];
+    for (const bad of bads) {
+      for (const items of [[good, bad], [bad, good], [good, other, bad], [bad, other, good]]) {
+        const scope = items.length === 2 ? 'single' : 'selected';
+        expect(await codeOf(() => api.encryptPaymentKeys(items, { scope, passphrase: PASS, N }))).toBe('error.stealthExport.keyDoesNotMatch');
+      }
+    }
+    expect(scrypt).not.toHaveBeenCalled();
+    const duplicate = verified('a1');
+    expect(duplicate.secret).not.toBe(good.secret);
+    const once = api.inspectPaymentKeys(await api.encryptPaymentKeys([good, duplicate, later], { scope: 'single', passphrase: PASS, N }));
+    expect(once.count).toBe(1);
+    expect(once.payments[0]).toEqual(good.record);
+    const conflicting = { ...good, record: { ...good.record, ephemeralPublicKey: byId('a2').announcement.ephemeralPublicKey } };
+    for (const items of [[good, conflicting], [conflicting, good]]) {
+      expect(await codeOf(() => api.encryptPaymentKeys(items, { scope: 'all-discovered', passphrase: PASS, N }))).toBe('error.stealthExport.conflict');
+    }
+  });
+
   it('wipes the encryption plaintext after sealing', async () => {
     const seen: Uint8Array[] = [];
     const encrypt = globalThis.crypto.subtle.encrypt.bind(globalThis.crypto.subtle);
