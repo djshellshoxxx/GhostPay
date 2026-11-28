@@ -25,7 +25,7 @@ function Client(props: { readonly provider: MockWallet }): ReactNode {
     <p>{status}</p>
   </>;
 }
-// Main has no global privacy mask yet (#569), so the provider presents directly; the mask cases of the donor are omitted.
+// Unmasked: the provider presents directly. Mask cases: WalletDisclosure.quickHide.test.tsx and AppShell.masking.test.tsx.
 function App(props: { readonly provider: MockWallet; readonly scope: object }): ReactNode {
   return <WalletDisclosureProvider scope={props.scope}><Client provider={props.provider} /></WalletDisclosureProvider>;
 }

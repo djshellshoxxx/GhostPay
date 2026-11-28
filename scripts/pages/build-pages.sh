@@ -58,11 +58,13 @@ $dirty"
 fi
 
 # Serving origin (GP-PAGES-01). Lower-cased; no path, query or credentials. A *.github.io host is shared.
-origin="$(printf '%s' "${GHOSTPAY_PAGES_ORIGIN:-}" | tr '[:upper:]' '[:lower:]')"
+origin="${GHOSTPAY_PAGES_ORIGIN:-}"
 if [ -n "$origin" ]; then
-  if [[ "$origin" =~ ^https://[a-z0-9]([a-z0-9.-]*[a-z0-9])?(:[0-9]{1,5})?$ ]]; then :
-  elif [ "$dev" = 1 ] && [[ "$origin" =~ ^http://(localhost|127\.0\.0\.1)(:[0-9]{1,5})?$ ]]; then :
-  else die "GHOSTPAY_PAGES_ORIGIN must be https://host[:port] with no path (got: $origin)"; fi
+  origin="$(node --input-type=module - "$origin" "$dev" <<'NODE'
+import { parseApprovedOrigin } from './scripts/pages/approved-origin.mjs';
+process.stdout.write(parseApprovedOrigin(process.argv[2], process.argv[3] === '1'));
+NODE
+)" || die "invalid GHOSTPAY_PAGES_ORIGIN"
 fi
 host="${origin#*://}"; host="${host%%:*}"
 shared=1
@@ -114,6 +116,7 @@ echo "== build apps/web (lean profile, relative base) at $commit"
 if ! (
   cd "$ROOT/apps/web"
   env -i PATH="$PATH" HOME="$HOME" TMPDIR="${TMPDIR:-/tmp}" CI="${CI:-}" TZ=UTC LC_ALL=C \
+    VITE_GHOSTPAY_PAGES_ORIGIN="$origin" \
     GHOSTPAY_LOCAL_BUILD_PROFILE=lean \
     GHOSTPAY_RELEASE_PUBKEYS="${GHOSTPAY_RELEASE_PUBKEYS:-}" \
     GHOSTPAY_PAGES_DEV="$dev" \
@@ -148,7 +151,7 @@ const NAMES = { 11155111: 'Ethereum Sepolia', 84532: 'Base Sepolia', 11155420: '
 const { chainIds } = checkManifestDir(readdirSync(deployments));
 const state = chainIds.length === 0
   ? '<strong>Demonstration build.</strong> Payments are disabled on every chain: no deployment manifest is bundled.'
-  : `<strong>Testnet beta.</strong> Payments work only on ${chainIds.map((id) => `${NAMES[id] ?? 'chain'} (${String(id)})`).join(', ')}, with test assets. Never send real funds.`;
+  : `<strong>Testnet beta.</strong> On the approved hosting origin, payments work only on ${chainIds.map((id) => `${NAMES[id] ?? 'chain'} (${String(id)})`).join(', ')}, with test assets. Never send real funds.`;
 const devNote = dev === '1' ? '<strong>Development build</strong> (not a release). ' : '';
 const sharedNote = shared === '1'
   ? ' This web address is shared with every other GitHub Pages site of the same account, which can read this site\'s browser storage and control its pages: use it only for testing and never load keys that hold real funds.'
@@ -185,7 +188,7 @@ import { join } from 'node:path';
 import { checkManifestDir, sha256sums, verifySite } from './scripts/pages/verify-pages-site.mjs';
 const [site, evidence, commit, manifestsSha256, root, deployments, origin, shared, dev] = process.argv.slice(2);
 const report = JSON.parse(readFileSync(join(evidence, 'ghostpay-lean-build.json'), 'utf8'));
-const { problems, files } = verifySite(site, report, { expectCommit: commit, expectManifestsSha256: manifestsSha256 });
+const { problems, files } = verifySite(site, report, { expectCommit: commit, expectManifestsSha256: manifestsSha256, expectPagesOrigin: origin || null });
 if (problems.length > 0) {
   console.error('Pages site verification FAILED:');
   for (const p of problems) console.error(` - ${p}`);
