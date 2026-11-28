@@ -147,16 +147,9 @@ node --input-type=module - "$site/index.html" "$deployments" "$shared" "$dev" <<
 import { readFileSync, readdirSync, writeFileSync } from 'node:fs';
 import { checkManifestDir } from './scripts/pages/verify-pages-site.mjs';
 const [indexPath, deployments, shared, dev] = process.argv.slice(2);
-const NAMES = { 11155111: 'Ethereum Sepolia', 84532: 'Base Sepolia', 11155420: 'OP Sepolia', 421614: 'Arbitrum Sepolia', 80002: 'Polygon Amoy', 97: 'BNB Smart Chain Testnet', 43113: 'Avalanche Fuji' };
+const { renderMirrorNotice } = await import('./scripts/pages/mirror-notice.mjs');
 const { chainIds } = checkManifestDir(readdirSync(deployments));
-const state = chainIds.length === 0
-  ? '<strong>Demonstration build.</strong> Payments are disabled on every chain: no deployment manifest is bundled.'
-  : `<strong>Testnet beta.</strong> On the approved hosting origin, payments work only on ${chainIds.map((id) => `${NAMES[id] ?? 'chain'} (${String(id)})`).join(', ')}, with test assets. Never send real funds.`;
-const devNote = dev === '1' ? '<strong>Development build</strong> (not a release). ' : '';
-const sharedNote = shared === '1'
-  ? ' This web address is shared with every other GitHub Pages site of the same account, which can read this site\'s browser storage and control its pages: use it only for testing and never load keys that hold real funds.'
-  : '';
-const banner = `<p class="gp-pages-mirror" role="note" id="gp-pages-mirror"><strong>GitHub Pages mirror.</strong> ${devNote}${state}${sharedNote} This host cannot send security headers (no clickjacking protection). Before trusting it, compare the served files with the published SHA256SUMS: <a href="https://github.com/djshellshoxxx/GhostPay/blob/main/docs/pages/README.md" rel="noopener noreferrer">how to verify</a>.</p>`;
+const banner = renderMirrorNotice(chainIds, shared === '1', dev === '1');
 let html = readFileSync(indexPath, 'utf8');
 if (!/<body[^>]*>/.test(html) || !html.includes('</head>')) throw new Error('index.html has no <head>/<body> to label');
 html = html.replace('</head>', '    <link rel="stylesheet" href="./pages-mirror.css" />\n  </head>').replace(/<body([^>]*)>/, (m) => `${m}\n    ${banner}`);

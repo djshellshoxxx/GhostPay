@@ -1,5 +1,5 @@
 // @vitest-environment jsdom
-import { screen, waitFor, within } from '@testing-library/react';
+import { cleanup, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { act } from '@testing-library/react';
@@ -65,6 +65,33 @@ async function openScan(services: Services, pickBaseSepolia = true): Promise<Ret
   await user.click(within(screen.getByRole('navigation', { name: 'Main' })).getByRole('button', { name: 'Scan and receive' }));
   if (pickBaseSepolia) await user.selectOptions(screen.getByLabelText('Chain'), screen.getByRole('option', { name: 'Base Sepolia' }));
   return user;
+}
+
+function verifiedRouterPayment(metaAddress: string) {
+  const mine = makeLog({ announcer: FAKE_ANNOUNCER, metaAddress: metaAddress, block: 120, index: 1, caller: FAKE_ROUTER, amount: 2_500_000n });
+  const txHash = `0x${'a'.repeat(64)}`;
+  const announcement = { ...mine.log, transactionHash: txHash };
+  const payer = '0x2222222222222222222222222222222222222222' as Address;
+  const [ephemeral, metadata] = decodeAbiParameters([{ type: 'bytes' }, { type: 'bytes' }], announcement.data as Hex);
+  const parsed = parseMetadata(metadata);
+  if (parsed.kind !== 'erc20') throw new Error('ERC20 fixture required');
+  const transfer = {
+    address: '0x036cbd53842c5426634e7929541ec2318f3dcf7e',
+    topics: [TRANSFER_TOPIC, topicAddress(payer), announcement.topics?.[2] ?? '0x'],
+    data: `0x${2_500_000n.toString(16).padStart(64, '0')}`,
+    blockNumber: announcement.blockNumber,
+    blockHash: announcement.blockHash,
+    transactionHash: txHash,
+    logIndex: '0x0',
+  };
+  const rpc = chainWithLogs(84532, 500, [announcement], (method, params) => {
+    if (method === 'eth_getLogs' && (params[0] as { address?: string }).address?.toLowerCase() === transfer.address) return [transfer];
+    const common = { to: FAKE_ROUTER, from: payer, blockHash: announcement.blockHash, blockNumber: announcement.blockNumber };
+    if (method === 'eth_getTransactionReceipt') return { ...common, status: '0x1', transactionHash: txHash, logs: [transfer, announcement] };
+    if (method === 'eth_getTransactionByHash') return { ...common, hash: txHash, value: '0x0', input: encodeFunctionData({ abi: ghostPayRouterAbi, functionName: 'payERC20', args: [parsed.token, mine.stealthAddress as Address, grossForNet(parsed.netAmount), parsed.netAmount, 9999999999n, ephemeral, metadata] }) };
+    return undefined;
+  });
+  return { rpc, mine, txHash };
 }
 
 describe('Scan and receive', () => {
@@ -226,32 +253,54 @@ describe('Scan and receive', () => {
     });
   });
 
+  it('retains a verified payment on navigation and checkpoint resume, and rediscovers it on explicit cold-start recovery', async () => {
+    const keys = { spendingKeyHex: '1'.padStart(64, '0'), viewingKeyHex: '2'.padStart(64, '0'), signingKeyHex: '3'.padStart(64, '0') };
+    const seller = importSession(keys);
+    window.localStorage.setItem(SETTINGS_KEY, JSON.stringify({ rpcUrls: { '84532': 'https://rpc.test' } }));
+    const { rpc, mine, txHash } = verifiedRouterPayment(seller.metaAddress);
+    const createRpc = vi.fn(() => Promise.resolve(withManifestChain(rpc)));
+    const services = () => makeServices({ loadManifest: loaded, createRpc, checkpoints: scanClient.localCheckpointStore(window.localStorage) });
+    const user = await openScan(services());
+    const scan = async () => {
+      await user.click(screen.getByRole('button', { name: 'Start scan' }));
+      await screen.findByText(/Finished\./);
+    };
+    await user.type(screen.getByLabelText('Start block'), '100');
+    await scan();
+    const keyId = checkpointKeyId(seller.spendingPublicKey, seller.viewingPublicKey);
+    const saved = services().checkpoints.load(84532, keyId);
+    expect(saved?.nextBlock).toBeGreaterThan(120n);
+    expect(saved?.recoveryStart).toBe(100n);
+    const nav = within(screen.getByRole('navigation', { name: 'Main' }));
+    await user.click(nav.getByRole('button', { name: 'Settings' }));
+    await user.click(nav.getByRole('button', { name: 'Scan and receive' }));
+    expect(screen.getByLabelText<HTMLSelectElement>('Chain').value).toBe('84532');
+    expect(screen.getByRole('button', { name: 'Sweep this payment' })).toBeTruthy();
+    await scan();
+    expect(screen.getAllByRole('button', { name: 'Sweep this payment' })).toHaveLength(1);
+    cleanup();
+    clearSession();
+    importSession(keys);
+    const restored = await openScan(services());
+    expect(screen.queryByRole('button', { name: 'Sweep this payment' })).toBeNull();
+    createRpc.mockClear();
+    await restored.click(screen.getByRole('button', { name: 'Find earlier payments' }));
+    expect(screen.getByLabelText<HTMLInputElement>('Start block').value).toBe('100');
+    expect(screen.getByLabelText<HTMLInputElement>('Resume from checkpoint').checked).toBe(false);
+    expect(createRpc).not.toHaveBeenCalled();
+    expect(screen.queryByRole('button', { name: 'Sweep this payment' })).toBeNull();
+    await restored.click(screen.getByRole('button', { name: 'Start scan' }));
+    expect(await screen.findByText('Seller-signed receipt')).toBeTruthy();
+    expect(screen.getByRole('button', { name: 'Sweep this payment' })).toBeTruthy();
+    const storage = JSON.stringify(window.localStorage);
+    expect(storage).not.toContain(mine.stealthAddress);
+    expect(storage).not.toContain(txHash);
+  });
+
   it('signs and exports a receipt from immutable finalized match data only', async () => {
     const pub = generateSession();
     window.localStorage.setItem(SETTINGS_KEY, JSON.stringify({ rpcUrls: { '84532': 'https://rpc.test' } }));
-    const mine = makeLog({ announcer: FAKE_ANNOUNCER, metaAddress: pub.metaAddress, block: 120, index: 1, caller: FAKE_ROUTER, amount: 2_500_000n });
-    const txHash = `0x${'a'.repeat(64)}`;
-    const announcement = { ...mine.log, transactionHash: txHash };
-    const payer = '0x2222222222222222222222222222222222222222' as Address;
-    const [ephemeral, metadata] = decodeAbiParameters([{ type: 'bytes' }, { type: 'bytes' }], announcement.data as Hex);
-    const parsed = parseMetadata(metadata);
-    if (parsed.kind !== 'erc20') throw new Error('ERC20 fixture required');
-    const transfer = {
-      address: '0x036cbd53842c5426634e7929541ec2318f3dcf7e',
-      topics: [TRANSFER_TOPIC, topicAddress(payer), announcement.topics?.[2] ?? '0x'],
-      data: `0x${2_500_000n.toString(16).padStart(64, '0')}`,
-      blockNumber: announcement.blockNumber,
-      blockHash: announcement.blockHash,
-      transactionHash: txHash,
-      logIndex: '0x0',
-    };
-    const rpc = chainWithLogs(84532, 500, [announcement], (method, params) => {
-      if (method === 'eth_getLogs' && (params[0] as { address?: string }).address?.toLowerCase() === transfer.address) return [transfer];
-      const common = { to: FAKE_ROUTER, from: payer, blockHash: announcement.blockHash, blockNumber: announcement.blockNumber };
-      if (method === 'eth_getTransactionReceipt') return { ...common, status: '0x1', transactionHash: txHash, logs: [transfer, announcement] };
-      if (method === 'eth_getTransactionByHash') return { ...common, hash: txHash, value: '0x0', input: encodeFunctionData({ abi: ghostPayRouterAbi, functionName: 'payERC20', args: [parsed.token, mine.stealthAddress as Address, grossForNet(parsed.netAmount), parsed.netAmount, 9999999999n, ephemeral, metadata] }) };
-      return undefined;
-    });
+    const { rpc, mine, txHash } = verifiedRouterPayment(pub.metaAddress);
     const user = await openScan(makeServices({ loadManifest: loaded, createRpc: () => Promise.resolve(withManifestChain(rpc)), createScanWorker: () => new InlineWorker() }));
     await user.type(screen.getByLabelText('Start block'), '100');
     await user.click(screen.getByRole('button', { name: 'Start scan' }));

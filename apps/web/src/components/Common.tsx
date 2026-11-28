@@ -4,14 +4,15 @@ import { copyClipboardText } from '../lib/clipboardPrivacy';
 import { sanitizeDisplayText } from '../lib/sanitize';
 import { neutralDownloadName } from '../lib/downloadNames';
 import { SOURCE_TRANSLATOR, useI18nOptional } from '../i18n/context';
+import { directionOf } from '../i18n/languages';
 import { ContextHelp } from './ContextHelp';
 
 // i18n-use: common.notice.info common.notice.warn common.notice.error common.notice.ok
-export function Notice(props: { readonly kind: 'info' | 'warn' | 'error' | 'ok'; readonly title?: string; readonly children: ReactNode }): ReactNode {
+export function Notice(props: { readonly kind: 'info' | 'warn' | 'error' | 'ok'; readonly lang?: string; readonly title?: string; readonly children: ReactNode }): ReactNode {
   const t = useI18nOptional()?.t ?? SOURCE_TRANSLATOR.t;
   const label = t(`common.notice.${props.kind}`);
   return (
-    <div className={`notice notice-${props.kind}`} role={props.kind === 'error' ? 'alert' : 'note'}>
+    <div lang={props.lang} dir={props.lang === undefined ? undefined : directionOf(props.lang)} className={`notice notice-${props.kind}`} role={props.kind === 'error' ? 'alert' : 'note'}>
       <strong className="notice-title">
         <span aria-hidden="true">{{ info: 'ℹ', warn: '⚠', error: '✖', ok: '✔' }[props.kind]} </span>
         {props.title ?? label}
@@ -24,6 +25,7 @@ export function Notice(props: { readonly kind: 'info' | 'warn' | 'error' | 'ok';
 
 export function Field(props: {
   readonly label: string;
+  readonly error?: string | undefined;
   readonly hint?: string;
   readonly help?: { readonly label: string; readonly text: string };
   readonly children: (id: string, describedBy: string | undefined) => ReactNode;
@@ -31,11 +33,13 @@ export function Field(props: {
   const id = useId();
   const hintId = props.hint === undefined ? undefined : `${id}-hint`;
   const helpId = props.help === undefined ? undefined : `${id}-help`;
-  const describedBy = [hintId, helpId].filter((value) => value !== undefined).join(' ') || undefined;
+  const errorId = props.error === undefined ? undefined : `${id}-error`;
+  const describedBy = [hintId, helpId, errorId].filter((value) => value !== undefined).join(' ') || undefined;
   return (
     <div className="field">
       <label htmlFor={id}>{props.label}</label>
       {props.children(id, describedBy)}
+      {props.error !== undefined && <p className="notice notice-error" id={errorId} role="alert">{props.error}</p>}
       {props.help !== undefined && <ContextHelp id={`${id}-help`} label={props.help.label}>{props.help.text}</ContextHelp>}
       {props.hint !== undefined && (
         <p className="hint" id={hintId}>

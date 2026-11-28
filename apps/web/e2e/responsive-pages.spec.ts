@@ -37,23 +37,28 @@ async function checkRpc(page: Page): Promise<void> {
       expect(b.y).toBeCloseTo(a.y, 0);
       expect(b.x).toBeGreaterThanOrEqual(a.x + a.width);
     }
-    const button = row.locator('.rpc-test-row button');
-    // A control may fit its grid cell while each word is split vertically.
-    const splitWords = await button.evaluate((el) => {
-      const text = el.firstChild;
-      if (!(text instanceof Text)) throw new Error('Expected the RPC Test label');
-      return [...text.data.matchAll(/\S+/gu)].filter((word) => {
-        const range = document.createRange();
-        range.setStart(text, word.index);
-        range.setEnd(text, word.index + word[0].length);
-        return range.getClientRects().length > 1;
-      }).map((word) => word[0]);
-    });
-    expect(splitWords).toEqual([]);
+    const buttons = row.locator('.rpc-test-row button');
+    await expect(buttons).toHaveCount(2);
+    for (const button of await buttons.all()) {
+      // A control may fit its grid cell while each word is split vertically.
+      const splitWords = await button.evaluate((el) => {
+        const text = el.firstChild;
+        if (!(text instanceof Text)) throw new Error('Expected the RPC Test label');
+        return [...text.data.matchAll(/\S+/gu)].filter((word) => {
+          const range = document.createRange();
+          range.setStart(text, word.index);
+          range.setEnd(text, word.index + word[0].length);
+          return range.getClientRects().length > 1;
+        }).map((word) => word[0]);
+      });
+      expect(splitWords).toEqual([]);
+    }
     await row.locator('input[type=url]').nth(1).focus();
     await page.keyboard.press('Tab');
-    await expect(button).toBeFocused();
-    await expect(button).toHaveCSS('outline-style', 'solid');
+    await expect(buttons.nth(0)).toBeFocused();
+    await page.keyboard.press('Tab');
+    await expect(buttons.nth(1)).toBeFocused();
+    await expect(buttons.nth(1)).toHaveCSS('outline-style', 'solid');
   }
 }
 

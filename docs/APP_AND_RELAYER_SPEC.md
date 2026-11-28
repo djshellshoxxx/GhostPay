@@ -14,6 +14,16 @@ Supplements DEVELOPER_SPECIFICATION Modules C and D, the Roadmap features, and F
 7. **Settings**: RPC URLs per chain (validated, https/wss only, chainId verified on connect), relayer URL, delay range, lock timeout, theme.
 8. **About/Privacy**: observer table, limitations, fee disclosure, how to verify the release.
 
+### Settings acceptance
+
+General settings and scan privacy settings each display their own saved or unsaved state. Editing either group clears its previous success feedback. A successful save applies only that group. If local storage refuses the save, the draft stays available for retry.
+
+With Scan privacy open in two tabs, each form follows the latest saved changes and keeps its unrelated drafts. A transport or source change keeps its saved endpoints together. A settings record removed in another tab resets that part of the form. When Save detects an unseen change, it shows the current settings for review and leaves storage untouched until the user saves again.
+
+Each primary and secondary RPC endpoint has an independent test action and result. Editing an endpoint invalidates its previous result, including a response that arrives after the edit. An invalid value receives focus and an associated inline error.
+
+Switching views or using browser Back with pending edits offers **Save and leave**, **Discard and leave**, and **Stay here**. A failed save keeps the user in Settings. The navigation behavior is specified in [Browser navigation in the payment client](ux/view-navigation.md).
+
 ### Security controls (all testable)
 - CSP: `default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'self' <user-configured origins injected at build as an allowlist plus a runtime-checked list>; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'; worker-src 'self'`. Because user RPC origins are runtime data, `connect-src` is broad (`https: wss:`) in the static header with a runtime allowlist check in the RPC adapter; this trade-off is documented. `_headers` file for Cloudflare Pages/Netlify; meta CSP fallback for GitHub Pages (no `frame-ancestors`).
 - `Referrer-Policy: no-referrer`, `X-Content-Type-Options: nosniff`, restrictive `Permissions-Policy`, COOP/CORP where hosts allow.

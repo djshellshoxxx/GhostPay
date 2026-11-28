@@ -46,7 +46,7 @@ describe('static Pages invoice-fragment privacy', () => {
     renderWith(<AppLean />);
 
     expect(window.location.hash).toBe('');
-    expect(window.history.state).toEqual(navigationState);
+    expect(window.history.state).toMatchObject(navigationState);
   });
 
   it('clears a retained invoice URL immediately when automatic fragment removal is enabled in Settings', () => {
@@ -58,6 +58,10 @@ describe('static Pages invoice-fragment privacy', () => {
     // Retention was explicitly requested at startup, so the initial hash remains.
     expect(window.location.hash).toBe('#gpi=v1.placeholder');
     fireEvent.click(within(screen.getByRole('navigation', { name: 'Main' })).getByRole('button', { name: 'Settings' }));
+    // Leaving Pay always sanitizes its entry. Simulate an already visible bearer URL on the
+    // settings entry so this exercises the preference effect independently of route cleanup.
+    expect(window.location.hash).toBe('');
+    window.history.replaceState({ ...navigationState, ...window.history.state }, '', '/app/?view=pay#gpi=v1.placeholder');
     const autoClear = screen.getByRole('checkbox', { name: 'Remove the invoice from the address bar after reading it' });
     expect((autoClear as HTMLInputElement).checked).toBe(false);
     fireEvent.click(autoClear);
@@ -68,7 +72,7 @@ describe('static Pages invoice-fragment privacy', () => {
     expect(window.location.hash).toBe('');
     expect(window.location.pathname).toBe('/app/');
     expect(window.location.search).toBe('?view=pay');
-    expect(window.history.state).toEqual(navigationState);
+    expect(window.history.state).toMatchObject(navigationState);
   });
 
   it('preserves unrelated document anchors instead of treating them as invoice links', () => {
@@ -81,7 +85,7 @@ describe('static Pages invoice-fragment privacy', () => {
     expect(window.location.hash).toBe('#main');
     expect(window.location.pathname).toBe('/app/');
     expect(window.location.search).toBe('?view=home');
-    expect(window.history.state).toEqual(navigationState);
+    expect(window.history.state).toMatchObject(navigationState);
   });
 
   it('retains a later invoice URL when the user explicitly disabled automatic clearing', () => {
@@ -100,7 +104,7 @@ describe('static Pages invoice-fragment privacy', () => {
     expect(window.location.hash).toBe('#gpi=v1.placeholder');
     expect(window.location.pathname).toBe('/app/');
     expect(window.location.search).toBe('?view=pay');
-    expect(window.history.state).toEqual(navigationState);
+    expect(window.history.state).toMatchObject(navigationState);
   });
 
   it('respects the explicit user option to retain invoice fragments in the address bar', () => {
@@ -164,7 +168,7 @@ describe('static Pages invoice-fragment privacy', () => {
     expect(window.location.hash).toBe('');
     expect(window.location.pathname).toBe('/app/');
     expect(window.location.search).toBe('?view=pay');
-    expect(window.history.state).toEqual(navigationState);
+    expect(window.history.state).toMatchObject(navigationState);
   });
 
 });

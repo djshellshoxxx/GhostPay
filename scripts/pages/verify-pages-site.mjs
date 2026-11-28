@@ -226,7 +226,7 @@ export function verifySite(siteDir, leanReport, o = {}) {
   if (!files.includes('.nojekyll')) problems.push('.nojekyll missing (Jekyll would drop files that start with _)');
   if (!files.includes('build-info.json')) problems.push('build-info.json missing');
   // ADR-0015 item 5: a GitHub Pages instance must say it is a mirror and what it can and cannot do.
-  if (files.includes('index.html') && !/<p class="gp-pages-mirror" role="note" id="gp-pages-mirror">/.test(readFileSync(join(root, 'index.html'), 'utf8'))) {
+  if (files.includes('index.html') && !/<(?:p|div) class="gp-pages-mirror" role="note" id="gp-pages-mirror"(?: lang="en" dir="ltr")?>/.test(readFileSync(join(root, 'index.html'), 'utf8'))) {
     problems.push('index.html: GitHub Pages mirror banner missing');
   }
   for (const rel of files) {

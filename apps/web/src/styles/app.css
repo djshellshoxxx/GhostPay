@@ -97,6 +97,32 @@ a, button, input, select, textarea, summary, [tabindex] { outline-offset: 2px; }
   font-weight: 600;
 }
 
+/* Keep the first task within reach while retaining every navigation control and its full touch target. */
+@media screen and (max-width: 39.999rem) {
+  .site-header h1 { margin-block-start: 6px; }
+  .site-header .tagline { margin-block-end: 4px; }
+  .site-header .nav {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    padding: 5px;
+    margin: 0 -5px 4px;
+    scroll-padding-inline: 5px;
+  }
+  .site-header .nav li { flex: none; }
+  .site-header .nav-btn { padding-inline: 10px; }
+  .site-header .privacy-controls .hint { margin-block: 2px; }
+  #home-h { margin-block-start: 6px; }
+  #home-h + .cards .card {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, auto);
+    gap: 6px 8px;
+    align-items: center;
+  }
+  #home-h + .cards .card > h3 { grid-area: 1 / 1; margin: 0; }
+  #home-h + .cards .card > .btn { grid-area: 1 / 2; }
+  #home-h + .cards .card > p { grid-column: 1 / -1; margin: 0; }
+}
+
 .btn {
   min-height: 44px;
   padding: 8px 16px;
@@ -150,7 +176,8 @@ legend { padding: 0 6px; font-weight: 600; }
     grid-template-rows: subgrid;
     grid-row: span 3;
   }
-  .rpc-test-row { grid-column: 1 / -1; }
+  .rpc-row:has([aria-invalid="true"]) > .field { grid-row: span 4; }
+  .rpc-test-row { align-self: start; }
 }
 
 .field label { display: block; font-weight: 600; margin-bottom: 4px; }
@@ -268,3 +295,14 @@ summary { cursor: pointer; min-height: 44px; display: flex; align-items: center;
 .context-help-text[hidden] { display: none; }
 
 @media (prefers-reduced-motion: reduce) { * { scroll-behavior: auto !important; transition: none !important; animation: none !important; } }
+
+dialog.settings-leave-dialog {
+  color: var(--text);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 1.25rem;
+  margin: auto;
+  max-inline-size: min(32rem, calc(100% - 2rem));
+}
+.settings-leave-dialog::backdrop { background: rgb(0 0 0 / 65%); }

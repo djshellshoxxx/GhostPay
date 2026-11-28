@@ -14,3 +14,5 @@
   .gp-pages-mirror { color: #fff4d6; background: #4a3700; border-bottom-color: #ffd76a; }
   .gp-pages-mirror a { color: #fff4d6; }
 }
+.gp-pages-mirror summary { cursor: pointer; width: fit-content; }
+.gp-pages-mirror summary:focus-visible { outline: 2px solid currentColor; outline-offset: 2px; }

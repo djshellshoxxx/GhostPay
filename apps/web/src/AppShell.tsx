@@ -5,7 +5,7 @@ import { PrivacyControls } from './components/PrivacyControls';
 import { SensitiveContent } from './components/SensitiveContent';
 import { PrivacyProvider, usePrivacyModePreference } from './lib/privacyMode';
 import type { RpcClient } from '@ghostpay/chain-adapters';
-import { clearFragment, readInvoiceFragment } from './lib/fragment';
+import { useViewHistory } from './lib/useViewHistory';
 import { loadedKeysRecoverable } from './lib/keyVault';
 import type { ScanMatch } from './lib/scanClient';
 import { useServices } from './lib/services';
@@ -54,6 +54,7 @@ function observeIdleClocks(): IdleObservation | undefined {
   }
 }
 import { SOURCE_TRANSLATOR, useI18nOptional } from './i18n/context';
+import { directionOf, isReviewed } from './i18n/languages';
 import type { MessageKey } from './i18n/catalog';
 import { ShellProfileContext } from './lib/buildProfile';
 
@@ -68,6 +69,15 @@ export interface AppShellProps {
 }
 
 export const CORE_ORDER: readonly ViewId[] = Object.freeze<ViewId[]>(['home', 'seller', 'create', 'pay', 'scan', 'sweep', 'registry', 'settings', 'about']);
+
+// Keep the whole active or focused control visible without scrolling the page away from main.
+function revealNavigationButton(list: HTMLUListElement | null, button: Element | null): void {
+  if (!list || !button || list.scrollWidth <= list.clientWidth) return;
+  const strip = list.getBoundingClientRect();
+  const active = button.getBoundingClientRect();
+  const delta = active.left < strip.left + 5 ? active.left - strip.left - 5 : Math.max(0, active.right - strip.right + 5);
+  if (delta !== 0) list.scrollBy({ left: delta });
+}
 
 function ViewSwitch(props: { readonly view: ViewId; readonly extraViews: ExtraViews; readonly profile: 'full' | 'lean'; readonly sellerArchive?: ReactNode }): ReactNode {
   const t = useI18nOptional()?.t ?? SOURCE_TRANSLATOR.t;
@@ -103,17 +113,13 @@ export function AppShell(props: AppShellProps): ReactNode {
   const extraViews = props.extraViews ?? {};
   const order = profile === 'lean' ? props.order.filter((id) => CORE_ORDER.includes(id)) : props.order;
   const services = useServices();
-  const [fragment, setFragment] = useState<string | undefined>(() => readInvoiceFragment(window.location));
-  const [selectedView, setViewState] = useState<ViewId>(() => (readInvoiceFragment(window.location) === undefined ? 'home' : 'pay'));
-  const setView = useCallback((next: ViewId): void => {
-    setViewState(profile === 'lean' && !CORE_ORDER.includes(next) ? 'home' : next);
-  }, [profile]);
   // The stored text this tab last read or wrote: a different one means another tab has saved since.
   const settingsText = useRef<string | null | undefined>(undefined);
   const [settings, setSettings] = useState<SettingsData>(() => {
     settingsText.current = storedSettingsText();
     return loadSettings();
   });
+  const { view: selectedView, setView, fragment, setFragment } = useViewHistory(order, settings.autoClearFragment);
   const [matches, setMatches] = useState<readonly ScanMatch[]>([]);
   const [sweepTarget, selectForSweep] = useState<AppState['sweepTarget']>(undefined);
   const [live, setLive] = useState<string | { readonly key: MessageKey }>('');
@@ -124,9 +130,13 @@ export function AppShell(props: AppShellProps): ReactNode {
   const view = suspended ? 'seller' : profile === 'lean' && !CORE_ORDER.includes(selectedView) ? 'home' : selectedView;
   const backup = useSyncExternalStore(subscribeSessionBackup, getSessionBackup);
   const i18n = useI18nOptional();
+  const locale = i18n?.locale ?? 'en';
+  const warningLocale = isReviewed(locale) ? locale : 'en';
+  const guideLanguage = locale === 'en' ? '' : ` (${i18n?.t('pagesMirror.english') ?? 'English'})`;
   const t = i18n?.t ?? SOURCE_TRANSLATOR.t;
   const main = useRef<HTMLElement>(null);
-  const first = useRef(true);
+  const navigation = useRef<HTMLUListElement>(null);
+  const lastFocusScope = useRef({ view, fragment });
   const rpcCache = useRef(new Map<string, Promise<RpcClient>>());
   // Configuration/service rerenders do not count as activity. Only actual key installation starts a new session lease.
   const idleLease = useRef<IdleLease | undefined>(undefined);
@@ -148,28 +158,6 @@ export function AppShell(props: AppShellProps): ReactNode {
     if (storedSettingsText() !== settingsText.current) adoptStoredSettings();
     return () => { window.removeEventListener('storage', onStorage); };
   }, [adoptStoredSettings]);
-
-  // Remove a sensitive invoice fragment on initial load and when the user re-enables automatic clearing.
-  // Hash changes arriving later are handled by the listener below.
-  useEffect(() => {
-    if (readInvoiceFragment(window.location) !== undefined && settings.autoClearFragment) {
-      clearFragment(window.location, window.history);
-    }
-  }, [settings.autoClearFragment]);
-
-  useEffect(() => {
-    const onHash = (): void => {
-      const f = readInvoiceFragment(window.location);
-      if (f === undefined) return;
-      setFragment(f);
-      setViewState('pay');
-      if (settings.autoClearFragment) clearFragment(window.location, window.history);
-    };
-    window.addEventListener('hashchange', onHash);
-    return () => {
-      window.removeEventListener('hashchange', onHash);
-    };
-  }, [settings.autoClearFragment]);
 
   useEffect(() => {
     const root = document.documentElement;
@@ -340,7 +328,7 @@ export function AppShell(props: AppShellProps): ReactNode {
       document.removeEventListener('resume', check);
       document.removeEventListener('freeze', check);
     };
-  }, [services, settings.lockTimeoutMin]);
+  }, [services, setFragment, settings.lockTimeoutMin]);
 
   // A cached local-vault copy can disappear in another tab before this tab learns about it. Closing is synchronous:
   // protect loaded keys unless a full verified copy exists outside this browser profile (SEC-40). Check custody at
@@ -358,14 +346,17 @@ export function AppShell(props: AppShellProps): ReactNode {
   }, [loadedKeys]);
 
   useEffect(() => {
-    if (first.current) {
-      first.current = false;
-      return;
-    }
+    if (lastFocusScope.current.view === view && lastFocusScope.current.fragment === fragment) return;
+    lastFocusScope.current = { view, fragment };
     // A new invoice deep link must move focus even when Pay is already selected.
     // Benign anchor changes do not update fragment and must not steal focus.
     main.current?.focus();
   }, [view, fragment]);
+
+  useEffect(() => {
+    const list = navigation.current;
+    revealNavigationButton(list, list?.querySelector('[aria-current="page"]') ?? null);
+  }, [view]);
 
   const rpcFor = useCallback(
     (urls: Readonly<Record<string, string>>, chainId: number): Promise<RpcClient | undefined> => {
@@ -416,7 +407,7 @@ export function AppShell(props: AppShellProps): ReactNode {
       getSecondaryRpc,
       announce: setLive,
     }),
-    [view, setView, settings, session, fragment, matches, sweepTarget, getRpc, getSecondaryRpc, adoptStoredSettings],
+    [view, setView, settings, session, fragment, setFragment, matches, sweepTarget, getRpc, getSecondaryRpc, adoptStoredSettings],
   );
   // One gate scope for the life of the shell: a connected wallet keeps working across key or settings changes, which
   // each view's own authority checks handle. Such a change only cancels a review that is open at that moment.
@@ -432,12 +423,12 @@ export function AppShell(props: AppShellProps): ReactNode {
       <SessionPresentationBoundary>
       <PrivacyProvider enabled={privacyEnabled} scope={privacyScope}>
       <WalletDisclosureProvider scope={walletDisclosureScope} revokeOn={walletDisclosureRevision}>
-      <a className="skip" href="#main" onClick={() => { main.current?.focus(); }}>{t('app.shell.skip')}</a>
+      <a className="skip" href="#main" onClick={(event) => { event.preventDefault(); main.current?.focus(); }}>{t('app.shell.skip')}</a>
       <header className="site-header">
         <h1>GhostPay</h1>
         <p className="tagline">{t('app.shell.tagline')}</p>
         <nav aria-label={t('app.shell.main')}>
-          <ul className="nav">
+          <ul className="nav" ref={navigation} onFocus={(event) => { revealNavigationButton(event.currentTarget, event.target.closest('.nav-btn')); }}>
             {order.map((v) => (
               <li key={v}>
                 <button type="button" className="nav-btn" data-view={v} disabled={suspended && v !== 'seller'} aria-current={view === v ? 'page' : undefined} onClick={() => { setView(v); }}>
@@ -453,29 +444,29 @@ export function AppShell(props: AppShellProps): ReactNode {
         <SensitiveContent>{!suspended && props.mainPrelude}</SensitiveContent>
         {!pagesOriginAllowsPayments() && <Notice kind="warn">{t('app.pagesOriginMismatch')}</Notice>}
         {!online && <Notice kind="warn">{t('app.offline')}</Notice>}
-        {suspended && <Notice kind="warn" title={t('app.idle.suspended.title')}>{t('app.idle.suspended.body')}</Notice>}
+        {suspended && <Notice lang={warningLocale} kind="warn" title={t('app.idle.suspended.title')}>{t('app.idle.suspended.body')}</Notice>}
         {session !== undefined && backup?.backedUp === true && backup.verified === false && (
-          <Notice kind="warn" title={t('app.backup.unverified.title')}>
+          <Notice lang={warningLocale} kind="warn" title={t('app.backup.unverified.title')}>
             {t('app.backup.unverified.body')}
-            {view !== 'seller' && <> <button type="button" className="btn" onClick={() => { setViewState('seller'); }}>{t('app.backup.unverified.action')}</button></>}
+            {view !== 'seller' && <> <button type="button" lang={locale} dir={directionOf(locale)} className="btn" onClick={() => { setView('seller'); }}>{t('app.backup.unverified.action')}</button></>}
           </Notice>
         )}
         {session !== undefined && backup?.backedUp === false && (
           // Payments stay sweepable from typed hex when only the signing key generated for it is unsaved (C-R10).
-          <Notice kind="warn" title={backup.signerOnly ? t('app.backup.signerOnly.title') : t('app.backup.title')}>
+          <Notice lang={warningLocale} kind="warn" title={backup.signerOnly ? t('app.backup.signerOnly.title') : t('app.backup.title')}>
             {backup.signerOnly ? t('app.backup.signerOnly.body') : t('app.backup.body')}
-            {view !== 'seller' && <> <button type="button" className="btn" onClick={() => { setViewState('seller'); }}>{t('app.backup.action')}</button></>}
+            {view !== 'seller' && <> <button type="button" lang={locale} dir={directionOf(locale)} className="btn" onClick={() => { setView('seller'); }}>{t('app.backup.action')}</button></>}
           </Notice>
         )}
         {session === undefined && idleWipedAfterMinutes !== undefined && (
-          <Notice kind="info">
+          <Notice lang={warningLocale} kind="info">
             {t('app.idle.wipedNotice', { minutes: idleWipedAfterMinutes })}{' '}
-            <button type="button" className="btn" onClick={() => { setIdleWipedAfterMinutes(undefined); }}>{t('app.idle.dismiss')}</button>
+            <button type="button" lang={locale} dir={directionOf(locale)} className="btn" onClick={() => { setIdleWipedAfterMinutes(undefined); }}>{t('app.idle.dismiss')}</button>
           </Notice>
         )}
         <CopiedBackupNotice />
         {/* A render error in a view shows an error panel instead of unmounting the app (G1-01). */}
-        <ErrorBoundary resetKey={view} onBack={() => { setFragment(undefined); setViewState('home'); }}>
+        <ErrorBoundary resetKey={view} onBack={() => { setFragment(undefined); setView('home'); }}>
           <ShellProfileContext.Provider value={profile}>
             {/* Home and About show only the public deployment: fee schedule, contracts and project text. */}
             <SensitiveContent active={view !== 'home' && view !== 'about'}>
@@ -489,9 +480,9 @@ export function AppShell(props: AppShellProps): ReactNode {
         <BrowserChecks />
         <p>{t('app.shell.footer')}</p>
         <ul className="footer-links">
-          <li><a href="./help.html" target="_blank" rel="noopener noreferrer">{t('app.shell.help')} <span className="sr-only">{t('app.shell.newTab')}</span></a></li>
-          <li><a href="./privacy.html" target="_blank" rel="noopener noreferrer">{t('app.shell.privacy')} <span className="sr-only">{t('app.shell.newTab')}</span></a></li>
-          <li><a href="./help.html#technology" target="_blank" rel="noopener noreferrer">{t('footer.sources')} <span className="sr-only">{t('app.shell.newTab')}</span></a></li>
+          <li><a href="./help.html" hrefLang="en" target="_blank" rel="noopener noreferrer">{t('app.shell.help')}{guideLanguage} <span className="sr-only">{t('app.shell.newTab')}</span></a></li>
+          <li><a href="./privacy.html" hrefLang="en" target="_blank" rel="noopener noreferrer">{t('app.shell.privacy')}{guideLanguage} <span className="sr-only">{t('app.shell.newTab')}</span></a></li>
+          <li><a href="./help.html#technology" hrefLang="en" target="_blank" rel="noopener noreferrer">{t('footer.sources')}{guideLanguage} <span className="sr-only">{t('app.shell.newTab')}</span></a></li>
         </ul>
       </footer>
       </WalletDisclosureProvider>
