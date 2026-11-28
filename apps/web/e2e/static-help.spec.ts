@@ -17,7 +17,7 @@ for (const guide of [
     await expect(stylesheets).toHaveCount(2);
     expect(await stylesheets.evaluateAll((links) => links.every((link) => (link as HTMLLinkElement).sheet !== null))).toBe(true);
 
-    for (const viewport of [{ width: 375, height: 667 }, { width: 768, height: 1024 }, { width: 1440, height: 900 }]) {
+    for (const viewport of [{ width: 320, height: 640 }, { width: 375, height: 667 }, { width: 768, height: 1024 }, { width: 1440, height: 900 }]) {
       await page.setViewportSize(viewport);
       const widths = await page.evaluate(() => ({
         viewport: document.documentElement.clientWidth,
