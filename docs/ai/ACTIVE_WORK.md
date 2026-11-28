@@ -1,3 +1,13 @@
+# Completion consolidation candidate and qualification (2026-11-27 UTC, closed 2026-11-28)
+
+Worker: Claude Code cloud session 01KtKj8iDjGeSrDZg41eqdMk; branch `nodata/beautiful-heisenberg-25ikdy`. **Complete.** On the
+owner's request (2026-11-28) the last unmerged content of this branch (`docs/handoffs/COMPLETION_QUALIFICATION_20261127.md`
+and the `verification/independent-beta/**` harness carried from #665) is merged to `main`; the integration lock was
+`released` at that time and was not taken. Everything else from this work reached `main` earlier through #728 and #754.
+Owned paths released: this entry, the handoff above, `docs/handoffs/ERC20_E2E_QUALIFICATION_20261127.md`, the new
+`*.fuzz.test.ts` and `erc20*.anvil.test.ts` files and the draft files listed in the handoff. No active claim remains.
+
+---
 # Static guide footer keyboard navigation
 
 Codex owns the page heading and footer link in `apps/web/{help,privacy}.html` and the matching
@@ -290,6 +300,34 @@ errors; omission and inclusion remain explicitly unverified; existing complete s
 build and affected app evidence checks pass; exact-candidate hosted gates and independent review precede integration.
 No proof verifier, backend, dependency, contract, chain expansion, light-client activation or privacy guarantee.
 Original donor and archive refs are unchanged. No integration lock is held by this worker.
+# LATE-L1 reconciliation retry, then #569 masking-test dispositions — 2026-11-27 UTC
+
+Worker: Claude session 01Tj2YczQ3YKPiCBh2nFurEc; branch `claude/loving-brown-v8dlp6` (base main `6bc97fde`, #738).
+Owned paths, LATE-L1: the replay condition in `observeInvoicePayments` of `packages/ux-vault/src/reconciliation-portable.ts`
+(no change to quarantine, matching, records or the vault format), new cases in
+`apps/web/src/lib/reconciliationVault.invoices.test.ts`, the LATE-L1 row of `docs/engineering/SECURITY_FINDINGS.md`.
+Owned paths, #569 follow-up (PR comment 7202318339): new masking regressions under `apps/web/src` and `apps/web/e2e`
+ported from #569 `c30283d2` where main's #708 design applies, a disposition record for each of the six cases, and a
+narrow repair only if a ported case shows a real gap. Also the #355 follow-up (PR comments 7202320570, 7204906392):
+the quick-hide focus regressions ported to `apps/web/src/components/WalletDisclosure.quickHide.test.tsx` and the
+masked focus fallback in `DisclosureDialog` of `apps/web/src/components/WalletDisclosure.tsx`. Not claimed: #569's branch (kept), `privacyMode.tsx` design changes,
+REV-I6, QA-I1, LATE-M1, IDLE-M1. Acceptance: LATE-L1 regression red on main and green with the fix; an unlinked candidate
+that was never verified (indirect router call, always `claimed`) is never replayed, so it cannot pin every later
+checkpoint; affected typecheck, lint and tests; hosted CI on the exact head; independent review; merge only under the
+integration lock.
+# Audit fixes F1-F4, F6, F7, F9 (permit clock, router buffer, HTTP 413 scan, sweep destination, embed focus, transfer estimate) — 2026-11-27 UTC
+
+Worker: local Claude Code maintenance/audit session on the existing merged branch
+`claude/a11y-reflow-checkvisibility-20261126` (fast-forwarded to main `3c324239`; no new branch). Owned paths:
+`apps/web/src/lib/payExec.ts` (final build time in `preparePayment` only) and its test;
+`packages/tx-review/src/{review,types}.ts`, `review.test.ts`, `DEVIATIONS.md` item 4;
+`apps/web/public/ghostpay-embed-v2.js` (`openFrame`) and `apps/web/src/embedV2.test.ts`;
+`packages/chain-adapters/src/{router,logs}.ts` and their tests; one comment in
+`packages/invoice-schema/src/passphrase.ts`; `apps/web/src/lib/scanSpam.ts` (`estimateSimilarTransfers` only) and its
+test; this entry. F9 is the duplicate-record defect recorded in review on #696 and #728. F2, F3 and F7 are the same
+changes already carried by draft #728, which stays open and untouched. Not claimed: refusing the fee recipient inside tx-review (the web check already
+refuses it), F5, F8. Acceptance: each new regression fails without its fix and passes with it; hosted CI green on the
+exact head; merge under the integration lock.
 
 ---
 
@@ -5344,6 +5382,14 @@ Observed: `negotiateLocale` drops extensions before comparing the exact canonica
 - Composed exact heads: #724 `0d083443fedf397765c5fcd712fb495771e351b3`, #732 `8fc4c2f5ee072b59948dce0ba72e254de6b435cd`, #726 `8e90e154c8e85188202d0425e68bd4e43d22bba2`, #713 `1d9a6b053e98ddb196304e608b23b2d52437dff7`, #715 `1fcadbff48c0840b2ca9ea291f5d849e38a969bd` (merged last; `--no-ff` merges; ACTIVE_WORK conflicts keep both sides).
 - Owns only the composition, this entry and any defect repair found in review. Donor branches are untouched.
 - Acceptance: AI source review of the four runtime diffs and the #715 build-guard diff; all PR checks green on the exact head. No merge into main, no integration lock, no deployment.
+# W5 independent payment-state verifier — 2026-11-25 UTC
+
+- Worker: W5 (Claude Code cloud session, remote; no home-computer access). Branch: `nodata/elegant-tesla-kpeojx`. Base main `aaa71a112d90fd39f59b40de9f139e9cfdc62d61`. W1-approved candidate: none found at start (no W1 coordination handoff located in PRs, issues or branches); #664 head `d4bdd022` observed only, not treated as approved.
+- Owned paths: new files under `verification/independent-beta/**` and this additive entry only. No production code, existing tests, shared config, dependencies, lockfiles or workflows are edited. Not duplicating #647 (keystore decoder) or #658 (RPC disclosure inventory).
+- Milestone 1: black-box verification of interrupted payment, restart/reload and reconciliation against the unmodified built web app: two tabs, one EVM chain/asset, one payment intent plus an unrelated control intent; local mock EIP-1193 wallet and mock JSON-RPC, loopback only, bounded seeded synthetic sequences.
+- Acceptance: requirement-derived safety model with citations; harness records SHAs, environment, commands, seeds and actual results; failing sequences minimized and classified (product / harness / ambiguous requirement); production findings routed to W2/W3 via `verification/independent-beta/HANDOFF.md`. Ordinary CI does not run this harness.
+- Milestone 2 (started 2026-11-26): black-box seller-side reconciliation against the unmodified lean build: seller profile (two tabs) scans synthetic announcement/payment evidence produced by the real payer checkout in a separate profile; pending vs final, late payment and explicit acceptance, distinct-payment counting, interrupted scans, reorg invalidation with retained evidence/decisions, unrelated invoice unaffected. Same owned paths and limits as milestone 1; stopped products (docs/ai/STOP_WORK_20261125.md) are not exercised.
+- Milestone 3 (2026-11-26): seller feature completion on main `9d92472a` (two-RPC disagreement, seller browser restart, expired checkout, LATE-LM1 reservation, backup tombstones, manual links), independent harness audit (22 harness findings, no product defect), bounded stress (payer named + 60 seeds, seller named + 40 seeds, property scale 10). Still only `verification/independent-beta/**`; findings routed via `verification/independent-beta/HANDOFF.md` (F2/SA8 to W3).
 
 # BUG — Share-target payment label ambiguity (2026-11-27 UTC)
 
