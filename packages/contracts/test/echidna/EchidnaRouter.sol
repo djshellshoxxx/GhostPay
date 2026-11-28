@@ -4,6 +4,7 @@ pragma solidity 0.8.28;
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {GhostPayRouter} from "../../src/GhostPayRouter.sol";
 import {IERC5564Announcer} from "../../src/interfaces/IERC5564Announcer.sol";
+import {IGhostPayRouter} from "../../src/interfaces/IGhostPayRouter.sol";
 import {ERC5564Announcer} from "../utils/ERC5564Announcer.sol";
 import {MockERC20} from "../mocks/MockERC20.sol";
 import {FeeOnTransferToken} from "../mocks/FeeOnTransferToken.sol";
@@ -26,6 +27,7 @@ contract EchidnaRouter {
     uint256 internal okErc20;
     uint256 internal okNative;
     uint256 internal okBuffer;
+    uint256 internal okPermitBuffer;
     uint256 internal okFeeNonZero;
 
     constructor() payable {
@@ -146,6 +148,31 @@ contract EchidnaRouter {
         } catch {}
     }
 
+    /// @dev Permit + buffer in one call. The mock has no permit(): the router's try/catch swallows
+    /// the dummy signature and the standing allowance pays, so the buffer accounting is exercised.
+    function payWithPermitBuffer(uint8 si, uint256 gross, uint256 buffer) external {
+        gross = gross % (type(uint120).max / 2);
+        buffer = buffer % (address(this).balance + 1);
+        uint256 net = gross - gross * 25 / 10_000;
+        uint256 sumBefore = _sum(token);
+        try router.payERC20WithPermitAndBuffer{value: buffer}(
+            token,
+            _s(si),
+            gross,
+            net,
+            block.timestamp,
+            buffer,
+            _eph(),
+            _meta(0xab, 0xa9059cbb, address(token), net),
+            IGhostPayRouter.PermitSig({v: 27, r: bytes32(0), s: bytes32(0)})
+        ) {
+            okPermitBuffer++;
+            totalBuffer += buffer;
+            totalGrossErc20 += gross;
+            if (_sum(token) - sumBefore != gross) perCallBroken = true;
+        } catch {}
+    }
+
     /// @dev Anyone may try to push tokens or ETH at the router; the router must refuse plain ETH.
     function sendEthDirect(uint256 v) external {
         v = v % (address(this).balance + 1);
@@ -196,6 +223,10 @@ contract EchidnaRouter {
 
     function echidna_canary_buffer_success() external view returns (bool) {
         return okBuffer < 5;
+    }
+
+    function echidna_canary_permit_buffer_success() external view returns (bool) {
+        return okPermitBuffer < 5;
     }
 
     function echidna_canary_nonzero_fee() external view returns (bool) {

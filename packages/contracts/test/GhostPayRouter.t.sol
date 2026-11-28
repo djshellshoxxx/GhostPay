@@ -554,27 +554,6 @@ contract GhostPayRouterTest is Base {
 
     // ------------------------------------------------------------------ permit path
 
-    function _permitSig(PermitToken t, uint256 pk, address owner, uint256 value, uint256 dl)
-        internal
-        view
-        returns (uint8 v, bytes32 r, bytes32 s)
-    {
-        bytes32 structHash = keccak256(
-            abi.encode(
-                keccak256(
-                    "Permit(address owner,address spender,uint256 value,uint256 nonce,uint256 deadline)"
-                ),
-                owner,
-                address(router),
-                value,
-                t.nonces(owner),
-                dl
-            )
-        );
-        (v, r, s) =
-            vm.sign(pk, keccak256(abi.encodePacked("\x19\x01", t.DOMAIN_SEPARATOR(), structHash)));
-    }
-
     function test_payERC20WithPermit_happyPath() public {
         (address payer, uint256 pk) = makeAddrAndKey("payer");
         PermitToken t = new PermitToken(6);
@@ -977,5 +956,150 @@ contract GhostPayRouterTest is Base {
             (bool ok,) = address(router).staticcall(abi.encodeWithSelector(admin[i], address(1)));
             assertFalse(ok);
         }
+    }
+
+    // ------------------------------------------------------------------ permit + buffer path
+
+    struct PermitPayer {
+        address addr;
+        uint256 pk;
+        PermitToken t;
+    }
+
+    function _permitPayer(uint256 funds) internal returns (PermitPayer memory p) {
+        (p.addr, p.pk) = makeAddrAndKey("permitBufferPayer");
+        p.t = new PermitToken(6);
+        p.t.mint(p.addr, GROSS);
+        vm.deal(p.addr, funds);
+    }
+
+    /// @dev The payer's own permit signature for `GROSS` at the current nonce, as the router's struct.
+    function _sigOf(PermitPayer memory p)
+        internal
+        view
+        returns (IGhostPayRouter.PermitSig memory sig)
+    {
+        (sig.v, sig.r, sig.s) = _permitSig(p.t, p.pk, p.addr, GROSS, deadline);
+    }
+
+    function _payPermitBuffer(
+        PermitPayer memory p,
+        uint256 buffer,
+        uint256 maxBuffer,
+        IGhostPayRouter.PermitSig memory sig
+    ) internal {
+        uint256 net = GROSS - _fee(GROSS);
+        bytes memory meta = _erc20Meta(address(p.t), net);
+        vm.prank(p.addr);
+        router.payERC20WithPermitAndBuffer{value: buffer}(
+            IERC20(address(p.t)), stealth, GROSS, net, deadline, maxBuffer, _eph(), meta, sig
+        );
+    }
+
+    /// @dev External indirection so `vm.expectRevert` applies to the router call made inside.
+    function payPermitBufferExternal(
+        PermitPayer memory p,
+        uint256 buffer,
+        uint256 maxBuffer,
+        IGhostPayRouter.PermitSig memory sig
+    ) external {
+        _payPermitBuffer(p, buffer, maxBuffer, sig);
+    }
+
+    function test_permitBuffer_happyPath() public {
+        PermitPayer memory p = _permitPayer(1 ether);
+        uint256 net = GROSS - _fee(GROSS);
+        IGhostPayRouter.PermitSig memory sig = _sigOf(p);
+        vm.expectEmit(true, true, true, true, address(announcer));
+        emit Announcement(1, stealth, address(router), _eph(), _erc20Meta(address(p.t), net));
+        _payPermitBuffer(p, 0.01 ether, 0.01 ether, sig);
+        assertEq(p.t.balanceOf(stealth), net);
+        assertEq(p.t.balanceOf(feeRecipient), _fee(GROSS));
+        assertEq(p.t.allowance(p.addr, address(router)), 0, "permit fully consumed");
+        assertEq(stealth.balance, 0.01 ether, "buffer forwarded");
+        assertEq(feeRecipient.balance, 0, "no fee on buffer");
+        assertEq(address(router).balance, 0, "router keeps nothing");
+        assertEq(p.addr.balance, 1 ether - 0.01 ether);
+    }
+
+    function test_permitBuffer_frontRunPermitStillSucceeds() public {
+        PermitPayer memory p = _permitPayer(1 ether);
+        IGhostPayRouter.PermitSig memory sig = _sigOf(p);
+        // Attacker front-runs by submitting the permit first; the router's try/catch tolerates it.
+        p.t.permit(p.addr, address(router), GROSS, deadline, sig.v, sig.r, sig.s);
+        _payPermitBuffer(p, 0.01 ether, 1 ether, sig);
+        assertEq(p.t.balanceOf(stealth), GROSS - _fee(GROSS));
+        assertEq(stealth.balance, 0.01 ether);
+    }
+
+    function test_permitBuffer_invalidPermitAndNoAllowanceReverts() public {
+        PermitPayer memory p = _permitPayer(1 ether);
+        (, uint256 otherPk) = makeAddrAndKey("other");
+        IGhostPayRouter.PermitSig memory sig;
+        (sig.v, sig.r, sig.s) = _permitSig(p.t, otherPk, p.addr, GROSS, deadline);
+        vm.expectRevert(); // ERC20InsufficientAllowance
+        this.payPermitBufferExternal(p, 0.01 ether, 1 ether, sig);
+        assertEq(p.addr.balance, 1 ether, "buffer returned on revert");
+        assertEq(stealth.balance, 0);
+    }
+
+    function test_permitBuffer_revertsBufferRequiredBeforePermit() public {
+        PermitPayer memory p = _permitPayer(1 ether);
+        IGhostPayRouter.PermitSig memory sig = _sigOf(p);
+        vm.expectRevert(IGhostPayRouter.BufferRequired.selector);
+        this.payPermitBufferExternal(p, 0, 1 ether, sig);
+        // A refused call leaves the signature usable: the same permit pays afterwards.
+        assertEq(p.t.nonces(p.addr), 0);
+        _payPermitBuffer(p, 0.01 ether, 1 ether, sig);
+        assertEq(p.t.balanceOf(stealth), GROSS - _fee(GROSS));
+    }
+
+    function test_permitBuffer_revertsBufferTooLarge() public {
+        PermitPayer memory p = _permitPayer(1 ether);
+        IGhostPayRouter.PermitSig memory sig = _sigOf(p);
+        vm.expectRevert(IGhostPayRouter.BufferTooLarge.selector);
+        this.payPermitBufferExternal(p, 0.02 ether, 0.01 ether, sig);
+        assertEq(p.t.nonces(p.addr), 0, "permit not consumed");
+    }
+
+    function test_permitBuffer_revertsExpiredAndZeroToken() public {
+        PermitPayer memory p = _permitPayer(1 ether);
+        IGhostPayRouter.PermitSig memory sig = _sigOf(p);
+        vm.warp(deadline + 1);
+        vm.expectRevert(IGhostPayRouter.Expired.selector);
+        this.payPermitBufferExternal(p, 0.01 ether, 1 ether, sig);
+        vm.warp(deadline - 1);
+        p.t = PermitToken(address(0));
+        vm.expectRevert(IGhostPayRouter.ZeroAddress.selector);
+        this.payPermitBufferExternal(p, 0.01 ether, 1 ether, sig);
+    }
+
+    function test_permitBuffer_revertsWhenStealthRejectsEth() public {
+        PermitPayer memory p = _permitPayer(1 ether);
+        IGhostPayRouter.PermitSig memory sig = _sigOf(p);
+        stealth = address(new RevertingReceiver());
+        vm.expectRevert(IGhostPayRouter.NativeTransferFailed.selector);
+        this.payPermitBufferExternal(p, 0.01 ether, 1 ether, sig);
+        assertEq(p.t.balanceOf(feeRecipient), 0, "atomic: no token moved");
+    }
+
+    function test_permitBuffer_tokenWithoutPermitButAllowanceWorks() public {
+        // alice holds a plain allowance on a token without permit(): the dummy permit fails inside
+        // try/catch and the allowance pays, as in `payERC20WithPermit`.
+        uint256 net = GROSS - _fee(GROSS);
+        vm.prank(alice);
+        router.payERC20WithPermitAndBuffer{value: 0.01 ether}(
+            IERC20(address(token)),
+            stealth,
+            GROSS,
+            net,
+            deadline,
+            0.01 ether,
+            _eph(),
+            _erc20Meta(address(token), net),
+            IGhostPayRouter.PermitSig({v: 27, r: bytes32(0), s: bytes32(0)})
+        );
+        assertEq(token.balanceOf(stealth), net);
+        assertEq(stealth.balance, 0.01 ether);
     }
 }

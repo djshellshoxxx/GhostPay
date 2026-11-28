@@ -130,7 +130,7 @@ Facts that matter when changing this flow:
 - `req.build()` derives a fresh ephemeral key on every call. Calling it twice yields two different stealth addresses.
 - `assertPreviewMatchesCalldata` is the guard between what the UI shows and what the wallet signs; the fee
   recipient is not in calldata (router immutable), so it must be displayed from the manifest.
-- The manifest's `signature` is **not verified** (audit S3-01). The app does read the manifest back from the chain with the user's RPC (`verifyManifest`: router getters and runtime code hashes) and keeps payments disabled until that passes; with one provider this proves consistency with that RPC, not authenticity.
+- The bundled manifest's `signature` is verified at load against the build-time release keys (`loadBundledManifest`; no configured key or an unverifiable signature refuses the manifest; audit S3-01). The app also reads the manifest back from the chain with the user's RPC (`verifyManifestOnChain`: router getters and runtime code hashes) and keeps payments disabled until that passes; with one provider this proves consistency with that RPC, not authenticity; with a second RPC configured in Settings every read-back call must return the same result from both providers, and Pay, Sweep and Scan refuse when they disagree or the second provider cannot be used (L2-I4; behind a required private path the second RPC is not contacted).
 
 ### 2.2 Scan
 

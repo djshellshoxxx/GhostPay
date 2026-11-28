@@ -253,6 +253,76 @@ export const ghostPayRouterAbi = [
   },
   {
     "type": "function",
+    "name": "payERC20WithPermitAndBuffer",
+    "inputs": [
+      {
+        "name": "token",
+        "type": "address",
+        "internalType": "contract IERC20"
+      },
+      {
+        "name": "stealth",
+        "type": "address",
+        "internalType": "address"
+      },
+      {
+        "name": "gross",
+        "type": "uint256",
+        "internalType": "uint256"
+      },
+      {
+        "name": "minNet",
+        "type": "uint256",
+        "internalType": "uint256"
+      },
+      {
+        "name": "deadline",
+        "type": "uint256",
+        "internalType": "uint256"
+      },
+      {
+        "name": "maxBufferWei",
+        "type": "uint256",
+        "internalType": "uint256"
+      },
+      {
+        "name": "ephemeralPubKey",
+        "type": "bytes",
+        "internalType": "bytes"
+      },
+      {
+        "name": "metadata",
+        "type": "bytes",
+        "internalType": "bytes"
+      },
+      {
+        "name": "permit",
+        "type": "tuple",
+        "internalType": "struct IGhostPayRouter.PermitSig",
+        "components": [
+          {
+            "name": "v",
+            "type": "uint8",
+            "internalType": "uint8"
+          },
+          {
+            "name": "r",
+            "type": "bytes32",
+            "internalType": "bytes32"
+          },
+          {
+            "name": "s",
+            "type": "bytes32",
+            "internalType": "bytes32"
+          }
+        ]
+      }
+    ],
+    "outputs": [],
+    "stateMutability": "payable"
+  },
+  {
+    "type": "function",
     "name": "payNative",
     "inputs": [
       {

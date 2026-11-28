@@ -8,6 +8,17 @@ import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 /// @dev The router takes a fixed protocol fee, moves the net amount to a stealth address and emits
 /// an ERC-5564 announcement whose metadata mirrors the transfer. See docs/CONTRACTS_SPEC.md section 1.
 interface IGhostPayRouter {
+    /// @notice An ERC-2612 permit signature, passed as one calldata word so entry points that also carry
+    /// a buffer cap stay within the EVM stack limit.
+    /// @param v Permit signature recovery id.
+    /// @param r Permit signature r.
+    /// @param s Permit signature s.
+    struct PermitSig {
+        uint8 v;
+        bytes32 r;
+        bytes32 s;
+    }
+
     /// @notice Emitted once per payment whose fee is non-zero.
     /// @dev Carries no payer, stealth address or invoice data on purpose (privacy).
     /// @param token The fee token, or `0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE` for the native asset.
@@ -34,9 +45,10 @@ interface IGhostPayRouter {
     error NativeTransferFailed();
     /// @notice `msg.value` exceeds the caller supplied `maxBufferWei`.
     error BufferTooLarge();
-    /// @notice `payERC20WithBuffer` was called with `msg.value == 0`.
+    /// @notice `payERC20WithBuffer` or `payERC20WithPermitAndBuffer` was called with `msg.value == 0`.
     error BufferRequired();
-    /// @notice Native asset was sent to the router outside of `payNative`/`payERC20WithBuffer`.
+    /// @notice Native asset was sent to the router outside of `payNative`, `payERC20WithBuffer` and
+    /// `payERC20WithPermitAndBuffer`.
     error NoDirectETH();
 
     /// @notice Pay an ERC-20 token to a stealth address, taking the protocol fee. Requires prior allowance.
@@ -115,5 +127,32 @@ interface IGhostPayRouter {
         uint256 maxBufferWei,
         bytes calldata ephemeralPubKey,
         bytes calldata metadata
+    ) external payable;
+
+    /// @notice Same as {payERC20WithBuffer} but first submits an ERC-2612 permit signed by the caller,
+    /// so a permit payer forwards the gas buffer without a separate approval transaction.
+    /// @dev `msg.value` is checked against zero and `maxBufferWei` before any external call, so a
+    /// mis-sized buffer fails on input validation alone (a revert leaves the signature usable either way).
+    /// The permit is wrapped in try/catch like {payERC20WithPermit}; if the allowance is then
+    /// insufficient the token transfer reverts. No fee is taken on the buffer.
+    /// @param token The ERC-20 token being paid (must implement ERC-2612).
+    /// @param stealth The stealth address receiving the net amount and the buffer.
+    /// @param gross Total token amount pulled from the caller, also the permit value.
+    /// @param minNet Minimum acceptable net token amount (`gross - fee`).
+    /// @param deadline Last timestamp (inclusive) for the payment and the permit.
+    /// @param maxBufferWei Maximum native buffer the caller accepts to forward (`msg.value <= maxBufferWei`).
+    /// @param ephemeralPubKey 33-byte compressed ephemeral public key announced to the recipient.
+    /// @param metadata 57-byte announcement metadata: view tag, `transfer` selector, token, net amount.
+    /// @param permit The ERC-2612 permit signature (`v`, `r`, `s`) over `(msg.sender, this, gross, deadline)`.
+    function payERC20WithPermitAndBuffer(
+        IERC20 token,
+        address stealth,
+        uint256 gross,
+        uint256 minNet,
+        uint256 deadline,
+        uint256 maxBufferWei,
+        bytes calldata ephemeralPubKey,
+        bytes calldata metadata,
+        PermitSig calldata permit
     ) external payable;
 }

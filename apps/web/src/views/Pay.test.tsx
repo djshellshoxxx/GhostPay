@@ -1043,6 +1043,26 @@ describe('Pay: manifest read-back and post-broadcast safety (WEB-APP-01, WEB-APP
     expect(screen.getByRole<HTMLButtonElement>('button', { name: 'Continue' }).disabled).toBe(true);
   });
 
+  it('L2-I4: refuses to build a payment when the second RPC disagrees with the primary about the manifest', async () => {
+    const { fragment } = await makeParsed({ token: 'native', tokenAmount: '0.5' });
+    window.localStorage.setItem(SETTINGS_KEY, JSON.stringify({ rpcUrls: { '84532': 'https://rpc.test' }, rpcUrlsSecondary: { '84532': 'https://rpc2.test' } }));
+    const good = withManifestChain(mockRpc(84532, () => '0x'));
+    const bad = withManifestChain(mockRpc(84532, () => '0x'), { feeRecipient: '0x00000000000000000000000000000000deadbeef' });
+    openWith(fragment, makeServices({ loadManifest: loaded(84532), createRpc: (_c, url) => Promise.resolve(new URL(url).host === 'rpc2.test' ? bad : good) }));
+    expect(await screen.findByText(/two RPC providers disagree about the contracts/)).toBeTruthy();
+    expect(screen.getByRole<HTMLButtonElement>('button', { name: 'Continue' }).disabled).toBe(true);
+  });
+
+  it('L2-I4: does not open the second RPC when no primary RPC is configured', async () => {
+    const { fragment } = await makeParsed({ token: 'native', tokenAmount: '0.5' });
+    window.localStorage.setItem(SETTINGS_KEY, JSON.stringify({ rpcUrlsSecondary: { '84532': 'https://rpc2.test' } }));
+    const created: string[] = [];
+    openWith(fragment, makeServices({ loadManifest: loaded(84532), createRpc: (_c, url) => { created.push(url); return Promise.resolve(withManifestChain(mockRpc(84532, () => '0x'))); } }), { noRpcSetting: true });
+    expect(await screen.findByText(/RPC for this chain is needed to verify/)).toBeTruthy();
+    expect((JSON.parse(window.localStorage.getItem(SETTINGS_KEY) ?? '{}') as { rpcUrlsSecondary?: Record<string, string> }).rpcUrlsSecondary?.['84532']).toBe('https://rpc2.test');
+    expect(created).toEqual([]);
+  });
+
   it('WEB-APP-01: shows the unsigned-dev banner', async () => {
     const { fragment } = await makeParsed({ token: 'native', tokenAmount: '0.5' });
     openWith(fragment, makeServices({ loadManifest: () => Promise.resolve({ status: 'loaded', manifest: backedManifest(84532), trust: 'unsigned-dev', warning: 'UNSIGNED DEV MANIFEST (test)' }) }));

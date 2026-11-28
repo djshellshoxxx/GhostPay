@@ -45,7 +45,7 @@ export interface AppState {
   readonly selectForSweep: (m: { readonly match: ScanMatch; readonly chainId: number } | undefined) => void;
   /** Verified RPC for a chain from the user's settings, or undefined when none is configured. */
   readonly getRpc: (chainId: number) => Promise<RpcClient | undefined>;
-  /** Independent second RPC for a chain (Settings), or undefined when none is configured. Used to cross-check scans. */
+  /** Independent second RPC for a chain (Settings), or undefined when none is configured. Cross-checks scans and the manifest read-back before Pay, Sweep and Scan. */
   readonly getSecondaryRpc: (chainId: number) => Promise<RpcClient | undefined>;
   /** Announces a short status message to the polite live region. */
   readonly announce: (message: string) => void;

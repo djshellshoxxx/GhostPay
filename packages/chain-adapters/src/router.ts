@@ -18,7 +18,7 @@ import { MAX_ROUTER_GROSS, routerFee } from './fees.js';
 import { MAX_UINT256, ZERO_ADDRESS, type Address, type Hex } from './types.js';
 
 /** Router entry points supported by the builder. */
-export type RouterMethod = 'payERC20' | 'payERC20WithPermit' | 'payNative' | 'payERC20WithBuffer';
+export type RouterMethod = 'payERC20' | 'payERC20WithPermit' | 'payNative' | 'payERC20WithBuffer' | 'payERC20WithPermitAndBuffer';
 
 /** Normalized, human-previewable description of a router call. Every field is checked against calldata. */
 export interface PaymentPreview {
@@ -43,9 +43,9 @@ export interface PaymentPreview {
   readonly metadata: Hex;
   /** `msg.value` of the transaction (gross for native, buffer for buffer payments, else 0). */
   readonly value: bigint;
-  /** Only for `payERC20WithBuffer`. */
+  /** Only for `payERC20WithBuffer` and `payERC20WithPermitAndBuffer`. */
   readonly maxBufferWei?: bigint;
-  /** Only for `payERC20WithPermit`. */
+  /** Only for `payERC20WithPermit` and `payERC20WithPermitAndBuffer`. */
   readonly permit?: { readonly v: number; readonly r: Hex; readonly s: Hex };
 }
 
@@ -101,12 +101,22 @@ function ephemeralHex(key: Uint8Array): Hex {
   }
 }
 
+/** Validates the buffer and its cap (default: the buffer itself); both must fit `uint256` and `cap >= buffer`. */
+function checkedBuffer(buffer: NonNullable<BuildPaymentInput['buffer']>): { bufferWei: bigint; maxBufferWei: bigint } {
+  const { bufferWei } = buffer;
+  const maxBufferWei = buffer.maxBufferWei ?? bufferWei;
+  if (bufferWei < 1n || bufferWei > MAX_UINT256) return fail('INVALID_INPUT', 'bufferWei');
+  if (maxBufferWei < bufferWei || maxBufferWei > MAX_UINT256) return fail('INVALID_INPUT', 'maxBufferWei');
+  return { bufferWei, maxBufferWei };
+}
+
 /**
  * Builds typed calldata for the GhostPay router.
  *
  * @remarks Method selection: native invoice -> `payNative`; ERC-20 + `permitSignature` ->
- * `payERC20WithPermit`; ERC-20 + `buffer` -> `payERC20WithBuffer`; otherwise `payERC20`.
- * Permit and buffer are mutually exclusive. The net amount in the metadata is computed by
+ * `payERC20WithPermit`; ERC-20 + `buffer` -> `payERC20WithBuffer`; ERC-20 + both ->
+ * `payERC20WithPermitAndBuffer` (one transaction, spec 13 section 2); otherwise `payERC20`.
+ * The net amount in the metadata is computed by
  * {@link routerFee}, identical to the contract. Fail-closed on: disabled/unknown chain, any
  * chain-id disagreement between chain, deployment and invoice, tokens off the allowlist, zero
  * addresses, invalid ephemeral key, gross outside `[1, MAX_ROUTER_GROSS]`, past deadlines.
@@ -129,10 +139,6 @@ export function buildPaymentTx(input: BuildPaymentInput): BuiltPayment {
   const net = gross - fee;
   const minNet = input.minNet ?? net;
   if (minNet < 1n || minNet > net) return fail('INVALID_INPUT', 'minNet');
-  if (input.permitSignature !== undefined && input.buffer !== undefined) {
-    return fail('INVALID_INPUT', 'permit and buffer are mutually exclusive');
-  }
-
   const stealth = checkedAddress(input.payment.stealthAddress, 'stealth address');
   if (sameAddr(stealth, input.deployment.router) || sameAddr(stealth, input.deployment.feeRecipient)) {
     return fail('INVALID_INPUT', 'stealth address collides with router or fee recipient');
@@ -166,6 +172,17 @@ export function buildPaymentTx(input: BuildPaymentInput): BuiltPayment {
     method = 'payNative';
     value = gross;
     data = encodeFunctionData({ abi: ghostPayRouterAbi, functionName: 'payNative', args: [stealth, minNet, deadline, ephemeral, metadataHex] });
+  } else if (input.permitSignature !== undefined && input.buffer !== undefined) {
+    method = 'payERC20WithPermitAndBuffer';
+    const sig = parsePermitSignature(input.permitSignature);
+    const { bufferWei, maxBufferWei } = checkedBuffer(input.buffer);
+    value = bufferWei;
+    extra = { permit: sig, maxBufferWei };
+    data = encodeFunctionData({
+      abi: ghostPayRouterAbi,
+      functionName: 'payERC20WithPermitAndBuffer',
+      args: [token, stealth, gross, minNet, deadline, maxBufferWei, ephemeral, metadataHex, { v: sig.v, r: sig.r, s: sig.s }],
+    });
   } else if (input.permitSignature !== undefined) {
     method = 'payERC20WithPermit';
     const sig = parsePermitSignature(input.permitSignature);
@@ -177,10 +194,7 @@ export function buildPaymentTx(input: BuildPaymentInput): BuiltPayment {
     });
   } else if (input.buffer !== undefined) {
     method = 'payERC20WithBuffer';
-    const { bufferWei } = input.buffer;
-    const maxBufferWei = input.buffer.maxBufferWei ?? bufferWei;
-    if (bufferWei < 1n || bufferWei > MAX_UINT256) return fail('INVALID_INPUT', 'bufferWei');
-    if (maxBufferWei < bufferWei || maxBufferWei > MAX_UINT256) return fail('INVALID_INPUT', 'maxBufferWei');
+    const { bufferWei, maxBufferWei } = checkedBuffer(input.buffer);
     value = bufferWei;
     extra = { maxBufferWei };
     data = encodeFunctionData({
@@ -257,6 +271,16 @@ export function decodePaymentCalldata(tx: PaymentTx, chainId: number): PaymentPr
       };
       break;
     }
+    case 'payERC20WithPermitAndBuffer': {
+      const [token, stealth, gross, minNet, deadline, maxBufferWei, eph, meta, permit] = decoded.args;
+      if (tx.value > maxBufferWei) return fail('PREVIEW_MISMATCH', 'buffer above its cap');
+      preview = {
+        ...assemble('payERC20WithPermitAndBuffer', { router, chainId, token, stealth, gross, minNet, deadline, eph, meta, value: tx.value }),
+        maxBufferWei,
+        permit: { v: permit.v, r: permit.r, s: permit.s },
+      };
+      break;
+    }
     case 'payNative': {
       const [stealth, minNet, deadline, eph, meta] = decoded.args;
       preview = assemble('payNative', { router, chainId, token: 'native', stealth, gross: tx.value, minNet, deadline, eph, meta, value: tx.value });
@@ -297,7 +321,7 @@ function assemble(method: RouterMethod, r: Raw): PreviewBase {
   const fee = routerFee(r.gross);
   const net = r.gross - fee;
   if (r.minNet > net) return fail('PREVIEW_MISMATCH', 'minNet above net');
-  if (method === 'payERC20WithBuffer') {
+  if (method === 'payERC20WithBuffer' || method === 'payERC20WithPermitAndBuffer') {
     if (r.value < 1n) return fail('PREVIEW_MISMATCH', 'buffer value missing');
   } else if (!native && r.value !== 0n) {
     return fail('PREVIEW_MISMATCH', 'unexpected msg.value');
@@ -347,6 +371,13 @@ function reencode(p: PaymentPreview): Hex {
     }
     case 'payERC20WithBuffer':
       return encodeFunctionData({ abi, functionName: 'payERC20WithBuffer', args: [p.token as Address, p.stealth, p.gross, p.minNet, p.deadline, p.maxBufferWei as bigint, p.ephemeralPublicKey, p.metadata] });
+    case 'payERC20WithPermitAndBuffer': {
+      const permit = p.permit as NonNullable<PaymentPreview['permit']>;
+      return encodeFunctionData({
+        abi, functionName: 'payERC20WithPermitAndBuffer',
+        args: [p.token as Address, p.stealth, p.gross, p.minNet, p.deadline, p.maxBufferWei as bigint, p.ephemeralPublicKey, p.metadata, { v: permit.v, r: permit.r, s: permit.s }],
+      });
+    }
     case 'payERC20':
       return encodeFunctionData({ abi, functionName: 'payERC20', args: [p.token as Address, p.stealth, p.gross, p.minNet, p.deadline, p.ephemeralPublicKey, p.metadata] });
   }

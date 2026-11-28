@@ -146,6 +146,35 @@ contract GhostPayRouter is IGhostPayRouter, ReentrancyGuard {
         ANNOUNCER.announce(SCHEME_ID, stealth, ephemeralPubKey, metadata);
     }
 
+    /// @inheritdoc IGhostPayRouter
+    function payERC20WithPermitAndBuffer(
+        IERC20 token,
+        address stealth,
+        uint256 gross,
+        uint256 minNet,
+        uint256 deadline,
+        uint256 maxBufferWei,
+        bytes calldata ephemeralPubKey,
+        bytes calldata metadata,
+        PermitSig calldata permit
+    ) external payable nonReentrant {
+        // Buffer bounds first: input validation before any external call (the permit comes after).
+        if (msg.value == 0) revert BufferRequired();
+        if (msg.value > maxBufferWei) revert BufferTooLarge();
+        if (address(token) == address(0)) revert ZeroAddress();
+        // Deadline semantics are inherent to the product; second-level validator drift is acceptable.
+        // forge-lint: disable-next-line(block-timestamp)
+        if (block.timestamp > deadline) revert Expired();
+        // Same reasoning as `payERC20WithPermit`: a front-run permit only makes this call fail, and
+        // the pull below reverts unless the allowance is sufficient.
+        try IERC20Permit(address(token))
+            .permit(msg.sender, address(this), gross, deadline, permit.v, permit.r, permit.s) {}
+            catch {}
+        _payERC20(token, stealth, gross, minNet, deadline, ephemeralPubKey, metadata);
+        _sendNative(stealth, msg.value);
+        ANNOUNCER.announce(SCHEME_ID, stealth, ephemeralPubKey, metadata);
+    }
+
     /// @notice Always reverts: the router does not accept plain native transfers.
     receive() external payable {
         revert NoDirectETH();

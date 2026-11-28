@@ -11,12 +11,16 @@ shows "payments disabled on this chain" and never builds a payment transaction.
 ## What a bundled manifest does and does not prove
 
 1. **Validation** at build time and again at load time (schema, `feeBps == 25`, distinct roles, checksummed addresses).
-2. **On-chain read-back before use** (`verifyDeployment` in `@ghostpay/chain-adapters`), through the user's RPC and, when
-   configured, a second independent provider that must return identical results: `eth_getCode` of router, sweep relayer and
-   (when the manifest has a policy section) the policy factory must hash to `bytecodeHashes`; the router's `FEE_BPS()` must
-   be 25, `FEE_RECIPIENT()` must equal `feeRecipient`, and `ANNOUNCER()` must equal both the manifest and the canonical
-   announcer constant. Pay, Scan and Sweep are disabled until this passes, and the router and fee recipient the UI shows are
-   the values **read from the chain**.
+2. **On-chain read-back before use** (`verifyManifestOnChain` in `@ghostpay/chain-adapters`, called from
+   `apps/web/src/lib/manifest.ts` before Pay, Sweep and Scan), through the user's RPC and, when a second RPC is configured
+   for the chain, through that independent provider as well (`createReconciledClient`): every `eth_getCode` and `eth_call`
+   must return identical results from both, a disagreement refuses the flow, and a second RPC that cannot be opened or read
+   refuses it too (no silent fallback to one provider; remove the second RPC in Settings to opt out; behind a required
+   private path the second RPC is not contacted, as for scans). The checks: the
+   router's `FEE_RECIPIENT()`, `ANNOUNCER()` and `FEE_BPS()` must equal the manifest; the runtime code of router, sweep
+   relayer and (when the manifest has a policy section) the policy implementation and factory must hash to
+   `bytecodeHashes`; the announcer must have code. Pay, Scan and Sweep are disabled until this passes. The refusal texts
+   are fixed-form (no URLs, no provider text).
 3. **Release authenticity.** `signature` is a detached secp256k1 ECDSA signature (64-byte compact `r || s`, low-s)
    over Keccak-256 of the UTF-8 `GhostPay/structured-deployment-manifest/v1\n` domain (one newline byte) followed by canonical manifest JSON; see `STRUCTURED_MANIFEST_SIGNING_DOMAIN`, `canonicalManifestJson` and `manifestDigest` in `@ghostpay/chain-adapters`. Old unprefixed signatures must be signed again; no fallback accepts them.
    Release public keys are a **build-time constant array** (`GHOSTPAY_RELEASE_PUBKEYS=<66-hex>,<66-hex>`). If no key is

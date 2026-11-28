@@ -8,7 +8,8 @@ import { checkDestinationReuse, isOwnOneTimeAddress } from '../lib/destinationRe
 import { CameraImporter } from '../components/CameraImporter';
 import { useManifest } from '../components/Disclosure';
 import { ManifestBanner } from '../components/ManifestBanner';
-import { verifyManifestForFlow } from '../lib/manifest';
+import { MANIFEST_READBACK_KEYS, NO_SECONDARY, openSecondaryReadback, verifyManifestForFlow } from '../lib/manifest';
+// i18n-use: manifest.readback.mismatch manifest.readback.rpcUnreadable manifest.readback.secondRpc manifest.readback.disagree
 import { UserFacingError, displayMessage, captureUserMessage, type DisplayMessage } from '../lib/errors';
 import { formatUnits } from '../lib/format';
 import { checkDestination, directSweep, DirectSweepOutcomeUnknownError, getSweepQuote, isUnresolvedAttempt, readBalance, reconcileSweepLock, relayedSweep, sweepPermitRefusalKey, sweepPermitSuggestsDirect, RELAYED_EXPIRY_MARGIN_SECONDS, type DirectSweepResult, type RelayedOrderRef, type SweepLock, type SweepQuoteView, type SweepTarget } from '../lib/sweep';
@@ -248,11 +249,22 @@ function SweepPanel(): ReactNode {
     }
   };
 
-  /** WEB-APP-01: read the manifest back from the chain before anything is signed or requested from it. */
+  /**
+   * WEB-APP-01: read the manifest back from the chain before anything is signed or requested from it. A configured
+   * second RPC must agree (L2-I4); an unusable one blocks instead of falling back to one provider. It is not opened
+   * without a primary (nothing to cross-check) nor behind a required private path (never contacted directly, as in Scan).
+   */
   const verified = async (rpc: Awaited<ReturnType<typeof app.getRpc>>): Promise<void> => {
     if (manifest === undefined) throw new Error('state');
-    const checked = await verifyManifestForFlow(manifest, rpc);
-    if (checked.status !== 'loaded') throw new UserFacingError(checked.status === 'invalid' ? checked.reason : { key: 'sweep.paymentsDisabledChain' });
+    const secondary = rpc === undefined || privatePathForbidsDirect(loadScanPrivacy(browserStorage()))
+      ? NO_SECONDARY
+      : await openSecondaryReadback(() => app.getSecondaryRpc(chainId));
+    const checked = await verifyManifestForFlow(manifest, rpc, secondary, { sleep: services.sleep });
+    if (checked.status !== 'loaded') {
+      throw new UserFacingError(checked.status === 'invalid'
+        ? (checked.cause === undefined ? checked.reason : { key: MANIFEST_READBACK_KEYS[checked.cause] })
+        : { key: 'sweep.paymentsDisabledChain' });
+    }
   };
 
   const onQuote = (): void => {

@@ -8,7 +8,7 @@ import { loadSettings } from '../lib/settings';
 import { ReceiptPanel } from '../components/ReceiptPanel';
 import { ReconciliationLedger } from '../components/ReconciliationLedger';
 import { useManifest } from '../components/Disclosure';
-import { verifyManifestState } from '../lib/manifest';
+import { NO_SECONDARY, verifyManifestState } from '../lib/manifest';
 import { formatUnits } from '../lib/format';
 import { UserFacingError, displayMessage, captureUserMessage, type DisplayMessage } from '../lib/errors';
 import { checkpointKeyId, runScan, type ScanMatch, type ScanProgress } from '../lib/scanClient';
@@ -264,10 +264,17 @@ export function Scan(): ReactNode {
           }
           cursor = { nextBlock: BigInt(start.trim()) };
         }
-        const checked = await verifyManifestState(manifest, rpc);
+        // The manifest read-back goes through the second RPC too (L2-I4): both providers must agree before scanning.
+        const checked = await verifyManifestState(manifest, rpc, rpc2 === undefined ? NO_SECONDARY : { kind: 'client', client: rpc2 }, { sleep: services.sleep });
         assertScopeCurrent();
+        // A route change during the read-back surfaces as SCAN_ROUTE_CHANGED, not as a provider failure.
+        assertScanPath();
         if (checked.status !== 'loaded') {
-          setError(msg('scan.error.manifestMismatch'));
+          const cause = checked.status === 'invalid' ? checked.cause : undefined;
+          setError(msg(cause === 'second-rpc-unavailable' ? 'scan.error.secondRpc'
+            : cause === 'providers-disagree' ? 'scan.error.manifestDisagree'
+              : cause === 'rpc-unreadable' ? 'scan.error.manifestUnreadable'
+                : 'scan.error.manifestMismatch'));
           return;
         }
         // The second RPC gets the same aligned announcement windows as the scan RPC, never the exact checkpoint range.

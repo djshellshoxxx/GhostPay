@@ -1,3 +1,42 @@
+# L2-I4: two-provider manifest read-back for Pay, Sweep and Scan (2026-11-26 UTC)
+
+Worker: Claude Code session `vibrant-cori`, branch `claude/vibrant-cori-scu18b` (stacked on the PR #720 commits), base main
+`e7e98109`. Source: audit 24 finding L2-I4 (deferred, Info) and docs/beta/CORE_BETA_COMPLETION_TRACKER.md:111; ranked
+first by an adversarial gap-analysis workflow on 2026-11-26. Owned paths: `apps/web/src/lib/manifest.ts` and its test,
+the manifest read-back call sites in `apps/web/src/views/{Pay,Sweep,Scan}.tsx` and their tests (`Pay.test.tsx`, `Sweep.test.tsx`,
+`Scan.test.tsx`, `Scan.privacy.test.tsx`), `apps/web/src/state.tsx` (doc comment), removal of the dead `apps/web/src/lib/deployment.ts`
+(+ `deployment.test.ts`, the S3-01 block of `hardening.test.ts`), `apps/web/locales/*.json` keys `settings.rpc.secondary.hint`,
+`scan.error.manifestDisagree`, `scan.error.manifestUnreadable` and `manifest.readback.*`, `apps/web/src/i18n/securityKeys.ts`,
+`apps/web/deployments/README.md` item 2, `apps/web/DEVIATIONS.md` item 26, `docs/engineering/SECURITY_FINDINGS.md` (L2-I4 row),
+`docs/beta/CORE_BETA_COMPLETION_TRACKER.md`, `docs/developer/architecture.md` (manifest bullet), `docs/pages/README.md` (RPC bullet),
+`docs/user/privacy-limits.md` (provider row), this entry. Overlap: open PRs #696 (`Scan.tsx`, `Scan.privacy.test.tsx`, `en.json`) and
+#723 (`Scan.tsx`, `Scan.test.tsx`) edit files touched here; reconcile at integration. Not touched: `packages/chain-adapters`
+(its `createReconciledClient` is reused as is), `scanClient.ts` and checkpoint code, settings schema, the generated audit-24 report.
+Acceptance: when Settings has a second RPC for the chain, Pay, Sweep and Scan confirm the deployment manifest through
+both providers (`eth_getCode`/`eth_call` reconciled) and refuse the flow when the providers disagree or the second one
+cannot be opened or read; with no second RPC the single-provider behaviour is unchanged; no silent downgrade to one
+provider; the refusal text is fixed-form (no URLs, no provider text) and names the remedy; unit tests cover agree,
+disagree, second provider unavailable at open and mid-read, chain mismatch, and no-secondary; `npm run typecheck`,
+`npm run lint`, `node scripts/i18n/check.mjs` and `npm test -w apps/web` pass; the Settings hint and the deployments
+README describe the real mechanism; SECURITY_FINDINGS records L2-I4 as fixed with the test path.
+
+# Spec 13 section 2: router `payERC20WithPermitAndBuffer` (2026-11-26 UTC)
+
+Worker: Claude Code session `vibrant-cori`, branch `claude/vibrant-cori-scu18b`, base main `e7e98109`. Owner-instructed
+contract change (ADR-0014 order kept: CONTRACTS_SPEC first). Owned paths: `docs/CONTRACTS_SPEC.md` section 1,
+`docs/adr/ADR-0030-router-permit-and-buffer.md` and its ADR-LOG entry, `docs/specs/13-gas-buffer-v2.md` status,
+`docs/developer/contracts-reference.md` router rows, `packages/contracts/src/GhostPayRouter.sol`,
+`src/interfaces/IGhostPayRouter.sol`, `test/Base.t.sol` (shared `_permitSig`), `test/GhostPayRouter.{t,fuzz.t,invariant.t}.sol`,
+`test/echidna/EchidnaRouter.sol`, `.gas-snapshot` entries for the new unit tests, `packages/chain-adapters/src/{abi/router,router}.ts`
+and their tests, `packages/chain-adapters/src/buffer.anvil.test.ts` (spec 13 section 4 anvil sweep on buffered gas, both buffer methods), `packages/tx-review/src/{decode,types}.ts` and tests, `apps/web/src/lib/txGuard.ts` and test, the three
+DEVIATIONS files, this entry. Not touched: `Pay.tsx`/`payExec.ts` wiring, deployments, manifests, workflows.
+Acceptance: CONTRACTS_SPEC describes the entry point before the code; `forge build/test/fmt/snapshot/natspec` and Slither
+green in CI (no local Foundry); unit tests for happy path, front-run permit, invalid permit, buffer required/too large
+before the permit, expired, zero token, stealth rejecting ETH, token without permit; fuzz and invariant coverage that the
+router holds nothing and the buffer is never charged; client build/decode round trip; tx-review and the web guard treat
+the method like `payERC20WithBuffer`. Overlap check: open PRs #220 (Mythril remediation) and #678 touch other contracts
+only.
+
 # Static guide footer keyboard navigation
 
 Codex owns the page heading and footer link in `apps/web/{help,privacy}.html` and the matching

@@ -50,6 +50,12 @@ describe('decodeTx refusals', () => {
     expect(reason({ to: ROUTER, data, value: 5n })).toBe('BUFFER_PAYMENT_UNSUPPORTED');
     expect(reason({ to: ROUTER, data, value: 0n })).toBe('BUFFER_PAYMENT_UNSUPPORTED');
   });
+  it('payERC20WithPermitAndBuffer is rejected like the buffer-only method (L-04)', () => {
+    const args = [USDC, STEALTH, 10n ** 9n, 9n * 10n ** 8n, BigInt(NOW + 60), 10n ** 15n, EPH, erc20Metadata(1, USDC, 997_500_000n), { v: 27, r: `0x${'11'.repeat(32)}`, s: `0x${'22'.repeat(32)}` }];
+    const data = (encodeFunctionData as (p: unknown) => Hex)({ abi: ghostPayRouterAbi, functionName: 'payERC20WithPermitAndBuffer', args });
+    expect(reason({ to: ROUTER, data, value: 5n })).toBe('BUFFER_PAYMENT_UNSUPPORTED');
+    expect(reason({ to: ROUTER, data, value: 0n })).toBe('BUFFER_PAYMENT_UNSUPPORTED');
+  });
   it('truncated calldata', () => {
     const d = tx(approve()).data;
     expect(reason({ data: d.slice(0, -2) })).toBe('MALFORMED_CALLDATA');
