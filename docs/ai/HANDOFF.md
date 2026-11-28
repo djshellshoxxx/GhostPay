@@ -9,7 +9,7 @@ Source-pinned coordinator handoff. Facts were read on 2026-11-28 UTC. This is a 
 - Last fully green main head read: `70458ebe` (#762): `CI` 46119185573, `Hosting kit` 46119185634, `Push on main` 46119185160, all `success`.
 - Recently landed on main, verified from main's history and GitHub: #768 (`0934ea09`), #762 (`70458ebe`), #759 (`b890a766`), #758 (`fd5e5911`), #695 (`194e225c`), #697 and #698 (merged 2026-11-26 06:35Z and 06:36Z), #703 (`6c3acdd5`).
 - Known red run: scheduled or dispatched `Nightly` run `46068598296` on `fd5e5911` (#758) failed in the `contract-analysis / mythril` job. The Mythril analyzer step exited non-zero (`ANALYSIS_OUTCOME: failure`). This is a security-analyzer result in CI/security gates, which are protected. It is not a screen target. Open PR #763 ("Disposition Mythril PC 2272") appears related by title. That relation is unverified.
-- The previous handoff PR #702 was closed without merging on 2026-11-26 08:44Z. Its branch was kept and reused for this refresh. This refresh is merged to main through a new PR, as the owner requested.
+- The previous handoff PR #702 was closed without merging on 2026-11-26 08:44Z. Its branch was kept and reused for this refresh. This refresh will be merged to main through a new draft PR (#788), as the owner requested. It is not on main until that merge.
 
 ## Where to find current PR state
 

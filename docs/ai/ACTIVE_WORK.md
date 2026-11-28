@@ -6,13 +6,6 @@ Finding: main's `docs/ai/HANDOFF.md` is still the unfilled template ("TO BE VERI
 Screen on `0934ea09`: no eligible unclaimed microtask. Link, i18n and import screens reproduced; no new defect. Mythril `Nightly` failure on `fd5e5911` belongs to protected security-gate work and is not assigned.
 Acceptance: docs-only diff; no code, test, workflow or dependency change; reviewer PASS on the exact head; main CI green on the exact head before merge.
 
-# Coordinator handoff refresh and microtask screen (2026-11-26 UTC)
-
-Worker: Claude Code coordinator session `session_01KtKj8iKdULDHfAMK6kXLsY` (Haiku-only run). Branch `nodata/brave-clarke-nwzz0s`; base `origin/main` `019d5d18c8992f63fe77740f75ad04d86d3d9b07`.
-Owned paths: `docs/ai/HANDOFF.md` (replaced the unfilled template with source-pinned state), this entry.
-Finding: `docs/ai/HANDOFF.md` still said "TO BE VERIFIED" for base SHA, PRs and CI; AGENTS.md requires source-pinned, current handoffs.
-Acceptance: docs-only diff; no code, test, workflow or dependency change; facts in the handoff match the read-only checks recorded in it.
-Read-only screens (no edits to code): relative markdown links, i18n catalog check, relative imports in scripts and test-vectors. No unclaimed microtask qualified; no worker tasks assigned.
 # Static guide footer keyboard navigation
 
 Codex owns the page heading and footer link in `apps/web/{help,privacy}.html` and the matching

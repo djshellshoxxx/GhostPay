@@ -24,8 +24,9 @@ git log --oneline -5 origin/main
 
 Then:
 
-- Read the live open-PR list (GitHub PR list, sorted by updated). Treat every open PR as an active claim until verified otherwise.
-- Read the main CI runs for the current main head (`CI`, `Hosting kit`, `Push on main`). Record any failure with its job and the first error line. Do not assume a queued run is green.
+- Open PRs: call `mcp__github__list_pull_requests` with `owner: djshellshoxxx`, `repo: GhostPay`, `state: open`, `perPage: 100`, `fields: ["number","title","draft","updated_at"]`. Treat every open PR as an active claim until verified otherwise. To check one branch, pass `head: djshellshoxxx:<branch>`.
+- Main CI: call `mcp__github__actions_list` with `method: list_workflow_runs`, `owner`, `repo`, `workflow_runs_filter: {"branch":"main"}`, `perPage: 6`. Confirm each run's `head_sha` equals `origin/main`, and read its `status` and `conclusion`. A `queued` or `in_progress` run is not green. For a failure, call `mcp__github__get_job_logs` with `run_id` and `failed_only: true`, and record the job and the first error line.
+- PR review state: call `mcp__github__pull_request_read` with `method: get_reviews` and `method: get_review_comments`, plus `pullNumber`. The GitHub CLI is not available on this runner; use these MCP tools.
 - Read [../ACTIVE_WORK.md](../ACTIVE_WORK.md) for claims on the paths you might touch.
 - Read [../STOP_WORK_20261125.md](../STOP_WORK_20261125.md) for stopped and deferred scope.
 
@@ -69,9 +70,27 @@ PY
 # Translation catalogs: errors must be 0. Warnings are translation work, not assignments.
 node scripts/i18n/check.mjs
 
-# Relative imports in helper scripts (flags for imports of unbuilt dist/ are expected).
-# Run only after reviewing the flags.
+python3 - <<'PY'
+import os,re
+imp=re.compile(r'''(?:from\s+|import\s*\(|import\s+)(?:'|")(\.{1,2}/[^'"]+)(?:'|")''')
+bad=[]
+for root in ['scripts','apps/web/scripts','test-vectors','tools']:
+    for dp,dn,fn in os.walk(root):
+        if 'node_modules' in dp: continue
+        for f in fn:
+            if not f.endswith(('.mjs','.js','.cjs','.ts')): continue
+            p=os.path.join(dp,f)
+            for i,l in enumerate(open(p,encoding='utf-8',errors='ignore'),1):
+                for m in imp.finditer(l):
+                    base=os.path.normpath(os.path.join(dp,m.group(1)))
+                    c=[base,base+'.mjs',base+'.js',base+'.ts',base+'.cjs',os.path.join(base,'index.mjs'),os.path.join(base,'index.js'),os.path.join(base,'index.ts')]
+                    if not any(os.path.isfile(x) for x in c): bad.append((p,i,m.group(1)))
+print("missing relative imports:",len(bad))
+for b in bad: print(*b)
+PY
 ```
+
+Flags of `packages/*/dist` imports are expected until `npm run build:libs` has run. Review each flag in source before reporting it.
 
 If a screen reports something new, verify it in source before creating a task. Do not turn a scanner false positive into work.
 
@@ -106,16 +125,17 @@ Workers do not start audits or choose other work.
 
 ## 6. Review and merge gate
 
-A milestone is complete only when all of these hold:
+A milestone is complete only when these steps pass, in this order:
 
-1. Each change has an independent Haiku review of the exact diff and its evidence. The reviewer is not the author.
-2. Every review finding is fixed, or answered with evidence that it does not apply.
-3. The branch is updated from main by merging main into it. Never rebase a shared branch.
-4. CI is green on the exact head. A queued or red run is not green.
-5. The PR is a draft until gates 1 to 4 pass. Then it may be marked ready.
-6. Merge only through the PR. Do not merge if any gate fails, or if the change touches a protected area.
+1. Update the branch from main by merging main into it. Never rebase a shared branch. Do this before the final review.
+2. An independent Haiku reviewer, who is not the author, reviews the exact final head against the diff and the evidence. Any push after a review invalidates that review. Review the new head.
+3. Every finding is fixed, or answered with evidence that it does not apply. Any fix returns to step 2.
+4. CI is green on the exact final head: the run's `head_sha` equals the PR head and its `conclusion` is `success`. A queued, in-progress, cancelled or red run is not green.
+5. Mark the PR ready (draft off).
+6. Merge manually through the PR. Never enable auto-merge. Do not merge if any step fails, if the review predates the head, or if the change touches a protected area.
+7. After the merge, check the main CI runs on the merge commit and record them. Report a failing main run; do not ignore it.
 
-Record the merge commit, the head SHA that was tested, and the checks actually run.
+Record the merge commit, the head SHA that was reviewed and tested, and the checks actually run.
 
 ## 7. Report
 
