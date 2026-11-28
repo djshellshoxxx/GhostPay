@@ -228,9 +228,10 @@ export function Scan(): ReactNode {
         const startSecondaryUrl = savedAtStart.rpcUrlsSecondary[String(chainId)];
         const assertScanPath = (): void => {
           const saved = loadSettings();
-          const cover = loadScanLanes(browserStorage());
+          const currentLanes = loadScanLanes(browserStorage());
           if (JSON.stringify(loadScanPrivacy(browserStorage())) !== scanPrivacySelection ||
-              cover.unreadable === true || cover.matchCover !== lanes.matchCover ||
+              currentLanes.unreadable === true || currentLanes.matchCover !== lanes.matchCover ||
+              currentLanes.privacySetTransfers !== lanes.privacySetTransfers ||
               (plan.endpoint === undefined && saved.rpcUrls[String(chainId)] !== startRpcUrl) ||
               (plan.useSecondary && saved.rpcUrlsSecondary[String(chainId)] !== startSecondaryUrl)) {
             throw new UserFacingError(SCAN_ROUTE_CHANGED);
@@ -284,7 +285,7 @@ export function Scan(): ReactNode {
         };
         const exportRpc: ExportRpc = {
           chainId: rpc.chainId,
-          request: (method, params) => rpc.request(method, params),
+          request: (method, params, signal) => rpc.request(method, params, signal === undefined ? undefined : { signal }),
           assertCurrent: assertScanRoute,
         };
         setScanOwner({ ...scope, exportRpc });
@@ -392,6 +393,7 @@ export function Scan(): ReactNode {
         });
         if (!ctl.signal.aborted) {
           assertScopeCurrent();
+          assertScanPath();
           if (caughtUp && !persistenceIssue && res.discrepancies.length === 0 &&
               !res.limitReached && !res.backlog && res.secondaryLag === undefined) {
             const matches = res.matches.filter((match) => match.receipt === 'verified');

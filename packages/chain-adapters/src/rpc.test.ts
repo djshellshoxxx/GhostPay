@@ -47,6 +47,36 @@ describe('validateRpcUrl', () => {
   });
 });
 
+describe('operation authority during RPC retries', () => {
+  it.each(['continue', 'cancel', 'revoke'] as const)('rechecks before sending after a transport outage (%s)', async (action) => {
+    const controller = new AbortController();
+    const calls: { method: string; params: unknown[] }[] = [];
+    let first = true;
+    let allowed = true;
+    const transport = fakeTransport((method) => {
+      if (method === 'eth_chainId') return '0xaa36a7';
+      if (first) { first = false; throw new RpcHttpError(429); }
+      return '0x';
+    }, calls);
+    const client = await createClient(SEPOLIA, URL_OK, { transport, retries: 1, sleep: () => {
+      if (action === 'cancel') controller.abort();
+      if (action === 'revoke') allowed = false;
+      return Promise.resolve();
+    } });
+    const pending = client.request('eth_getCode', ['0x' + '11'.repeat(20), 'latest'], {
+      signal: controller.signal,
+      beforeSend: () => { if (!allowed) throw new Error('permission changed'); },
+    });
+    if (action === 'continue') {
+      await expect(pending).resolves.toBe('0x');
+      expect(calls.map((call) => call.method)).toEqual(['eth_chainId', 'eth_getCode', 'eth_chainId', 'eth_getCode']);
+    } else {
+      await expect(pending).rejects.toThrow(action === 'cancel' ? /cancelled/ : /permission changed/);
+      expect(calls.map((call) => call.method)).toEqual(['eth_chainId', 'eth_getCode']);
+    }
+  });
+});
+
 describe('parseQuantity', () => {
   it('accepts canonical quantities only', () => {
     expect(parseQuantity('0x0')).toBe(0n);

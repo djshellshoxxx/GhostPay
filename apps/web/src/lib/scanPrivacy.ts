@@ -486,15 +486,15 @@ export function createWindowedScanClient(inner: RpcClient, o: WindowedOptions): 
 
   return {
     chainId: inner.chainId,
-    request: (m, p) => inner.request(m, p),
+    request: (m, p, options) => inner.request(m, p, options),
     getBlock: (n) => inner.getBlock(n),
     async blockNumber() {
       const h = await inner.blockNumber();
       head = h;
       return h;
     },
-    async getLogs(f) {
-      if (!isAnnouncerQuery(f, o.announcer)) return inner.getLogs(f);
+    async getLogs(f, options) {
+      if (!isAnnouncerQuery(f, o.announcer)) return inner.getLogs(f, options);
       assertScanFilter(f, o.router);
       if (W === 0) return inner.getLogs(f);
       if (f.fromBlock < 0n || f.toBlock < f.fromBlock) throw new ChainAdapterError('INVALID_INPUT', 'invalid scan range');
@@ -654,11 +654,11 @@ export function createIndexerScanClient(inner: RpcClient, o: IndexerClientOption
   });
   return {
     chainId: inner.chainId,
-    request: (m, p) => inner.request(m, p),
+    request: (m, p, options) => inner.request(m, p, options),
     blockNumber: () => inner.blockNumber(),
     getBlock: (n) => inner.getBlock(n),
-    async getLogs(f) {
-      if (!isAnnouncerQuery(f, o.announcer)) return inner.getLogs(f);
+    async getLogs(f, options) {
+      if (!isAnnouncerQuery(f, o.announcer)) return inner.getLogs(f, options);
       assertScanFilter(f, o.router);
       let res;
       try {
@@ -731,12 +731,17 @@ async function checkedCall<T>(assertCurrent: () => void, call: () => Promise<T>)
  * already sent cannot be recalled.
  */
 export function guardScanClient(inner: RpcClient, assertCurrent: () => void): RpcClient {
+  type Options = Parameters<RpcClient['request']>[2];
+  const guardedOptions = (options: Options): NonNullable<Options> => ({
+    ...options,
+    beforeSend: () => { assertCurrent(); options?.beforeSend?.(); },
+  });
   return {
     chainId: inner.chainId,
-    request: (method, params) => checkedCall(assertCurrent, () => inner.request(method, params)),
+    request: (method, params, options) => checkedCall(assertCurrent, () => inner.request(method, params, guardedOptions(options))),
     blockNumber: () => checkedCall(assertCurrent, () => inner.blockNumber()),
     getBlock: (n) => checkedCall(assertCurrent, () => inner.getBlock(n)),
-    getLogs: (f) => checkedCall(assertCurrent, () => inner.getLogs(f)),
+    getLogs: (f, options) => checkedCall(assertCurrent, () => inner.getLogs(f, guardedOptions(options))),
   };
 }
 

@@ -37,7 +37,7 @@ export interface LogFilter {
  * must signal HTTP failures by throwing {@link RpcHttpError}. Injected in tests: no network is used there.
  */
 export interface RpcTransport {
-  send(url: string, body: string, init: { readonly timeoutMs: number; readonly maxBytes: number }): Promise<string>;
+  send(url: string, body: string, init: { readonly timeoutMs: number; readonly maxBytes: number; readonly signal?: AbortSignal }): Promise<string>;
 }
 
 /** Thrown by transports for non-2xx statuses. `retryable` is true for 429 and 5xx. */
@@ -95,7 +95,10 @@ export function validateRpcUrl(raw: string, opts: UrlOptions = {}): string {
 export const fetchTransport: RpcTransport = {
   async send(url, body, init) {
     if (!url.startsWith('https:') && !url.startsWith('http:')) return fail('RPC_URL_REJECTED', 'fetch transport needs http(s)');
+    checkRequest(init);
     const ctl = new AbortController();
+    const cancel = (): void => { ctl.abort(); };
+    init.signal?.addEventListener('abort', cancel, { once: true });
     const timer = setTimeout(() => {
       ctl.abort();
     }, init.timeoutMs);
@@ -138,6 +141,7 @@ export const fetchTransport: RpcTransport = {
       return fail('RPC_FAILURE', 'transport error or timeout');
     } finally {
       clearTimeout(timer);
+      init.signal?.removeEventListener('abort', cancel);
     }
   },
 };
@@ -166,14 +170,25 @@ export interface ClientOptions extends UrlOptions {
   readonly now?: () => number;
 }
 
+/** Per-operation authority, checked again before transport retries and reconnects. */
+export interface RpcRequestOptions {
+  readonly signal?: AbortSignal;
+  readonly beforeSend?: () => void;
+}
+
+function checkRequest(options?: RpcRequestOptions): void {
+  if (options?.signal?.aborted) fail('RPC_FAILURE', 'request cancelled');
+  options?.beforeSend?.();
+}
+
 /** Verified JSON-RPC client bound to one chain. */
 export interface RpcClient {
   readonly chainId: number;
   /** Generic request; returns the `result` field. */
-  request(method: string, params: readonly unknown[]): Promise<unknown>;
+  request(method: string, params: readonly unknown[], options?: RpcRequestOptions): Promise<unknown>;
   blockNumber(): Promise<bigint>;
   getBlock(number: bigint): Promise<BlockRef | null>;
-  getLogs(filter: LogFilter): Promise<readonly RpcLog[]>;
+  getLogs(filter: LogFilter, options?: RpcRequestOptions): Promise<readonly RpcLog[]>;
 }
 
 function cryptoRandom(): number {
@@ -238,7 +253,7 @@ export async function createClient(chain: ChainConfig, url: string, opts: Client
   let dirty = false;
   let failureGeneration = 0;
 
-  async function rawRequest(method: string, params: readonly unknown[]): Promise<{ readonly value: unknown; readonly generation: number }> {
+  async function rawRequest(method: string, params: readonly unknown[], options?: RpcRequestOptions): Promise<{ readonly value: unknown; readonly generation: number }> {
     const id = nextId++;
     const body = JSON.stringify({ jsonrpc: '2.0', id, method, params });
     let reconnect = false;
@@ -246,15 +261,17 @@ export async function createClient(chain: ChainConfig, url: string, opts: Client
       // This flag belongs to this request: another concurrent chain check must not erase its recovery requirement.
       // Chain-id requests perform their own bounded retries and never recursively verify themselves.
       if (reconnect && method !== 'eth_chainId') {
-        await checkChain();
+        await checkChain(options);
         reconnect = false;
       }
+      checkRequest(options);
       const generation = failureGeneration;
       try {
-        const text = await transport.send(target, body, { timeoutMs, maxBytes });
+        const text = await transport.send(target, body, { timeoutMs, maxBytes, ...(options?.signal === undefined ? {} : { signal: options.signal }) });
         if (text.length > maxBytes) return fail('RESPONSE_TOO_LARGE', 'response exceeds cap');
         return { value: parseResponse(text, id), generation };
       } catch (e) {
+        checkRequest(options);
         // A transport-level failure may mean a reconnect to a different backend: re-verify the chain before trusting
         // more. A JSON-RPC error object proves the same node answered, so it does not.
         if (!(e instanceof JsonRpcError)) {
@@ -268,8 +285,8 @@ export async function createClient(chain: ChainConfig, url: string, opts: Client
     }
   }
 
-  async function checkChain(): Promise<void> {
-    const response = await rawRequest('eth_chainId', []);
+  async function checkChain(options?: RpcRequestOptions): Promise<void> {
+    const response = await rawRequest('eth_chainId', [], options);
     const reported = parseQuantity(response.value);
     if (reported !== BigInt(chain.chainId)) return fail('CHAIN_MISMATCH', 'endpoint reports a different chain id');
     // A response from a check started before another request lost its connection cannot clear that failure.
@@ -279,9 +296,11 @@ export async function createClient(chain: ChainConfig, url: string, opts: Client
   }
 
   /** Every request after the first connect is preceded by a chain id re-check when stale or after a failure. */
-  async function guarded(method: string, params: readonly unknown[]): Promise<unknown> {
-    if (method !== 'eth_chainId' && (dirty || (recheckMs > 0 && clock() - lastChainCheck >= recheckMs))) await checkChain();
-    return (await rawRequest(method, params)).value;
+  async function guarded(method: string, params: readonly unknown[], options?: RpcRequestOptions): Promise<unknown> {
+    if (method !== 'eth_chainId' && (dirty || (recheckMs > 0 && clock() - lastChainCheck >= recheckMs))) await checkChain(options);
+    const result = await rawRequest(method, params, options);
+    checkRequest(options);
+    return result.value;
   }
 
   const client = clientFromRequest(chain.chainId, guarded);
@@ -313,10 +332,10 @@ function clientFromRequest(chainId: number, request: RpcClient['request']): RpcC
       const timestamp = o['timestamp'] === undefined ? undefined : parseQuantity(o['timestamp']);
       return { number: n, hash: hash as Hex, parentHash: parentHash as Hex, ...(timestamp === undefined ? {} : { timestamp }) };
     },
-    async getLogs(f) {
+    async getLogs(f, options) {
       const r = await request('eth_getLogs', [
         { address: f.address, topics: f.topics, fromBlock: toQuantity(f.fromBlock), toBlock: toQuantity(f.toBlock) },
-      ]);
+      ], options);
       if (!Array.isArray(r)) return fail('RPC_FAILURE', 'logs not an array');
       return r as RpcLog[];
     },
@@ -421,9 +440,12 @@ export async function requestWithFallbackCheck(
   b: RpcClient,
   method: string,
   params: readonly unknown[],
+  options?: RpcRequestOptions,
 ): Promise<unknown> {
   if (a.chainId !== b.chainId) return fail('CHAIN_MISMATCH', 'clients target different chains');
-  const [ra, rb] = await Promise.all([a.request(method, params), b.request(method, params)]);
+  checkRequest(options);
+  const [ra, rb] = await Promise.all([a.request(method, params, options), b.request(method, params, options)]);
+  checkRequest(options);
   if (stableStringify(ra) !== stableStringify(rb)) return fail('RPC_FAILURE', 'providers disagree');
   return ra;
 }
@@ -477,14 +499,14 @@ export function createReconciledClient(primary: RpcClient, secondary: RpcClient,
   const methods = new Set(opts.methods ?? DEFAULT_RECONCILED_METHODS);
   const sleep = opts.sleep ?? defaultSleep;
   const delay = opts.retryDelayMs ?? 1000;
-  const request = async (method: string, params: readonly unknown[]): Promise<unknown> => {
-    if (!methods.has(method)) return primary.request(method, params);
+  const request = async (method: string, params: readonly unknown[], options?: RpcRequestOptions): Promise<unknown> => {
+    if (!methods.has(method)) return primary.request(method, params, options);
     try {
-      return await requestWithFallbackCheck(primary, secondary, method, params);
+      return await requestWithFallbackCheck(primary, secondary, method, params, options);
     } catch (e) {
       if (!(e instanceof Error) || e.message !== 'RPC_FAILURE: providers disagree') throw e;
       await sleep(delay);
-      return requestWithFallbackCheck(primary, secondary, method, params);
+      return requestWithFallbackCheck(primary, secondary, method, params, options);
     }
   };
   return clientFromRequest(primary.chainId, request);

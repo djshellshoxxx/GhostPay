@@ -8,7 +8,7 @@ import { SETTINGS_KEY } from '../lib/settings';
 import { SCAN_PRIVACY_KEY } from '../lib/scanPrivacy';
 import { SCAN_LANES_KEY } from '../lib/scanSpam';
 import type { Services } from '../lib/services';
-import { makeLog } from '../test/announcements';
+import { makeLog, TOKEN_84532 } from '../test/announcements';
 import { FAKE_ANNOUNCER, FAKE_ROUTER } from '../test/fakeManifest';
 import { backedManifest, withManifestChain } from '../test/manifestChain';
 import { chainWithLogs } from '../test/mockChain';
@@ -83,6 +83,36 @@ describe('Scan privacy (spec 10)', () => {
     expect(await screen.findByText(/Scan stopped: the scan privacy settings or an RPC this scan uses changed/)).toBeTruthy();
     expect(pages).toBe(1);
     expect(screen.queryByText(/Finished\./)).toBeNull();
+  });
+
+  it.each(['keep', 'revoke'] as const)('honours the transfer-estimate choice during a scan (%s)', async (choice) => {
+    const seller = generateSession();
+    window.localStorage.setItem(SETTINGS_KEY, JSON.stringify({ rpcUrls: { '84532': 'https://rpc.test' } }));
+    window.localStorage.setItem(SCAN_LANES_KEY, JSON.stringify({ privacySetTransfers: true }));
+    const payment = makeLog({ announcer: FAKE_ANNOUNCER, caller: FAKE_ROUTER, metaAddress: seller.metaAddress, block: 120, index: 0 });
+    const base = withManifestChain(chainWithLogs(84532, 500, [payment.log]));
+    let tokenReads = 0;
+    const client: typeof base = { ...base, getLogs: async (filter) => {
+      if (filter.address.toLowerCase() === TOKEN_84532.toLowerCase() && filter.topics.length === 1) {
+        tokenReads++;
+        return [];
+      }
+      const logs = await base.getLogs(filter);
+      if (choice === 'revoke' && filter.address.toLowerCase() === FAKE_ANNOUNCER.toLowerCase()) {
+        window.localStorage.setItem(SCAN_LANES_KEY, JSON.stringify({ privacySetTransfers: false }));
+      }
+      return logs;
+    } };
+    const user = await openScan(makeServices({ loadManifest: loaded, createRpc: () => Promise.resolve(client) }));
+    await user.type(screen.getByLabelText('Start block'), '100');
+    await user.click(screen.getByRole('button', { name: 'Start scan' }));
+    if (choice === 'revoke') {
+      expect(await screen.findByText(/Scan stopped: the scan privacy settings or an RPC this scan uses changed/)).toBeTruthy();
+      expect(tokenReads).toBe(0);
+    } else {
+      await waitFor(() => { expect(screen.getByText(/Finished\./)).toBeTruthy(); });
+      expect(tokenReads).toBeGreaterThan(0);
+    }
   });
 
   it.each([[true, true], [false, false]])('looks up other router payments only when cover lookups are on (%s)', async (matchCover, expected) => {
