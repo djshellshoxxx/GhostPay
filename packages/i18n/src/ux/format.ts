@@ -27,8 +27,10 @@ export interface DateFormatSpec {
   readonly timeZone?: string;
 }
 
-function loc(locale: string): string {
-  return parseLocale(locale)?.tag ?? 'en';
+function loc(locale: string, formatter: { supportedLocalesOf(locales: string[]): string[] }): string {
+  const tag = parseLocale(locale)?.tag ?? 'en';
+  // Intl silently uses the host default for unsupported locales.
+  return tag === 'en' || formatter.supportedLocalesOf([tag]).length > 0 ? tag : 'en';
 }
 
 function digits(n: number | undefined): number | undefined {
@@ -71,7 +73,7 @@ export function formatNumberParts(
   if (spec.notation !== undefined) o.notation = spec.notation;
   if (spec.signDisplay !== undefined) o.signDisplay = spec.signDisplay;
   try {
-    return new intl.NumberFormat(loc(locale), o).formatToParts(value);
+    return new intl.NumberFormat(loc(locale, intl.NumberFormat), o).formatToParts(value);
   } catch (e) {
     if (e instanceof RangeError) {
       try {
@@ -123,7 +125,7 @@ export function formatDateParts(
   };
   if (spec.timeStyle !== undefined) o.timeStyle = spec.timeStyle;
   try {
-    return new intl.DateTimeFormat(loc(locale), o).formatToParts(ms);
+    return new intl.DateTimeFormat(loc(locale, intl.DateTimeFormat), o).formatToParts(ms);
   } catch (e) {
     if (e instanceof RangeError) {
       try {

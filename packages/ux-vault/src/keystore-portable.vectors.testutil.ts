@@ -2,8 +2,8 @@ import { readFileSync } from 'node:fs';
 
 // The canonical TEST-ONLY v1 seller keystore vector (test-vectors/seller-keystore-v1.json, written independently with
 // node:crypto and noble by test-vectors/generate-seller-keystore.mjs; spec 18b). Its spending and viewing keys are the
-// public keys of test-vectors/scheme1.json vector scheme1-001. Shared by the known-answer and fuzz tests; never imported
-// by production code.
+// public keys of test-vectors/scheme1.json vector scheme1-001. Shared by the known-answer and fuzz tests and by the web
+// mobile-restore e2e; never imported by production code.
 interface SellerKeystoreVectors {
   readonly passphrase: string;
   readonly seller: { readonly spendingPrivateKey: string; readonly viewingPrivateKey: string; readonly signingPrivateKey: string };

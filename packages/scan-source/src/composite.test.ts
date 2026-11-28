@@ -40,8 +40,8 @@ describe('light source', () => {
     const r = await s.fetch(REQ);
     expect(r.announcements.length).toBeGreaterThan(0);
   });
-  it('integrity is proof only when the light client proves logs', () => {
-    expect(createLightSource({ chainId: 31337, lc: lc({ verifiesLogs: true }), inner: range() }).integrity).toBe('proof');
+  it.each([false, true])('a verifiesLogs capability of %s cannot claim log-inclusion proof', (verifiesLogs) => {
+    expect(createLightSource({ chainId: 31337, lc: lc({ verifiesLogs }), inner: range() }).integrity).toBe('unverified');
   });
   it('rejects a block hash the light client disagrees with or cannot confirm', async () => {
     const forged = range([{ ...rawAnn(1500, 0), blockHash: `0x${'22'.repeat(32)}` }]);

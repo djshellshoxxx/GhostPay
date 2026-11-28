@@ -29,7 +29,7 @@ Order: fund loss → recovery of funds/authority → primary payment flow → me
 |---|---|---|---|---|---|
 | 1 | P0-JRNL | Payment attempt durability, cross-tab duplicate prevention, outcome recovery | COMPLETE (merged `c8e131c1`, PR #500) | 95 (open: REV-I5/I6, QA-I1, GP-PAGES-01) | Double payment of one invoice from a 2nd tab or after a crash; lost tracking after reload |
 | 2 | P0-HASH | Wallet-attempt first-hash integrity (#427→#443) | COMPLETE (merged via #500, `c8e131c1`) | 100 | Replacement hash could overwrite the first submitted hash |
-| 3 | P0-KEYS | Independent payment-key export/restore (#240/#269/#361 → #372) | PARTIAL: single-payment export, standalone decoder, seller-keystore verify/restore and independent keystore reader merged (#539, #641, #657, #647); archive/master export and in-app recovery open (#707, successor of #622) | 75 (2026-11-23) | Funds unrecoverable without the original browser session |
+| 3 | P0-KEYS | Independent payment-key export/restore (#240/#269/#361 → #372) | COMPLETE on `main` `c7c6349c`: single-payment export, standalone decoder, seller-keystore verify/restore, independent keystore reader (#539, #641, #657, #647) and archive/master export with in-app recovery (#707, successor of #622, via #718); verified on `c7c6349c`, see `milestones/M2-P0-KEYS.md` | 100 of the extraction scope (2026-11-26); #372 remainder not taken | Funds unrecoverable without the original browser session |
 | 4 | P0-RCPT | Receipt envelope fail-closed fixes (#449→#450→#452) | COMPLETE (merged `8ddb3449`); RCPT-L1/L2 fix `752828f6` merged via #690 | 100 | Malformed RPC envelope accepted as settlement evidence |
 | 5 | P1-LATE | Late payment (broadcast before expiry, confirmed after) shown as paid/late, not lost | MERGED (`aaa71a11`, PR #635) | 40 (2026-11-23) | Seller treats a paid invoice as unpaid; payer pays twice |
 | 6 | P1-REFUND | Refund authority/execution | MISSING by design (see below) | n/a | — |
@@ -70,9 +70,11 @@ Order: fund loss → recovery of funds/authority → primary payment flow → me
 - Size: 2,186 files vs main (+505,914/−3,072, mostly evidence docs; ~12.2k source, ~26.3k test lines).
 - Confirmed failures (hosted, reported in #455 and re-checked from job logs there): Mythril job 136771947984 (10 findings,
   artifact 14699233056), Tor browser job 136771948240 (`locator.waitFor` timeout at `scripts/tor/browser-acceptance.mjs:81`).
-- Class BLOCKED: code present, red gates. Since 2026-11-23 a peer Claude session (same owner) owns a narrow extraction onto
-  current `main` as milestone M2 on branch `claude/nifty-bohr-5ra2ap`; its evidence goes to
-  `docs/engineering/milestones/M2-P0-KEYS.md`.
+- Spec 18 extraction (milestone M2, peer session nifty-bohr) is on `main`: #539 (codec, decoder) and #707 (archive, master
+  backup, in-app recovery; Worker A commits through `8c7ae937`, merged by #718 as `c7c6349c`). Post-merge verification on
+  `c7c6349c`: codec 65/65, web 126/126, recovery scripts 48/48 with anvil, e2e full 2/2 and lean 9/9. Evidence:
+  [`milestones/M2-P0-KEYS.md`](milestones/M2-P0-KEYS.md). #372's red gates did not apply (no contract, Tor or hosting-kit
+  path in the extraction); they still gate anything further taken from #372.
 
 ### P0-RCPT — receipt envelope fixes
 

@@ -144,9 +144,9 @@ describe('privacy invariants: web app', () => {
     expect(hits).toEqual([]);
   });
 
-  it('issues fetch() only from the three audited call sites (everything else uses the injected fetchFn or RPC client)', () => {
+  it('issues fetch() only from the two audited call sites (everything else uses the injected fetchFn or RPC client)', () => {
     const files = web.filter((s) => referencesGlobalFetch(s.sf)).map((s) => s.file).sort();
-    expect(files).toEqual(['lib/defaultServices.ts', 'lib/manifest.ts', 'lib/relayerClient.ts']);
+    expect(files).toEqual(['lib/defaultServices.ts', 'lib/relayerClient.ts']);
   });
 
   it('sends relayer requests without cookies or referrer and never follows redirects', () => {

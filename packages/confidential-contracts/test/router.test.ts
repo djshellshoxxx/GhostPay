@@ -154,6 +154,18 @@ describe("GhostPayConfidentialRouter: payConfidential", () => {
     );
   });
 
+  it("does not copy the stealth address's return data on the ETH forward (audit A-3)", async () => {
+    const { d, payer } = await setup(10_000n);
+    const bomb = await (await ethers.getContractFactory("ReturnBombStealth")).deploy();
+    const addr = await bomb.getAddress();
+    const quiet = await pay(d, payer, addr, 1_000n, { value: 1n, maxBuffer: 1n });
+    await (await bomb.setSize(0x40000)).wait();
+    const loud = await pay(d, payer, addr, 1_000n, { value: 1n, maxBuffer: 1n });
+    expect(await ethers.provider.getBalance(addr)).to.equal(2n);
+    // Copying 256 KiB into the router frame would cost well over 100k gas of memory expansion.
+    expect(loud.gasUsed - quiet.gasUsed).to.be.lessThan(20_000n);
+  });
+
   it("reverts Expired after the deadline", async () => {
     const { d, payer } = await setup(1_000n);
     const now = BigInt(await time.latest());

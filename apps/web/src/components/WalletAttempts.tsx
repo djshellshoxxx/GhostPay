@@ -171,6 +171,10 @@ export function WalletAttempts({ getRpc, wallet: supplied }: { readonly getRpc?:
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<DisplayMessage>();
   const [hasEntries, setHasEntries] = useState(false);
+  // In-memory returned hashes are evidence for this tab only; their details stay behind the owner connection.
+  const [returned, setReturned] = useState<readonly WalletAttempt[]>([]);
+  const [saving, setSaving] = useState(false);
+  const alive = useRef(false);
   const chains = services?.chains ?? CHAINS.filter((chain) => chain.enabled);
   const [chainId, setChainId] = useState(chains[0]?.chainId);
   const candidate = supplied !== undefined && !revoked.has(supplied) ? supplied : recovered;
@@ -189,18 +193,30 @@ export function WalletAttempts({ getRpc, wallet: supplied }: { readonly getRpc?:
   useLayoutEffect(() => { setRecovered(undefined); setWallets(undefined); setError(undefined); }, [supplied]);
   useEffect(() => {
     let mounted = true;
+    alive.current = true;
     const refresh = (): void => {
       if (!mounted) return;
       try { setHasEntries(readAttempts().length > 0); }
       catch { setHasEntries(true); }
+      try { setReturned(readReturnedAttempts()); }
+      catch { setReturned([]); }
     };
     const unsubscribe = subscribeAttempts(refresh);
     refresh();
     void migrateBrowserAttempts().catch((e: unknown) => { if (mounted) setError(captureUserMessage(e)); });
-    return () => { mounted = false; unsubscribe(); };
+    return () => { mounted = false; alive.current = false; unsubscribe(); };
   }, []);
   if (!hasEntries && error === undefined) return null;
   const warnings = walletWarnings(wallets ?? [], t);
+  // An unsaved hash the shown owner cannot see (none connected, or another account/chain) still needs this tab open.
+  // Say only that one exists: no account, chain, hash or count before the matching owner connects.
+  const unownedUnsaved = returned.some((attempt) => wallet === undefined || attempt.account !== wallet.account.toLowerCase() || attempt.chainId !== wallet.chainId);
+  const retrySaving = (): void => {
+    setSaving(true);
+    // Only the existing evidence is written again under a fresh journal lock: no wallet or RPC request.
+    void retryReturnedAttempts().catch((e: unknown) => { if (alive.current) setError(captureUserMessage(e)); })
+      .finally(() => { if (alive.current) setSaving(false); });
+  };
   const connect = async (info: WalletInfo): Promise<void> => {
     if (chainId === undefined) return;
     let scope: WalletPrivacyScope | undefined;
@@ -216,6 +232,10 @@ export function WalletAttempts({ getRpc, wallet: supplied }: { readonly getRpc?:
     <h3>{t('walletAttempts.heading')}</h3>
     {hasEntries && <Notice kind="warn">{t('walletAttempts.privateWarning')}</Notice>}
     {error !== undefined && <Notice kind="error">{displayMessage(error, t)}</Notice>}
+    {unownedUnsaved && <>
+      <Notice kind="warn">{t('walletAttempts.unsavedOther')}</Notice>
+      <button type="button" className="btn" disabled={saving} onClick={retrySaving}>{t('walletAttempts.retrySave')}</button>
+    </>}
     {wallet !== undefined
       ? <OwnedAttempts key={owner.generation} wallet={wallet} getRpc={getRpc} t={t} capture={privacy.capture} />
       : <>

@@ -67,12 +67,11 @@ newly typed passphrases and cancelling pending recovery operations. It does not 
 ordinary session authority. That cleanup timer also preserves any outstanding custody
 decision, so typing cannot prevent disposal when an existing recoverable copy is confirmed.
 
-**A retained sole copy is not equivalent to a wiped, passphrase-locked vault.** The keys
-remain in this tab's memory and the encrypted-backup recovery path remains accessible
-to someone who controls the tab. For keys that never had a credential, protecting
-against that person while retaining recoverability would require a separate
-authentication or custody design. This change does not claim that protection or add
-persistent plaintext storage.
+**Lock your device before stepping away.** If the tab holds the sole copy and the seller keys have
+no existing vault passphrase, anyone at the unlocked keyboard can choose a passphrase, download
+an encrypted keystore and restore the same spending, viewing and invoice-signing keys elsewhere.
+The beta owner accepted this physical-access risk on November 27, 2026 to preserve recovery of
+the last copy. Keys already tied to a vault still require its original passphrase for export.
 
 ## Qualification
 

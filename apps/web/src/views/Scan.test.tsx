@@ -94,6 +94,32 @@ describe('Scan and receive', () => {
     expect((await screen.findByRole('alert')).textContent).toMatch(/Payments are disabled on this chain/);
   });
 
+  it('PRIV-06 F1: a checkpoint another tab writes during scan setup is kept; the resumed run still lists its payments', async () => {
+    const pub = generateSession();
+    const keyId = checkpointKeyId(pub.spendingPublicKey, pub.viewingPublicKey);
+    window.localStorage.setItem(SETTINGS_KEY, JSON.stringify({ rpcUrls: { '84532': 'https://rpc.test' } }));
+    const mine = makeLog({ announcer: FAKE_ANNOUNCER, metaAddress: pub.metaAddress, block: 120, index: 0, caller: FAKE_ROUTER, amount: 2_500_000n });
+    const rpc = chainWithLogs(84532, 500, [mine.log]);
+    const checkpoints = memoryCheckpoints();
+    checkpoints.save(84532, keyId, { nextBlock: 100n });
+    // Another tab advances the shared checkpoint after this view rendered it, while this tab awaits its scan setup.
+    const foreign = { nextBlock: 450n };
+    let armed = false;
+    const user = await openScan(makeServices({ loadManifest: loaded, checkpoints, createScanWorker: () => new InlineWorker(), createRpc: () => {
+      if (armed) { armed = false; checkpoints.save(84532, keyId, foreign); }
+      return Promise.resolve(withManifestChain(rpc));
+    } }));
+    const resume = screen.getByLabelText<HTMLInputElement>('Resume from checkpoint');
+    if (!resume.checked) await user.click(resume);
+    armed = true;
+    await user.click(screen.getByRole('button', { name: 'Start scan' }));
+    expect(await screen.findByText('Payments found')).toBeTruthy();
+    expect(screen.getByText(mine.stealthAddress)).toBeTruthy();
+    await waitFor(() => { expect(screen.getByText(/Finished\./)).toBeTruthy(); });
+    expect(armed).toBe(false);
+    expect(checkpoints.load(84532, keyId)).toEqual(foreign);
+  });
+
   it('requires a numeric start block', async () => {
     generateSession();
     window.localStorage.setItem(SETTINGS_KEY, JSON.stringify({ rpcUrls: { '84532': 'https://rpc.test' } }));
@@ -454,7 +480,14 @@ describe('Scan and receive', () => {
       await user.click(screen.getByRole('button', { name: 'Cancel' }));
       await act(async () => { unlock(); await invalidation; });
       expect(vaultData.size).toBe(0);
-      finish(); await waitFor(() => expect(screen.getByText(/Cancelled\./)).toBeTruthy());
+      finish(); await waitFor(() => {
+        const scanRegion = within(screen.getByRole('region', { name: 'Scan and receive' }));
+        expect(scanRegion.getByText(/^Cancelled\. \d+ announcements checked\./)).toBeTruthy();
+        expect(screen.getByText('Cancelled. The scan stopped before completing.', {
+          selector: '[role="status"][aria-live="polite"][aria-atomic="true"]'
+        })).toBeTruthy();
+        expect(screen.queryByText('Scan finished.', { selector: '[role="status"]' })).toBeNull();
+      });
     } finally { unlock(); finish(); runner.mockRestore(); }
   });
 
@@ -662,7 +695,14 @@ describe('Scan and receive', () => {
     await waitFor(() => { expect((cancel as HTMLButtonElement).disabled).toBe(false); });
     await user.click(cancel);
     release();
-    await waitFor(() => { expect(screen.getByText(/Cancelled\./)).toBeTruthy(); });
+    await waitFor(() => {
+      const scanRegion = within(screen.getByRole('region', { name: 'Scan and receive' }));
+      expect(scanRegion.getByText(/^Cancelled\. \d+ announcements checked\./)).toBeTruthy();
+      expect(screen.getByText('Cancelled. The scan stopped before completing.', {
+        selector: '[role="status"][aria-live="polite"][aria-atomic="true"]'
+      })).toBeTruthy();
+      expect(screen.queryByText('Scan finished.', { selector: '[role="status"]' })).toBeNull();
+    });
     expect(worker.terminated).toBe(true);
     expect(worker.received.some((m) => m.type === 'cancel')).toBe(true);
   });

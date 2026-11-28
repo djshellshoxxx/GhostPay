@@ -1,6 +1,7 @@
 import { findChain, tokensForChain, verifyClaimedPayment, type RpcClient } from '@ghostpay/chain-adapters';
 import { useEffect, useRef, useState, useSyncExternalStore, type ReactNode } from 'react';
 import { Field, Mono, Notice } from '../components/Common';
+import { StealthExportArchive } from '../components/StealthExportArchive';
 import { StealthExportPayment } from '../components/StealthExportPayment';
 import type { ExportRpc } from '../lib/paymentKeyExport';
 import { loadSettings } from '../lib/settings';
@@ -49,7 +50,7 @@ type ScanText = { readonly key: MessageKey; readonly values?: MessageValues } | 
 // msg('key') descriptors are not seen by scripts/i18n/extract.mjs; the keys built through msg() in this file:
 // i18n-use: scan.error.noRpc scan.error.secondRpc scan.error.startBlock scan.error.manifestMismatch scan.error.noManifest
 // i18n-use: scan.error.discrepancy scan.error.backlog scan.error.limitReached scan.error.keysChanged scan.lag
-// i18n-use: scan.done.note scan.done.cancelled scan.done.limit scan.done.finished scan.done.cancelledEarly
+// i18n-use: scan.done.note scan.done.cancelled scan.done.limit scan.done.finished scan.done.cancelledEarly scan.done.indexerCaveat
 const msg = (key: MessageKey, values?: MessageValues): ScanText => (values === undefined ? { key } : { key, values });
 const show = (m: ScanText, t: T): string => ('error' in m ? displayMessage(m.error, t) : t(m.key, m.values));
 
@@ -123,7 +124,9 @@ export function Scan(): ReactNode {
       autoTick.current();
     }, randomDelayMs(AUTO_RESCAN_MIN_MS, AUTO_RESCAN_MAX_MS));
     return () => { window.clearTimeout(handle); };
-  }, [autoArmed, autoWake]);
+    // `done` is new after every scan: a re-check that starts and finishes within one render never shows `autoArmed`
+    // as false, and would otherwise leave no timer for the next one.
+  }, [autoArmed, autoWake, done]);
 
   useEffect(
     () => () => {
@@ -215,20 +218,25 @@ export function Scan(): ReactNode {
         const scanPrivacySelection = JSON.stringify(privacy);
         const selectedRpcUrl = app.settings.rpcUrls[String(chainId)];
         if (plan.kind === 'blocked') throw new UserFacingError(plan.reasonMessage);
-        // Every request of this scan re-checks the saved route it started with: its privacy settings, the Settings RPC
-        // it uses and its second RPC. A change in this or another tab stops it before anything more is sent.
+        // Unreadable lane settings may hold a cover opt-in: block instead of verifying matches without cover.
+        if (lanes.unreadable === true) throw new UserFacingError({ key: 'scanPrivacy.blocked.settingsUnreadable' });
+        // Every request of this scan re-checks the saved route it started with: its privacy settings, its cover choice,
+        // the Settings RPC it uses and its second RPC. A change in this or another tab stops it before anything more is
+        // sent.
         const savedAtStart = loadSettings();
         const startRpcUrl = savedAtStart.rpcUrls[String(chainId)];
         const startSecondaryUrl = savedAtStart.rpcUrlsSecondary[String(chainId)];
         const assertScanPath = (): void => {
           const saved = loadSettings();
+          const cover = loadScanLanes(browserStorage());
           if (JSON.stringify(loadScanPrivacy(browserStorage())) !== scanPrivacySelection ||
+              cover.unreadable === true || cover.matchCover !== lanes.matchCover ||
               (plan.endpoint === undefined && saved.rpcUrls[String(chainId)] !== startRpcUrl) ||
               (plan.useSecondary && saved.rpcUrlsSecondary[String(chainId)] !== startSecondaryUrl)) {
             throw new UserFacingError(SCAN_ROUTE_CHANGED);
           }
         };
-        const clients = await openScanClients({ plan, chain, announcer: manifest.manifest.announcer, router: manifest.manifest.router, appRpc: () => app.getRpc(chainId), fetchImpl: services.fetchFn, sleep: services.sleep, assertCurrent: assertScanPath });
+        const clients = await openScanClients({ plan, chain, announcer: manifest.manifest.announcer, router: manifest.manifest.router, appRpc: () => app.getRpc(chainId), fetchImpl: services.fetchFn, sleep: services.sleep, assertCurrent: assertScanPath, signal: ctl.signal });
         assertScopeCurrent();
         if (clients === undefined) {
           setError(msg('scan.error.noRpc'));
@@ -305,6 +313,7 @@ export function Scan(): ReactNode {
           floodPerBlock: lanes.floodPerBlock,
           spamScoring: lanes.spamScoring,
           privacySetTransfers: lanes.privacySetTransfers,
+          ...(lanes.matchCover ? { matchCover: true } : {}),
           cursor,
           spendingPublicKeyHex: app.session?.spendingPublicKey ?? '',
           keyId,
@@ -314,6 +323,9 @@ export function Scan(): ReactNode {
           createWorker: services.createScanWorker,
           signal: ctl.signal,
           checkpoints: services.checkpoints,
+          // The checkpoint this render showed and `cursor` was chosen against: a change by another tab since then is
+          // foreign to this run, even if it happened during the awaits above.
+          checkpointSeen: checkpoint ?? null,
           onProgress: (nextProgress) => {
             if (!scopeIsCurrent()) return;
             caughtUp = nextProgress.caughtUp;
@@ -415,10 +427,12 @@ export function Scan(): ReactNode {
         if (res.limitReached) setError(msg('scan.error.limitReached', { block: res.cursor.nextBlock.toString() }));
         const note = msg('scan.done.note', { block: cursor.nextBlock.toString(), fromCheckpoint: (resume || append) && checkpoint !== undefined ? 'yes' : 'no', oneRpc: rpc2 === undefined ? 'yes' : 'no' });
         const counts = { scanned: String(res.scanned), found: String(res.matches.length) };
-        setDone([msg(ctl.signal.aborted ? 'scan.done.cancelled' : res.limitReached ? 'scan.done.limit' : 'scan.done.finished', counts), note]);
+        // Keep the outcome bound to this run's source even if settings change after it finishes.
+        const indexerCaveat = plan.indexerUrl === undefined ? [] : [msg('scan.done.indexerCaveat')];
+        setDone([msg(ctl.signal.aborted ? 'scan.done.cancelled' : res.limitReached ? 'scan.done.limit' : 'scan.done.finished', counts), note, ...indexerCaveat]);
         // A cancelled run must not re-arm the automatic re-check.
         if (ctl.signal.aborted) setAutoRescan(false);
-        app.announce(latestT.current(res.limitReached ? 'scan.announce.limit' : 'scan.announce.finished'));
+        app.announce([latestT.current(ctl.signal.aborted ? 'scan.done.cancelledEarly' : res.limitReached ? 'scan.announce.limit' : 'scan.announce.finished'), ...indexerCaveat.map((message) => show(message, latestT.current))].join(' '));
       } catch (e) {
         if (!scopeKeysAreCurrent()) return;
         if (e instanceof Error && (e.message === 'scan-aborted' || e.message === 'scan-session-changed')) {
@@ -453,6 +467,7 @@ export function Scan(): ReactNode {
             <li key={row.party.key}><strong>{displayMessage(row.party, t)}:</strong> {displayMessage(row.learns, t)}</li>
           ))}
           {scanLanes.privacySetTransfers && <li><strong>{t('scanPrivacy.disclosure.rpcParty')}:</strong> {t('scanLanes.disclosure.transfers', { blocks: String(PRIVACY_TRANSFER_WINDOW_BLOCKS) })}</li>}
+          {scanLanes.matchCover && <li><strong>{t('scanPrivacy.disclosure.rpcParty')}:</strong> {t('scanLanes.disclosure.matchCover')}</li>}
         </ul>
         <p className="hint">{t('scan.disclosure.hint')}</p>
       </details>
@@ -592,6 +607,7 @@ function Matches(props: { readonly exportRpc: ExportRpc | undefined; readonly ch
   return (
     <div>
       <h3>{t('scan.matches.heading')}</h3>
+      <StealthExportArchive matches={matches} chainId={props.chainId} rpc={props.exportRpc} announce={app.announce} />
       {err !== undefined && <Notice kind="error">{show(err, t)}</Notice>}
       {shared.size > 0 && <Notice kind="warn">{t('scan.matches.sharedAddress')}</Notice>}
       <ul className="plain-list matches">
