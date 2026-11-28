@@ -52,6 +52,14 @@ test.describe('help without JavaScript', () => {
 
   test('the no-JavaScript entry links to usable local help and privacy pages', async ({ page }) => {
     await page.goto('/');
+    await page.keyboard.press('Tab');
+    const skip = page.getByRole('link', { name: 'Skip to main content', exact: true });
+    await expect(skip).toBeFocused();
+    await expect(skip).toBeInViewport();
+    await page.keyboard.press('Enter');
+    await expect(page.getByRole('main')).toBeFocused();
+    await page.keyboard.press('Tab');
+    await expect(page.getByRole('main').getByRole('link', { name: 'help guide', exact: true })).toBeFocused();
     await expect(page.getByRole('heading', { name: 'This app needs JavaScript', exact: true })).toBeVisible();
     await page.getByRole('navigation', { name: 'Help without JavaScript' }).getByRole('link', { name: /^Help:/ }).click();
     await expect(page.getByRole('heading', { level: 1, name: 'Invoices, receipts and recovery', exact: true })).toBeVisible();
