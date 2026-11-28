@@ -4,7 +4,7 @@ import { createInvoice, generateKeys } from './helpers';
 const button = (page: Page, name: string) => page.getByRole('navigation', { name: 'Main' }).getByRole('button', { name, exact: true });
 
 test('private view traversal preserves browser direction, main focus, and branch replacement', async ({ page }) => {
-  await page.goto('/?privateMarker=fixture');
+  await page.goto('./?privateMarker=fixture');
   await button(page, 'Settings').click();
   await button(page, 'About and privacy').click();
   expect(await page.evaluate(() => ({ search: location.search, hash: location.hash, state: history.state as unknown })))
@@ -24,7 +24,7 @@ test('private view traversal preserves browser direction, main focus, and branch
 });
 
 test('leaving or forgetting a retained invoice prevents its contents from returning on Back and Forward', async ({ page }) => {
-  await page.goto('/');
+  await page.goto('./');
   await generateKeys(page);
   const link = await createInvoice(page, { description: 'Private fixture', chainLabel: 'Ethereum Sepolia' });
   await button(page, 'Settings').click();
@@ -51,7 +51,7 @@ test('leaving or forgetting a retained invoice prevents its contents from return
 });
 
 test('a pending Settings decision can cancel Back without losing its Forward destination', async ({ page }) => {
-  await page.goto('/');
+  await page.goto('./');
   await button(page, 'About and privacy').click();
   await button(page, 'Settings').click();
   await page.evaluate(() => {
@@ -72,7 +72,7 @@ test('a pending Settings decision can cancel Back without losing its Forward des
 for (const width of [320, 375]) {
   test(`keyboard navigation and the first Home action fit at ${width}px`, async ({ page }) => {
     await page.setViewportSize({ width, height: 640 });
-    await page.goto('/');
+    await page.goto('./');
     await expect(page.locator('#home-h + .cards .btn-primary').first()).toBeInViewport({ ratio: 1 });
     const nav = page.getByRole('navigation', { name: 'Main' });
     await nav.getByRole('button').first().focus();
