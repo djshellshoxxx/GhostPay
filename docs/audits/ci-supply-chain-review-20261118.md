@@ -1,5 +1,7 @@
 # CI, supply-chain and release-gate review (2026-11-18)
 
+> **Dated snapshot.** Written 2026-11-18 against `main` `5467c158`. Re-checked 2026-11-28 against `main` `70458ebe`: `main` still has no branch protection (`GET /branches/main/protection` 404) and no rulesets (`GET /rulesets` `[]`), so the owner actions below still apply. Workflow line numbers may have moved since; later Pages, Mythril and remediation evidence is in `docs/audits/security-remediation-20261118.md`, `docs/audits/nov27-qualification.md` and `docs/pages/README.md`.
+
 **Scope.** Every file under `.github/workflows/`, the composite actions under `.github/actions/`,
 `.github/dependabot.yml`, `package.json` overrides, `package-lock.json`, and the repository settings that can be read
 through this session's GitHub proxy. Source reviewed: worktree branch `secrec-local` (candidate `71abc7e5` plus

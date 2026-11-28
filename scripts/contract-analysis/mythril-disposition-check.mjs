@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 // UNWIRED: no workflow, release gate or npm script calls this file. Wiring it into any gate is an owner decision
-// (docs/audits/mythril-reevaluation-20261118.md, "Disposition checker"). It never changes the Mythril gate itself:
+// (docs/audits/security-remediation-20261118.md, "Mythril gate policy"). It never changes the Mythril gate itself:
 // scripts/run-mythril.sh stays red on every reported issue.
 //
 // Validates a finding-specific Mythril disposition file against one runner report (report.log of

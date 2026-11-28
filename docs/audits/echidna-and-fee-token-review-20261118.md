@@ -1,5 +1,7 @@
 # Echidna harness and fee-token freeze review (2026-11-18)
 
+> **Dated snapshot.** Written 2026-11-18; it predates `docs/audits/security-remediation-20261118.md` (last updated 2026-11-26), which is the current consolidated record. Contract sources analysed here are unchanged on `main` `70458ebe`. The deploy-path guard recommended for SEC-E2-01 / N1 is PR #217 (open at the time of this note); the N1 contract decision itself remains the owner's.
+
 Status: AI-assisted review by an agent. **This is not an external audit** and does not replace one. Claims below
 are marked as checked against source at the commits named here, as CI evidence (a hosted step outcome or log), or
 as reported by an earlier document and not re-verified (for example the 44242366379 call counts in A4, the
@@ -204,7 +206,7 @@ stablecoins are upgradeable proxies, and Ethereum USDT also carries a transfer-f
 | CI / release workflows | Yes (no deploy step) | `grep 'forge script\|--broadcast\|DeployPolicy' .github/workflows/` finds nothing |
 | Web client (`apps/web/src/features/policy/chain.ts`) | **Yes** | `verifyPolicyDeployment` throws for `!chain.testnet` (`:78`). `PINNED_POLICY_DEPLOYMENTS` is empty (`:34`), so every network throws `policy.deployment.untrusted` (`:84`). The feature is also behind `VITE_GHOSTPAY_EXPERIMENTAL_POLICY`. |
 | Web client deploy step (`withdraw.ts:149`) | Yes, at deploy time only | `deployCall` refuses `flatFee != 0`. The receive/create views do not check the fee first (Low, UX). |
-| Bundled manifests (`apps/web/deployments`) | Yes | The build fails on any manifest unless `GHOSTPAY_RELEASE_PUBKEYS` is set (`scripts/pages/build-pages.sh:94`, `apps/web/scripts/validate-deployments.mjs:47`); it was empty in Pages CI run 44248573838 (site job env). That repository variable is the manifest trust root; `.github/release-signers/allowed_signers` (tag signing, 0 key lines) plays no part in manifest validation (`STATIC_BETA_DECISIONS.md` D3 vs D4). The web code also does not consume manifest `policy*` fields. |
+| Bundled manifests (`apps/web/deployments`) | Yes | The build fails on any manifest unless `GHOSTPAY_RELEASE_PUBKEYS` is set (`scripts/pages/build-pages.sh:94`, `apps/web/scripts/validate-deployments.mjs:47`); it was empty in Pages CI run 44248573838 (site job env). That repository variable is the manifest trust root; `.github/release-signers/allowed_signers` (tag signing, 0 key lines) plays no part in manifest validation (they are separate trust roots). The web code also does not consume manifest `policy*` fields. |
 
 **Result:** GhostPay's own client cannot pay or receive through any scheme-2 factory today. That is enforced in
 code by the testnet-only check and the empty pinned profile list. **The factory deployment path itself is not

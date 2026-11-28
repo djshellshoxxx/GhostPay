@@ -1,5 +1,7 @@
 # Owner action packet: repository protection, release and Pages gates (2026-11-18)
 
+> **Dated snapshot.** Written 2026-11-18 against `main` `5467c158`. Re-checked 2026-11-28 against `main` `70458ebe`: `main` still has no branch protection (`GET /branches/main/protection` 404) and no rulesets (`GET /rulesets` `[]`), so the owner actions below still apply. Workflow line numbers may have moved since; later Pages, Mythril and remediation evidence is in `docs/audits/security-remediation-20261118.md`, `docs/audits/nov27-qualification.md` and `docs/pages/README.md`.
+
 Every step here is a **write to GitHub settings that only the repository owner should make**. None of it has been
 run. The repository settings were read on 2026-11-18 with read-only `gh api` calls. Findings, evidence and HTTP codes
 are in [ci-supply-chain-review-20261118.md](../../audits/ci-supply-chain-review-20261118.md). This is an AI-prepared
@@ -247,7 +249,7 @@ build, the anvil acceptance and the release gates. The environment is the second
 `https://djshellshoxxx.github.io/GhostPay/` were not fetched (egress refused; the Pages API returned 403). The latest
 recorded deployment is 7251740697 to `github-pages` at 2026-10-22T12:07:53Z, from the then push-triggered "Pages
 mirror" workflow (run 39775570505, commit `dbee6786`), so the likely live content is that unqualified build (see
-[PAGES_QUALIFICATION_20261118.md](../../pages/PAGES_QUALIFICATION_20261118.md) F1). Decide whether to keep it, replace it through a gated `pages.yml` run, or
+[docs/pages/README.md](../../pages/README.md) for the current Pages publication path). Decide whether to keep it, replace it through a gated `pages.yml` run, or
 unpublish it (`gh api -X DELETE $R/pages`, which is irreversible for the current configuration).
 
 ## 4. Actions and security settings

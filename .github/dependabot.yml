@@ -3,7 +3,8 @@ version: 2
 updates:
   - package-ecosystem: github-actions
     # "/" alone scans only .github/workflows and a root action.yml; the composite actions under .github/actions/*
-    # pin actions too (actions/cache, setup-node, foundry-toolchain) and were left behind by the 5.0.5 -> 6.1.0 bump.
+    # pin actions too (actions/cache v5.0.5, setup-node v7.1.0, foundry-toolchain v1.9.2) and were left behind when the
+    # workflows moved to actions/cache v6.1.0.
     directories:
       - /
       - /.github/actions/*
