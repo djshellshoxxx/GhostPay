@@ -34,6 +34,18 @@ function build(files: Record<string, string> = {}, opts: { html?: string; header
 const scan = (b: ReturnType<typeof build>): string[] => scanBundle(b.dist, b.src, b.cfg);
 
 describe('scan-bundle', () => {
+  it('permits the exact independently approved Pages origin only as a direct origin comparison', () => {
+    const approved = 'https://djshellshoxxx.github.io';
+    const b = build({ 'dist/assets/a.js': `function authorized(){return globalThis.origin === "${approved}"}` });
+    expect(scanBundle(b.dist, b.src, b.cfg)).toContainEqual(expect.stringContaining('unexpected origin'));
+    expect(scanBundle(b.dist, b.src, b.cfg, approved)).toEqual([]);
+    for (const operation of [`fetch("${approved}")`, `fetch("${approved}/collect")`,
+      'globalThis.origin === "https://other.github.io"', `globalThis.origin === "${approved}/GhostPay/"`]) {
+      writeFileSync(join(b.dist, 'assets/a.js'), `globalThis.origin === "${approved}"; ${operation}`);
+      expect(scanBundle(b.dist, b.src, b.cfg, approved)).toContainEqual(expect.stringContaining('unexpected origin'));
+    }
+  });
+
   it('passes a clean build', () => {
     expect(scan(build())).toEqual([]);
   });

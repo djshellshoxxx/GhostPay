@@ -7,10 +7,12 @@ import { PrivacyControls } from './components/PrivacyControls';
 import { WalletDisclosureProvider, useWalletDisclosure } from './components/WalletDisclosure';
 import { notifyAppLock } from './lib/appLock';
 import { PRIVACY_MODE_KEY, PrivacyProvider, resetPrivacyModeForTests, revokePrivacyReveal } from './lib/privacyMode';
-import { clearSession } from './lib/session';
+import { clearSession, getSessionPublic, revealViewingKey } from './lib/session';
+import { MemoryTagStore, TagVault } from './lib/tags';
 import { prepareWalletConnection } from './lib/walletDisclosure';
 import { generateWaivedSession } from './test/keys';
-import { renderApp } from './test/render';
+import { makeServices, renderApp, renderWith } from './test/render';
+import { AppShell, CORE_ORDER } from './AppShell';
 
 const MEMO = 'Synthetic private memo 7f3a';
 const MEMO_LABEL = 'Memo (optional, shown to the payer)';
@@ -137,5 +139,47 @@ describe('wallet request review under masking', () => {
     await waitFor(() => { expect(screen.queryByRole('dialog')).toBeNull(); });
     await waitFor(() => { expect(results).toHaveLength(2); });
     expect(results[1]).not.toBe('approved');
+  });
+
+  // Adapted from #569 `c30283d2` (AppShell.privacy.test.tsx, 'revokes an active reveal on a vault-side lock and while a
+  // tag wipe is unresolved'). #708 does not list a tag-vault lock among the reveal revocations (lock there means the app
+  // lock), so the reveal itself is not asserted. What still applies: the tags leave the live document at once on a
+  // vault-side lock and when a wipe starts, stay hidden while it is unresolved and after it fails, and the seller keys are kept.
+  it('hides tags on a vault-side lock and while a tag wipe is unresolved, even during a reveal, and keeps the seller keys', async () => {
+    const user = userEvent.setup();
+    const seller = generateWaivedSession();
+    localStorage.setItem(PRIVACY_MODE_KEY, '1');
+    const store = new MemoryTagStore();
+    const vault = new TagVault(store);
+    await vault.unlock(revealViewingKey());
+    const services = makeServices({ vault });
+    const label = 'Private tag 286';
+    await vault.save(services.chains[0]?.chainId ?? 84532, { stealthAddress: `0x${'a'.repeat(40)}`, announcementId: `0x${'b'.repeat(64)}:0`,
+      logIndex: 0, clientLabel: label, invoiceLabel: '', notes: '' });
+    let fail!: () => void;
+    const wipe = vi.spyOn(store, 'clear').mockImplementation(() => new Promise<void>((_resolve, reject) => {
+      fail = () => { reject(new Error('test storage unavailable')); };
+    }));
+    renderWith(<AppShell order={CORE_ORDER} profile="lean" />, services);
+    await user.click(nav().getByRole('button', { name: 'Scan and receive' }));
+    expect(documentReveals(label)).toBe(false);
+    await user.click(screen.getByRole('button', { name: 'Reveal details for 30 seconds' }));
+    expect(await screen.findByText(label)).toBeTruthy();
+
+    act(() => { vault.lock(); });
+    expect(documentReveals(label)).toBe(false);
+    await user.click(screen.getByRole('button', { name: 'Unlock tags' }));
+    expect(await screen.findByText(label)).toBeTruthy();
+
+    vi.spyOn(window, 'confirm').mockReturnValue(true);
+    await user.click(screen.getByRole('button', { name: 'Delete all tags' }));
+    expect(wipe).toHaveBeenCalledTimes(1);
+    expect(vault.unlocked).toBe(false);
+    expect(documentReveals(label)).toBe(false);
+    expect(screen.getByRole('button', { name: 'Unlock tags' })).toBeTruthy();
+    await act(async () => { fail(); await Promise.resolve(); });
+    expect(documentReveals(label)).toBe(false);
+    expect(vault.unlocked).toBe(false);
+    expect(getSessionPublic()).toBe(seller);
   });
 });
