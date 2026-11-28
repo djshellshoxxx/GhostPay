@@ -22,6 +22,10 @@ Owned paths: `apps/web/public/ghostpay-embed-v2.js` (dialog containment) and `em
 Acceptance: each fix has a regression test; no payment, journal, privacy or verification guard loosened; no dependency,
 contract, workflow or activation change.
 
+# Pages homepage demo publication decision — 2026-11-28
+
+Worker: Codex, branch `pages/approve-one-feature-guide-demo`, base `70458ebe3ae4a5502d7c39ae25d37342dbde971b`. Own the scope of the one-release decision in ADR-0029, its corresponding Pages owner checklist and this entry. Acceptance: document the approved shared URL for the payments-disabled demo containing PR #776 and the evidence to verify before and after publishing.
+
 # Defensive fixes W2-1 to W2-3, sweep destination, embed popup, F8 — 2026-11-27 UTC
 
 Worker: local Claude Code worker W2 on the existing merged branch `claude/journal-fuzz-20261126`, fast-forwarded to
