@@ -1,4 +1,4 @@
-import { expect, test, type ConsoleMessage, type Page } from '@playwright/test';
+import { expect, test, type ConsoleMessage, type Dialog, type Page } from '@playwright/test';
 import { ORIGIN, createInvoice, generateKeys, openFresh } from './helpers';
 
 /** Collects console errors/warnings (CSP violations show up here) so tests can assert there are none. */
@@ -112,21 +112,27 @@ test('egress: parsing and reviewing an invoice makes no request except same-orig
   expect(seen.some((u) => u.includes('gpi='))).toBe(false);
 });
 
-test('hostile text in line items and memo is rendered inert', async ({ page }) => {
+test('hostile text in line items and memo is rendered inert', async ({ page, context }) => {
   const dialogs: string[] = [];
-  page.on('dialog', (d) => {
+  const recordDialog = (d: Dialog): void => {
     dialogs.push(d.message());
     void d.dismiss();
-  });
+  };
+  page.on('dialog', recordDialog);
   const evil = '<img src=x onerror="window.__xss=1"><script>window.__xss=2</script>"\'><svg onload=window.__xss=3>';
   await page.goto('/');
   await generateKeys(page);
   const link = await createInvoice(page, { description: evil, memo: evil });
-  await openFresh(page, link);
-  await expect(page.getByRole('heading', { level: 2, name: 'Review payment' })).toBeVisible();
-  await expect(page.getByText(evil, { exact: true }).first()).toBeVisible();
-  expect(await page.evaluate(() => (window as unknown as { __xss?: number }).__xss)).toBeUndefined();
-  expect(await page.locator('main img, main script, main svg[onload]').count()).toBe(0);
+  // Keep the seller document (and its unsaved synthetic keys) intact.
+  // A separate payer document can open the link without triggering the
+  // seller's legitimate sole-copy beforeunload protection.
+  const payer = await context.newPage();
+  payer.on('dialog', recordDialog);
+  await payer.goto(link);
+  await expect(payer.getByRole('heading', { level: 2, name: 'Review payment' })).toBeVisible();
+  await expect(payer.getByText(evil, { exact: true }).first()).toBeVisible();
+  expect(await payer.evaluate(() => (window as unknown as { __xss?: number }).__xss)).toBeUndefined();
+  expect(await payer.locator('main img, main script, main svg[onload]').count()).toBe(0);
   expect(dialogs).toEqual([]);
 });
 

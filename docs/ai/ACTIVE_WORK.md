@@ -1,3 +1,7 @@
+# November 28 — signer branch CI
+
+Codex CI qualification on `ci/243-signer-qualification-nov28`, based on `276aed60f19671cc6fa551be616b61041cb45b50`. Scope covers failing test fixtures and workspace metadata after checking existing successor fixes. Acceptance requires the original assertions, targeted test runs and an exact-head CI check.
+
 # Pinned invoice signer completion — 2026-11-18
 
 Worker: ChatGPT coordinator, protocol_validation, pin_management, and independent integration/security reviewers.

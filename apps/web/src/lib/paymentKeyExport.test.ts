@@ -103,18 +103,25 @@ describe('single encrypted keypair', () => {
   it('discards the result and wipes the key when the keys are wiped while the file is being sealed', async () => {
     let captured: Uint8Array | undefined;
     let release: () => void = () => undefined;
+    let reached: () => void = () => undefined;
+    const sealing = new Promise<void>((resolve) => { reached = resolve; });
     const actual = stealthExport.encryptPaymentKeys;
     vi.spyOn(stealthExport, 'encryptPaymentKeys').mockImplementation(async (items, options) => {
       captured = items[0]?.secret;
       expect(captured?.some((b) => b !== 0)).toBe(true);
+      reached();
       await new Promise<void>((resolve) => { release = resolve; });
       return actual(items, options);
     });
     const pending = exportEncryptedPayment(vectorMatch('a1'), keystore, EXPORT_PASS, { rpc: codeRpc(), N: TEST_N });
-    await vi.waitFor(() => { expect(captured).toBeDefined(); });
-    clearSession();
-    release();
-    await expect(pending).rejects.toThrow(/changed during this action/);
+    const rejected = expect(pending).rejects.toThrow(/changed during this action/);
+    try {
+      await Promise.race([sealing, pending]);
+      clearSession();
+    } finally {
+      release();
+      await rejected;
+    }
     expect(captured?.every((b) => b === 0)).toBe(true);
   });
 

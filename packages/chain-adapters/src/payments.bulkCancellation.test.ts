@@ -18,7 +18,7 @@ function fixture(onCall: (name: string) => void | Promise<void> = () => undefine
       blockNumber: async () => { await call('head'); return 110n; },
       getBlock: async (number) => { await call(`block:${String(number)}`); return { number, hash: HASH, parentHash: HASH }; },
       request: async (method, params) => { await call(`${method}:${String(params[0])}`); return {}; },
-      getLogs: async () => { throw new Error('Unexpected log query'); },
+      getLogs: () => Promise.reject(new Error('Unexpected log query')),
     },
   };
 }
