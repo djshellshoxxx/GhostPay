@@ -1,3 +1,11 @@
+# Handoff execution run: refresh and execution prompt on current main (2026-11-28 UTC)
+
+Worker: Claude Code coordinator session `session_01KtKj8iKdULDHfAMK6kXLsY` (Haiku-only run). Branch `nodata/brave-clarke-nwzz0s`, merged with `origin/main` `0934ea094cb1db90293b74d2d1e9d9324e09a883` (no rebase).
+Owned paths: `docs/ai/HANDOFF.md` (re-pinned to `0934ea09`, CI state recorded as queued, screen results), `docs/ai/prompts/HANDOFF_EXECUTION.md` (new execution prompt), this entry.
+Finding: main's `docs/ai/HANDOFF.md` is still the unfilled template ("TO BE VERIFIED"). The owner asked for the handoff to be turned into an execution prompt and merged at milestone completion.
+Screen on `0934ea09`: no eligible unclaimed microtask. Link, i18n and import screens reproduced; no new defect. Mythril `Nightly` failure on `fd5e5911` belongs to protected security-gate work and is not assigned.
+Acceptance: docs-only diff; no code, test, workflow or dependency change; reviewer PASS on the exact head; main CI green on the exact head before merge.
+
 # Coordinator handoff refresh and microtask screen (2026-11-26 UTC)
 
 Worker: Claude Code coordinator session `session_01KtKj8iKdULDHfAMK6kXLsY` (Haiku-only run). Branch `nodata/brave-clarke-nwzz0s`; base `origin/main` `019d5d18c8992f63fe77740f75ad04d86d3d9b07`.
