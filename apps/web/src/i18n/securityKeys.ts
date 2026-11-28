@@ -1227,6 +1227,7 @@ export const SECURITY_KEY_GROUPS = {
     'settings.scanPrivacy.window',
   ],
   sweepReviewAndOutcomes: [
+    'home.guide.sweep',
     'sweep.keysGone',
     'sweep.vaultCancelledKeys',
     'sweep.paymentsDisabledChain',
@@ -2447,7 +2448,6 @@ export const NEUTRAL_KEY_LIST = [
   'home.guide.create',
   'home.guide.pay',
   'home.guide.scan',
-  'home.guide.sweep',
   'home.guide.settings',
   'home.guide.about',
   'home.title',
