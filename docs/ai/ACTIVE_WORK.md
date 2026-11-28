@@ -5420,3 +5420,7 @@ respective owners. Use disposable fixtures and record only sanitized results.
 ## November 27 audit — approved Pages payment origin
 
 Worker Codex origin, branch `audit/nov27-origin-87060`, base `b890a76603b924829fdbe2b4fb2c5626f0cf4e36`. Own the Pages build origin, lean manifest and wallet gates, smoke origin checks, corresponding workflow arguments, docs and regressions. Preserve the signed manifest, on-chain read-back, shared-testnet decision and explicit local fixture. Acceptance requires zero wallet requests on origin mismatch, working approved-origin payment and manifest-free demo, and an independent post-deployment origin check. Coordinate workflow hunks with the deployment archive worker.
+
+## Pages home feature guide — 2026-11-28
+
+Worker: Codex, branch `pages/current-beta-feature-guide`, base `70458ebe3ae4a5502d7c39ae25d37342dbde971b`. Scope: the Home feature directory, scoped styling using the Circuit Drift Labs palette, the last footer line (including the no-script entry), corresponding locale entries and homepage acceptance coverage. Verify the eight non-home lean routes, demo/testnet wording, responsive layout and theme choices. Keep overlapping help, translations and accessibility edits separate from these additions.

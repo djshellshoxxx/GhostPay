@@ -434,6 +434,7 @@ export function AppShell(props: AppShellProps): ReactNode {
       <WalletDisclosureProvider scope={walletDisclosureScope} revokeOn={walletDisclosureRevision}>
       <a className="skip" href="#main" onClick={() => { main.current?.focus(); }}>{t('app.shell.skip')}</a>
       <header className="site-header">
+        {profile === 'lean' && <p className="beta-studio" dir="ltr">Circuit Drift Labs</p>}
         <h1>GhostPay</h1>
         <p className="tagline">{t('app.shell.tagline')}</p>
         <nav aria-label={t('app.shell.main')}>
@@ -493,6 +494,7 @@ export function AppShell(props: AppShellProps): ReactNode {
           <li><a href="./privacy.html" target="_blank" rel="noopener noreferrer">{t('app.shell.privacy')} <span className="sr-only">{t('app.shell.newTab')}</span></a></li>
           <li><a href="./help.html#technology" target="_blank" rel="noopener noreferrer">{t('footer.sources')} <span className="sr-only">{t('app.shell.newTab')}</span></a></li>
         </ul>
+        {profile === 'lean' && <p><small>{t('home.guide.disclaimer')}</small></p>}
       </footer>
       </WalletDisclosureProvider>
       </PrivacyProvider>
