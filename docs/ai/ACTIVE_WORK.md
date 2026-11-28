@@ -1,3 +1,7 @@
+# November 28 — stress replay qualification
+
+Codex on `ci/765-stress-replay-qa-nov28`, base `3e633f55e100fcb32eca7262919b9b8a413cbceb`. Scope covers the reporter and replay project configuration. Each browser must use its own executable and diagnostics must preserve the last successful step.
+
 # Recorded low residuals (web) — 2026-11-27 UTC
 
 Worker: local Claude Code worker W7 on the existing merged branch `claude/consolidation-stack-20261126`, fast-forwarded
@@ -5409,3 +5413,12 @@ respective owners. Use disposable fixtures and record only sanitized results.
 ## November 27 audit — approved Pages payment origin
 
 Worker Codex origin, branch `audit/nov27-origin-87060`, base `b890a76603b924829fdbe2b4fb2c5626f0cf4e36`. Own the Pages build origin, lean manifest and wallet gates, smoke origin checks, corresponding workflow arguments, docs and regressions. Preserve the signed manifest, on-chain read-back, shared-testnet decision and explicit local fixture. Acceptance requires zero wallet requests on origin mismatch, working approved-origin payment and manifest-free demo, and an independent post-deployment origin check. Coordinate workflow hunks with the deployment archive worker.
+
+## November 27 stress replay runner — 2026-11-28 UTC
+
+- Worker: Codex stress investigation; isolated branch `fix/stress-runner-volume-crash`; base main `b890a76603b924829fdbe2b4fb2c5626f0cf4e36`.
+- Owned paths: new `scripts/stress/**`, new `scripts/tests/stress-replay-runner.test.mjs`, new `docs/handoffs/GHOSTPAY_STRESS_REPLAY_20261127.md`, and this additive claim. Do not modify production payment, recovery, keystore, or E2E assertion code; do not alter Playwright worker count, retries, or cryptographic cost.
+- Scope: preserve the six journeys and six-tab workload from `GhostPay_Stress_Test_Evidence_2026-11-27.zip`; make results output configurable and case records durable/incremental; on output errors exit nonzero and expose completed/failed/unrun counts on stderr; capture safe step/crash/disconnect, browser-version, stderr and process-resource diagnostics without wallet/backup secrets.
+- Ownership check: current open-PR list (147 entries) checked; #753 touches the shared Playwright config, #309 is historical QA evidence, #373 is native-browser qualification. None owns the new `scripts/stress/**` paths. Existing `ACTIVE_WORK.md` has no stress-runner claim. Recheck PR files and branch heads before opening/updating the PR.
+- Acceptance: injected results-write failure after several case records remains detectable, previously completed JSONL records remain readable, stderr reports counts, and normal output succeeds; original six browser journeys run three times on Chromium/Firefox/WebKit with retries disabled, then Chromium runs at two workers with overlapping six-tab journal work. If original crashes do not reproduce, keep them unresolved and report the actual executable/build, commands, last step, browser stderr and available process evidence; do not infer a cause from clean reruns.
+- Coordination: integration lock branch observed at generation 77, released. No lock acquisition or main merge is part of this task.
