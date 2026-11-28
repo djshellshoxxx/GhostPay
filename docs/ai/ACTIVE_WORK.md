@@ -5353,6 +5353,13 @@ Observed: R5 requires unsafe redirect parameters to reject the whole HTTPS deep 
 
 ---
 
+# Bug-only receipt input snapshot — 2026-11-27
+
+Worker: sequential GhostPay bug-repair worker; isolated branch `automation/20261127/bug/receipt-input-snapshot`, base `fd5e591151765b2dafe6345501ca40393e0f176a`. Own only `packages/ux-receipts/src/verify.ts`, new `packages/ux-receipts/src/verify.receipt-snapshot.test.ts`, this additive claim and `docs/handoffs/RECEIPT_INPUT_SNAPSHOT_20261127.md`. All 145 open PR file lists in the refreshed census were checked; no proposed source or new regression path overlaps. Historical source owners #449/#663/#690 merged; #450/#664 closed. Other receipt tests and manifests remain untouched. Original verifier blob `88b696d05bca3f2692e29256285f849458b53bfe` remains unchanged from prior isolated reproduction. Acceptance: regression-first, consistent digest/query/comparison snapshot despite caller mutation during await; preserve valid and invalid receipt semantics, no activation of unmounted utility, no new dependencies or network/fund/contract/deployment work. Prior isolated exact-blob red/green 5/9 to 9/9; no native checkout available. Exact-head hosted CI and genuine independent review required. Generation 76 released, not acquired. Draft only until qualification.
+
+
+---
+
 # Quick-hide donor #300 test recovery — 2026-11-27 UTC
 
 Worker: consolidation coordinator; isolated branch `test/quick-hide-donor-300-20261127`, base `fd5e591151765b2dafe6345501ca40393e0f176a`. Own only new `apps/web/src/components/PrivacyControls.donor300.test.tsx`, new `docs/handoffs/QUICK_HIDE_300_DISPOSITION_20261127.md` and this additive claim. #760 identifies #300 residual tests as unassigned; #742 owns separate masking and wallet focus files and is untouched. Donor #300 head `137628961463fc5abd8b7927b2efe6b18a0a206a` remains unchanged. Preserve current PrivacyControls implementation; adapt applicable test intent to #708 global reveal design, do not restore PrivateHistory or change product behavior. Exact-head hosted CI and independent review required; no main merge or lease acquisition. All ten exclusions remain binding.
