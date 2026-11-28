@@ -5,7 +5,7 @@ import type { ChainConfig } from './config/chains.js';
 import { findToken } from './config/tokens.js';
 import { checkAnnouncementDeep } from './deepscan.js';
 import { ChainAdapterError, fail } from './errors.js';
-import { ANNOUNCEMENT_TOPIC, validateAnnouncementLog, type ScannedAnnouncement } from './logs.js';
+import { ANNOUNCEMENT_TOPIC, MAX_PLAUSIBLE_HEAD, validateAnnouncementLog, type ScannedAnnouncement } from './logs.js';
 import { decodePaymentCalldata } from './router.js';
 import { parseQuantity, type RpcClient, type RpcLog } from './rpc.js';
 import type { Address, Hex } from './types.js';
@@ -153,44 +153,65 @@ export interface VerifyClaimInput {
  * @returns Verification result with confirmation depth against `chain.finalityDepth`.
  */
 export async function verifyClaimedPayment(i: VerifyClaimInput): Promise<PaymentVerification> {
-  const primary = await verifyClaimedPaymentOnClient(i);
+  const primary = await readPaymentEvidence(i);
   if (primary.status !== 'received') return primary;
   if (i.secondaryClient !== undefined) {
-    const secondary = await verifyClaimedPaymentOnClient({ chain: i.chain, client: i.secondaryClient, router: i.router, announcer: i.announcer, claim: i.claim });
-    if (secondary.status !== 'received' || secondary.evidenceId !== primary.evidenceId || secondary.evidenceBinding !== primary.evidenceBinding || secondary.final !== primary.final || secondary.evidence.join('|') !== primary.evidence.join('|')) {
+    const secondary = await readPaymentEvidence({ chain: i.chain, client: i.secondaryClient, router: i.router, announcer: i.announcer, claim: i.claim });
+    if (secondary.status !== 'received' || secondary.evidenceId !== primary.evidenceId || secondary.evidenceBinding !== primary.evidenceBinding || secondary.evidence.join('|') !== primary.evidence.join('|')) {
       return withoutEvidenceId(primary, 'The two RPC providers did not agree on the payment evidence.');
     }
+  }
+  // Both providers finish reading the receipt and transaction before either supplies a final depth.
+  const clients = i.secondaryClient === undefined ? [i.client] : [i.client, i.secondaryClient];
+  const announcement = i.claim.announcement;
+  let confirmations: bigint;
+  try {
+    const blocks = await Promise.all(clients.map((client) => client.getBlock(announcement.blockNumber)));
+    if (blocks.some((block) => block === null || block.number !== announcement.blockNumber || block.hash.toLowerCase() !== announcement.blockHash.toLowerCase())) {
+      return withoutEvidenceId(primary, 'The payment block changed while its evidence was being checked. Rescan before relying on it.');
+    }
+    const heads = await Promise.all(clients.map((client) => client.blockNumber()));
+    if (heads.some((head) => head < announcement.blockNumber || head > MAX_PLAUSIBLE_HEAD)) {
+      return withoutEvidenceId(primary, 'Your RPC could not confirm the current payment depth.');
+    }
+    const depths = heads.map((head) => head - announcement.blockNumber + 1n);
+    confirmations = depths.reduce((a, b) => a < b ? a : b);
+    const required = BigInt(i.chain.finalityDepth);
+    if (confirmations < required && depths.some((depth) => depth >= required)) {
+      return withoutEvidenceId(primary, 'The two RPC providers did not agree on payment finality.');
+    }
+  } catch {
+    return withoutEvidenceId(primary, 'Your RPC could not confirm this payment.');
   }
   if (primary.evidenceId !== undefined && i.consumedTransfers?.has(primary.evidenceId) === true) {
     return withoutEvidenceId(primary, 'This transfer evidence has already been credited to another announcement in this scan.');
   }
   if (primary.evidenceId !== undefined) i.consumedTransfers?.add(primary.evidenceId);
-  return primary;
+  return { ...primary, confirmations, final: confirmations >= BigInt(i.chain.finalityDepth) };
 }
 
 function withoutEvidenceId(result: PaymentVerification, reason: string): PaymentVerification {
   return {
     status: 'unverified-claim',
     reason,
-    confirmations: result.confirmations,
-    final: result.final,
+    confirmations: 0n,
+    final: false,
     ...(result.observedBalance === undefined ? {} : { observedBalance: result.observedBalance }),
     evidence: result.evidence,
   };
 }
 
-async function verifyClaimedPaymentOnClient(i: VerifyClaimInput): Promise<PaymentVerification> {
+async function readPaymentEvidence(i: VerifyClaimInput): Promise<PaymentVerification> {
   const { claim, client, chain } = i;
   const a = claim.announcement;
   const evidence: Evidence[] = [];
   let evidenceId: string | undefined;
   let evidenceBinding: Hex | undefined;
-  let confirmations = 0n;
   const done = (status: PaymentVerification['status'], reason: string | undefined, observed: bigint | undefined): PaymentVerification => ({
     status,
     ...(reason === undefined ? {} : { reason }),
-    confirmations,
-    final: confirmations >= BigInt(chain.finalityDepth),
+    confirmations: 0n,
+    final: false,
     ...(observed === undefined ? {} : { observedBalance: observed }),
     evidence,
     ...(evidenceId === undefined ? {} : { evidenceId }),
@@ -212,8 +233,6 @@ async function verifyClaimedPaymentOnClient(i: VerifyClaimInput): Promise<Paymen
   if (meta === undefined || asset === undefined) return done('unverified-claim', 'The announcement metadata is not in the router layout.', observed);
   if (a.blockNumber < 0n || meta.netAmount <= 0n || (meta.kind === 'erc20' && findToken(chain.chainId, meta.token) === undefined)) return done('unverified-claim', 'The announcement position or metadata is invalid or names an unsupported asset.', observed);
   try {
-    const head = await client.blockNumber();
-    confirmations = head >= a.blockNumber ? head - a.blockNumber + 1n : 0n;
     const block = await client.getBlock(a.blockNumber);
     if (block === null || block.hash.toLowerCase() !== a.blockHash.toLowerCase()) {
       return done('unverified-claim', 'The announcement’s block hash is not the canonical hash of that block on your RPC.', observed);
@@ -233,11 +252,6 @@ async function verifyClaimedPaymentOnClient(i: VerifyClaimInput): Promise<Paymen
     } else {
       // Credit one native value-bearing transaction at most once.
       supportingId = `native:${a.blockNumber.toString()}:${a.transactionHash!.toLowerCase()}:${a.blockHash.toLowerCase()}`;
-    }
-    // A reorg may happen while the receipt and transaction were being read. Never release stale evidence.
-    const confirmedBlock = await client.getBlock(a.blockNumber);
-    if (confirmedBlock === null || confirmedBlock.hash.toLowerCase() !== a.blockHash.toLowerCase()) {
-      return done('unverified-claim', 'The payment block changed while its evidence was being checked. Rescan before relying on it.', observed);
     }
     evidenceId = supportingId;
     evidenceBinding = direct.binding;

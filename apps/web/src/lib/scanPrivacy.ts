@@ -14,6 +14,7 @@ import {
   ANNOUNCEMENT_TOPIC,
   ChainAdapterError,
   createClient,
+  fetchTransport,
   isLogLimitError,
   rawCallerTopic,
   validateRpcUrl,
@@ -763,6 +764,15 @@ function guardTransport(inner: RpcTransport, assertCurrent: () => void): RpcTran
   };
 }
 
+/** Opens a per-scan Settings client. Recheck consent on the handshake, reconnects and transport retries. */
+export function openSettingsScanRpc(
+  chain: ChainConfig, url: string | undefined, createRpc: typeof createClient, assertCurrent: () => void,
+): Promise<RpcClient | undefined> {
+  return checkedCall(assertCurrent, () => url === undefined
+    ? Promise.resolve(undefined)
+    : createRpc(chain, url, { transport: guardTransport(fetchTransport, assertCurrent) }));
+}
+
 export interface ScanClients {
   /** Plain client on the chosen path: manifest checks and receipts. */
   readonly base: RpcClient;
@@ -798,7 +808,7 @@ export async function openScanClients(o: OpenScanOptions): Promise<ScanClients |
     base = await o.appRpc();
   }
   if (base === undefined) return undefined;
-  // The app's RPC is cached across views; guard this scan's use of it without changing the cached client.
+  // Guard this scan's use of the base client before each operation and when its answer arrives.
   if (assertCurrent !== undefined) base = guardScanClient(base, assertCurrent);
   const router = o.router === undefined ? {} : { router: o.router };
   const stop = o.signal === undefined ? {} : { signal: o.signal };

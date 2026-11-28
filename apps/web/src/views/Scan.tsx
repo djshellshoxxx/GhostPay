@@ -1,5 +1,5 @@
 import { findChain, tokensForChain, verifyClaimedPayment, type RpcClient } from '@ghostpay/chain-adapters';
-import { useEffect, useRef, useState, useSyncExternalStore, type ReactNode } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState, useSyncExternalStore, type ReactNode } from 'react';
 import { Field, Mono, Notice } from '../components/Common';
 import { StealthExportArchive } from '../components/StealthExportArchive';
 import { StealthExportPayment } from '../components/StealthExportPayment';
@@ -13,7 +13,7 @@ import { formatUnits } from '../lib/format';
 import { UserFacingError, displayMessage, captureUserMessage, type DisplayMessage } from '../lib/errors';
 import { checkpointKeyId, runScan, type ScanMatch, type ScanProgress } from '../lib/scanClient';
 import { placeScanMatch, sharedRouterAddresses } from '../lib/scanMatches';
-import { browserStorage, createWindowedScanClient, describeScanDisclosureMessages, guardScanClient, loadScanPrivacy, openScanClients, planScan, SCAN_ROUTE_CHANGED } from '../lib/scanPrivacy';
+import { browserStorage, createWindowedScanClient, describeScanDisclosureMessages, guardScanClient, loadScanPrivacy, openScanClients, openSettingsScanRpc, planScan, SCAN_ROUTE_CHANGED } from '../lib/scanPrivacy';
 import { PRIVACY_TRANSFER_WINDOW_BLOCKS, loadScanLanes, type AnonymitySet } from '../lib/scanSpam';
 import { useServices } from '../lib/services';
 import { captureSessionGuard, revealViewingKey, subscribeSession } from '../lib/session';
@@ -84,6 +84,8 @@ export function Scan(): ReactNode {
   const latestT = useLatestScanT(t);
   const app = useApp();
   const services = useServices();
+  const currentSettings = useRef(app.settings);
+  useLayoutEffect(() => { currentSettings.current = app.settings; }, [app.settings]);
   const [chainId, setChainId] = useState<number>(services.chains[0]?.chainId ?? 84532);
   const [start, setStart] = useState('');
   const [resume, setResume] = useState(true);
@@ -216,27 +218,29 @@ export function Scan(): ReactNode {
         const lanes = loadScanLanes(browserStorage());
         const plan = planScan(privacy, chain);
         const scanPrivacySelection = JSON.stringify(privacy);
-        const selectedRpcUrl = app.settings.rpcUrls[String(chainId)];
+        const key = String(chainId);
+        const selected = app.settings;
+        const persisted = app.sessionOnlyRpcBaseline ?? selected;
         if (plan.kind === 'blocked') throw new UserFacingError(plan.reasonMessage);
         // Unreadable lane settings may hold a cover opt-in: block instead of verifying matches without cover.
         if (lanes.unreadable === true) throw new UserFacingError({ key: 'scanPrivacy.blocked.settingsUnreadable' });
         // Every request of this scan re-checks the saved route it started with: its privacy settings, its cover choice,
         // the Settings RPC it uses and its second RPC. A change in this or another tab stops it before anything more is
         // sent.
-        const savedAtStart = loadSettings();
-        const startRpcUrl = savedAtStart.rpcUrls[String(chainId)];
-        const startSecondaryUrl = savedAtStart.rpcUrlsSecondary[String(chainId)];
+        const sameEndpoints = (settings: typeof selected, baseline: typeof selected): boolean =>
+          (plan.endpoint !== undefined || settings.rpcUrls[key] === baseline.rpcUrls[key]) &&
+          (!plan.useSecondary || settings.rpcUrlsSecondary[key] === baseline.rpcUrlsSecondary[key]);
         const assertScanPath = (): void => {
           const saved = loadSettings();
           const cover = loadScanLanes(browserStorage());
           if (JSON.stringify(loadScanPrivacy(browserStorage())) !== scanPrivacySelection ||
               cover.unreadable === true || cover.matchCover !== lanes.matchCover ||
-              (plan.endpoint === undefined && saved.rpcUrls[String(chainId)] !== startRpcUrl) ||
-              (plan.useSecondary && saved.rpcUrlsSecondary[String(chainId)] !== startSecondaryUrl)) {
+              !sameEndpoints(saved, persisted) || !sameEndpoints(currentSettings.current, selected)) {
             throw new UserFacingError(SCAN_ROUTE_CHANGED);
           }
         };
-        const clients = await openScanClients({ plan, chain, announcer: manifest.manifest.announcer, router: manifest.manifest.router, appRpc: () => app.getRpc(chainId), fetchImpl: services.fetchFn, sleep: services.sleep, assertCurrent: assertScanPath, signal: ctl.signal });
+        const openSettingsRpc = (url: string | undefined) => openSettingsScanRpc(chain, url, services.createRpc, assertScanPath);
+        const clients = await openScanClients({ plan, chain, announcer: manifest.manifest.announcer, router: manifest.manifest.router, appRpc: () => openSettingsRpc(selected.rpcUrls[key]), fetchImpl: services.fetchFn, sleep: services.sleep, assertCurrent: assertScanPath, signal: ctl.signal });
         assertScopeCurrent();
         if (clients === undefined) {
           setError(msg('scan.error.noRpc'));
@@ -248,9 +252,10 @@ export function Scan(): ReactNode {
         // Behind a required local proxy it is not contacted at all (it would be reached directly).
         let rpc2: RpcClient | undefined;
         try {
-          rpc2 = plan.useSecondary ? await app.getSecondaryRpc(chainId) : undefined;
+          rpc2 = plan.useSecondary ? await openSettingsRpc(selected.rpcUrlsSecondary[key]) : undefined;
         } catch {
           assertScopeCurrent();
+          assertScanPath();
           setError(msg('scan.error.secondRpc'));
           return;
         }
@@ -277,8 +282,7 @@ export function Scan(): ReactNode {
         // Check the saved route again before sending an address or returning an export.
         const assertScanRoute = (): void => {
           guardSession();
-          if (JSON.stringify(loadScanPrivacy(browserStorage())) !== scanPrivacySelection ||
-              (plan.endpoint === undefined && loadSettings().rpcUrls[String(chainId)] !== selectedRpcUrl)) {
+          try { assertScanPath(); } catch {
             throw new UserFacingError({ key: 'error.paymentKeyExport.noRpc' });
           }
         };
@@ -402,19 +406,19 @@ export function Scan(): ReactNode {
                 assertScanRoute();
                 const { announcement, metadata } = match;
                 if (!matches.includes(match) || metadata === undefined || announcement.blockTimestamp === undefined) return false;
+                const clientsToCheck = secondary === undefined ? [clients.scan] : [clients.scan, secondary];
+                const blocks = await Promise.all(clientsToCheck.map((client) => client.getBlock(announcement.blockNumber)));
+                assertScanRoute();
+                if (!blocks.every((block) => block !== null && block.number === announcement.blockNumber &&
+                  block.hash.toLowerCase() === announcement.blockHash.toLowerCase() &&
+                  block.timestamp?.toString() === announcement.blockTimestamp)) return false;
                 const evidence = await verifyClaimedPayment({
                   chain, client: clients.scan, router: manifest.manifest.router, announcer: manifest.manifest.announcer,
                   claim: { ...match, metadata },
                   ...(secondary === undefined ? {} : { secondaryClient: secondary }),
                 });
                 assertScanRoute();
-                if (evidence.status !== 'received' || !evidence.final) return false;
-                const clientsToCheck = secondary === undefined ? [clients.scan] : [clients.scan, secondary];
-                const blocks = await Promise.all(clientsToCheck.map((client) => client.getBlock(announcement.blockNumber)));
-                assertScanRoute();
-                return blocks.every((block) => block !== null && block.number === announcement.blockNumber &&
-                  block.hash.toLowerCase() === announcement.blockHash.toLowerCase() &&
-                  block.timestamp?.toString() === announcement.blockTimestamp);
+                return evidence.status === 'received' && evidence.final;
               },
             });
           }

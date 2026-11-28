@@ -1,8 +1,9 @@
 // @vitest-environment jsdom
-import { screen, waitFor, within } from '@testing-library/react';
+import { fireEvent, screen, waitFor, within } from '@testing-library/react';
+import { createClient } from '@ghostpay/chain-adapters';
 import { encodeMetaAddress, generateKeySet } from '@ghostpay/core-crypto';
 import userEvent from '@testing-library/user-event';
-import { beforeEach, describe, expect, it } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { clearSession, generateSession } from '../lib/session';
 import { SETTINGS_KEY } from '../lib/settings';
 import { SCAN_PRIVACY_KEY } from '../lib/scanPrivacy';
@@ -33,6 +34,84 @@ beforeEach(() => {
 });
 
 describe('Scan privacy (spec 10)', () => {
+  it.each(['primary', 'secondary'] as const)('opens no RPC when the disclosed %s was removed before the storage event', async (role) => {
+    generateSession();
+    bothRpcs();
+    const createRpc = vi.fn<Services['createRpc']>(() => Promise.resolve(withManifestChain(chainWithLogs(84532, 500, []))));
+    const user = await openScan(makeServices({ loadManifest: loaded, createRpc }));
+    await user.type(screen.getByLabelText('Start block'), '100');
+    window.localStorage.setItem(SETTINGS_KEY, JSON.stringify({
+      rpcUrls: role === 'primary' ? {} : { '84532': 'https://rpc.test' },
+      rpcUrlsSecondary: role === 'secondary' ? {} : { '84532': 'https://rpc2.test' },
+    }));
+    await user.click(screen.getByRole('button', { name: 'Start scan' }));
+    expect(createRpc).not.toHaveBeenCalled();
+    expect(await screen.findByText(/Scan stopped: the scan privacy settings or an RPC this scan uses changed/)).toBeTruthy();
+  });
+
+  it('rechecks both endpoints after the primary opens and before the second handshake', async () => {
+    generateSession();
+    bothRpcs();
+    const opened: string[] = [];
+    const primary = chainWithLogs(84532, 500, []);
+    const user = await openScan(makeServices({ loadManifest: loaded, createRpc: (_chain, url) => {
+      opened.push(new URL(url).host);
+      window.localStorage.setItem(SETTINGS_KEY, JSON.stringify({ rpcUrls: { '84532': 'https://rpc.test' } }));
+      return Promise.resolve(withManifestChain(primary));
+    } }));
+    await user.type(screen.getByLabelText('Start block'), '100');
+    await user.click(screen.getByRole('button', { name: 'Start scan' }));
+    expect(opened).toEqual(['rpc.test']);
+    expect(primary.calls).toHaveLength(0);
+    expect(await screen.findByText(/Scan stopped: the scan privacy settings or an RPC this scan uses changed/)).toBeTruthy();
+  });
+
+  it('uses a tab-only provider after a refused save, until another tab changes the stored route', async () => {
+    generateSession();
+    window.localStorage.setItem(SETTINGS_KEY, JSON.stringify({ rpcUrls: { '84532': 'https://old.test/' } }));
+    const opened: string[] = [];
+    const user = await openScan(makeServices({ loadManifest: loaded, createRpc: (_chain, url) => {
+      opened.push(url);
+      return Promise.resolve(withManifestChain(chainWithLogs(84532, 500, [])));
+    } }));
+    const nav = within(screen.getByRole('navigation', { name: 'Main' }));
+    await user.click(nav.getByRole('button', { name: 'Settings' }));
+    fireEvent.change(screen.getByLabelText('Base Sepolia RPC URL'), { target: { value: 'https://session.test/' } });
+    const setItem = Storage.prototype.setItem;
+    const refusal = vi.spyOn(Storage.prototype, 'setItem').mockImplementation(function (this: Storage, key, value) {
+      if (key === SETTINGS_KEY) throw new Error('quota exceeded');
+      setItem.call(this, key, value);
+    });
+    try {
+      await user.click(screen.getByRole('button', { name: 'Save settings' }));
+      expect(screen.getByText(/apply to this tab only/)).toBeTruthy();
+    } finally { refusal.mockRestore(); }
+    await user.click(nav.getByRole('button', { name: 'Scan and receive' }));
+    await user.selectOptions(screen.getByLabelText('Chain'), screen.getByRole('option', { name: 'Base Sepolia' }));
+    await user.type(screen.getByLabelText('Start block'), '100');
+    await user.click(screen.getByRole('button', { name: 'Start scan' }));
+    expect(await screen.findByText(/Finished\./)).toBeTruthy();
+    expect(opened).toEqual(['https://session.test/']);
+    window.localStorage.removeItem(SETTINGS_KEY);
+    await user.click(screen.getByRole('button', { name: 'Start scan' }));
+    expect(await screen.findByText(/Scan stopped: the scan privacy settings or an RPC this scan uses changed/)).toBeTruthy();
+    expect(opened).toEqual(['https://session.test/']);
+  });
+
+  it('checks the Settings route again before a handshake retry', async () => {
+    generateSession();
+    bothRpcs();
+    const sent = vi.spyOn(globalThis, 'fetch').mockResolvedValue(new Response(null, { status: 503 }));
+    try {
+      const user = await openScan(makeServices({ loadManifest: loaded, createRpc: (chain, url, options) =>
+        createClient(chain, url, { ...options, sleep: async () => { window.localStorage.removeItem(SETTINGS_KEY); } }) }));
+      await user.type(screen.getByLabelText('Start block'), '100');
+      await user.click(screen.getByRole('button', { name: 'Start scan' }));
+      expect(await screen.findByText(/Scan stopped: the scan privacy settings or an RPC this scan uses changed/)).toBeTruthy();
+      expect(sent.mock.calls.map(([url]) => url)).toEqual(['https://rpc.test/']);
+    } finally { sent.mockRestore(); }
+  });
+
   it('does not mention cover lookups while the opt-in is off', async () => {
     generateSession();
     window.localStorage.setItem(SETTINGS_KEY, JSON.stringify({ rpcUrls: { '84532': 'https://rpc.test' } }));
