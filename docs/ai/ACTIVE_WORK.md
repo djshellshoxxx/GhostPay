@@ -1,3 +1,7 @@
+# November 28 — private checkpoint CI
+
+Codex CI qualification on `ci/248-checkpoint-qualification-nov28`, based on `18b367457103fb1731a5b4ef5c51faa37a010e47`. Scope covers private scan browser fixtures, scan error handling and affected lint/unit tests. Acceptance requires the original assertions, targeted test runs and an exact-head CI check.
+
 # Private seller scan completion — 2026-11-19
 
 Owner: ChatGPT coordinator with independent scan reviewer, encrypted-storage worker and scan UI worker.

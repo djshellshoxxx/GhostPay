@@ -127,7 +127,7 @@ describe('durable private scan discovery', () => {
     const result = await scan(s, {
       client, cursor: { nextBlock: 2000n, last: { number: 1999n, hash: blockHash(1999) } },
       replayBlocks: [120n, 2100n, 120n],
-      onCheckpoint: async (cursor: ScanCursor, matches: readonly unknown[]) => { committed.push({ cursor, count: matches.length }); },
+      onCheckpoint: (cursor: ScanCursor, matches: readonly unknown[]) => { committed.push({ cursor, count: matches.length }); return Promise.resolve(); },
     });
     expect(result.matches.map((m) => m.stealthAddress)).toEqual([s.mine.stealthAddress, s.mine2.stealthAddress]);
     expect(result.matches[0]?.receipt).toBe('verified');
@@ -203,6 +203,53 @@ describe('durable private scan discovery', () => {
       expect(base.calls).toEqual([]);
     } finally { release(2500n); await task; }
     expect(base.calls).toEqual([]);
+  });
+
+  it.each(['before dispatch', 'RPC rejection', 'after completion'] as const)('preserves Error identity at the %s boundary', async (boundary) => {
+    const s = setup(); const base = chainWith(2500, s.logs);
+    const failure = new Error('scan-client-failure');
+    const blockNumber = vi.fn<() => Promise<bigint>>().mockResolvedValue(2500n);
+    const assertCurrent = vi.fn<() => void>();
+    if (boundary === 'RPC rejection') blockNumber.mockRejectedValueOnce(failure);
+    else {
+      if (boundary === 'after completion') assertCurrent.mockImplementationOnce(() => undefined);
+      assertCurrent.mockImplementationOnce(() => { throw failure; });
+    }
+    const worker = new InlineWorker();
+    const viewingKey = unsafeRevealSecret(s.keys.viewingSecret);
+    await expect(scan(s, { client: { ...base, blockNumber }, assertCurrent, viewingKey, createWorker: () => worker })).rejects.toBe(failure);
+    expect(blockNumber).toHaveBeenCalledTimes(boundary === 'before dispatch' ? 0 : 1);
+    expect(base.calls).toEqual([]);
+    expect(worker.terminated).toBe(true);
+    expect(viewingKey.every((byte) => byte === 0)).toBe(true);
+  });
+
+  it('replaces a non-Error RPC rejection with a fixed safe Error', async () => {
+    const s = setup(); const base = chainWith(2500, s.logs);
+    const privateCause = { diagnostic: 'private endpoint and seller material' };
+    const blockNumber = vi.fn<() => Promise<bigint>>().mockRejectedValueOnce(privateCause);
+    const worker = new InlineWorker();
+    const task = scan(s, { client: { ...base, blockNumber }, createWorker: () => worker });
+    await expect(task).rejects.toBeInstanceOf(Error);
+    await expect(task).rejects.toThrow('scan operation failed');
+    expect(base.calls).toEqual([]);
+    expect(worker.terminated).toBe(true);
+  });
+
+  it('gives cancellation precedence when the completion guard aborts and throws', async () => {
+    const s = setup(); const base = chainWith(2500, s.logs); const ctl = new AbortController();
+    const blockNumber = vi.fn<() => Promise<bigint>>().mockResolvedValue(2500n);
+    const assertCurrent = vi.fn<() => void>()
+      .mockImplementationOnce(() => undefined)
+      .mockImplementationOnce(() => { ctl.abort(); throw new Error('late private diagnostic'); });
+    const onProgress = vi.fn(); const onCheckpoint = vi.fn(); const worker = new InlineWorker();
+    const result = await scan(s, { client: { ...base, blockNumber }, assertCurrent, signal: ctl.signal,
+      onProgress, onCheckpoint, createWorker: () => worker });
+    expect(result).toMatchObject({ matches: [], cursor: { nextBlock: 0n }, scanned: 0 });
+    expect(blockNumber).toHaveBeenCalledOnce();
+    expect(base.calls).toEqual([]);
+    expect(onProgress).not.toHaveBeenCalled(); expect(onCheckpoint).not.toHaveBeenCalled();
+    expect(worker.terminated).toBe(true);
   });
 });
 

@@ -172,6 +172,9 @@ export async function runScan(p: ScanParams): Promise<{ readonly matches: readon
   let progressed: ((scanned: number) => void) | undefined;
   const timeoutMs = p.replyTimeoutMs ?? 60_000;
   const ABORTED = new Error('scan cancelled');
+  const operationFailure = (error: unknown): Error => p.signal.aborted
+    ? ABORTED
+    : error instanceof Error ? error : new Error('scan operation failed');
   const active = <T>(operation: () => Promise<T>): Promise<T> => new Promise<T>((resolve, reject) => {
     const onAbort = (): void => { reject(ABORTED); };
     if (p.signal.aborted) { reject(ABORTED); return; }
@@ -183,10 +186,10 @@ export async function runScan(p: ScanParams): Promise<{ readonly matches: readon
         finish();
         if (p.signal.aborted) reject(ABORTED);
         else {
-          try { p.assertCurrent?.(); resolve(value); } catch (error) { reject(error); }
+          try { p.assertCurrent?.(); resolve(value); } catch (error) { reject(operationFailure(error)); }
         }
-      }, (error: unknown) => { finish(); reject(p.signal.aborted ? ABORTED : error); });
-    } catch (error) { finish(); reject(error); }
+      }, (error: unknown) => { finish(); reject(operationFailure(error)); });
+    } catch (error) { finish(); reject(operationFailure(error)); }
   });
   const scopedClient = (client: RpcClient): RpcClient => ({
     chainId: client.chainId,

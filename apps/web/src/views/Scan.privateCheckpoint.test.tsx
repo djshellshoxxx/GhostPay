@@ -47,7 +47,7 @@ function setup(custody: 'imported' | 'sole-copy' = 'imported') {
   const rpc = chainWithLogs(84532, 500, [mine.log]);
   const saved = memoryStore();
   const legacy = { load: vi.fn(() => ({ nextBlock: 999_999n })), save: vi.fn(), clear: vi.fn() };
-  const services = makeServices({ loadManifest: loaded, createRpc: () => Promise.resolve(withManifestChain(rpc)), createScanWorker: () => new InlineWorker(), checkpoints: legacy, privateScanStore: saved.store } as Partial<Services>);
+  const services = makeServices({ loadManifest: loaded, createRpc: () => Promise.resolve(withManifestChain(rpc)), createScanWorker: () => new InlineWorker(), checkpoints: legacy, privateScanStore: saved.store });
   return { pub, mine, saved, services, legacy };
 }
 
@@ -384,7 +384,7 @@ describe('private seller checkpoint UI', () => {
   it('offers reload after a conflicting checkpoint write and safely retries', async () => {
     const s = setup();
     const { user } = await open(s.services);
-    vi.spyOn(s.saved.store, 'compareAndSwap').mockImplementationOnce(async (_key, _expected, _next, guard) => { guard(); return false; });
+    vi.spyOn(s.saved.store, 'compareAndSwap').mockImplementationOnce((_key, _expected, _next, guard) => { guard(); return Promise.resolve(false); });
     await user.click(screen.getByRole('button', { name: 'Start scan' }));
     expect((await screen.findByRole('alert')).textContent).toMatch(/another tab|changed in another/i);
     await user.click(screen.getByRole('button', { name: 'Reload saved scan history' }));
