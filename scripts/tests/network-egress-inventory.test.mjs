@@ -79,6 +79,19 @@ test('shipped SDK and transport boundaries are represented, with library-only ad
   assert.ok(inventory.policyScopeStatement.includes('does not implement universal private-path enforcement'));
 });
 
+test('the recovery inventory distinguishes payment-address checks from local seller-key backup', () => {
+  const recovery = inventory.surfaces.find((surface) =>
+    surface.sourcePaths.includes('apps/web/src/lib/paymentKeyExport.ts') &&
+    surface.symbols.includes('exportPaymentArchive'));
+  assert.ok(recovery, 'missing payment recovery-export RPC disclosure');
+  assert.equal(recovery.automatic, false);
+  assert.equal(recovery.transport, 'json-rpc-http');
+  assert.ok(recovery.symbols.includes('exportEncryptedPayment'));
+  assert.ok(recovery.symbols.includes('exportRawPrivateKey'));
+  assert.match(recovery.destination, /eth_getCode/);
+  assert.match(recovery.destination, /latest/);
+});
+
 test('inventory detector recognizes calls and aliases without flagging type declarations or comments', () => {
   for (const text of ['fetch("/")', 'const send = globalThis.fetch', 'service.fetchFn("/")', 'new WebSocket("wss://invalid")', 'self["fetch"]("/")']) {
     assert.equal(referencesNetwork(text), true, text);

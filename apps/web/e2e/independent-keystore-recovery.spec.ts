@@ -41,7 +41,7 @@ function view(page: Page) {
   return page.locator('section[aria-labelledby="keys-h"]');
 }
 
-async function newEnv(browser: Browser): Promise<Env> {
+async function newEnv(browser: Browser, clockTime?: Date): Promise<Env> {
   const blocked: string[] = [];
   const context = await browser.newContext({ baseURL: ORIGIN, serviceWorkers: 'block', acceptDownloads: true });
   // Installed before any navigation; non-origin traffic is aborted and recorded.
@@ -52,6 +52,7 @@ async function newEnv(browser: Browser): Promise<Env> {
     return route.abort();
   });
   const page = await context.newPage();
+  if (clockTime !== undefined) await page.clock.install({ time: clockTime });
   await page.goto('/');
   await page.getByRole('navigation', { name: 'Main' }).getByRole('button', { name: 'Seller keys' }).click();
   await expect(page.getByRole('heading', { name: 'Seller keys', level: 2 })).toBeVisible();
@@ -69,6 +70,7 @@ async function identityOf(page: Page): Promise<Identity> {
 async function generate(page: Page): Promise<Identity> {
   await view(page).getByRole('button', { name: 'Generate new keys' }).click();
   await kdfExpect(view(page).getByText('New keys generated in memory.', { exact: true })).toBeVisible();
+  await expect(page.getByText(/the idle lock still lets anyone using this unlocked device make an encrypted copy/i)).toBeVisible();
   await page.getByLabel(/To continue without a backup, type/).fill('continue without backup');
   await page.getByRole('button', { name: 'Continue without a backup' }).click();
   return identityOf(page);
@@ -102,9 +104,16 @@ test('a keystore from a closed browser profile is recovered without GhostPay cod
   const reader = await loadReader();
 
   // Original profile: generate seller keys and download the encrypted keystore through the normal controls.
-  const original = await newEnv(browser);
+  const original = await newEnv(browser, new Date('2026-11-27T12:00:00Z'));
   const id = await generate(original.page);
+  // Only this tab holds the three keys. Expiry blocks signing while keeping encrypted recovery available.
+  await original.page.clock.setSystemTime(await original.page.evaluate(() => Date.now() + 86_400_000));
+  await original.page.evaluate(() => window.dispatchEvent(new Event('focus')));
+  await expect(original.page.getByText(/anyone at the unlocked keyboard can export these keys under a passphrase they choose/i)).toBeVisible();
+  const createInvoice = original.page.getByRole('navigation', { name: 'Main' }).getByRole('button', { name: 'Create invoice' });
+  await expect(createInvoice).toBeDisabled();
   const backup = await exportBackup(original.page, PASS);
+  await expect(createInvoice).toBeDisabled();
   expect(backup.includes(PASS)).toBe(false);
   expect(original.blocked).toEqual([]);
   // The original profile, its storage and its in-memory session no longer exist from here on.

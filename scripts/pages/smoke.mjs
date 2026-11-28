@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // Post-deployment smoke test of a published GhostPay GitHub Pages site (or any static host serving the same files).
 //
-// Usage: node scripts/pages/smoke.mjs <site url ending in /> [--commit <40-hex>] [--timeout-s 600]
+// Usage: node scripts/pages/smoke.mjs <site url ending in /> --approved-origin <origin> [--loopback-preview] [--commit <40-hex>] [--timeout-s 600]
 // Checks, in order (any failure exits 1):
 //   1. build-info.json is served and names the expected commit (retried until --timeout-s: Pages propagates slowly);
 //   2. index.html is text/html, carries the meta CSP with script-src 'self', and its entry script is served as JavaScript;
@@ -12,6 +12,7 @@
 // Read-only: it clicks only the main navigation; it never connects a wallet, creates keys or contacts an RPC.
 import { chromium } from '@playwright/test';
 import { existsSync } from 'node:fs';
+import { parseApprovedOrigin } from './approved-origin.mjs';
 import { requestWithinPublishedSite } from './smoke-url.mjs';
 import { openFixtureInvoice, unvisitedViews, walkLeanViews } from './smoke-walk.mjs';
 
@@ -24,7 +25,7 @@ const opt = (name) => {
 const commit = opt('--commit');
 const timeoutS = Number(opt('--timeout-s') ?? '600');
 if (url === undefined || !/^https?:\/\/[^/]+\/(?:[^?#]*\/)?$/.test(url)) {
-  console.error('usage: smoke.mjs <site url ending in /> [--commit <sha>] [--timeout-s N]');
+  console.error('usage: smoke.mjs <site url ending in /> --approved-origin <origin> [--loopback-preview] [--commit <sha>] [--timeout-s N]');
   process.exit(2);
 }
 if (commit !== undefined && !/^[0-9a-f]{40}$/.test(commit)) {
@@ -40,6 +41,15 @@ const fail = (msg) => {
   console.error(`SMOKE FAIL: ${msg}`);
   process.exit(1);
 };
+const preview = args.includes('--loopback-preview');
+const loopback = site.protocol === 'http:' && ['localhost', '127.0.0.1'].includes(site.hostname);
+if (site.username || site.password || (preview && !loopback)) fail('loopback preview requires an HTTP loopback origin without credentials');
+let approved = null;
+if (!preview || opt('--approved-origin') !== undefined) {
+  try { approved = parseApprovedOrigin(opt('--approved-origin'), preview && loopback); }
+  catch { fail('an independently approved hosting origin is required'); }
+}
+if (!preview && site.origin !== approved) fail('the served origin differs from the independently approved hosting origin');
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
 async function get(path) {
@@ -58,6 +68,7 @@ for (;;) {
     info = undefined;
   }
   if (info?.app === 'ghostpay-web' && (commit === undefined || info.commit === commit)) {
+    if (info.pagesOrigin !== approved) fail('the origin recorded in build-info.json differs from the independently approved hosting origin');
     console.log(`build-info: commit ${String(info.commit)}, manifests ${String(info.manifestsSha256).slice(0, 16)}...`);
     break;
   }
@@ -100,6 +111,7 @@ try {
     if (new URL(r.url()).origin === site.origin) errors.push(`request failed: ${r.url()}`);
   });
   await page.goto(url, { waitUntil: 'load', timeout: 60_000 });
+  if (new URL(page.url()).origin !== site.origin) fail('the browser did not load the expected serving origin');
   const nav = page.getByRole('navigation', { name: 'Main' });
   await nav.waitFor({ state: 'visible', timeout: 30_000 });
   const banner = (await page.locator('#gp-pages-mirror').textContent()) ?? '';

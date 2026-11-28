@@ -238,6 +238,52 @@
       "status": "baseline-source-reviewed"
     },
     {
+      "id": "evm-payment-recovery-export",
+      "flows": [
+        "single-payment-key-export",
+        "payment-key-archive"
+      ],
+      "sourcePaths": [
+        "apps/web/src/views/Scan.tsx",
+        "apps/web/src/components/StealthExportPayment.tsx",
+        "apps/web/src/components/StealthExportArchive.tsx",
+        "apps/web/src/lib/paymentKeyExport.ts",
+        "apps/web/src/lib/keyVault.ts",
+        "packages/chain-adapters/src/rpc.ts"
+      ],
+      "symbols": [
+        "exportEncryptedPayment",
+        "exportRawPrivateKey",
+        "exportPaymentArchive",
+        "assertPlainAccount",
+        "distinctPayments"
+      ],
+      "trigger": "The seller requests an encrypted or raw payment key, or confirms an encrypted archive of the discovered payments.",
+      "destination": "The selected primary scan RPC receives eth_getCode(address, \"latest\") for each distinct selected stealth address.",
+      "transport": "json-rpc-http",
+      "sensitiveData": [
+        "selected stealth addresses",
+        "request timing and connection metadata that can link addresses to the client and to each other"
+      ],
+      "automatic": false,
+      "authorization": "The export requires the loaded seller’s vault credential or matching keystore and passphrase. Raw export also requires a second confirmation. Viewing results or exporting the public record sends zero export RPC requests.",
+      "privatePath": "Uses the verified scan route for this chain. A seller can choose a trusted scan RPC. Private keys, passphrases and exported files stay local.",
+      "failureBehavior": "A missing route, mismatched chain, nonempty code or failed code check blocks export. Each logical lookup may generate additional transport attempts on retry. A later failure cannot retract addresses already disclosed.",
+      "profile": [
+        "full",
+        "lean"
+      ],
+      "ownership": "Shared payment recovery and scan privacy.",
+      "status": "Source reviewed on b890a76603b924829fdbe2b4fb2c5626f0cf4e36.",
+      "testPaths": [
+        "apps/web/src/components/StealthExportPayment.test.tsx",
+        "apps/web/src/components/StealthExportArchive.test.tsx",
+        "apps/web/src/views/Scan.stealthExport.test.tsx",
+        "apps/web/src/lib/paymentKeyExport.test.ts",
+        "apps/web/src/lib/paymentKeyExport.recovery.test.ts"
+      ]
+    },
+    {
       "id": "evm-scan-bulk",
       "flows": [
         "evm-scan"
@@ -1208,7 +1254,7 @@
         "clearSession",
         "notifyAppLock"
       ],
-      "trigger": "User generates/imports/unlocks/exports local key material or idle lock fires.",
+      "trigger": "The seller generates, imports, unlocks or backs up the seller keystore, or the idle lock fires. Payment-specific recovery export is recorded under evm-payment-recovery-export.",
       "destination": "None; local memory/files/encrypted persistence.",
       "transport": "none",
       "sensitiveData": [],

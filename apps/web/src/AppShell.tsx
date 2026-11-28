@@ -24,6 +24,7 @@ import { Scan } from './views/Scan';
 import { BackupGate, SellerKeys } from './views/SellerKeys';
 import { Settings } from './views/Settings';
 import { Sweep } from './views/Sweep';
+import { pagesOriginAllowsPayments } from './lib/pagesOrigin';
 import { Notice } from './components/Common';
 import { ErrorBoundary } from './components/ErrorBoundary';
 import { BrowserChecks } from './components/BrowserChecks';
@@ -458,6 +459,7 @@ export function AppShell(props: AppShellProps): ReactNode {
       </header>
       <main id="main" tabIndex={-1} ref={main}>
         <SensitiveContent>{!suspended && props.mainPrelude}</SensitiveContent>
+        {!pagesOriginAllowsPayments() && <Notice kind="warn">{t('app.pagesOriginMismatch')}</Notice>}
         {!online && <Notice kind="warn">{t('app.offline')}</Notice>}
         {suspended && <Notice kind="warn" title={t('app.idle.suspended.title')}>{t('app.idle.suspended.body')}</Notice>}
         {session !== undefined && backup?.backedUp === true && backup.verified === false && (

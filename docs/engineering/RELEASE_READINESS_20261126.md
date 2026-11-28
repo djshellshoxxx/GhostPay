@@ -20,7 +20,7 @@ No functional failure in the core payment, scan, receipt and recovery flows was 
 
 Release still needs four things:
 
-1. The owner decides on GP-PAGES-01 and IDLE-M1.
+1. The owner decides on GP-PAGES-01. The November 27 owner decision on IDLE-M1 is recorded below.
 2. The Mythril gate is dispositioned.
 3. Exact-SHA Pages-on-anvil and beta-acceptance runs are done.
 4. The browser and device checks no automation here covers are done (see "Not run").
@@ -95,7 +95,7 @@ Clean worktree. `npm ci --ignore-scripts && npm run build:libs`, Node 22.23.5, F
 | Id | Severity | Item | Source |
 |---|---|---|---|
 | GP-PAGES-01 | Owner decision | A shared `*.github.io` origin lets sibling pages read, forge or block the persistent wallet-attempt journal and lock. A custom domain removes this | REMAINING_WORK item 4 |
-| IDLE-M1 | Medium, accepted design | An idle-suspended sole-copy session still allows encrypted keystore export with a passphrase chosen at the keyboard | SECURITY_FINDINGS |
+| IDLE-M1 | Closed by beta owner acceptance, November 27 | Anyone at the unlocked keyboard can export sole-copy keys under a passphrase they choose when no vault credential is tied to the keys. The seller warning describes this residual risk. | [SECURITY_FINDINGS](SECURITY_FINDINGS.md) |
 | Mythril gate | Release gate | See "Confirmed failures" | Nightly |
 | KEYS-B1 | Blocker for anything further from #372 | Mythril and Tor gates red on #372. Not applicable to what is already on `main` | SECURITY_FINDINGS |
 | LATE-M1 | Medium (availability) | An unreadable reconciliation vault blocks scan checkpoints even with no registered invoices. Fails closed | SECURITY_FINDINGS |
@@ -108,7 +108,7 @@ with this record.
 
 ## Next actions
 
-1. Owner: decide GP-PAGES-01 (custom domain), IDLE-M1 and the Mythril disposition.
+1. Owner: decide GP-PAGES-01 (custom domain) and the Mythril disposition.
 2. Run the Pages-on-anvil (`BROWSER_DEVNET_MODE=pages bash scripts/beta/browser-devnet.sh`) and
    `scripts/beta/acceptance.sh` on the exact release SHA, in an environment that can install solc 0.8.28.
 3. Do manual Firefox/WebKit/mobile, assistive-technology and third-party wallet passes on the built Pages artifact.
