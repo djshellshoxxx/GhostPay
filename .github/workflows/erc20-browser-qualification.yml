@@ -55,6 +55,7 @@ jobs:
     env:
       GHOSTPAY_PAGES_ERC20: ${{ matrix.mode }}
       GHOSTPAY_PAGES_BROWSER: ${{ matrix.browser }}
+      GHOSTPAY_MANAGED_BROWSER: '1'
       PR_HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
     steps:
       # Runner paths are available after allocation; the runner context is not valid in job-level env.
@@ -114,6 +115,7 @@ jobs:
           import { existsSync, lstatSync, mkdirSync, readFileSync, readdirSync, writeFileSync } from 'node:fs';
           import { basename, dirname, join, resolve } from 'node:path';
           import { validateErc20ReportMembership } from './scripts/beta/erc20-report-membership.mjs';
+          import { verifyPagesArtifact } from './scripts/pages/verify-pages-artifact.mjs';
           const root = resolve(process.env.ERC20_RUN_ROOT);
           const evidence = resolve(process.env.ERC20_EVIDENCE);
           if (dirname(root) !== resolve(process.env.RUNNER_TEMP) || dirname(evidence) !== resolve(process.env.RUNNER_TEMP)) {
@@ -234,15 +236,20 @@ jobs:
           const build = run === undefined ? undefined : optional(() => {
             const directory = join(run, 'pages', 'evidence');
             const record = JSON.parse(readText(join(directory, 'pages-evidence.json')));
-            const sums = readText(join(directory, 'SHA256SUMS'));
+            const sumsPath = join(directory, 'SHA256SUMS');
+            const site = join(run, 'pages', 'site');
+            const verified = verifyPagesArtifact(site, sumsPath, { expectedCommit: sha });
+            if (verified.problems.length || verified.verified !== record.files) throw new Error('Incomplete build.');
+            const info = JSON.parse(readText(join(site, 'build-info.json')));
+            const sums = readText(sumsPath);
             const lockfileSha256 = hash(read('package-lock.json'));
             if (record.commit !== sha || record.profile !== 'lean' || record.release !== false
               || JSON.stringify(record.paymentsEnabledChainIds) !== '[84532]' || record.lockfileSha256 !== lockfileSha256
-              || record.sha256sumsSha256 !== hash(sums) || !/^[0-9a-f]{64}$/.test(record.manifestsSha256)) throw new Error('Build identity mismatch.');
+              || record.sha256sumsSha256 !== hash(sums) || !/^[0-9a-f]{64}$/.test(record.manifestsSha256)
+              || info.manifestsSha256 !== record.manifestsSha256) throw new Error('Build identity mismatch.');
             const servedFiles = sums.trim().split('\n').map((line) => {
               const match = /^([0-9a-f]{64})  \.\/([A-Za-z0-9_./-]+)$/.exec(line);
               if (!match || match[2].split('/').some((part) => part === '..' || part === '')) throw new Error('Invalid build path.');
-              if (hash(read(join(run, 'pages', 'site', match[2]))) !== match[1]) throw new Error('Build file changed.');
               return { path: match[2], sha256: match[1] };
             });
             if (servedFiles.length !== record.files || !servedFiles.some((file) => file.path === 'index.html')) throw new Error('Incomplete build.');

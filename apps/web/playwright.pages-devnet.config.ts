@@ -32,7 +32,8 @@ const CANDIDATES = [
   '/opt/pw-browsers/chromium',
 ].filter((p): p is string => typeof p === 'string');
 // Firefox/WebKit use their own managed executables, never Chromium's path or launch arguments.
-const executablePath = browserName === 'chromium' ? CANDIDATES.find((p) => existsSync(p)) : undefined;
+const executablePath = browserName === 'chromium' && process.env['GHOSTPAY_MANAGED_BROWSER'] !== '1'
+  ? CANDIDATES.find((p) => existsSync(p)) : undefined;
 
 const PAGES_BASE = '/GhostPay/';
 const statePath = process.env['GHOSTPAY_DEVNET_STATE'];

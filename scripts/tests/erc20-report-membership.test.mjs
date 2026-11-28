@@ -12,6 +12,7 @@ import { fileURLToPath } from 'node:url';
 const sourceRoot = fileURLToPath(new URL('../..', import.meta.url));
 const workflowPath = '.github/workflows/erc20-browser-qualification.yml';
 const helperPath = 'scripts/beta/erc20-report-membership.mjs';
+const verifierPath = 'scripts/pages/verify-pages-artifact.mjs';
 const testPath = 'scripts/tests/erc20-report-membership.test.mjs';
 const workflow = readFileSync(join(sourceRoot, workflowPath), 'utf8');
 const playwrightVersion = JSON.parse(readFileSync(join(sourceRoot, 'package-lock.json'), 'utf8'))
@@ -87,6 +88,8 @@ function collectFixture({ mode = 'plain', browser = 'chromium', mutate = () => {
       mkdirSync(dirname(join(repository, helperPath)), { recursive: true });
       copyFileSync(join(sourceRoot, helperPath), join(repository, helperPath));
     }
+    mkdirSync(dirname(join(repository, verifierPath)), { recursive: true });
+    copyFileSync(join(sourceRoot, verifierPath), join(repository, verifierPath));
     const environment = {
       PATH: process.env.PATH, LANG: 'C.UTF-8', GIT_CONFIG_NOSYSTEM: '1', GIT_CONFIG_GLOBAL: '/dev/null',
       GIT_AUTHOR_NAME: 'Synthetic fixture', GIT_AUTHOR_EMAIL: 'fixture@example.invalid',
@@ -130,14 +133,18 @@ function collectFixture({ mode = 'plain', browser = 'chromium', mutate = () => {
       ],
     };
     const site = '<!doctype html><title>Synthetic collector fixture</title>\n';
-    const sums = `${hash(site)}  ./index.html\n`;
+    const manifestsSha256 = 'a'.repeat(64);
+    const info = JSON.stringify({ app: 'ghostpay-web', commit, manifestsSha256 });
+    const sums = [`${hash('')}  ./.nojekyll`, `${hash(info)}  ./build-info.json`, `${hash(site)}  ./index.html`, ''].join('\n');
     const build = { commit, profile: 'lean', release: false, paymentsEnabledChainIds: [84532],
-      lockfileSha256: hash(lockfile), sha256sumsSha256: hash(sums), manifestsSha256: 'a'.repeat(64), files: 1 };
+      lockfileSha256: hash(lockfile), sha256sumsSha256: hash(sums), manifestsSha256, files: 3 };
     const fixture = { mode, browser, report, primary, boundaries, attachment, publicJourney, build,
-      environment, repository, siteDirectory, runnerExit: '0\n' };
+      environment, repository, siteDirectory, sums, runnerExit: '0\n' };
+    writeFileSync(join(siteDirectory, '.nojekyll'), '');
+    writeFileSync(join(siteDirectory, 'build-info.json'), info);
     writeFileSync(join(siteDirectory, 'index.html'), site);
     mutate(fixture);
-    writeFileSync(join(buildDirectory, 'SHA256SUMS'), sums);
+    writeFileSync(join(buildDirectory, 'SHA256SUMS'), fixture.sums);
     writeFileSync(join(buildDirectory, 'pages-evidence.json'), JSON.stringify(build));
     writeFileSync(join(reportDirectory, 'erc20-report.json'), JSON.stringify(report));
     writeFileSync(join(runRoot, 'runner-exit.txt'), fixture.runnerExit);
@@ -175,7 +182,7 @@ for (const mode of ['plain', 'permit']) {
       assert.equal(result.record.publicJourney.mode, mode);
       assert.equal(result.record.publicJourney.browserName, browser);
       assert.equal(result.record.publicJourney.recoveredOriginalPayment, true);
-      assert.deepEqual(result.record.build.files.map((file) => file.path), ['index.html']);
+      assert.deepEqual(result.record.build.files.map((file) => file.path), ['.nojekyll', 'build-info.json', 'index.html']);
     });
   }
 }
@@ -278,6 +285,16 @@ const preservedGuards = [
   ['the checkout identity differs', ({ environment }) => { environment.GITHUB_SHA = '0'.repeat(40); }],
   ['tracked source changes', ({ repository }) => { writeFileSync(join(repository, 'package.json'), '{"type":"commonjs"}\n'); }],
   ['the build source differs', ({ build }) => { build.commit = '0'.repeat(40); }],
+  ['a served file is missing from the inventory', ({ siteDirectory }) => {
+    writeFileSync(join(siteDirectory, 'unexpected.js'), '/* synthetic */');
+  }],
+  ['a duplicate inventory line substitutes for a required file', (fixture) => {
+    const lines = fixture.sums.trimEnd().split('\n');
+    lines[0] = lines[2];
+    fixture.sums = lines.join('\n') + '\n';
+    fixture.build.sha256sumsSha256 = hash(fixture.sums);
+  }],
+  ['the reported manifest digest differs from the served build', ({ build }) => { build.manifestsSha256 = 'b'.repeat(64); }],
   ['the served build changes', ({ siteDirectory }) => { writeFileSync(join(siteDirectory, 'index.html'), 'changed\n'); }],
   ['the public journey names another checkout', ({ publicJourney, attachment }) => {
     attachment.body = Buffer.from(JSON.stringify({ ...publicJourney, commit: '0'.repeat(40) })).toString('base64');
@@ -303,4 +320,26 @@ test('ERC-20 workflow runs collector regressions before browser setup', () => {
   assert.ok(tests >= 0, 'The qualification workflow must execute the collector regression suite');
   assert.ok(tests > workflow.indexOf('npm ci --ignore-scripts'), 'Collector regression tests follow dependency setup');
   assert.ok(tests < workflow.indexOf('- name: Build workspace libraries from source'), 'Collector regressions fail before expensive browser qualification');
+});
+
+test('the hosted Chromium lane ignores a present local browser override', () => {
+  const directory = mkdtempSync(join(tmpdir(), 'gp-erc20-engine-'));
+  try {
+    const state = join(directory, 'state.json');
+    writeFileSync(state, JSON.stringify({ chainId: 84532, publicKey: '02' + 'a'.repeat(64), deploymentsDir: directory }));
+    const managed = /^      GHOSTPAY_MANAGED_BROWSER: '([01])'$/m.exec(workflow)?.[1];
+    assert.equal(managed, '1');
+    const readConfig = "import config from './apps/web/playwright.pages-devnet.config.ts'; console.log(config.use.launchOptions?.executablePath ?? 'managed')";
+    for (const [flag, expected] of [[managed, 'managed'], ['0', process.execPath]]) {
+      const actual = spawnSync(process.execPath, ['--input-type=module', '-e', readConfig], {
+        cwd: sourceRoot, encoding: 'utf8', env: {
+          ...process.env, GHOSTPAY_DEVNET_STATE: state, GHOSTPAY_PAGES_OUT: join(directory, 'pages'),
+          GHOSTPAY_PAGES_ERC20: 'permit', GHOSTPAY_PAGES_BROWSER: 'chromium',
+          GHOSTPAY_MANAGED_BROWSER: flag, GHOSTPAY_CHROMIUM: process.execPath,
+        },
+      });
+      assert.equal(actual.status, 0, actual.stderr);
+      assert.equal(actual.stdout.trim(), expected);
+    }
+  } finally { rmSync(directory, { recursive: true, force: true }); }
 });

@@ -242,6 +242,9 @@ test(`ERC-20 ${mode}: approved payment, final scan and receipt, then recovered o
     await nav(recovered).getByRole('button', { name: 'Seller keys', exact: true }).click();
     await expectEmptySeller(recovered);
     const rpcBeforeRecovery = network.methods.length;
+    let recoveryRequests = 0;
+    const countRequest = (): void => { recoveryRequests++; };
+    fresh.on('request', countRequest);
     for (const input of [
       { file: backup.keystoreText, pass: WRONG_PASS },
       { file: tamperCiphertext(backup.keystoreText), pass: KEYSTORE_PASS },
@@ -259,12 +262,15 @@ test(`ERC-20 ${mode}: approved payment, final scan and receipt, then recovered o
     expect(await readSellerVault(recovered)).toBeNull();
     expect(await storedSettings(recovered)).toBeNull();
     expect(network.methods.length).toBe(rpcBeforeRecovery);
+    fresh.off('request', countRequest);
+    expect(recoveryRequests).toBe(0);
     await configureRpc(recovered, APP_RPC);
     await scanErc20(recovered, { fromStart: true });
     await expect(scanMatches(recovered)).toHaveCount(1);
     await expect(scanMatches(recovered)).toContainText(stealth);
     await expect(scanMatches(recovered)).toContainText('99.75 USDC');
     await expect(scanMatches(recovered)).not.toContainText('waiting for enough confirmations');
+    await expect(receiptPanel(recovered).getByText(payHash, { exact: true })).toBeVisible();
     // A seller keystore contains keys, not the original profile's local invoice/history records.
     await ledger(recovered).getByRole('button', { name: 'Unlock encrypted reconciliation vault', exact: true }).click();
     await expect(ledger(recovered).getByText('No records saved.', { exact: true })).toBeVisible({ timeout: 30_000 });

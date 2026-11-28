@@ -185,6 +185,8 @@ test('pending payment survives reload and blocks the same invoice in a second ta
       await duplicate.getByRole('button', { name: 'Continue to wallet', exact: true }).click();
     }
     await expect(second.getByRole('alert')).toContainText(DUPLICATE);
+    expect(secondWallet.requests).not.toContain('eth_signTypedData_v4');
+    expect(secondWallet.requests).not.toContain('eth_sendTransaction');
     expect(secondWallet.sends).toHaveLength(0);
     expect(secondWallet.signatures).toHaveLength(0);
     expect(secondWallet.hashes).toHaveLength(0);

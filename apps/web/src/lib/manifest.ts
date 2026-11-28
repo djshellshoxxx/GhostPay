@@ -6,6 +6,7 @@ import {
   type RpcClient,
 } from '@ghostpay/chain-adapters';
 import { BUNDLED_MANIFESTS } from './bundledManifests';
+import { pagesOriginAllowsPayments, pagesOriginRefusal } from './pagesOrigin';
 import { RELEASE_PUBLIC_KEYS } from './releaseKeys';
 
 /**
@@ -37,6 +38,7 @@ export function loadBundledManifest(
 ): ManifestState {
   const text = Object.hasOwn(source, String(chainId)) ? source[String(chainId)] : undefined;
   if (text === undefined) return { status: 'absent' };
+  if (!pagesOriginAllowsPayments()) return { status: 'invalid', reason: pagesOriginRefusal() };
   if (releaseKeys.length === 0) return { status: 'invalid', reason: 'No release verification key is configured; deployment manifests are disabled.' };
   try {
     const manifest = loadDeployment(text, chainId);

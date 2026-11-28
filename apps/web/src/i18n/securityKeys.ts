@@ -33,6 +33,7 @@ export const SECURITY_KEY_GROUPS = {
   ],
   // External wallet disclosure: what leaves the page and what the wallet learns stays reviewed-only.
   walletDisclosure: [
+    'app.pagesOriginMismatch',
     'wallet.disclosure.title',
     'wallet.disclosure.intro',
     'wallet.disclosure.accountAccess',
