@@ -78,7 +78,7 @@ export const OBSERVERS: readonly { readonly who: string; readonly learns: string
   },
   { who: 'Static host / CDN', learns: 'Client IP, user agent, which app files were fetched, timing.', not: 'The URL fragment, keys, invoice contents.' },
   { who: 'RPC provider', learns: 'Client IP, queried block ranges and addresses, submitted transactions.', not: 'Viewing or spending keys (never sent); invoice contents.' },
-  { who: 'Relayer operator', learns: 'IP (hashed), the stealth address, destination, token, amount, fee, timing; can censor.', not: 'Keys.' },
+  { who: 'Relayer operator', learns: 'Your IP address (hashed by the reference relayer for rate limits, but visible to the operator and any proxy), the stealth address, destination, token, amount, fee, timing; can censor.', not: 'Keys.' },
   { who: 'Wallet provider', learns: 'Transaction requests, chain, connected addresses.', not: 'Keys of the stealth wallet.' },
   { who: 'Anyone holding the invoice link', learns: 'The entire invoice (it is a bearer link).', not: 'Seller keys.' },
   { who: 'Fee recipient (project owner)', learns: 'Aggregate fees on-chain only.', not: 'Payer or seller identity beyond public chain data.' },

@@ -1,0 +1,1894 @@
+{
+  "format": "ghostpay-closed-residual-dispositions/1",
+  "comparison_main_sha": "6b323a99df1238cb5ebe7248528cc7bce5140e80",
+  "scope": "The 61 source/test residual candidates from the fully paginated closed-unmerged PR inventory; classifications are scoped to each intended change and preserve separately owned inherited work.",
+  "global_semantic_completion": false,
+  "qualification_note": "Source/history/discussion assessment only. No fresh runtime test or release qualification is implied. Main endpoint differences, patch IDs, counts and file presence alone did not establish missing functionality.",
+  "inventory_baseline": {
+    "main_sha": "9ae770203d69d23bdc8735912dfe98af5944d4d6",
+    "remote_heads": 838,
+    "open_prs": 154,
+    "closed_prs": 579,
+    "closed_unmerged_prs": 244
+  },
+  "refreshed_inventory": {
+    "main_sha": "6b323a99df1238cb5ebe7248528cc7bce5140e80",
+    "remote_heads": 842,
+    "open_prs": 156,
+    "closed_prs": 582,
+    "closed_unmerged_prs": 244,
+    "open_page_sizes": [
+      100,
+      56
+    ],
+    "closed_page_sizes": [
+      100,
+      100,
+      100,
+      100,
+      100,
+      82,
+      0
+    ],
+    "frozen_archive_refs": 34,
+    "frozen_sha_changes": 0,
+    "note": "Snapshot before the later documentation-claim branch and before F3 integration; counts are historical observations."
+  },
+  "category_counts": {
+    "C": 42,
+    "D": 14,
+    "E": 2,
+    "F": 3
+  },
+  "source_ref_preservation_required": true,
+  "rows": [
+    {
+      "row_index": 0,
+      "pr": 616,
+      "source_branch": "integration/ghostpay-followup-fixes-20261124-68c82b9",
+      "source_sha": "7c4987650faf32322d7ded48ad669130aba7e63b",
+      "comparison_main_sha": "6b323a99df1238cb5ebe7248528cc7bce5140e80",
+      "merge_bases": [
+        "70970c3b739dcba51c0fb6cd0b1b75f73f6aae95",
+        "97cb98591a2a2e95c8d9a701d0eb60e4e2bc7a4b",
+        "9fdb87fe59748a7463e4de5b92dc0ff3396ea7ce",
+        "f0171888c95b48005a6809aedf1e625bf86dfe83",
+        "7e618aef8e9c84055f445b4959a339e7ad470cbf",
+        "e9e9d60dacb6458796f3e1b5d704f1afdca62ae0",
+        "5f280cab9c252cf57a68e2c2d156c07b36d2b018",
+        "41ddd0f21986d3ec65d43ead73fafda39a4a2f4d",
+        "1f3d230be9f5ab67e5314c5084dc1f4b5e141472",
+        "c86d5a32e02efbee14d935548c821b27e287f507",
+        "59b5bbfc6f6dc3cc83d24c1fccbe87b15cd72d0c"
+      ],
+      "category": "C",
+      "behavioral_evidence": "Reused previously verified C disposition: the shared-core preset/seal safety residual is represented in main. This classification applies only to authorized shared-core behavior; the stopped POS/fiat portions of the mixed composition remain D and must not be merged or activated.",
+      "successor_or_ownership_pins": [],
+      "newly_tested": false,
+      "assessment_details": {
+        "assessment_basis": "reused supported disposition",
+        "category_scope": "authorized shared-core residuals only",
+        "mixed_composition_disposition": {
+          "category": "D",
+          "scope": "stopped POS/fiat product portions and wholesale integration of this mixed donor",
+          "reason": "Owner stop-work directive excludes product-specific completion and activation; represented shared core does not authorize merging the mixed composition.",
+          "preserve_source_refs": true
+        }
+      },
+      "initial_mechanical_residual_path_count": 1,
+      "initial_mechanical_residual_paths": [
+        "packages/ux-presets/src/seal.ts"
+      ]
+    },
+    {
+      "row_index": 1,
+      "pr": 603,
+      "source_branch": "codex/recover-minimal-invoice-qualification-20261124",
+      "source_sha": "2d612e37f3f71b785129f447c14731cbef9143c7",
+      "comparison_main_sha": "6b323a99df1238cb5ebe7248528cc7bce5140e80",
+      "merge_bases": [
+        "b82be893d3d360064222fafcce8cef2033cd23a5"
+      ],
+      "category": "C",
+      "behavioral_evidence": "Reused previously verified C disposition: minimal-sharing invoice qualification and ordering coverage are represented in main; the residual file difference does not establish missing authorized behavior.",
+      "successor_or_ownership_pins": [],
+      "newly_tested": false,
+      "assessment_details": {
+        "assessment_basis": "reused supported disposition"
+      },
+      "initial_mechanical_residual_path_count": 1,
+      "initial_mechanical_residual_paths": [
+        "apps/web/src/views/CreateInvoice.ordering.test.tsx"
+      ]
+    },
+    {
+      "row_index": 2,
+      "pr": 127,
+      "source_branch": "chatgpt/zero-codex/ux-guide-plain-object-20261111",
+      "source_sha": "cf3a8b23a1994b39d2cf77b72d8c61c0a903ae4a",
+      "comparison_main_sha": "6b323a99df1238cb5ebe7248528cc7bce5140e80",
+      "merge_bases": [
+        "364b1f185fcc2adaedab4ce7b4b14e676b1da3b7"
+      ],
+      "category": "C",
+      "behavioral_evidence": "Plain-object questionnaire validation rejects Date/class/inherited answers and accepts own answers on plain or null-prototype objects. The donor regression file is identical on main; runtime differences are newer detectProfile own-key custom-profile guards.",
+      "successor_or_ownership_pins": [
+        {
+          "pr": 203,
+          "merge_sha": "5467c158069c5bab264b6a653ac56e89e13f3e13"
+        },
+        {
+          "pr": 189,
+          "retained_commit_sha": "c9787b223a240b8bd5a626325944b3c01a2d4be0"
+        },
+        {
+          "newer_main_commit_sha": "4cd141dbdaa4a348c4a894afa9a032abc2c670f2",
+          "purpose": "detectProfile own-key custom-profile guard"
+        }
+      ],
+      "newly_tested": false,
+      "assessment_details": {
+        "assessment_basis": "reused supported disposition"
+      },
+      "initial_mechanical_residual_path_count": 1,
+      "initial_mechanical_residual_paths": [
+        "packages/ux-guide/src/profiles.ts"
+      ]
+    },
+    {
+      "row_index": 3,
+      "pr": 163,
+      "source_branch": "chatgpt/zero-codex/pages-owner-transfer-filter-20261115",
+      "source_sha": "cf5e876ce164e63d535fb6e40319573798b746e1",
+      "comparison_main_sha": "6b323a99df1238cb5ebe7248528cc7bce5140e80",
+      "merge_bases": [
+        "a89a2e948321314acf97db435e9776d9322a9461"
+      ],
+      "category": "C",
+      "behavioral_evidence": "Off-filter token/block transfer rejection remains in estimateSimilarTransfers. The final scanSpam.ts difference is newer main partial-coverage accounting for 30 days instead of seven. The closure identifies integrated Pages lineage and only residual ownership documentation.",
+      "successor_or_ownership_pins": [
+        {
+          "pr": 203,
+          "merge_sha": "5467c158069c5bab264b6a653ac56e89e13f3e13"
+        }
+      ],
+      "newly_tested": false,
+      "assessment_details": {
+        "assessment_basis": "read-only semantic comparison and existing integration evidence"
+      },
+      "initial_mechanical_residual_path_count": 1,
+      "initial_mechanical_residual_paths": [
+        "apps/web/src/lib/scanSpam.ts"
+      ]
+    },
+    {
+      "row_index": 4,
+      "pr": 159,
+      "source_branch": "chatgpt/zero-codex/pages-scan-transfer-filter-20261114",
+      "source_sha": "7b6c4983e5c0ba048edf97aaff7399bd77980234",
+      "comparison_main_sha": "6b323a99df1238cb5ebe7248528cc7bce5140e80",
+      "merge_bases": [
+        "c3e707ade896c5acfebdb5967f4de7c0445740e2"
+      ],
+      "category": "C",
+      "behavioral_evidence": "Off-filter token/block transfer rejection remains on main. Final source comparison shows the filter itself unchanged; newer 30-day partial-coverage accounting explains the blob difference.",
+      "successor_or_ownership_pins": [
+        {
+          "pr": 203,
+          "merge_sha": "5467c158069c5bab264b6a653ac56e89e13f3e13"
+        }
+      ],
+      "newly_tested": false,
+      "assessment_details": {
+        "assessment_basis": "read-only semantic comparison and existing integration evidence"
+      },
+      "initial_mechanical_residual_path_count": 1,
+      "initial_mechanical_residual_paths": [
+        "apps/web/src/lib/scanSpam.ts"
+      ]
+    },
+    {
+      "row_index": 5,
+      "pr": 154,
+      "source_branch": "chatgpt/zero-codex/pages-negative-fiat-regression-20261114",
+      "source_sha": "9bdc9cbade90995e3207b72535a7818f909c2684",
+      "comparison_main_sha": "6b323a99df1238cb5ebe7248528cc7bce5140e80",
+      "merge_bases": [
+        "b1150eb8280ac5259fad620f0b762e83c19cf71d"
+      ],
+      "category": "C",
+      "behavioral_evidence": "formatFiat still renders negative minor units with one leading sign, retaining its regression. Final runtime differences are additional parsing/countdown/timestamp guards. This is shared formatting, not F13 fiat-conversion activation.",
+      "successor_or_ownership_pins": [
+        {
+          "pr": 203,
+          "merge_sha": "5467c158069c5bab264b6a653ac56e89e13f3e13"
+        }
+      ],
+      "newly_tested": false,
+      "assessment_details": {
+        "assessment_basis": "read-only semantic comparison and existing integration evidence"
+      },
+      "initial_mechanical_residual_path_count": 1,
+      "initial_mechanical_residual_paths": [
+        "apps/web/src/lib/format.ts"
+      ]
+    },
+    {
+      "row_index": 6,
+      "pr": 126,
+      "source_branch": "chatgpt/zero-codex/ux-confirm-clock-boundary-20261111",
+      "source_sha": "d77956901d95c3eeb8c5c1d67ae7d1647bd069aa",
+      "comparison_main_sha": "6b323a99df1238cb5ebe7248528cc7bce5140e80",
+      "merge_bases": [
+        "364b1f185fcc2adaedab4ce7b4b14e676b1da3b7"
+      ],
+      "category": "C",
+      "behavioral_evidence": "Confirmation reads one clock value for the maximum-age boundary and resulting stamp, and the advancing-clock regression file is identical on main. Newer runtime additions handle cancellation with one clock read and preserve terminal-state guards.",
+      "successor_or_ownership_pins": [
+        {
+          "pr": 203,
+          "merge_sha": "5467c158069c5bab264b6a653ac56e89e13f3e13"
+        },
+        {
+          "pr": 189,
+          "retained_commit_sha": "c9787b223a240b8bd5a626325944b3c01a2d4be0"
+        },
+        {
+          "newer_main_commit_sha": "27d280d97592a5035edadd07c2b4a7351f58dd14",
+          "purpose": "one-clock cancellation"
+        },
+        {
+          "newer_main_commit_sha": "4b4ac44bd4ac00639929ec04b91874cb958fe85d",
+          "purpose": "terminal-state guard"
+        }
+      ],
+      "newly_tested": false,
+      "assessment_details": {
+        "assessment_basis": "reused supported disposition"
+      },
+      "initial_mechanical_residual_path_count": 1,
+      "initial_mechanical_residual_paths": [
+        "packages/ux-schedule/src/scheduled.ts"
+      ]
+    },
+    {
+      "row_index": 7,
+      "pr": 125,
+      "source_branch": "chatgpt/zero-codex/cli-sentinel-value-20261111",
+      "source_sha": "a6e74591e134b31de3e0efc84448eb97cdc3b012",
+      "comparison_main_sha": "6b323a99df1238cb5ebe7248528cc7bce5140e80",
+      "merge_bases": [
+        "364b1f185fcc2adaedab4ce7b4b14e676b1da3b7"
+      ],
+      "category": "C",
+      "behavioral_evidence": "CLI parsing preserves the end-of-options sentinel, rejects missing values and multiple bare sentinels, and retains explicit --input=-- behavior. The donor regression file is identical on main; newer changes concern optional global flag positions.",
+      "successor_or_ownership_pins": [
+        {
+          "pr": 203,
+          "merge_sha": "5467c158069c5bab264b6a653ac56e89e13f3e13"
+        },
+        {
+          "pr": 189,
+          "retained_commit_sha": "c9787b223a240b8bd5a626325944b3c01a2d4be0"
+        },
+        {
+          "newer_main_commit_sha": "1c3beee9adbaece49881f34c3f0ffd5c3bb0ecce",
+          "purpose": "optional global flag positions"
+        }
+      ],
+      "newly_tested": false,
+      "assessment_details": {
+        "assessment_basis": "reused supported disposition"
+      },
+      "initial_mechanical_residual_path_count": 1,
+      "initial_mechanical_residual_paths": [
+        "packages/cli/src/args.ts"
+      ]
+    },
+    {
+      "row_index": 8,
+      "pr": 193,
+      "source_branch": "chatgpt/zero-codex/pages-tagarchive-blocked-click-20261117",
+      "source_sha": "8aed22ad44ee2131b36a9e12ec2dc33fe3501e1b",
+      "comparison_main_sha": "6b323a99df1238cb5ebe7248528cc7bce5140e80",
+      "merge_bases": [
+        "dd4a7eb4dd71435284d9d326310cb2695faa249a"
+      ],
+      "category": "C",
+      "behavioral_evidence": "Main retains and strengthens the blocked-download TagArchive regression: download-anchor removal, exactly one URL revocation, no success notification, error/checklist state, plus later idle/session backup cases. The old paused title does not establish missing coverage.",
+      "successor_or_ownership_pins": [],
+      "newly_tested": false,
+      "assessment_details": {
+        "assessment_basis": "read-only semantic comparison and existing integration evidence"
+      },
+      "initial_mechanical_residual_path_count": 1,
+      "initial_mechanical_residual_paths": [
+        "apps/web/src/components/TagArchive.test.tsx"
+      ]
+    },
+    {
+      "row_index": 9,
+      "pr": 77,
+      "source_branch": "fix/remediation-b16c7936-5ce634",
+      "source_sha": "0b213bd9d43409aaa9671945761e51892aa5d69e",
+      "comparison_main_sha": "6b323a99df1238cb5ebe7248528cc7bce5140e80",
+      "merge_bases": [
+        "d9fe8b4e9c020f8cef0073b9a990903fad38f1a8"
+      ],
+      "category": "C",
+      "behavioral_evidence": "Current checkpoint persistence replays uncertain router claims from the current page above the run floor, while pending evidence independently holds the checkpoint. The bounded single replay preserves recovery without permanently pinning future checkpoints; existing regressions identify the donor and stronger liveness behavior.",
+      "successor_or_ownership_pins": [
+        {
+          "record": "docs/consolidation/PAGES_INTEGRATION_2026-11-16.md",
+          "purpose": "records retention through pageMatches checkpoint behavior"
+        }
+      ],
+      "newly_tested": false,
+      "assessment_details": {
+        "assessment_basis": "read-only semantic comparison and existing integration evidence"
+      },
+      "initial_mechanical_residual_path_count": 1,
+      "initial_mechanical_residual_paths": [
+        "apps/web/src/lib/scanClient.ts"
+      ]
+    },
+    {
+      "row_index": 10,
+      "pr": 419,
+      "source_branch": "automation/20261121T1835Z/bug/display-surrogate-cut",
+      "source_sha": "62dcc695ae3ff9d8c109ced97dd357fe29ed3fd3",
+      "comparison_main_sha": "6b323a99df1238cb5ebe7248528cc7bce5140e80",
+      "merge_bases": [
+        "eb59d93cffed7848c4aac37d0e9650b87239c6da"
+      ],
+      "category": "C",
+      "behavioral_evidence": "Reused previously verified C disposition: display truncation preserves valid surrogate pairs and the relevant regression coverage is retained on main; residual source/test blobs do not establish missing behavior.",
+      "successor_or_ownership_pins": [],
+      "newly_tested": false,
+      "assessment_details": {
+        "assessment_basis": "reused supported disposition"
+      },
+      "initial_mechanical_residual_path_count": 2,
+      "initial_mechanical_residual_paths": [
+        "apps/web/src/lib/displayText.truncation.test.ts",
+        "apps/web/src/lib/displayText.ts"
+      ]
+    },
+    {
+      "row_index": 11,
+      "pr": 409,
+      "source_branch": "automation/20261121/bug/cache-control-no-cache-r3",
+      "source_sha": "8d55b4e39be48a0410c16d4a4c0acaa57da55b9b",
+      "comparison_main_sha": "6b323a99df1238cb5ebe7248528cc7bce5140e80",
+      "merge_bases": [
+        "eb59d93cffed7848c4aac37d0e9650b87239c6da"
+      ],
+      "category": "C",
+      "behavioral_evidence": "Main rejects no-cache responses from cache-first storage. Maintained cache-policy.no-cache.test.ts covers the donor cases plus mixed/case-insensitive and field-qualified directives, immutable controls, and the no-cachex nonmatch; the differently named donor test is not missing coverage.",
+      "successor_or_ownership_pins": [
+        {
+          "main_commit_abbrev": "fc81d8e3",
+          "purpose": "no-cache storage rejection"
+        },
+        {
+          "closure_compared_main_abbrev": "5880576a"
+        }
+      ],
+      "newly_tested": false,
+      "assessment_details": {
+        "assessment_basis": "read-only semantic comparison and existing integration evidence"
+      },
+      "initial_mechanical_residual_path_count": 2,
+      "initial_mechanical_residual_paths": [
+        "packages/ux-notify/src/cache-policy.nocache.test.ts",
+        "packages/ux-notify/src/cache-policy.ts"
+      ]
+    },
+    {
+      "row_index": 12,
+      "pr": 416,
+      "source_branch": "automation/20261121T1636Z/bug/countdown-invalid-runtime",
+      "source_sha": "5d3e21617a8a368c5694739319856d083a6c3881",
+      "comparison_main_sha": "6b323a99df1238cb5ebe7248528cc7bce5140e80",
+      "merge_bases": [
+        "eb59d93cffed7848c4aac37d0e9650b87239c6da"
+      ],
+      "category": "C",
+      "behavioral_evidence": "Main validates countdown runtime types and finite values before coercion. Dedicated format.countdown.test.ts covers wrong types, nonfinite values, nonexecuted conversion hooks, and valid boundary behavior; the older format.test.ts residual does not indicate missing tests.",
+      "successor_or_ownership_pins": [
+        {
+          "main_commit_abbrev": "15fabb4c",
+          "purpose": "port #405/#416 runtime guards"
+        },
+        {
+          "closure_compared_main_abbrev": "5880576a"
+        }
+      ],
+      "newly_tested": false,
+      "assessment_details": {
+        "assessment_basis": "read-only semantic comparison and existing integration evidence"
+      },
+      "initial_mechanical_residual_path_count": 2,
+      "initial_mechanical_residual_paths": [
+        "apps/web/src/lib/format.test.ts",
+        "apps/web/src/lib/format.ts"
+      ]
+    },
+    {
+      "row_index": 13,
+      "pr": 405,
+      "source_branch": "automation/20261121T1238Z/bug/unix-timestamp-runtime-guard",
+      "source_sha": "11117b9fff062d859c9db123ff62641cc0479192",
+      "comparison_main_sha": "6b323a99df1238cb5ebe7248528cc7bce5140e80",
+      "merge_bases": [
+        "eb59d93cffed7848c4aac37d0e9650b87239c6da"
+      ],
+      "category": "C",
+      "behavioral_evidence": "formatUnix validates number/finite/range inputs before date conversion, retaining wrong-type and nonexecuted conversion-hook regressions. This presentation guard is distinct from explicitly deferred persistent timestamp-retention work.",
+      "successor_or_ownership_pins": [
+        {
+          "main_commit_abbrev": "15fabb4c",
+          "purpose": "port #405/#416 runtime guards"
+        },
+        {
+          "closure_compared_main_abbrev": "5880576a"
+        }
+      ],
+      "newly_tested": false,
+      "assessment_details": {
+        "assessment_basis": "read-only semantic comparison and existing integration evidence"
+      },
+      "initial_mechanical_residual_path_count": 2,
+      "initial_mechanical_residual_paths": [
+        "apps/web/src/lib/format.test.ts",
+        "apps/web/src/lib/format.ts"
+      ]
+    },
+    {
+      "row_index": 14,
+      "pr": 384,
+      "source_branch": "automation/20261121T1033Z/bug/fiat-minor-units",
+      "source_sha": "f3e5540777491559e79565cafe0978f5e8e30003",
+      "comparison_main_sha": "6b323a99df1238cb5ebe7248528cc7bce5140e80",
+      "merge_bases": [
+        "eb59d93cffed7848c4aac37d0e9650b87239c6da"
+      ],
+      "category": "C",
+      "behavioral_evidence": "parseUnits validates string input and integer precision 0..36 before trim/BigInt, with malformed-input coverage. The final donor had already reverted the ISO-exponent experiment; no experimental exponent behavior should be restored.",
+      "successor_or_ownership_pins": [
+        {
+          "main_commit_abbrev": "f49cd29b",
+          "purpose": "parseUnits runtime guard"
+        },
+        {
+          "closure_compared_main_abbrev": "5880576a"
+        }
+      ],
+      "newly_tested": false,
+      "assessment_details": {
+        "assessment_basis": "read-only semantic comparison and existing integration evidence"
+      },
+      "initial_mechanical_residual_path_count": 2,
+      "initial_mechanical_residual_paths": [
+        "apps/web/src/lib/format.test.ts",
+        "apps/web/src/lib/format.ts"
+      ]
+    },
+    {
+      "row_index": 15,
+      "pr": 319,
+      "source_branch": "fix/ghostpay-backup-completion-20261120",
+      "source_sha": "627ab977c9cc4e5ebc682eda822cfe792cd76fc1",
+      "comparison_main_sha": "6b323a99df1238cb5ebe7248528cc7bce5140e80",
+      "merge_bases": [
+        "740efcf061c1ca97a562b85be742dd59f3ad0911"
+      ],
+      "category": "C",
+      "behavioral_evidence": "Reused the newer P14 completion handoff: SellerKeys operation ownership and completion are superseded by #684, which retains and extends the relevant ownership tests. The older small-residual suggestion to consider missing tests is obsolete.",
+      "successor_or_ownership_pins": [
+        {
+          "pr": 684,
+          "record": "docs/handoffs/P14_LIGHT_EVIDENCE_COMPLETION_20261127.md"
+        }
+      ],
+      "newly_tested": false,
+      "assessment_details": {
+        "assessment_basis": "reused supported disposition"
+      },
+      "initial_mechanical_residual_path_count": 2,
+      "initial_mechanical_residual_paths": [
+        "apps/web/src/views/SellerKeys.operation.test.tsx",
+        "apps/web/src/views/SellerKeys.tsx"
+      ]
+    },
+    {
+      "row_index": 16,
+      "pr": 566,
+      "source_branch": "feature/f13-offline-quote-terms",
+      "source_sha": "7020c7cb6177e6d5311bc882af4cf2ad77f0fe4a",
+      "comparison_main_sha": "6b323a99df1238cb5ebe7248528cc7bce5140e80",
+      "merge_bases": [
+        "f76904301cff0b24d65ea4e31cbf37d470db4d95"
+      ],
+      "category": "D",
+      "behavioral_evidence": "Feature-specific offline fiat quote-term implementation/tests belong to stopped F13. Preserve donor/archive refs; no completion, qualification, integration, or activation is authorized.",
+      "successor_or_ownership_pins": [],
+      "newly_tested": false,
+      "assessment_details": {
+        "assessment_basis": "read-only semantic comparison and existing integration evidence",
+        "stopped_workstream": "F13",
+        "stop_directive": "docs/ai/STOP_WORK_20261125.md"
+      },
+      "initial_mechanical_residual_path_count": 2,
+      "initial_mechanical_residual_paths": [
+        "apps/web/src/features/fiat-conversion/quote-terms.test.ts",
+        "apps/web/src/features/fiat-conversion/quote-terms.ts"
+      ]
+    },
+    {
+      "row_index": 17,
+      "pr": 552,
+      "source_branch": "feature/f11-ghostteams-invitation-review",
+      "source_sha": "10d995fa3290b51e0c35804a681ae0b30c4785b3",
+      "comparison_main_sha": "6b323a99df1238cb5ebe7248528cc7bce5140e80",
+      "merge_bases": [
+        "e0cb4681e453af77bb10be45ba61b4d19579f41b"
+      ],
+      "category": "D",
+      "behavioral_evidence": "Feature-specific offline GhostTeams invitation review belongs to stopped F11. Preserve donor/archive refs; no completion, qualification, integration, or activation is authorized.",
+      "successor_or_ownership_pins": [],
+      "newly_tested": false,
+      "assessment_details": {
+        "assessment_basis": "read-only semantic comparison and existing integration evidence",
+        "stopped_workstream": "F11",
+        "stop_directive": "docs/ai/STOP_WORK_20261125.md"
+      },
+      "initial_mechanical_residual_path_count": 2,
+      "initial_mechanical_residual_paths": [
+        "apps/web/src/features/ghostteams/invitation.test.ts",
+        "apps/web/src/features/ghostteams/invitation.ts"
+      ]
+    },
+    {
+      "row_index": 18,
+      "pr": 550,
+      "source_branch": "feature/f02-ghoststore-catalog-cart",
+      "source_sha": "974fe2ce363e6d7644e3d4f080a98d6f37b68e35",
+      "comparison_main_sha": "6b323a99df1238cb5ebe7248528cc7bce5140e80",
+      "merge_bases": [
+        "8ddb344973e80b8e1eda6821e970ee6a2b808b29"
+      ],
+      "category": "D",
+      "behavioral_evidence": "Feature-specific GhostStore catalog/cart implementation belongs to stopped F02. Preserve donor/archive refs; no completion, qualification, integration, or activation is authorized.",
+      "successor_or_ownership_pins": [],
+      "newly_tested": false,
+      "assessment_details": {
+        "assessment_basis": "read-only semantic comparison and existing integration evidence",
+        "stopped_workstream": "F02",
+        "stop_directive": "docs/ai/STOP_WORK_20261125.md"
+      },
+      "initial_mechanical_residual_path_count": 2,
+      "initial_mechanical_residual_paths": [
+        "apps/web/src/features/future/ghoststore/catalog.test.ts",
+        "apps/web/src/features/future/ghoststore/catalog.ts"
+      ]
+    },
+    {
+      "row_index": 19,
+      "pr": 81,
+      "source_branch": "codex/ghostpay-cloud-41868394956",
+      "source_sha": "f34a80f710d191b025538bae43cc9b4c92fd2455",
+      "comparison_main_sha": "6b323a99df1238cb5ebe7248528cc7bce5140e80",
+      "merge_bases": [
+        "0014bc5b26c7487ea1f9fb230194c36673193236"
+      ],
+      "category": "C",
+      "behavioral_evidence": "Sparse invoice arrays are traversed with Array.from so holes undergo validation. Schema/private-item and signing regressions remain; newer schema guards explain final file differences.",
+      "successor_or_ownership_pins": [
+        {
+          "pr": 203,
+          "merge_sha": "5467c158069c5bab264b6a653ac56e89e13f3e13"
+        }
+      ],
+      "newly_tested": false,
+      "assessment_details": {
+        "assessment_basis": "read-only semantic comparison and existing integration evidence"
+      },
+      "initial_mechanical_residual_path_count": 2,
+      "initial_mechanical_residual_paths": [
+        "packages/invoice-schema/src/schema.test.ts",
+        "packages/invoice-schema/src/schema.ts"
+      ]
+    },
+    {
+      "row_index": 20,
+      "pr": 80,
+      "source_branch": "fix/remediation-f95457fd-22ecf9",
+      "source_sha": "6b3e689c15ca0a4ca0bc034ef24c3a2a5fb5ea7a",
+      "comparison_main_sha": "6b323a99df1238cb5ebe7248528cc7bce5140e80",
+      "merge_bases": [
+        "f7b8ee9db98162a97a962ff40d77460cb6eb8417"
+      ],
+      "category": "C",
+      "behavioral_evidence": "EXPLICITLY REJECTED/SUPERSEDED, NOT INTEGRATED: donor treats every differently keyed payment for the same payer/chain as a legacy record, but the journal has no key-version discriminator. It therefore blocks later independent modern payments. Main has a regression naming remediation 6b3e689, permits distinct completed scoped payments, and refuses the same payment and unreadable journals. Do not port this guard; any reconsideration requires a separately approved journal-version/migration design.",
+      "successor_or_ownership_pins": [
+        {
+          "rejected_equivalent_commit_abbrev": "0fe67bcd",
+          "revert_commit_abbrev": "051c1c12"
+        },
+        {
+          "regression_commit_abbrev": "92a05a235",
+          "record": "docs/consolidation/PAGES_INTEGRATION_2026-11-16.md"
+        },
+        {
+          "record": "docs/consolidation/all-branch-followups-20261124/RESIDUAL_OVERLAY.md",
+          "disposition": "rejected_superseded_source"
+        }
+      ],
+      "newly_tested": false,
+      "assessment_details": {
+        "assessment_basis": "read-only semantic comparison and existing integration evidence",
+        "disposition_detail": "explicitly rejected overbroad guard; do not restore",
+        "future_dependency": "A separately approved journal-key versioning/migration design that distinguishes legacy entries from independent modern scoped payments.",
+        "guard_present_in_main": false
+      },
+      "initial_mechanical_residual_path_count": 2,
+      "initial_mechanical_residual_paths": [
+        "apps/web/src/features/policy/send.test.ts",
+        "apps/web/src/features/policy/send.ts"
+      ]
+    },
+    {
+      "row_index": 21,
+      "pr": 704,
+      "source_branch": "claude/fc05b-main-20261126",
+      "source_sha": "69a4d3e17fc46833fb31c41cbab6aafeb0bfad9c",
+      "comparison_main_sha": "6b323a99df1238cb5ebe7248528cc7bce5140e80",
+      "merge_bases": [
+        "601f20955b435eede448c6d82d8315705d7e381d",
+        "b6f9d0cbc65df082ef563a5368addc3ed305f857"
+      ],
+      "category": "C",
+      "behavioral_evidence": "Integrated through #718. Remaining source differences are newer main additions, including checkpoint ownership, returned-hash-saving protection, and archive/security keys. The residual work-log entry is already retained verbatim.",
+      "successor_or_ownership_pins": [
+        {
+          "pr": 718,
+          "merge_sha_abbrev": "c7c6349c",
+          "contained_train_head_abbrev": "b6f9d0cb"
+        }
+      ],
+      "newly_tested": false,
+      "assessment_details": {
+        "assessment_basis": "reused supported disposition"
+      },
+      "initial_mechanical_residual_path_count": 3,
+      "initial_mechanical_residual_paths": [
+        "apps/web/src/i18n/securityKeys.ts",
+        "apps/web/src/lib/duplicateAttemptJournal.ts",
+        "apps/web/src/views/Scan.tsx"
+      ]
+    },
+    {
+      "row_index": 22,
+      "pr": 617,
+      "source_branch": "integration/ghostpay-additional-reviewed-20261124-68c82b9",
+      "source_sha": "464a7cb4c3cd0a6d23cee82643ca8efd95c067f0",
+      "comparison_main_sha": "6b323a99df1238cb5ebe7248528cc7bce5140e80",
+      "merge_bases": [
+        "70970c3b739dcba51c0fb6cd0b1b75f73f6aae95",
+        "100de4006569ee1f65736adce8d111446dfafa59",
+        "f0171888c95b48005a6809aedf1e625bf86dfe83",
+        "e9e9d60dacb6458796f3e1b5d704f1afdca62ae0"
+      ],
+      "category": "C",
+      "behavioral_evidence": "Shared-core residuals are represented: QR/preset safety is retained, and main additionally requires literal true for passphrase protection. This C classification applies only to shared-core behavior. The mixed donor also contains stopped POS/fiat changes and remains D for wholesale integration; preserve refs and do not activate those products.",
+      "successor_or_ownership_pins": [
+        {
+          "pr": 611,
+          "retained_donor_commit_abbrev": "100de400",
+          "closure_compared_main_abbrev": "194e225c"
+        }
+      ],
+      "newly_tested": false,
+      "assessment_details": {
+        "assessment_basis": "read-only semantic comparison and existing integration evidence",
+        "category_scope": "authorized shared-core residuals only",
+        "mixed_composition_disposition": {
+          "category": "D",
+          "scope": "stopped POS/fiat product portions and wholesale integration of this mixed donor",
+          "reason": "Owner stop-work directive excludes product-specific completion and activation; represented shared core does not authorize merging the mixed composition.",
+          "preserve_source_refs": true
+        }
+      },
+      "initial_mechanical_residual_path_count": 3,
+      "initial_mechanical_residual_paths": [
+        "apps/web/src/lib/qrKinds.test.ts",
+        "apps/web/src/lib/qrKinds.ts",
+        "packages/ux-presets/src/seal.ts"
+      ]
+    },
+    {
+      "row_index": 23,
+      "pr": 161,
+      "source_branch": "chatgpt/pages-browser-fixes-combined-20261114",
+      "source_sha": "73923350fcda62f00be0f2b83ad346f416a24bb6",
+      "comparison_main_sha": "6b323a99df1238cb5ebe7248528cc7bce5140e80",
+      "merge_bases": [
+        "c3e707ade896c5acfebdb5967f4de7c0445740e2"
+      ],
+      "category": "C",
+      "behavioral_evidence": "Main retains the 16-KiB streamed relayer-response bound, early cancellation, reader cleanup, generic transport errors and stream regressions, together with off-filter telemetry rejection. Closure and final implementation support supersession through #203.",
+      "successor_or_ownership_pins": [
+        {
+          "pr": 203,
+          "merge_sha": "5467c158069c5bab264b6a653ac56e89e13f3e13"
+        }
+      ],
+      "newly_tested": false,
+      "assessment_details": {
+        "assessment_basis": "read-only semantic comparison and existing integration evidence"
+      },
+      "initial_mechanical_residual_path_count": 3,
+      "initial_mechanical_residual_paths": [
+        "apps/web/src/lib/relayerClient.test.ts",
+        "apps/web/src/lib/relayerClient.ts",
+        "apps/web/src/lib/scanSpam.ts"
+      ]
+    },
+    {
+      "row_index": 24,
+      "pr": 250,
+      "source_branch": "integration/ghostpay-historical-promotion-20261118",
+      "source_sha": "22af2074a086d9957a18e310ef8572b28d1facd0",
+      "comparison_main_sha": "6b323a99df1238cb5ebe7248528cc7bce5140e80",
+      "merge_bases": [
+        "ab4e0da2cfe2a18adac0424896fba0b40fac81a8"
+      ],
+      "category": "C",
+      "behavioral_evidence": "Main retains deployment-calendar validation, nonfinite RPC retry normalization to zero, bounded retries and RPC egress policy. Quote-decimal regressions arrived through #663; maintained coverage also rejects fractional/nonfinite values before exponentiation. Dormant adapter code provides no chain-activation authorization.",
+      "successor_or_ownership_pins": [
+        {
+          "pr": 663,
+          "integration_sha_abbrev": "62d8ff68"
+        },
+        {
+          "retained_commit_sha": "2e61af277030d76f765b320b9f3e0e81e1a6cddd",
+          "purpose": "deployment-calendar validation"
+        },
+        {
+          "retained_commit_sha": "1bf1ac709a1147395d2f47dcdc5eab6a5ffc517b",
+          "purpose": "bounded retries and RPC egress policy"
+        }
+      ],
+      "newly_tested": false,
+      "assessment_details": {
+        "assessment_basis": "read-only semantic comparison and existing integration evidence"
+      },
+      "initial_mechanical_residual_path_count": 4,
+      "mechanical_path_note": "Large inherited diff; classify the intended change from behavioral evidence and preserve separately owned/deferred obligations in assessment_details. Full mechanical path list remains in the original session inventory."
+    },
+    {
+      "row_index": 25,
+      "pr": 556,
+      "source_branch": "qualification/f02-merchant-catalog-auth-provider",
+      "source_sha": "08faa16e1a03fe8c87f97f02257363750b52c920",
+      "comparison_main_sha": "6b323a99df1238cb5ebe7248528cc7bce5140e80",
+      "merge_bases": [
+        "8ddb344973e80b8e1eda6821e970ee6a2b808b29"
+      ],
+      "category": "D",
+      "behavioral_evidence": "GhostStore merchant-proof provider contract and its feature-specific qualification belong to stopped F02. Preserve donor/archive refs; no completion, qualification, integration, or activation is authorized.",
+      "successor_or_ownership_pins": [],
+      "newly_tested": false,
+      "assessment_details": {
+        "assessment_basis": "read-only semantic comparison and existing integration evidence",
+        "stopped_workstream": "F02",
+        "stop_directive": "docs/ai/STOP_WORK_20261125.md"
+      },
+      "initial_mechanical_residual_path_count": 4,
+      "mechanical_path_note": "Large inherited diff; classify the intended change from behavioral evidence and preserve separately owned/deferred obligations in assessment_details. Full mechanical path list remains in the original session inventory."
+    },
+    {
+      "row_index": 26,
+      "pr": 554,
+      "source_branch": "feature/f11-ghostteams-membership",
+      "source_sha": "9229a14c303944380523d2a65b783a25541f8403",
+      "comparison_main_sha": "6b323a99df1238cb5ebe7248528cc7bce5140e80",
+      "merge_bases": [
+        "e0cb4681e453af77bb10be45ba61b4d19579f41b"
+      ],
+      "category": "D",
+      "behavioral_evidence": "GhostTeams invitation acceptance/member-revocation implementation belongs to stopped F11. Preserve donor/archive refs; no completion, qualification, integration, or activation is authorized.",
+      "successor_or_ownership_pins": [],
+      "newly_tested": false,
+      "assessment_details": {
+        "assessment_basis": "read-only semantic comparison and existing integration evidence",
+        "stopped_workstream": "F11",
+        "stop_directive": "docs/ai/STOP_WORK_20261125.md"
+      },
+      "initial_mechanical_residual_path_count": 4,
+      "mechanical_path_note": "Large inherited diff; classify the intended change from behavioral evidence and preserve separately owned/deferred obligations in assessment_details. Full mechanical path list remains in the original session inventory."
+    },
+    {
+      "row_index": 27,
+      "pr": 271,
+      "source_branch": "integration/ghostpay-adapter-qualification-20261119",
+      "source_sha": "429a4de80b9ec53177b17d89d18ce8ec91a08814",
+      "comparison_main_sha": "6b323a99df1238cb5ebe7248528cc7bce5140e80",
+      "merge_bases": [
+        "8f56376427c96881f49590920ff0bf8543ec81b4"
+      ],
+      "category": "C",
+      "behavioral_evidence": "The adapter lineage is represented, including remaining regressions integrated through #663. Dormant TRON completeness coverage retains missing offsets 0/1/49 failing before address lookups; this is preserved coverage, not authorization to activate TRON.",
+      "successor_or_ownership_pins": [
+        {
+          "pr": 663,
+          "integration_sha_abbrev": "62d8ff68"
+        },
+        {
+          "retained_commit_sha": "2e61af277030d76f765b320b9f3e0e81e1a6cddd",
+          "purpose": "deployment-calendar validation"
+        },
+        {
+          "retained_commit_sha": "1bf1ac709a1147395d2f47dcdc5eab6a5ffc517b",
+          "purpose": "bounded retries and RPC egress policy"
+        }
+      ],
+      "newly_tested": false,
+      "assessment_details": {
+        "assessment_basis": "read-only semantic comparison and existing integration evidence"
+      },
+      "initial_mechanical_residual_path_count": 5,
+      "mechanical_path_note": "Large inherited diff; classify the intended change from behavioral evidence and preserve separately owned/deferred obligations in assessment_details. Full mechanical path list remains in the original session inventory."
+    },
+    {
+      "row_index": 28,
+      "pr": 322,
+      "source_branch": "future/f04-merchant-dashboard",
+      "source_sha": "066731b4d6d19d96469dd18fa082b264f3efed5d",
+      "comparison_main_sha": "6b323a99df1238cb5ebe7248528cc7bce5140e80",
+      "merge_bases": [
+        "aa3df1cb37274fae73af0ca957183c15c51b62d3",
+        "524aa18bdcd307a3129bbb7a6b7e74838819331e"
+      ],
+      "category": "D",
+      "behavioral_evidence": "Local merchant dashboard/projection implementation belongs to stopped F04. Preserve donor/archive refs; no completion, qualification, integration, or activation is authorized.",
+      "successor_or_ownership_pins": [],
+      "newly_tested": false,
+      "assessment_details": {
+        "assessment_basis": "read-only semantic comparison and existing integration evidence",
+        "stopped_workstream": "F04",
+        "stop_directive": "docs/ai/STOP_WORK_20261125.md"
+      },
+      "initial_mechanical_residual_path_count": 5,
+      "mechanical_path_note": "Large inherited diff; classify the intended change from behavioral evidence and preserve separately owned/deferred obligations in assessment_details. Full mechanical path list remains in the original session inventory."
+    },
+    {
+      "row_index": 29,
+      "pr": 162,
+      "source_branch": "chatgpt/zero-codex/pages-qr-combined-20261115",
+      "source_sha": "26f83ccdda98ee82c26ad5f71c3f90d90ad68c20",
+      "comparison_main_sha": "6b323a99df1238cb5ebe7248528cc7bce5140e80",
+      "merge_bases": [
+        "c3e707ade896c5acfebdb5967f4de7c0445740e2"
+      ],
+      "category": "C",
+      "behavioral_evidence": "Both bearer-QR regressions remain: testnet and unsigned/unverified flags cannot downgrade bearer capability. Main adds stronger passphrase truthfulness tests and retains the bounded relayer reads and telemetry guards from #161.",
+      "successor_or_ownership_pins": [
+        {
+          "pr": 203,
+          "merge_sha": "5467c158069c5bab264b6a653ac56e89e13f3e13"
+        }
+      ],
+      "newly_tested": false,
+      "assessment_details": {
+        "assessment_basis": "read-only semantic comparison and existing integration evidence"
+      },
+      "initial_mechanical_residual_path_count": 5,
+      "mechanical_path_note": "Large inherited diff; classify the intended change from behavioral evidence and preserve separately owned/deferred obligations in assessment_details. Full mechanical path list remains in the original session inventory."
+    },
+    {
+      "row_index": 30,
+      "pr": 562,
+      "source_branch": "feature/f11-ghostteams-membership-commit",
+      "source_sha": "8ade47153d0d08de4a7cc45fb60672a2b6afd658",
+      "comparison_main_sha": "6b323a99df1238cb5ebe7248528cc7bce5140e80",
+      "merge_bases": [
+        "e0cb4681e453af77bb10be45ba61b4d19579f41b"
+      ],
+      "category": "D",
+      "behavioral_evidence": "GhostTeams membership-commit implementation belongs to stopped F11. Preserve donor/archive refs; no completion, qualification, integration, or activation is authorized.",
+      "successor_or_ownership_pins": [],
+      "newly_tested": false,
+      "assessment_details": {
+        "assessment_basis": "read-only semantic comparison and existing integration evidence",
+        "stopped_workstream": "F11",
+        "stop_directive": "docs/ai/STOP_WORK_20261125.md"
+      },
+      "initial_mechanical_residual_path_count": 6,
+      "mechanical_path_note": "Large inherited diff; classify the intended change from behavioral evidence and preserve separately owned/deferred obligations in assessment_details. Full mechanical path list remains in the original session inventory."
+    },
+    {
+      "row_index": 31,
+      "pr": 151,
+      "source_branch": "claude/ghostpay-lean-core-milestone-t5lwox",
+      "source_sha": "2527d6b9367887508d7d8f678a18564132652a03",
+      "comparison_main_sha": "6b323a99df1238cb5ebe7248528cc7bce5140e80",
+      "merge_bases": [
+        "bd2652bf1853948594522140a6a0fe0cbe54e32b"
+      ],
+      "category": "C",
+      "behavioral_evidence": "Bounded payment deadlines and fresh invoice-payability checks are present in payExec before preparation and final dispatch. The obsolete agent workflow is already removed; the lean-core donor was superseded by the consolidation.",
+      "successor_or_ownership_pins": [
+        {
+          "pr": 203,
+          "sha": "5467c158069c5bab264b6a653ac56e89e13f3e13"
+        }
+      ],
+      "newly_tested": false,
+      "assessment_details": {
+        "inspection": "Read-only final behavior, tests, successor history and relevant PR discussions; no runtime execution or fresh CI qualification."
+      },
+      "initial_mechanical_residual_path_count": 7,
+      "mechanical_path_note": "Large inherited diff; classify the intended change from behavioral evidence and preserve separately owned/deferred obligations in assessment_details. Full mechanical path list remains in the original session inventory."
+    },
+    {
+      "row_index": 32,
+      "pr": 40,
+      "source_branch": "codex/ghostpay-security-audit-20261030",
+      "source_sha": "63994db6cff8b3b3ca698427eee9e95904230546",
+      "comparison_main_sha": "6b323a99df1238cb5ebe7248528cc7bce5140e80",
+      "merge_bases": [
+        "dfd5cbdd94d982985c73551355906723ac70a97e"
+      ],
+      "category": "C",
+      "behavioral_evidence": "The descriptor-bound secret loader and all three original pathname-swap, symlink and post-stat growth regressions were moved into packages/relayer-guard/src/secrets.ts and secrets.test.ts; apps/relayer re-exports that shared loader. Original audit payment/scan guards are retained through the later consolidation.",
+      "successor_or_ownership_pins": [
+        {
+          "pr": 203,
+          "sha": "5467c158069c5bab264b6a653ac56e89e13f3e13"
+        }
+      ],
+      "newly_tested": false,
+      "assessment_details": {
+        "inspection": "Read-only final behavior, tests, successor history and relevant PR discussions; no runtime execution or fresh CI qualification."
+      },
+      "initial_mechanical_residual_path_count": 8,
+      "mechanical_path_note": "Large inherited diff; classify the intended change from behavioral evidence and preserve separately owned/deferred obligations in assessment_details. Full mechanical path list remains in the original session inventory."
+    },
+    {
+      "row_index": 33,
+      "pr": 39,
+      "source_branch": "claude/gifted-planck-115x2k",
+      "source_sha": "1d28f24d86f40c7af5d4187f5d0b3b0d0bf79c78",
+      "comparison_main_sha": "6b323a99df1238cb5ebe7248528cc7bce5140e80",
+      "merge_bases": [
+        "dfd5cbdd94d982985c73551355906723ac70a97e"
+      ],
+      "category": "C",
+      "behavioral_evidence": "The audit residuals are represented by current deadline checks around relayer queue/execution/broadcast/nonce reads, the shared OP Stack fee helper that permits only explicit execution-reverted fallback, and scanner window-growth accounting that resets served only below the cap.",
+      "successor_or_ownership_pins": [
+        {
+          "pr": 203,
+          "sha": "5467c158069c5bab264b6a653ac56e89e13f3e13"
+        }
+      ],
+      "newly_tested": false,
+      "assessment_details": {
+        "inspection": "Read-only final behavior, tests, successor history and relevant PR discussions; no runtime execution or fresh CI qualification."
+      },
+      "initial_mechanical_residual_path_count": 8,
+      "mechanical_path_note": "Large inherited diff; classify the intended change from behavioral evidence and preserve separately owned/deferred obligations in assessment_details. Full mechanical path list remains in the original session inventory."
+    },
+    {
+      "row_index": 34,
+      "pr": 583,
+      "source_branch": "fix/364-responsive-pages",
+      "source_sha": "c1980912f87f0293b7a15f2419505a6719c5f3a8",
+      "comparison_main_sha": "6b323a99df1238cb5ebe7248528cc7bce5140e80",
+      "merge_bases": [
+        "1a7447d58c08363209b6b9b67e9a6afad07d87f3"
+      ],
+      "category": "C",
+      "behavioral_evidence": "RPC-row grid layout, every-enabled-row reflow assertions, widths 320/375/768/1280/1920, and 200% text zoom remain on main. Donor responsive cases were cherry-picked and later adapted for legitimate 304 revalidation.",
+      "successor_or_ownership_pins": [
+        {
+          "pr": 640,
+          "sha": "5dc05bd6b73effef3d6fd3443a2e2fdde1103d3a"
+        },
+        {
+          "pr": null,
+          "sha": "90816802034df9cb62f3c655cc2eec7395c319d8"
+        },
+        {
+          "pr": null,
+          "sha": "99c54bef1535e2ea81d27dbcea21867ae34b4bc5"
+        }
+      ],
+      "newly_tested": false,
+      "assessment_details": {
+        "inspection": "Read-only final behavior, tests, successor history and relevant PR discussions; no runtime execution or fresh CI qualification."
+      },
+      "initial_mechanical_residual_path_count": 9,
+      "mechanical_path_note": "Large inherited diff; classify the intended change from behavioral evidence and preserve separately owned/deferred obligations in assessment_details. Full mechanical path list remains in the original session inventory."
+    },
+    {
+      "row_index": 35,
+      "pr": 272,
+      "source_branch": "review/ghostpay-sweep-quote-lifecycle-20261119",
+      "source_sha": "63ff40d57af879a3d82166450f63aadb7bf0d5ff",
+      "comparison_main_sha": "6b323a99df1238cb5ebe7248528cc7bce5140e80",
+      "merge_bases": [
+        "8f56376427c96881f49590920ff0bf8543ec81b4",
+        "4085622463411d3ba27f4efb7b73a70575170535"
+      ],
+      "category": "C",
+      "behavioral_evidence": "Sweep quote/context lifecycle is integrated and strengthened: stale quote/balance failures cannot regain authority; recipient/provider/mode/session changes revoke signing; retained submitted hashes survive refresh/lock; final guards are rechecked before each signature.",
+      "successor_or_ownership_pins": [
+        {
+          "pr": 683,
+          "sha": "8aca5a06a9435dd30e40378ba606da3c68f94863"
+        },
+        {
+          "pr": 649,
+          "sha": "ce817b22a2afb39244b8535fc00d7c9b50ce8165"
+        }
+      ],
+      "newly_tested": false,
+      "assessment_details": {
+        "inspection": "Read-only final behavior, tests, successor history and relevant PR discussions; no runtime execution or fresh CI qualification."
+      },
+      "initial_mechanical_residual_path_count": 10,
+      "mechanical_path_note": "Large inherited diff; classify the intended change from behavioral evidence and preserve separately owned/deferred obligations in assessment_details. Full mechanical path list remains in the original session inventory."
+    },
+    {
+      "row_index": 36,
+      "pr": 584,
+      "source_branch": "codex/287-evm-payment-destination-reuse",
+      "source_sha": "17c5a2ee3828d0132cfdf21e4c966ca7550d07f2",
+      "comparison_main_sha": "6b323a99df1238cb5ebe7248528cc7bce5140e80",
+      "merge_bases": [
+        "f76904301cff0b24d65ea4e31cbf37d470db4d95"
+      ],
+      "category": "C",
+      "behavioral_evidence": "The alternative attempt-journal reuse design is superseded by the accepted salted, session-local bounded advisory store. Current Pay and Sweep reuse notices cover same/different invoice and repeated/cross-profile/own-key sweep destinations; unavailable storage remains advisory rather than authorizing or vetoing a payment.",
+      "successor_or_ownership_pins": [
+        {
+          "pr": 674,
+          "sha": "e4ef87e0437cb5ded9e7d000b344b9d10ec11211"
+        }
+      ],
+      "newly_tested": false,
+      "assessment_details": {
+        "inspection": "Read-only final behavior, tests, successor history and relevant PR discussions; no runtime execution or fresh CI qualification."
+      },
+      "initial_mechanical_residual_path_count": 11,
+      "mechanical_path_note": "Large inherited diff; classify the intended change from behavioral evidence and preserve separately owned/deferred obligations in assessment_details. Full mechanical path list remains in the original session inventory."
+    },
+    {
+      "row_index": 37,
+      "pr": 590,
+      "source_branch": "fix/pages-offline-session",
+      "source_sha": "f01c69d277c39c76fd3077103c43cc38f7f9c736",
+      "comparison_main_sha": "6b323a99df1238cb5ebe7248528cc7bce5140e80",
+      "merge_bases": [
+        "f76904301cff0b24d65ea4e31cbf37d470db4d95"
+      ],
+      "category": "E",
+      "behavioral_evidence": "Receipt binding from this branch is integrated via #635. Its offline/unsigned-draft remainder is still unique but carried by the active #604 to #717/#728 successor work; do not independently claim those paths.",
+      "successor_or_ownership_pins": [
+        {
+          "pr": 635,
+          "sha": "aaa71a112d90fd39f59b40de9f139e9cfdc62d61"
+        },
+        {
+          "pr": 717,
+          "sha": "367a3b30b1feb5c31c0727fc6fc435162067063c"
+        },
+        {
+          "pr": 728,
+          "sha": "298257fd251cf0dd64dc80a92198d296672a6cab"
+        }
+      ],
+      "newly_tested": false,
+      "assessment_details": {
+        "inspection": "Read-only final behavior, tests, successor history and relevant PR discussions; no runtime execution or fresh CI qualification."
+      },
+      "initial_mechanical_residual_path_count": 17,
+      "mechanical_path_note": "Large inherited diff; classify the intended change from behavioral evidence and preserve separately owned/deferred obligations in assessment_details. Full mechanical path list remains in the original session inventory."
+    },
+    {
+      "row_index": 38,
+      "pr": 397,
+      "source_branch": "feat/f04-deliberate-local-export-20261121",
+      "source_sha": "a9f19eb236fb2265f48444a0b4ad7bbffb411897",
+      "comparison_main_sha": "6b323a99df1238cb5ebe7248528cc7bce5140e80",
+      "merge_bases": [
+        "eb59d93cffed7848c4aac37d0e9650b87239c6da",
+        "524aa18bdcd307a3129bbb7a6b7e74838819331e"
+      ],
+      "category": "D",
+      "behavioral_evidence": "F04-specific deliberate merchant CSV/JSON export approval is archived under the owner stop-work directive. Preserve donor refs and existing dormant modules; no merchant product activation is authorized.",
+      "successor_or_ownership_pins": [],
+      "newly_tested": false,
+      "assessment_details": {
+        "inspection": "Read-only final behavior, tests, successor history and relevant PR discussions; no runtime execution or fresh CI qualification."
+      },
+      "initial_mechanical_residual_path_count": 19,
+      "mechanical_path_note": "Large inherited diff; classify the intended change from behavioral evidence and preserve separately owned/deferred obligations in assessment_details. Full mechanical path list remains in the original session inventory."
+    },
+    {
+      "row_index": 39,
+      "pr": 460,
+      "source_branch": "feat/f04-evidence-analytics-20261122",
+      "source_sha": "ff60e1e45cac1348d554f94ea24717285ecc5608",
+      "comparison_main_sha": "6b323a99df1238cb5ebe7248528cc7bce5140e80",
+      "merge_bases": [
+        "eb59d93cffed7848c4aac37d0e9650b87239c6da",
+        "524aa18bdcd307a3129bbb7a6b7e74838819331e"
+      ],
+      "category": "D",
+      "behavioral_evidence": "F04-specific evidence-qualified merchant analytics and dashboard completion work is archived under the stop-work directive. Shared reconciliation is not authorization to restore the merchant dashboard.",
+      "successor_or_ownership_pins": [],
+      "newly_tested": false,
+      "assessment_details": {
+        "inspection": "Read-only final behavior, tests, successor history and relevant PR discussions; no runtime execution or fresh CI qualification."
+      },
+      "initial_mechanical_residual_path_count": 21,
+      "mechanical_path_note": "Large inherited diff; classify the intended change from behavioral evidence and preserve separately owned/deferred obligations in assessment_details. Full mechanical path list remains in the original session inventory."
+    },
+    {
+      "row_index": 40,
+      "pr": 543,
+      "source_branch": "fix/f04-dashboard-refresh-focus",
+      "source_sha": "3085c87a57147afeb7dac7bc563af62f2c9784e5",
+      "comparison_main_sha": "6b323a99df1238cb5ebe7248528cc7bce5140e80",
+      "merge_bases": [
+        "8ddb344973e80b8e1eda6821e970ee6a2b808b29"
+      ],
+      "category": "D",
+      "behavioral_evidence": "The change preserves the merchant dashboard network-picker focus during automatic dashboard refresh; that F04 user journey is stopped and must remain dormant.",
+      "successor_or_ownership_pins": [],
+      "newly_tested": false,
+      "assessment_details": {
+        "inspection": "Read-only final behavior, tests, successor history and relevant PR discussions; no runtime execution or fresh CI qualification."
+      },
+      "initial_mechanical_residual_path_count": 23,
+      "mechanical_path_note": "Large inherited diff; classify the intended change from behavioral evidence and preserve separately owned/deferred obligations in assessment_details. Full mechanical path list remains in the original session inventory."
+    },
+    {
+      "row_index": 41,
+      "pr": 535,
+      "source_branch": "feat/f04-pages-dashboard-20261123",
+      "source_sha": "e16bd876c3bd9aa6f075dd5ae27711d9836eb890",
+      "comparison_main_sha": "6b323a99df1238cb5ebe7248528cc7bce5140e80",
+      "merge_bases": [
+        "8ddb344973e80b8e1eda6821e970ee6a2b808b29"
+      ],
+      "category": "D",
+      "behavioral_evidence": "Pages merchant-dashboard routing, ledger browsing and product UI belong to stopped F04. Do not restore routes or full-profile activation from this donor.",
+      "successor_or_ownership_pins": [],
+      "newly_tested": false,
+      "assessment_details": {
+        "inspection": "Read-only final behavior, tests, successor history and relevant PR discussions; no runtime execution or fresh CI qualification."
+      },
+      "initial_mechanical_residual_path_count": 23,
+      "mechanical_path_note": "Large inherited diff; classify the intended change from behavioral evidence and preserve separately owned/deferred obligations in assessment_details. Full mechanical path list remains in the original session inventory."
+    },
+    {
+      "row_index": 42,
+      "pr": 564,
+      "source_branch": "ui/merchant-dashboard-records",
+      "source_sha": "37a714cfedec93749083d5cf5b46fa8adcd9bfa1",
+      "comparison_main_sha": "6b323a99df1238cb5ebe7248528cc7bce5140e80",
+      "merge_bases": [
+        "8ddb344973e80b8e1eda6821e970ee6a2b808b29"
+      ],
+      "category": "D",
+      "behavioral_evidence": "Merchant-dashboard record browsing/responsive product UI belongs to stopped F04; its unique product-specific code and browser coverage remain preserved but excluded.",
+      "successor_or_ownership_pins": [],
+      "newly_tested": false,
+      "assessment_details": {
+        "inspection": "Read-only final behavior, tests, successor history and relevant PR discussions; no runtime execution or fresh CI qualification."
+      },
+      "initial_mechanical_residual_path_count": 25,
+      "mechanical_path_note": "Large inherited diff; classify the intended change from behavioral evidence and preserve separately owned/deferred obligations in assessment_details. Full mechanical path list remains in the original session inventory."
+    },
+    {
+      "row_index": 43,
+      "pr": 664,
+      "source_branch": "claude/fc-integration-20261125",
+      "source_sha": "d205fc30257a2da5e05d8b232d744a6f461305a2",
+      "comparison_main_sha": "6b323a99df1238cb5ebe7248528cc7bce5140e80",
+      "merge_bases": [
+        "32ae3977b6026991ae0591daf385d3c536e2132f",
+        "d05108873af1ab79edee9c22fe01b0a22cf3a213",
+        "22c3cb1d7a5c973f0ebc6b34cd0f36f6ed377ffa",
+        "3851f02b04325d417a52b80cc107290f1f434597",
+        "a2b14ca8725372d3da21b1d3fbdea3dfeedb7cd6",
+        "790de53e198d075c7c7b7559372014867dfdbaf0"
+      ],
+      "category": "C",
+      "behavioral_evidence": "All seven integration components have represented successors on main. The final remaining multipart-QR explanatory label was separately ported by #712 at 122ca29d7; main names the current invoice QR/request-file control.",
+      "successor_or_ownership_pins": [
+        {
+          "pr": 648,
+          "sha": "f6b8a274bcc558ba55ccb49cacaca440c2837a2c"
+        },
+        {
+          "pr": 661,
+          "sha": "b097f240eee3dcb3005d745c73e9ea4788867775"
+        },
+        {
+          "pr": 656,
+          "sha": "d2294296d9c31a364329ae813ad521990d171820"
+        },
+        {
+          "pr": 662,
+          "sha": "527d6ee19bf238f60c984433954e0bc8f09d69a8"
+        },
+        {
+          "pr": 649,
+          "sha": "ce817b22a2afb39244b8535fc00d7c9b50ce8165"
+        },
+        {
+          "pr": 650,
+          "sha": "39cece11afac78212d9f7331aeb1ab1a5fe8d427"
+        },
+        {
+          "pr": 663,
+          "sha": "62d8ff681b3ce3916d7aa4639c73437856ef8e48"
+        },
+        {
+          "pr": 712,
+          "sha": "122ca29d7e230f31d779b472a8abf97618fe49f2"
+        }
+      ],
+      "newly_tested": false,
+      "assessment_details": {
+        "inspection": "Read-only final behavior, tests, successor history and relevant PR discussions; no runtime execution or fresh CI qualification."
+      },
+      "initial_mechanical_residual_path_count": 26,
+      "mechanical_path_note": "Large inherited diff; classify the intended change from behavioral evidence and preserve separately owned/deferred obligations in assessment_details. Full mechanical path list remains in the original session inventory."
+    },
+    {
+      "row_index": 44,
+      "pr": 618,
+      "source_branch": "automation/20261124T1037Z/bug/dashboard-idb-rejection",
+      "source_sha": "e564360afa37714db4ea7cb63e12cde44db62dee",
+      "comparison_main_sha": "6b323a99df1238cb5ebe7248528cc7bce5140e80",
+      "merge_bases": [
+        "8ddb344973e80b8e1eda6821e970ee6a2b808b29"
+      ],
+      "category": "D",
+      "behavioral_evidence": "The isolated change repairs a merchant-dashboard IndexedDB rejection test fixture. It qualifies the stopped F04 surface and is not a new independently useful core runtime unit.",
+      "successor_or_ownership_pins": [],
+      "newly_tested": false,
+      "assessment_details": {
+        "inspection": "Read-only final behavior, tests, successor history and relevant PR discussions; no runtime execution or fresh CI qualification."
+      },
+      "initial_mechanical_residual_path_count": 26,
+      "mechanical_path_note": "Large inherited diff; classify the intended change from behavioral evidence and preserve separately owned/deferred obligations in assessment_details. Full mechanical path list remains in the original session inventory."
+    },
+    {
+      "row_index": 45,
+      "pr": 579,
+      "source_branch": "feat/f04-dashboard-totals-qualification",
+      "source_sha": "6366767fb632ab3a01603497b49f12714ab796bb",
+      "comparison_main_sha": "6b323a99df1238cb5ebe7248528cc7bce5140e80",
+      "merge_bases": [
+        "8ddb344973e80b8e1eda6821e970ee6a2b808b29"
+      ],
+      "category": "D",
+      "behavioral_evidence": "Exact invoice and historical-scan totals qualification is merchant-dashboard F04 work; preserve source/tests without activating or completing that stopped product.",
+      "successor_or_ownership_pins": [],
+      "newly_tested": false,
+      "assessment_details": {
+        "inspection": "Read-only final behavior, tests, successor history and relevant PR discussions; no runtime execution or fresh CI qualification."
+      },
+      "initial_mechanical_residual_path_count": 26,
+      "mechanical_path_note": "Large inherited diff; classify the intended change from behavioral evidence and preserve separately owned/deferred obligations in assessment_details. Full mechanical path list remains in the original session inventory."
+    },
+    {
+      "row_index": 46,
+      "pr": 582,
+      "source_branch": "test/gp-pages-04-frozen-page-sweep-resume",
+      "source_sha": "9303aecc53c170c09537782f445a3b6bc71be465",
+      "comparison_main_sha": "6b323a99df1238cb5ebe7248528cc7bce5140e80",
+      "merge_bases": [
+        "89b3572f7e60cb6f5e5a0d7830632d1bb5f04dd8",
+        "e0c583be2514b44af7f3b15619fb8160358f1470",
+        "1de98f6c9371010883253450446e6f7294da84fa",
+        "caa4bd7e3465b5d6655eb3dbe86e5f240eb21462",
+        "7e1a189c065f4ae437a2570f03922eb66ca38c2c",
+        "740efcf061c1ca97a562b85be742dd59f3ad0911",
+        "c48c9917708ea86ea1a82a9d5d44f3add9876c98",
+        "4085622463411d3ba27f4efb7b73a70575170535"
+      ],
+      "category": "C",
+      "behavioral_evidence": "Frozen-page Scan/Sweep idle-deadline and recovery qualification is represented by #711/#718. Current tests retain the real freeze/restore journey and later replace a DevTools-startup timing race with an explicit readiness wait.",
+      "successor_or_ownership_pins": [
+        {
+          "pr": 711,
+          "sha": "fdb85e71a723fc0085851b2c445bbde31c58df02"
+        },
+        {
+          "pr": 718,
+          "sha": "c7c6349c7b58ac81e9bfc1c2e5757ea69cbd5c45"
+        }
+      ],
+      "newly_tested": false,
+      "assessment_details": {
+        "inspection": "Read-only final behavior, tests, successor history and relevant PR discussions; no runtime execution or fresh CI qualification."
+      },
+      "initial_mechanical_residual_path_count": 57,
+      "mechanical_path_note": "Large inherited diff; classify the intended change from behavioral evidence and preserve separately owned/deferred obligations in assessment_details. Full mechanical path list remains in the original session inventory."
+    },
+    {
+      "row_index": 47,
+      "pr": 596,
+      "source_branch": "resume/recovery-native-20261124",
+      "source_sha": "f637214e6f3825181dcffbd79f746a21bcc84bba",
+      "comparison_main_sha": "6b323a99df1238cb5ebe7248528cc7bce5140e80",
+      "merge_bases": [
+        "89b3572f7e60cb6f5e5a0d7830632d1bb5f04dd8",
+        "e0c583be2514b44af7f3b15619fb8160358f1470",
+        "1de98f6c9371010883253450446e6f7294da84fa",
+        "caa4bd7e3465b5d6655eb3dbe86e5f240eb21462",
+        "7e1a189c065f4ae437a2570f03922eb66ca38c2c",
+        "740efcf061c1ca97a562b85be742dd59f3ad0911",
+        "c48c9917708ea86ea1a82a9d5d44f3add9876c98",
+        "4085622463411d3ba27f4efb7b73a70575170535"
+      ],
+      "category": "C",
+      "behavioral_evidence": "The native-recovery App test typing correction and suspended-signer recovery behavior are represented in the #689/#691/#697 composition. Current suspended state keeps backup-only recovery while rejecting ordinary session authority.",
+      "successor_or_ownership_pins": [
+        {
+          "pr": 697,
+          "sha": "045ac2d329d1ab68ba8f3896b21e17427ca3a5f0"
+        }
+      ],
+      "newly_tested": false,
+      "assessment_details": {
+        "inspection": "Read-only final behavior, tests, successor history and relevant PR discussions; no runtime execution or fresh CI qualification."
+      },
+      "initial_mechanical_residual_path_count": 59,
+      "mechanical_path_note": "Large inherited diff; classify the intended change from behavioral evidence and preserve separately owned/deferred obligations in assessment_details. Full mechanical path list remains in the original session inventory."
+    },
+    {
+      "row_index": 48,
+      "pr": 577,
+      "source_branch": "codex/gp-pages-02-retain-suspended-signer",
+      "source_sha": "2363943571de84bfd5da0b3f167699f34eb53ce7",
+      "comparison_main_sha": "6b323a99df1238cb5ebe7248528cc7bce5140e80",
+      "merge_bases": [
+        "89b3572f7e60cb6f5e5a0d7830632d1bb5f04dd8",
+        "e0c583be2514b44af7f3b15619fb8160358f1470",
+        "1de98f6c9371010883253450446e6f7294da84fa",
+        "caa4bd7e3465b5d6655eb3dbe86e5f240eb21462",
+        "7e1a189c065f4ae437a2570f03922eb66ca38c2c",
+        "740efcf061c1ca97a562b85be742dd59f3ad0911",
+        "c48c9917708ea86ea1a82a9d5d44f3add9876c98",
+        "4085622463411d3ba27f4efb7b73a70575170535"
+      ],
+      "category": "C",
+      "behavioral_evidence": "Sole-copy invoice signing material is retained for backup-only recovery after idle suspension. Main also has the two original authorization/credential-specific idle expiry regressions, with later getKey/Settings draft guards strengthening the path.",
+      "successor_or_ownership_pins": [
+        {
+          "pr": 697,
+          "sha": "045ac2d329d1ab68ba8f3896b21e17427ca3a5f0"
+        }
+      ],
+      "newly_tested": false,
+      "assessment_details": {
+        "inspection": "Read-only final behavior, tests, successor history and relevant PR discussions; no runtime execution or fresh CI qualification."
+      },
+      "initial_mechanical_residual_path_count": 59,
+      "mechanical_path_note": "Large inherited diff; classify the intended change from behavioral evidence and preserve separately owned/deferred obligations in assessment_details. Full mechanical path list remains in the original session inventory."
+    },
+    {
+      "row_index": 49,
+      "pr": 297,
+      "source_branch": "automation/20261120T0115Z/coordinator/clipboard-qualification",
+      "source_sha": "04910f65dc0268e41519c4b1a44e83264272f0bf",
+      "comparison_main_sha": "6b323a99df1238cb5ebe7248528cc7bce5140e80",
+      "merge_bases": [
+        "b5fc0991eb7cc12fcdfaea514f1fee5be1eca2a0",
+        "8cbae85c95fa707210704ee72bb4416b36e5a4d7",
+        "a4c6f945adef0438bfd0b347fb7c11057e3973ce",
+        "ddfc8cfafa44b09103ced821f160c1d37fdfe552",
+        "c591b54078febcf24cba01b29bc173b2fac1f9cb",
+        "84398a79e18673f3e371a405931bc464e1cca99a",
+        "4085622463411d3ba27f4efb7b73a70575170535",
+        "9617e8572f9bc414410bd937b0e7718d0c5bd55c"
+      ],
+      "category": "C",
+      "behavioral_evidence": "Clipboard coordination delta is represented: current cleanup retains asynchronous double-read, newer-clipboard protection, generation/pending-recopy controls, denied-API and unsupported rich/multiple-format refusal, plus backup hide/lock cleanup handling.",
+      "successor_or_ownership_pins": [
+        {
+          "pr": 687,
+          "sha": "edcca81906c304499c436083dec3b598680de188"
+        }
+      ],
+      "newly_tested": false,
+      "assessment_details": {
+        "inspection": "Read-only final behavior, tests, successor history and relevant PR discussions; no runtime execution or fresh CI qualification.",
+        "inherited_residuals": "Some broad privacy donor heads also inherit private encrypted scan, selected-signer pin, offline-draft and persistent-timestamp stacks. The row’s category describes the PR-specific intended delta, not blanket equivalence of every inherited residual file; owned scanner/draft work and explicit timestamp deferral remain separate."
+      },
+      "initial_mechanical_residual_path_count": 275,
+      "mechanical_path_note": "Large inherited diff; classify the intended change from behavioral evidence and preserve separately owned/deferred obligations in assessment_details. Full mechanical path list remains in the original session inventory."
+    },
+    {
+      "row_index": 50,
+      "pr": 293,
+      "source_branch": "automation/20261120T004531Z/feature/clipboard-guard",
+      "source_sha": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9",
+      "comparison_main_sha": "6b323a99df1238cb5ebe7248528cc7bce5140e80",
+      "merge_bases": [
+        "b5fc0991eb7cc12fcdfaea514f1fee5be1eca2a0",
+        "8cbae85c95fa707210704ee72bb4416b36e5a4d7",
+        "a4c6f945adef0438bfd0b347fb7c11057e3973ce",
+        "ddfc8cfafa44b09103ced821f160c1d37fdfe552",
+        "c591b54078febcf24cba01b29bc173b2fac1f9cb",
+        "84398a79e18673f3e371a405931bc464e1cca99a",
+        "4085622463411d3ba27f4efb7b73a70575170535",
+        "9617e8572f9bc414410bd937b0e7718d0c5bd55c"
+      ],
+      "category": "C",
+      "behavioral_evidence": "The clipboard guard is integrated through #668/#687 and later hardening. Current runtime/tests preserve checked cleanup and do not overwrite newer clipboard content or silently clear unsupported clipboard formats.",
+      "successor_or_ownership_pins": [
+        {
+          "pr": 687,
+          "sha": "edcca81906c304499c436083dec3b598680de188"
+        }
+      ],
+      "newly_tested": false,
+      "assessment_details": {
+        "inspection": "Read-only final behavior, tests, successor history and relevant PR discussions; no runtime execution or fresh CI qualification.",
+        "inherited_residuals": "Some broad privacy donor heads also inherit private encrypted scan, selected-signer pin, offline-draft and persistent-timestamp stacks. The row’s category describes the PR-specific intended delta, not blanket equivalence of every inherited residual file; owned scanner/draft work and explicit timestamp deferral remain separate."
+      },
+      "initial_mechanical_residual_path_count": 275,
+      "mechanical_path_note": "Large inherited diff; classify the intended change from behavioral evidence and preserve separately owned/deferred obligations in assessment_details. Full mechanical path list remains in the original session inventory."
+    },
+    {
+      "row_index": 51,
+      "pr": 549,
+      "source_branch": "feat/create-invoice-link-clipboard-286",
+      "source_sha": "21b1d68c0a31159f528b77872b3a660f0da901f7",
+      "comparison_main_sha": "6b323a99df1238cb5ebe7248528cc7bce5140e80",
+      "merge_bases": [
+        "b5fc0991eb7cc12fcdfaea514f1fee5be1eca2a0",
+        "8cbae85c95fa707210704ee72bb4416b36e5a4d7",
+        "a4c6f945adef0438bfd0b347fb7c11057e3973ce",
+        "ddfc8cfafa44b09103ced821f160c1d37fdfe552",
+        "c591b54078febcf24cba01b29bc173b2fac1f9cb",
+        "84398a79e18673f3e371a405931bc464e1cca99a",
+        "4085622463411d3ba27f4efb7b73a70575170535",
+        "9617e8572f9bc414410bd937b0e7718d0c5bd55c"
+      ],
+      "category": "C",
+      "behavioral_evidence": "CreateInvoice CopyButton uses invoiceLinkClipboardDelaySec multiplied by 1000; the shared copy helper and remaining copy actions already implement the accepted preference with lifecycle cleanup.",
+      "successor_or_ownership_pins": [
+        {
+          "pr": 687,
+          "sha": "edcca81906c304499c436083dec3b598680de188"
+        }
+      ],
+      "newly_tested": false,
+      "assessment_details": {
+        "inspection": "Read-only final behavior, tests, successor history and relevant PR discussions; no runtime execution or fresh CI qualification.",
+        "inherited_residuals": "Some broad privacy donor heads also inherit private encrypted scan, selected-signer pin, offline-draft and persistent-timestamp stacks. The row’s category describes the PR-specific intended delta, not blanket equivalence of every inherited residual file; owned scanner/draft work and explicit timestamp deferral remain separate."
+      },
+      "initial_mechanical_residual_path_count": 277,
+      "mechanical_path_note": "Large inherited diff; classify the intended change from behavioral evidence and preserve separately owned/deferred obligations in assessment_details. Full mechanical path list remains in the original session inventory."
+    },
+    {
+      "row_index": 52,
+      "pr": 655,
+      "source_branch": "automation/20261125T0841Z/qa/private-scan-presentation",
+      "source_sha": "1dcd5a25130b9db6afc4d224c619cd4dbcf0307c",
+      "comparison_main_sha": "6b323a99df1238cb5ebe7248528cc7bce5140e80",
+      "merge_bases": [
+        "eb59d93cffed7848c4aac37d0e9650b87239c6da",
+        "89b3572f7e60cb6f5e5a0d7830632d1bb5f04dd8",
+        "e0c583be2514b44af7f3b15619fb8160358f1470",
+        "1de98f6c9371010883253450446e6f7294da84fa",
+        "caa4bd7e3465b5d6655eb3dbe86e5f240eb21462",
+        "7e1a189c065f4ae437a2570f03922eb66ca38c2c",
+        "740efcf061c1ca97a562b85be742dd59f3ad0911",
+        "c48c9917708ea86ea1a82a9d5d44f3add9876c98",
+        "8cbae85c95fa707210704ee72bb4416b36e5a4d7",
+        "a4c6f945adef0438bfd0b347fb7c11057e3973ce",
+        "ddfc8cfafa44b09103ced821f160c1d37fdfe552",
+        "c591b54078febcf24cba01b29bc173b2fac1f9cb",
+        "4085622463411d3ba27f4efb7b73a70575170535",
+        "9617e8572f9bc414410bd937b0e7718d0c5bd55c"
+      ],
+      "category": "F",
+      "behavioral_evidence": "The fresh private-checkpoint presentation fixture is still absent from main, along with the privateScanStore/privateScanLifecycle implementation it tests. Its dependency is the owned, unintegrated #248 private encrypted scan checkpoint stack; retain the useful fixture for that owner rather than treating it as runtime currently on main.",
+      "successor_or_ownership_pins": [
+        {
+          "pr": 248,
+          "sha": "18b367457103fb1731a5b4ef5c51faa37a010e47"
+        }
+      ],
+      "newly_tested": false,
+      "assessment_details": {
+        "inspection": "Read-only final behavior, tests, successor history and relevant PR discussions; no runtime execution or fresh CI qualification.",
+        "inherited_residuals": "Some broad privacy donor heads also inherit private encrypted scan, selected-signer pin, offline-draft and persistent-timestamp stacks. The row’s category describes the PR-specific intended delta, not blanket equivalence of every inherited residual file; owned scanner/draft work and explicit timestamp deferral remain separate."
+      },
+      "initial_mechanical_residual_path_count": 383,
+      "mechanical_path_note": "Large inherited diff; classify the intended change from behavioral evidence and preserve separately owned/deferred obligations in assessment_details. Full mechanical path list remains in the original session inventory."
+    },
+    {
+      "row_index": 53,
+      "pr": 652,
+      "source_branch": "automation/20261125T0637Z/qa/account-privacy-signer-pin",
+      "source_sha": "724afdcf557178d8b78d841b681f50e99d41935f",
+      "comparison_main_sha": "6b323a99df1238cb5ebe7248528cc7bce5140e80",
+      "merge_bases": [
+        "eb59d93cffed7848c4aac37d0e9650b87239c6da",
+        "89b3572f7e60cb6f5e5a0d7830632d1bb5f04dd8",
+        "e0c583be2514b44af7f3b15619fb8160358f1470",
+        "1de98f6c9371010883253450446e6f7294da84fa",
+        "caa4bd7e3465b5d6655eb3dbe86e5f240eb21462",
+        "7e1a189c065f4ae437a2570f03922eb66ca38c2c",
+        "740efcf061c1ca97a562b85be742dd59f3ad0911",
+        "c48c9917708ea86ea1a82a9d5d44f3add9876c98",
+        "8cbae85c95fa707210704ee72bb4416b36e5a4d7",
+        "a4c6f945adef0438bfd0b347fb7c11057e3973ce",
+        "ddfc8cfafa44b09103ced821f160c1d37fdfe552",
+        "c591b54078febcf24cba01b29bc173b2fac1f9cb",
+        "4085622463411d3ba27f4efb7b73a70575170535",
+        "9617e8572f9bc414410bd937b0e7718d0c5bd55c"
+      ],
+      "category": "F",
+      "behavioral_evidence": "The signer-pin fixture correction duplicates #630 and depends on Pay.signer.test.tsx/invoiceSignerPins.ts, neither present on main. Named selected-seller pin validation remains owned by open #243; this fixture belongs with that implementation.",
+      "successor_or_ownership_pins": [
+        {
+          "pr": 630,
+          "sha": "c484f833560aef8e8c798a71228d92e10fe5a877"
+        },
+        {
+          "pr": 243,
+          "sha": "276aed60f19671cc6fa551be616b61041cb45b50"
+        }
+      ],
+      "newly_tested": false,
+      "assessment_details": {
+        "inspection": "Read-only final behavior, tests, successor history and relevant PR discussions; no runtime execution or fresh CI qualification.",
+        "inherited_residuals": "Some broad privacy donor heads also inherit private encrypted scan, selected-signer pin, offline-draft and persistent-timestamp stacks. The row’s category describes the PR-specific intended delta, not blanket equivalence of every inherited residual file; owned scanner/draft work and explicit timestamp deferral remain separate."
+      },
+      "initial_mechanical_residual_path_count": 383,
+      "mechanical_path_note": "Large inherited diff; classify the intended change from behavioral evidence and preserve separately owned/deferred obligations in assessment_details. Full mechanical path list remains in the original session inventory."
+    },
+    {
+      "row_index": 54,
+      "pr": 645,
+      "source_branch": "automation/20261125T0437Z/qa/registry-history-live-region",
+      "source_sha": "3b7351c7f289dc8d4f928a9cefd408d9fcfbb8d7",
+      "comparison_main_sha": "6b323a99df1238cb5ebe7248528cc7bce5140e80",
+      "merge_bases": [
+        "eb59d93cffed7848c4aac37d0e9650b87239c6da",
+        "89b3572f7e60cb6f5e5a0d7830632d1bb5f04dd8",
+        "e0c583be2514b44af7f3b15619fb8160358f1470",
+        "1de98f6c9371010883253450446e6f7294da84fa",
+        "caa4bd7e3465b5d6655eb3dbe86e5f240eb21462",
+        "7e1a189c065f4ae437a2570f03922eb66ca38c2c",
+        "740efcf061c1ca97a562b85be742dd59f3ad0911",
+        "c48c9917708ea86ea1a82a9d5d44f3add9876c98",
+        "8cbae85c95fa707210704ee72bb4416b36e5a4d7",
+        "a4c6f945adef0438bfd0b347fb7c11057e3973ce",
+        "ddfc8cfafa44b09103ced821f160c1d37fdfe552",
+        "c591b54078febcf24cba01b29bc173b2fac1f9cb",
+        "4085622463411d3ba27f4efb7b73a70575170535",
+        "9617e8572f9bc414410bd937b0e7718d0c5bd55c"
+      ],
+      "category": "C",
+      "behavioral_evidence": "Registry history presentation is superseded by the accepted public-shell architecture. Current tests explicitly conceal account/hash/action rows on consent withdrawal, preserve stored evidence and assert zero new RPC/send activity; restoring the old detached-container assertion would conflict with that architecture.",
+      "successor_or_ownership_pins": [
+        {
+          "pr": 691,
+          "sha": "f8145c1cb8d806f1d8b134c159eb00f595e6769a"
+        },
+        {
+          "pr": 697,
+          "sha": "045ac2d329d1ab68ba8f3896b21e17427ca3a5f0"
+        }
+      ],
+      "newly_tested": false,
+      "assessment_details": {
+        "inspection": "Read-only final behavior, tests, successor history and relevant PR discussions; no runtime execution or fresh CI qualification.",
+        "inherited_residuals": "Some broad privacy donor heads also inherit private encrypted scan, selected-signer pin, offline-draft and persistent-timestamp stacks. The row’s category describes the PR-specific intended delta, not blanket equivalence of every inherited residual file; owned scanner/draft work and explicit timestamp deferral remain separate."
+      },
+      "initial_mechanical_residual_path_count": 383,
+      "mechanical_path_note": "Large inherited diff; classify the intended change from behavioral evidence and preserve separately owned/deferred obligations in assessment_details. Full mechanical path list remains in the original session inventory."
+    },
+    {
+      "row_index": 55,
+      "pr": 612,
+      "source_branch": "fix/20261124/encrypted-wallet-revocation-notice",
+      "source_sha": "e580fcac85e1e7fc2a42a4c7ea7d5a581418aab8",
+      "comparison_main_sha": "6b323a99df1238cb5ebe7248528cc7bce5140e80",
+      "merge_bases": [
+        "eb59d93cffed7848c4aac37d0e9650b87239c6da",
+        "89b3572f7e60cb6f5e5a0d7830632d1bb5f04dd8",
+        "e0c583be2514b44af7f3b15619fb8160358f1470",
+        "1de98f6c9371010883253450446e6f7294da84fa",
+        "caa4bd7e3465b5d6655eb3dbe86e5f240eb21462",
+        "7e1a189c065f4ae437a2570f03922eb66ca38c2c",
+        "740efcf061c1ca97a562b85be742dd59f3ad0911",
+        "c48c9917708ea86ea1a82a9d5d44f3add9876c98",
+        "8cbae85c95fa707210704ee72bb4416b36e5a4d7",
+        "a4c6f945adef0438bfd0b347fb7c11057e3973ce",
+        "ddfc8cfafa44b09103ced821f160c1d37fdfe552",
+        "c591b54078febcf24cba01b29bc173b2fac1f9cb",
+        "4085622463411d3ba27f4efb7b73a70575170535",
+        "9617e8572f9bc414410bd937b0e7718d0c5bd55c"
+      ],
+      "category": "C",
+      "behavioral_evidence": "Encrypted-payment wallet-revocation feedback is represented by the account/privacy composition. Pay distinguishes the wallet-change cause for the notice and revokes presentation/request authority through the current privacy lifecycle.",
+      "successor_or_ownership_pins": [
+        {
+          "pr": 691,
+          "sha": "f8145c1cb8d806f1d8b134c159eb00f595e6769a"
+        },
+        {
+          "pr": 697,
+          "sha": "045ac2d329d1ab68ba8f3896b21e17427ca3a5f0"
+        }
+      ],
+      "newly_tested": false,
+      "assessment_details": {
+        "inspection": "Read-only final behavior, tests, successor history and relevant PR discussions; no runtime execution or fresh CI qualification.",
+        "inherited_residuals": "Some broad privacy donor heads also inherit private encrypted scan, selected-signer pin, offline-draft and persistent-timestamp stacks. The row’s category describes the PR-specific intended delta, not blanket equivalence of every inherited residual file; owned scanner/draft work and explicit timestamp deferral remain separate."
+      },
+      "initial_mechanical_residual_path_count": 383,
+      "mechanical_path_note": "Large inherited diff; classify the intended change from behavioral evidence and preserve separately owned/deferred obligations in assessment_details. Full mechanical path list remains in the original session inventory."
+    },
+    {
+      "row_index": 56,
+      "pr": 598,
+      "source_branch": "resume/account-privacy-20261124",
+      "source_sha": "86450d8d459ccf4a6925742d082e1c7ad0905e75",
+      "comparison_main_sha": "6b323a99df1238cb5ebe7248528cc7bce5140e80",
+      "merge_bases": [
+        "eb59d93cffed7848c4aac37d0e9650b87239c6da",
+        "89b3572f7e60cb6f5e5a0d7830632d1bb5f04dd8",
+        "e0c583be2514b44af7f3b15619fb8160358f1470",
+        "1de98f6c9371010883253450446e6f7294da84fa",
+        "caa4bd7e3465b5d6655eb3dbe86e5f240eb21462",
+        "7e1a189c065f4ae437a2570f03922eb66ca38c2c",
+        "740efcf061c1ca97a562b85be742dd59f3ad0911",
+        "c48c9917708ea86ea1a82a9d5d44f3add9876c98",
+        "8cbae85c95fa707210704ee72bb4416b36e5a4d7",
+        "a4c6f945adef0438bfd0b347fb7c11057e3973ce",
+        "ddfc8cfafa44b09103ced821f160c1d37fdfe552",
+        "c591b54078febcf24cba01b29bc173b2fac1f9cb",
+        "4085622463411d3ba27f4efb7b73a70575170535",
+        "9617e8572f9bc414410bd937b0e7718d0c5bd55c"
+      ],
+      "category": "C",
+      "behavioral_evidence": "The account-privacy resumption work is represented by the scoped #691/#697 composition: AppShell mounts SessionPresentationBoundary, wallet privacy epochs invalidate stale work and protected account/vault presentations are revoked.",
+      "successor_or_ownership_pins": [
+        {
+          "pr": 691,
+          "sha": "f8145c1cb8d806f1d8b134c159eb00f595e6769a"
+        },
+        {
+          "pr": 697,
+          "sha": "045ac2d329d1ab68ba8f3896b21e17427ca3a5f0"
+        }
+      ],
+      "newly_tested": false,
+      "assessment_details": {
+        "inspection": "Read-only final behavior, tests, successor history and relevant PR discussions; no runtime execution or fresh CI qualification.",
+        "inherited_residuals": "Some broad privacy donor heads also inherit private encrypted scan, selected-signer pin, offline-draft and persistent-timestamp stacks. The row’s category describes the PR-specific intended delta, not blanket equivalence of every inherited residual file; owned scanner/draft work and explicit timestamp deferral remain separate."
+      },
+      "initial_mechanical_residual_path_count": 383,
+      "mechanical_path_note": "Large inherited diff; classify the intended change from behavioral evidence and preserve separately owned/deferred obligations in assessment_details. Full mechanical path list remains in the original session inventory."
+    },
+    {
+      "row_index": 57,
+      "pr": 571,
+      "source_branch": "fix/286-account-vault-privacy",
+      "source_sha": "63f40efac175e5ee49563326dbef930aafb14235",
+      "comparison_main_sha": "6b323a99df1238cb5ebe7248528cc7bce5140e80",
+      "merge_bases": [
+        "eb59d93cffed7848c4aac37d0e9650b87239c6da",
+        "89b3572f7e60cb6f5e5a0d7830632d1bb5f04dd8",
+        "e0c583be2514b44af7f3b15619fb8160358f1470",
+        "1de98f6c9371010883253450446e6f7294da84fa",
+        "caa4bd7e3465b5d6655eb3dbe86e5f240eb21462",
+        "7e1a189c065f4ae437a2570f03922eb66ca38c2c",
+        "740efcf061c1ca97a562b85be742dd59f3ad0911",
+        "c48c9917708ea86ea1a82a9d5d44f3add9876c98",
+        "8cbae85c95fa707210704ee72bb4416b36e5a4d7",
+        "a4c6f945adef0438bfd0b347fb7c11057e3973ce",
+        "ddfc8cfafa44b09103ced821f160c1d37fdfe552",
+        "c591b54078febcf24cba01b29bc173b2fac1f9cb",
+        "4085622463411d3ba27f4efb7b73a70575170535",
+        "9617e8572f9bc414410bd937b0e7718d0c5bd55c"
+      ],
+      "category": "C",
+      "behavioral_evidence": "Account/vault privacy revocation is integrated and subsequently audited. Current session-presentation boundary and wallet-change revocation preserve evidence while withdrawing visible account-scoped authority.",
+      "successor_or_ownership_pins": [
+        {
+          "pr": 691,
+          "sha": "f8145c1cb8d806f1d8b134c159eb00f595e6769a"
+        },
+        {
+          "pr": 697,
+          "sha": "045ac2d329d1ab68ba8f3896b21e17427ca3a5f0"
+        }
+      ],
+      "newly_tested": false,
+      "assessment_details": {
+        "inspection": "Read-only final behavior, tests, successor history and relevant PR discussions; no runtime execution or fresh CI qualification.",
+        "inherited_residuals": "Some broad privacy donor heads also inherit private encrypted scan, selected-signer pin, offline-draft and persistent-timestamp stacks. The row’s category describes the PR-specific intended delta, not blanket equivalence of every inherited residual file; owned scanner/draft work and explicit timestamp deferral remain separate."
+      },
+      "initial_mechanical_residual_path_count": 383,
+      "mechanical_path_note": "Large inherited diff; classify the intended change from behavioral evidence and preserve separately owned/deferred obligations in assessment_details. Full mechanical path list remains in the original session inventory."
+    },
+    {
+      "row_index": 58,
+      "pr": 630,
+      "source_branch": "automation/20261124T2037Z/qa/disclosure-signer-pin-gate",
+      "source_sha": "c484f833560aef8e8c798a71228d92e10fe5a877",
+      "comparison_main_sha": "6b323a99df1238cb5ebe7248528cc7bce5140e80",
+      "merge_bases": [
+        "eb59d93cffed7848c4aac37d0e9650b87239c6da",
+        "89b3572f7e60cb6f5e5a0d7830632d1bb5f04dd8",
+        "e0c583be2514b44af7f3b15619fb8160358f1470",
+        "1de98f6c9371010883253450446e6f7294da84fa",
+        "caa4bd7e3465b5d6655eb3dbe86e5f240eb21462",
+        "7e1a189c065f4ae437a2570f03922eb66ca38c2c",
+        "740efcf061c1ca97a562b85be742dd59f3ad0911",
+        "c48c9917708ea86ea1a82a9d5d44f3add9876c98",
+        "8cbae85c95fa707210704ee72bb4416b36e5a4d7",
+        "a4c6f945adef0438bfd0b347fb7c11057e3973ce",
+        "ddfc8cfafa44b09103ced821f160c1d37fdfe552",
+        "c591b54078febcf24cba01b29bc173b2fac1f9cb",
+        "4085622463411d3ba27f4efb7b73a70575170535",
+        "9617e8572f9bc414410bd937b0e7718d0c5bd55c"
+      ],
+      "category": "F",
+      "behavioral_evidence": "The disclosure signer-pin gate correction has the same useful fixture blob as #652. It depends on the missing selected-seller pin implementation and should be folded into the explicitly owned #243 successor, not applied against main without that feature.",
+      "successor_or_ownership_pins": [
+        {
+          "pr": 243,
+          "sha": "276aed60f19671cc6fa551be616b61041cb45b50"
+        }
+      ],
+      "newly_tested": false,
+      "assessment_details": {
+        "inspection": "Read-only final behavior, tests, successor history and relevant PR discussions; no runtime execution or fresh CI qualification.",
+        "inherited_residuals": "Some broad privacy donor heads also inherit private encrypted scan, selected-signer pin, offline-draft and persistent-timestamp stacks. The row’s category describes the PR-specific intended delta, not blanket equivalence of every inherited residual file; owned scanner/draft work and explicit timestamp deferral remain separate."
+      },
+      "initial_mechanical_residual_path_count": 388,
+      "mechanical_path_note": "Large inherited diff; classify the intended change from behavioral evidence and preserve separately owned/deferred obligations in assessment_details. Full mechanical path list remains in the original session inventory."
+    },
+    {
+      "row_index": 59,
+      "pr": 606,
+      "source_branch": "codex/recover-wallet-disclosure-qualification-20261124",
+      "source_sha": "f941ac01fd9464fc881266dcc2d2e1e530d5f15b",
+      "comparison_main_sha": "6b323a99df1238cb5ebe7248528cc7bce5140e80",
+      "merge_bases": [
+        "eb59d93cffed7848c4aac37d0e9650b87239c6da",
+        "89b3572f7e60cb6f5e5a0d7830632d1bb5f04dd8",
+        "e0c583be2514b44af7f3b15619fb8160358f1470",
+        "1de98f6c9371010883253450446e6f7294da84fa",
+        "caa4bd7e3465b5d6655eb3dbe86e5f240eb21462",
+        "7e1a189c065f4ae437a2570f03922eb66ca38c2c",
+        "740efcf061c1ca97a562b85be742dd59f3ad0911",
+        "c48c9917708ea86ea1a82a9d5d44f3add9876c98",
+        "8cbae85c95fa707210704ee72bb4416b36e5a4d7",
+        "a4c6f945adef0438bfd0b347fb7c11057e3973ce",
+        "ddfc8cfafa44b09103ced821f160c1d37fdfe552",
+        "c591b54078febcf24cba01b29bc173b2fac1f9cb",
+        "4085622463411d3ba27f4efb7b73a70575170535",
+        "9617e8572f9bc414410bd937b0e7718d0c5bd55c"
+      ],
+      "category": "C",
+      "behavioral_evidence": "The retry-warning/browser qualification change is represented by current journal/disclosure integration: actual wallet handoff is distinguished from merely reviewed intent, unknown submitted outcomes retain evidence and are not presented as Nothing sent. #677/#679 carry the underlying request-preview and callback behavior.",
+      "successor_or_ownership_pins": [
+        {
+          "pr": 677,
+          "sha": "52a670f0d253f392d2b93dff8892222c2f6f8e0e"
+        },
+        {
+          "pr": 679,
+          "sha": "3cd06286c10b1e4ac9000030d4bc53e9dbf1e321"
+        }
+      ],
+      "newly_tested": false,
+      "assessment_details": {
+        "inspection": "Read-only final behavior, tests, successor history and relevant PR discussions; no runtime execution or fresh CI qualification.",
+        "inherited_residuals": "Some broad privacy donor heads also inherit private encrypted scan, selected-signer pin, offline-draft and persistent-timestamp stacks. The row’s category describes the PR-specific intended delta, not blanket equivalence of every inherited residual file; owned scanner/draft work and explicit timestamp deferral remain separate."
+      },
+      "initial_mechanical_residual_path_count": 388,
+      "mechanical_path_note": "Large inherited diff; classify the intended change from behavioral evidence and preserve separately owned/deferred obligations in assessment_details. Full mechanical path list remains in the original session inventory."
+    },
+    {
+      "row_index": 60,
+      "pr": 589,
+      "source_branch": "codex/287-wallet-request-preview",
+      "source_sha": "697cb7314c323b574bfbb1f102244265046dd93a",
+      "comparison_main_sha": "6b323a99df1238cb5ebe7248528cc7bce5140e80",
+      "merge_bases": [
+        "eb59d93cffed7848c4aac37d0e9650b87239c6da",
+        "89b3572f7e60cb6f5e5a0d7830632d1bb5f04dd8",
+        "e0c583be2514b44af7f3b15619fb8160358f1470",
+        "1de98f6c9371010883253450446e6f7294da84fa",
+        "caa4bd7e3465b5d6655eb3dbe86e5f240eb21462",
+        "7e1a189c065f4ae437a2570f03922eb66ca38c2c",
+        "740efcf061c1ca97a562b85be742dd59f3ad0911",
+        "c48c9917708ea86ea1a82a9d5d44f3add9876c98",
+        "8cbae85c95fa707210704ee72bb4416b36e5a4d7",
+        "a4c6f945adef0438bfd0b347fb7c11057e3973ce",
+        "ddfc8cfafa44b09103ced821f160c1d37fdfe552",
+        "c591b54078febcf24cba01b29bc173b2fac1f9cb",
+        "4085622463411d3ba27f4efb7b73a70575170535",
+        "9617e8572f9bc414410bd937b0e7718d0c5bd55c"
+      ],
+      "category": "E",
+      "behavioral_evidence": "Runtime contractCall/disclosureAbi/onWalletRequest and verbatim permit handling are represented by #677/#679, but the two-case manual-approval token disclosure browser test is genuinely absent from main. Its blob 51ce4023c64b008f9bb60f23dcf769791d5cf56c is inherited unchanged by still-open owner stack #632, whose ownership was explicitly preserved. Reconcile that ownership before claiming a focused successor.",
+      "successor_or_ownership_pins": [
+        {
+          "pr": 677,
+          "sha": "52a670f0d253f392d2b93dff8892222c2f6f8e0e"
+        },
+        {
+          "pr": 679,
+          "sha": "3cd06286c10b1e4ac9000030d4bc53e9dbf1e321"
+        },
+        {
+          "pr": 632,
+          "sha": "0036fe1656579e0e9551bb9ae07cc63d802fb667"
+        }
+      ],
+      "newly_tested": false,
+      "assessment_details": {
+        "inspection": "Read-only final behavior, tests, successor history and relevant PR discussions; no runtime execution or fresh CI qualification.",
+        "inherited_residuals": "Some broad privacy donor heads also inherit private encrypted scan, selected-signer pin, offline-draft and persistent-timestamp stacks. The row’s category describes the PR-specific intended delta, not blanket equivalence of every inherited residual file; owned scanner/draft work and explicit timestamp deferral remain separate.",
+        "unique_unit_acceptance": "Use local synthetic RPC/EIP1193 fixtures for Permit and approval: show exact method/account/token/router/base-unit amount/action before dispatch; require deliberate approval; assert provider receives exactly the preview JSON once; preserve visible rejection feedback and no send after rejected permit. Adapt only after ownership reconciliation; do not reuse automatic disclosure approval for this journey.",
+        "evidence_urls": [
+          "https://github.com/djshellshoxxx/GhostPay/pull/589#issuecomment-7186939809",
+          "https://github.com/djshellshoxxx/GhostPay/pull/632",
+          "https://github.com/djshellshoxxx/GhostPay/blob/697cb7314c323b574bfbb1f102244265046dd93a/apps/web/e2e/wallet-token-disclosure.spec.ts"
+        ]
+      },
+      "initial_mechanical_residual_path_count": 388,
+      "mechanical_path_note": "Large inherited diff; classify the intended change from behavioral evidence and preserve separately owned/deferred obligations in assessment_details. Full mechanical path list remains in the original session inventory."
+    }
+  ],
+  "post_integration_revalidation": {
+    "main_sha": "7d29d39be5240762de6df2aefc7316f4bd460d60",
+    "tree_sha": "3522dec7b56b44f217b02781b4e7d21fa66d983c",
+    "all_61_merge_base_sets_unchanged": true,
+    "changed_paths": [
+      "apps/web/e2e/scan-indexer-completion.spec.ts",
+      "apps/web/locales/ar.json",
+      "apps/web/locales/en.json",
+      "apps/web/locales/es.json",
+      "apps/web/locales/ja.json",
+      "apps/web/src/i18n/securityKeys.ts",
+      "apps/web/src/views/Scan.indexerCompletion.test.tsx",
+      "apps/web/src/views/Scan.test.tsx",
+      "apps/web/src/views/Scan.tsx",
+      "docs/GHOSTPAY_CONSOLIDATION_TRACKER.md",
+      "docs/ai/ACTIVE_WORK.md",
+      "docs/handoffs/P14_INDEXER_COMPLETION_20261127.md",
+      "docs/research/privacy-evidence-matrix-2026-11-10.md"
+    ],
+    "dispositions_changed": false,
+    "basis": "The complete F3 change was reviewed: source-bound completion/announcement, additive security catalog key, dedicated tests and documentation. It does not implement the owned private-scan/signer-pin/token-disclosure qualification units or revive stopped products.",
+    "resulting_main_checks": "All 32 reported checks and all applicable push/dynamic workflow runs completed successfully on 7d29d39be5240762de6df2aefc7316f4bd460d60.",
+    "verification_workflow_urls": [
+      "https://github.com/djshellshoxxx/GhostPay/actions/runs/45944662051",
+      "https://github.com/djshellshoxxx/GhostPay/actions/runs/45944662249",
+      "https://github.com/djshellshoxxx/GhostPay/actions/runs/45944661942"
+    ]
+  }
+}

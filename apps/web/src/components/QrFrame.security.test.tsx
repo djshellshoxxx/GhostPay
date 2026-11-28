@@ -3,6 +3,7 @@ import { act, cleanup, fireEvent, render, screen, within } from '@testing-librar
 import userEvent from '@testing-library/user-event';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { PART_INTERVAL_MS, QrFrame } from './QrFrame';
+import { PrivacyBoundary } from './SensitiveContent';
 
 afterEach(() => { cleanup(); vi.useRealTimers(); vi.restoreAllMocks(); vi.unstubAllGlobals(); });
 
@@ -80,6 +81,31 @@ describe('large QR keyboard operation', () => {
     render(<><QrFrame kind="proof" text="receipt" caption="Receipt" /><button>Outside frame</button></>);
     await user.click(screen.getByRole('button', { name: 'Show larger' }));
     act(() => { screen.getByRole('button', { name: 'Outside frame' }).focus(); });
+    expect(document.activeElement).toBe(within(screen.getByRole('dialog')).getByRole('button', { name: 'Close' }));
+  });
+
+  // A privacy mask detaches the open dialog but keeps it mounted: its trap must not hold the page's keyboard.
+  it('releases Tab and focus while a privacy mask has the open dialog out of the document', async () => {
+    const user = userEvent.setup();
+    const view = (hidden: boolean) => <>
+      <button type="button" data-privacy-safe-control>Reveal</button>
+      <button type="button">Next control</button>
+      <PrivacyBoundary hidden={hidden}><QrFrame kind="proof" text="receipt" caption="Receipt" /></PrivacyBoundary>
+    </>;
+    const { rerender } = render(view(false));
+    await user.click(screen.getByRole('button', { name: 'Show larger' }));
+    rerender(view(true));
+    expect(screen.queryByRole('dialog')).toBeNull();
+    const reveal = screen.getByRole('button', { name: 'Reveal' });
+    const next = screen.getByRole('button', { name: 'Next control' });
+    expect(document.activeElement).toBe(reveal); // The mask's move to the neutral control is not pulled back.
+    await user.tab();
+    expect(document.activeElement).toBe(next);
+    await user.tab({ shift: true });
+    expect(document.activeElement).toBe(reveal);
+
+    rerender(view(false)); // Back in the document, the same dialog confines focus again.
+    act(() => { next.focus(); });
     expect(document.activeElement).toBe(within(screen.getByRole('dialog')).getByRole('button', { name: 'Close' }));
   });
 });

@@ -40,13 +40,15 @@ export interface LogSpec {
   readonly index: number;
   readonly caller?: `0x${string}`;
   readonly wrongTag?: boolean;
+  /** ERC-20 named in the router metadata (default: the supported test token). */
+  readonly token?: `0x${string}`;
 }
 
 export function sellerLog(s: Seller, spec: LogSpec): MadeLog {
-  return makeLog({ announcer: FAKE_ANNOUNCER, metaAddress: s.meta, block: spec.block, index: spec.index, caller: spec.caller ?? FAKE_ROUTER, ...(spec.wrongTag === true ? { wrongTag: true } : {}) });
+  return makeLog({ announcer: FAKE_ANNOUNCER, metaAddress: s.meta, block: spec.block, index: spec.index, caller: spec.caller ?? FAKE_ROUTER, ...(spec.wrongTag === true ? { wrongTag: true } : {}), ...(spec.token === undefined ? {} : { token: spec.token }) });
 }
 export function strangerLog(spec: LogSpec): MadeLog {
-  return makeLog({ announcer: FAKE_ANNOUNCER, metaAddress: newSeller().meta, block: spec.block, index: spec.index, caller: spec.caller ?? FAKE_ROUTER });
+  return makeLog({ announcer: FAKE_ANNOUNCER, metaAddress: newSeller().meta, block: spec.block, index: spec.index, caller: spec.caller ?? FAKE_ROUTER, ...(spec.token === undefined ? {} : { token: spec.token }) });
 }
 
 export interface ScenarioInput {
@@ -65,6 +67,10 @@ export interface ScenarioInput {
   readonly signal?: AbortSignal;
   /** Recorder to continue (resume scenarios keep one recorder per scenario id). */
   readonly recorder?: DisclosureRecorder;
+  /** Cover lookups for matched router payments (`runScan`'s `matchCover`); absent: off. */
+  readonly matchCover?: boolean;
+  /** The viewing-key copy handed to the scan (which wipes it), for tests that check the wipe. */
+  readonly viewingKey?: Uint8Array;
 }
 
 export interface ScenarioOutput {
@@ -125,11 +131,12 @@ export async function runDisclosureScenario(i: ScenarioInput): Promise<ScenarioO
       cursor: i.cursor ?? { nextBlock: 0n },
       spendingPublicKeyHex: hexOf(i.seller.keys.spendingPublicKey),
       keyId: KEY_ID,
-      viewingKey: unsafeRevealSecret(i.seller.keys.viewingSecret),
+      viewingKey: i.viewingKey ?? unsafeRevealSecret(i.seller.keys.viewingSecret),
       createWorker: () => new InlineWorker(),
       signal: i.signal ?? new AbortController().signal,
       ...(i.checkpoints === undefined ? {} : { checkpoints: i.checkpoints }),
       ...(i.maxPages === undefined ? {} : { maxPages: i.maxPages }),
+      ...(i.matchCover === undefined ? {} : { matchCover: i.matchCover }),
       ...(secondary === undefined ? {} : { secondaryClient: win(secondary) }),
       onProgress: (p) => progress.push(p),
       onMatch: (m) => matches.push(m),

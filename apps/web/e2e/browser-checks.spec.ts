@@ -2,8 +2,8 @@ import { expect, test, type Page } from '@playwright/test';
 import { auditAccessibility } from './accessibility-audit';
 
 // Synthetic browser faults, applied before app scripts run: an insecure-context flag, a wrong SHA-256 answer for the
-// self-check's known-answer input only, and a refused write for the self-check's storage probe only. The rest of the
-// app keeps real WebCrypto and storage, so no other feature is altered by the fixture.
+// self-check's known-answer input only, and a refused write and a refused database open for the self-check's probe
+// names only. The rest of the app keeps real WebCrypto, storage and IndexedDB, so no other feature is altered.
 async function injectBrowserFaults(page: Page): Promise<void> {
   await page.addInitScript(() => {
     Object.defineProperty(window, 'isSecureContext', { configurable: true, get: () => false });
@@ -22,6 +22,11 @@ async function injectBrowserFaults(page: Page): Promise<void> {
       if (key.startsWith('__ghostpay_capability_')) throw new DOMException('Synthetic refusal', 'SecurityError');
       setItem.call(this, key, value);
     };
+    const open = Object.getOwnPropertyDescriptor(IDBFactory.prototype, 'open')?.value as (this: IDBFactory, name: string, version?: number) => IDBOpenDBRequest;
+    IDBFactory.prototype.open = function (this: IDBFactory, name: string, version?: number) {
+      if (name.startsWith('__ghostpay_capability_')) throw new DOMException('Synthetic refusal', 'SecurityError');
+      return open.call(this, name, version);
+    };
   });
 }
 
@@ -38,7 +43,12 @@ test('the self-check footer passes on a secure local preview and stays on every 
     await nav.getByRole('button', { name: view, exact: true }).click();
     await expect(selfChecks(page).locator('summary')).toContainText('All browser capability checks passed');
   }
+  await region.locator('summary').click();
+  await expect(region.locator('.browser-checks-list li')).toHaveCount(4);
+  await expect(region.locator('.browser-checks-list li').nth(3)).toContainText('Temporary browser database (IndexedDB) round trip');
+  // Neither probe leaves anything behind in the browser profile.
   expect(await page.evaluate(() => Object.keys(localStorage).filter((key) => key.startsWith('__ghostpay_capability_')))).toEqual([]);
+  expect(await page.evaluate(async () => (await indexedDB.databases()).map((db) => db.name ?? '').filter((name) => name.startsWith('__ghostpay_capability_')))).toEqual([]);
 });
 
 test('failed and unavailable capabilities are explained, accessible and reflow at 320 CSS pixels', async ({ page }) => {
@@ -50,14 +60,16 @@ test('failed and unavailable capabilities are explained, accessible and reflow a
   await expect(summary).toContainText('Check browser capabilities');
   await summary.click();
   const items = region.locator('.browser-checks-list li');
-  await expect(items).toHaveCount(3);
+  await expect(items).toHaveCount(4);
   await expect(items.nth(0).locator('strong')).toHaveText('Failed');
   await expect(items.nth(0)).toContainText('not in a secure context');
   await expect(items.nth(1).locator('strong')).toHaveText('Failed');
   await expect(items.nth(1)).toContainText('returned a wrong result or an error');
   await expect(items.nth(2).locator('strong')).toHaveText('Unavailable');
   await expect(items.nth(2)).toContainText('refused site storage');
-  await expect(region.locator('.browser-checks-explain')).toHaveCount(3);
+  await expect(items.nth(3).locator('strong')).toHaveText('Unavailable');
+  await expect(items.nth(3)).toContainText('refused its site database (IndexedDB)');
+  await expect(region.locator('.browser-checks-explain')).toHaveCount(4);
   for (const explanation of await region.locator('.browser-checks-explain').all()) await expect(explanation).toBeVisible();
 
   const overflow = await page.evaluate(() => {

@@ -361,8 +361,13 @@ describe('backup export and recovery', () => {
     expect(await codeOfAsync(() => target.importBackup(mixed))).toBe('P13_RECORD_AUTH');
     expect(await target.list()).toEqual([]);
 
-    const flipped = good.records[0] ?? '';
-    const corrupt = { ...good, records: [`${flipped.slice(0, -2)}${flipped.endsWith('A') ? 'B' : 'A'}${flipped.slice(-1)}`] };
+    // Replace a character in the middle with a different one: all of its bits count, so the record's bytes always
+    // change. (Picking the replacement from another position could leave the record exactly as it was.)
+    const sealed = good.records[0] ?? '';
+    const at = sealed.length >> 1;
+    const damaged = `${sealed.slice(0, at)}${sealed[at] === 'A' ? 'B' : 'A'}${sealed.slice(at + 1)}`;
+    expect(damaged).not.toBe(sealed);
+    const corrupt = { ...good, records: [damaged] };
     expect(await codeOfAsync(() => target.importBackup(corrupt))).not.toBe('ok');
     expect(await codeOfAsync(() => target.importBackup({ ...good, records: ['***'] }))).toBe('P13_RECORD_INVALID');
     expect(await codeOfAsync(() => target.importBackup({ ...good, namespace: 'p13:other' }))).toBe('P13_RECORD_INVALID');

@@ -1,14 +1,14 @@
 import { useEffect, useId, useRef, useState, type FormEvent, type ReactNode } from 'react';
 import { UserFacingError, captureUserMessage, displayMessage, type DisplayMessage } from '../lib/errors';
-import type { StealthExportFile } from '../lib/paymentKeyExport';
-import { STEALTH_EXPORT_LIMITS, decryptPaymentKeys } from '../lib/stealthExport';
+import { verifyStealthExport, type StealthExportFile, type VerifiedStealthExport } from '../lib/paymentKeyExport';
+import { STEALTH_EXPORT_LIMITS } from '../lib/stealthExport';
 import { Field, Notice } from './Common';
 import { useExportOperation, useExportT, useLatestExportT } from './StealthExportCommon';
 
 /**
  * A download request does not prove retention. Verify the user's saved copy against the exact encrypted file generated
  * by this panel, then authenticate and validate every key without installing it. This never changes seller custody:
- * the file restores only this payment's key.
+ * a payment file restores only its listed payment keys, and a master backup omits the invoice-signing key.
  */
 export function StealthExportVerification(props: {
   readonly file: StealthExportFile;
@@ -24,12 +24,12 @@ export function StealthExportVerification(props: {
   const [selected, setSelected] = useState<File | undefined>(undefined);
   const [passphrase, setPassphrase] = useState('');
   const [busy, setBusy] = useState(false);
-  const [verified, setVerified] = useState(false);
+  const [verified, setVerified] = useState<VerifiedStealthExport | undefined>(undefined);
   const [error, setError] = useState<DisplayMessage | undefined>(undefined);
   const expected = useRef(props.file);
 
   const reset = (): void => {
-    setRetained(false); setSelected(undefined); setPassphrase(''); setBusy(false); setVerified(false); setError(undefined);
+    setRetained(false); setSelected(undefined); setPassphrase(''); setBusy(false); setVerified(undefined); setError(undefined);
   };
   const op = useExportOperation(reset, [props.file]);
   useEffect(() => {
@@ -39,7 +39,7 @@ export function StealthExportVerification(props: {
   }, [props.file]);
 
   const cancel = (): void => {
-    op.stop(); setPassphrase(''); setBusy(false); setVerified(false); setError(undefined);
+    op.stop(); setPassphrase(''); setBusy(false); setVerified(undefined); setError(undefined);
   };
 
   const onVerify = (event: FormEvent): void => {
@@ -47,7 +47,7 @@ export function StealthExportVerification(props: {
     if (!retained || selected === undefined) return;
     const controller = op.start();
     const file = selected; const generated = props.file; const pass = passphrase;
-    setBusy(true); setVerified(false); setError(undefined);
+    setBusy(true); setVerified(undefined); setError(undefined);
     void (async () => {
       try {
         if (file.size > STEALTH_EXPORT_LIMITS.keypairFileBytes) throw new UserFacingError({ key: 'error.stealthExport.tooLarge' });
@@ -56,14 +56,10 @@ export function StealthExportVerification(props: {
         // These exports are ASCII. File.text() strips a UTF-8 BOM, so compare byte length as well as decoded text.
         // A different valid backup cannot verify this download. Filenames and parsed public headers are insufficient.
         if (file.size !== generated.text.length || text !== generated.text) throw new UserFacingError({ key: 'stealthExport.verify.differentFile' });
-        const opened = await decryptPaymentKeys(text, pass);
-        try {
-          if (opened.header.scope !== 'single') throw new UserFacingError({ key: 'error.stealthExport.scopeMismatch' });
-        } finally {
-          for (const payment of opened.payments) payment.secret.fill(0);
-        }
+        // The recovery path authenticates and validates every key (payment or master) and disposes them before returning.
+        const result = await verifyStealthExport(text, pass, { signal: controller.signal });
         if (!op.current(controller) || expected.current !== generated) return;
-        setVerified(true);
+        setVerified(result);
         props.announce(latestT.current('stealthExport.verify.savedSuccess'));
       } catch (failure) {
         if (op.current(controller)) setError(captureUserMessage(failure));
@@ -73,16 +69,16 @@ export function StealthExportVerification(props: {
     })();
   };
 
-  const visibleVerified = expected.current === props.file && verified;
+  const visibleVerified = expected.current === props.file ? verified : undefined;
   const visibleRetained = expected.current === props.file && retained;
 
   return (
     <section className="stack" aria-labelledby={headingId} data-testid="stealth-export-verification">
       <h4 id={headingId}>{t('stealthExport.verify.heading')}</h4>
       <p role="status" aria-live="polite" data-testid="stealth-export-backup-state">
-        {visibleVerified ? t('stealthExport.verify.savedSuccess') : visibleRetained ? t('stealthExport.verify.retained') : t(props.downloadStarted ? 'stealthExport.verify.downloadStarted' : 'stealthExport.verify.generated')}
+        {visibleVerified !== undefined ? t('stealthExport.verify.savedSuccess') : visibleRetained ? t('stealthExport.verify.retained') : t(props.downloadStarted ? 'stealthExport.verify.downloadStarted' : 'stealthExport.verify.generated')}
       </p>
-      {!visibleVerified && <p><button type="button" className="btn" disabled={busy} onClick={props.onRetryDownload}>{t('stealthExport.verify.retryDownload')}</button></p>}
+      {visibleVerified === undefined && <p><button type="button" className="btn" disabled={busy} onClick={props.onRetryDownload}>{t('stealthExport.verify.retryDownload')}</button></p>}
       <p className="hint">{t('stealthExport.verify.scope')}</p>
       <div className="check">
         <input id={retainedId} type="checkbox" checked={visibleRetained} onChange={(event) => { cancel(); setRetained(event.target.checked); }} />
@@ -98,13 +94,14 @@ export function StealthExportVerification(props: {
           {selected !== undefined && <p className="hint">{t('upload.selectedFile')}</p>}
         </>}</Field>
         <Field label={t('stealthExport.verify.passphrase')}>
-          {(id) => <input id={id} type="password" autoComplete="off" value={passphrase} disabled={busy} onChange={(event) => { setPassphrase(event.target.value); setVerified(false); setError(undefined); }} />}
+          {(id) => <input id={id} type="password" autoComplete="off" value={passphrase} disabled={busy} onChange={(event) => { setPassphrase(event.target.value); setVerified(undefined); setError(undefined); }} />}
         </Field>
         <button type="submit" className="btn" disabled={busy || !retained || selected === undefined || passphrase === ''}>{t('stealthExport.verify.submit')}</button>
         {busy && <button type="button" className="btn" onClick={cancel}>{t('stealthExport.cancel')}</button>}
       </form>
       {busy && <p role="status">{t('stealthExport.open.working')}</p>}
       {error !== undefined && <Notice kind="error">{displayMessage(error, t)}</Notice>}
+      {visibleVerified?.kind === 'master' && <p className="hint">{t('stealthExport.verify.masterScope')}</p>}
     </section>
   );
 }

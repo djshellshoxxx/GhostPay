@@ -131,6 +131,18 @@ describe('Scan: automatic re-check while the page is open', () => {
     await waitFor(() => { expect(runner.mock.calls.length).toBeGreaterThanOrEqual(2); }, { timeout: 5000 });
   });
 
+  it('re-arms even when a re-check finishes before the page ever renders it running', async () => {
+    generateSession();
+    // Each scan settles at once, so React can batch its start and its finish into one render.
+    const runner = vi.spyOn(scanClient, 'runScan').mockImplementation((p) => {
+      p.checkpoints?.save(p.chain.chainId, p.keyId, p.cursor);
+      return Promise.resolve({ matches: [], cursor: p.cursor, scanned: 0, discrepancies: [], limitReached: false });
+    });
+    const { services } = growingChain([]);
+    await startScan(services, true);
+    await waitFor(() => { expect(runner.mock.calls.length).toBeGreaterThanOrEqual(4); }, { timeout: 5000 });
+  });
+
   it('stops after an error and says so; it does not retry on its own', async () => {
     generateSession();
     const runner = vi.spyOn(scanClient, 'runScan');

@@ -1,3 +1,539 @@
+# Static guide footer keyboard navigation
+
+Codex owns the page heading and footer link in `apps/web/{help,privacy}.html` and the matching
+regression in `apps/web/e2e/static-help.spec.ts` on `fix/static-guides-back-to-top`.
+Base: `70458ebe3ae4a5502d7c39ae25d37342dbde971b`. With JavaScript disabled, Enter on
+“Back to top” must focus the page heading and the next Tab must focus “Open app” on both guides.
+
+The follow-up on PR #768 starts at `0d7d069da7e0145b8a373e45de150e82744713ca` and adds
+the `<noscript>` navigation in `apps/web/index.html` to this claim. With JavaScript disabled,
+the first Tab must reveal the skip link, Enter must focus main, and the next Tab must reach the inline help guide.
+
+# Recorded low residuals (web) — 2026-11-27 UTC
+
+Worker: local Claude Code worker W7 on the existing merged branch `claude/consolidation-stack-20261126`, fast-forwarded
+to main `3f79c301` (#757); no new branch. Draft PR only: no merge, no integration lock.
+
+Owned paths: `apps/web/public/ghostpay-embed-v2.js` (dialog containment) and `embedV2.test.ts`;
+`apps/web/src/lib/{relayerClient,displayText,pay,scanPrivacy}.ts` (`trustView` and the indexer cross-check bound only);
+`views/Pay.tsx` (signer notice and offline notice only); `lib/scanClient.ts` (fetch cancellation only) and
+`views/Scan.tsx` (passing the run's signal only); their tests; two keys in `locales/*.json` and
+`i18n/securityKeys.ts`; this entry. Overlap: `Pay.tsx` with open #742, separate hunks.
+Acceptance: each fix has a regression test; no payment, journal, privacy or verification guard loosened; no dependency,
+contract, workflow or activation change.
+
+# Defensive fixes W2-1 to W2-3, sweep destination, embed popup, F8 — 2026-11-27 UTC
+
+Worker: local Claude Code worker W2 on the existing merged branch `claude/journal-fuzz-20261126`, fast-forwarded to
+`8a519272` (repair train #724, which holds main `a7f9abf8`), then merged with main `3dba277e` (#728) and `1894b4bb` (#754, tests and docs); no new branch.
+Draft PR only: no merge, no integration lock.
+
+Owned paths: `apps/web/src/{AppShell.tsx,state.tsx}`, `lib/{settings,sweep}.ts`, `lib/scanClient.ts` (reorg clears
+only), `lib/scanPrivacy.ts` (indexer adapter only), `views/{Pay,Settings,Sweep}.tsx`,
+`features/registry/RegistryView.tsx` (settings changes only), their new or extended tests,
+`i18n/securityKeys.ts`; three new keys in `apps/web/locales/*.json`; `apps/web/public/ghostpay-embed-v2.js` (click
+guard) and `embedV2.test.ts`; `packages/scan-source/src/{indexer,types,validate}.ts`;
+`packages/tx-review/src/{review,types}.ts`, `review.test.ts`, `DEVIATIONS.md` item 4;
+`packages/ux-vault/src/tag-archive-portable.ts` (`derive` only) and its new memory test; this entry.
+
+Overlap: #728 (`AppShell.tsx`, `Pay.tsx`, `Settings.tsx`, `scanClient.ts`, `securityKeys.ts`, locale catalogs, this
+file) is merged into this branch with both behaviours kept. The settings-sync shape comes from draft #251, which is left
+untouched; its network-authorization feature is not taken. Not claimed: F5, the
+embed focus trap. Acceptance: each regression fails without its fix and passes with it; hosted CI green on the exact
+head; independent review before any merge.
+
+---
+
+# LATE-L1 reconciliation retry, then #569 masking-test dispositions — 2026-11-27 UTC
+
+Worker: Claude session 01Tj2YczQ3YKPiCBh2nFurEc; branch `claude/loving-brown-v8dlp6` (base main `6bc97fde`, #738).
+Owned paths, LATE-L1: the replay condition in `observeInvoicePayments` of `packages/ux-vault/src/reconciliation-portable.ts`
+(no change to quarantine, matching, records or the vault format), new cases in
+`apps/web/src/lib/reconciliationVault.invoices.test.ts`, the LATE-L1 row of `docs/engineering/SECURITY_FINDINGS.md`,
+and `apps/web/src/lib/reconciliationVault.replay.fuzz.test.ts` (ported from #751 `a27d7b80`; test model repaired per
+review 7221525657).
+Owned paths, #569 follow-up (PR comment 7202318339): new masking regressions under `apps/web/src` and `apps/web/e2e`
+ported from #569 `c30283d2` where main's #708 design applies, a disposition record for each of the six cases, and a
+narrow repair only if a ported case shows a real gap. Also the #355 follow-up (PR comments 7202320570, 7204906392):
+the quick-hide focus regressions ported to `apps/web/src/components/WalletDisclosure.quickHide.test.tsx` and the
+masked focus fallback in `DisclosureDialog` of `apps/web/src/components/WalletDisclosure.tsx`. Not claimed: #569's branch (kept), `privacyMode.tsx` design changes,
+REV-I6, QA-I1, IDLE-M1. LATE-M1 stays claimed by this worker: the owner approved a presence marker (2026-11-27); the first
+fix (`a530f96a`) was held by review 7215494772 for cross-tab serialization and reverted from #742 (`98d99a4f`); a
+redo with per-scope coordination follows in its own PR. Acceptance: LATE-L1 regression red on main and green with the fix; an unlinked candidate
+that was never verified (indirect router call, always `claimed`) is never replayed, so it cannot pin every later
+checkpoint; affected typecheck, lint and tests; hosted CI on the exact head; independent review; merge only under the
+integration lock.
+
+---
+
+# Consolidation stack 2 (#728): repair-train merge, replacement status, qualification port (2026-11-27 UTC)
+
+Worker: newghostpay-e3 worker W1; existing branch `claude/consolidation-stack-20261126`, previous head `298257fd`.
+Merges repair train #724 head `8a519272` (contains main `a7f9abf8`). Owned paths: `resolveReplacements` in
+`apps/web/src/lib/attemptStatus.ts` with its test; ported from donor `nodata/beautiful-heisenberg-25ikdy` (#751,
+read-only): `invoiceDraft*`, `useInvoiceDraft*`, the draft purge in `session.ts`, the draft hint and cover label in the
+four locales, `privacyWording.test.ts`, the two label matches in `Settings.test.tsx`, `docs/pages/README.md`,
+`docs/research/privacy-rpc-call-graph.md`, `docs/user/privacy-limits.md`, the draft, offline-checkout, scan and
+log-paging fuzz tests, the `decodePaymentCalldata` re-encode guard in `packages/chain-adapters/src/router.ts` with its
+fuzz test, `walletDisclosure.callsites.test.ts`; cover cases in `scanClient.checkpoint.test.ts`; this entry. Not taken:
+#665, #742 and the ERC-20 suites. Acceptance: each fix has a regression test that fails without it; all PR checks green
+at the exact head; no gate, dependency, contract or activation change; merge stays with the integration-lock holder.
+Review follow-up on `9222e597` (findings N1-N5): connection-loss handling in `apps/web/src/views/Pay.tsx`, a
+wallet-request notification on `grantApproval` in `apps/web/src/lib/payExec.ts`, and `Pay.offline.test.tsx`,
+`Pay.offlineHandoff.test.tsx` and `Pay.offline.fuzz.test.tsx`. Journal, post-broadcast and terminal behaviour unchanged.
+
+# Consolidation stack 2: current-main merge and payment lifecycle fixes (2026-11-27 UTC)
+
+Worker: newghostpay-67 worker W1; existing branch `claude/consolidation-stack-20261126` (#728), main `3f7fcd0a` merged.
+Owned paths: the terminal-invoice and connection-loss handling in `apps/web/src/views/Pay.tsx` with new
+`Pay.offlineRevocation.test.tsx`, `resolveReplacements` in `apps/web/src/lib/attemptStatus.ts` with its test, the
+cover/ownership cases appended to `apps/web/src/lib/scanClient.checkpoint.test.ts`, and this entry. Not claimed: #744
+(it carries the `scanSpam.ts` estimate fix; merged after it lands). Acceptance: each fix has a regression test that fails
+without it; all PR checks green at the exact head; no gate, dependency, contract or activation change.
+
+# Consolidation stack 2: #696, #717 and audit fixes F2, F3, F7 (2026-11-26 UTC)
+
+Worker: newghostpay-4e (coordinator); existing branch `claude/consolidation-stack-20261126`, base `c7c6349c` (#718).
+Stacks reviewed heads #696 `1b097132` and #717 `367a3b30` plus the independently reviewed source-audit patches F2, F3 and
+F7. Hand resolutions are limited to `apps/web/src/AppShell.tsx` (masking wrapper kept, offline notice added),
+`apps/web/src/i18n/securityKeys.ts` (both key groups kept) and this registry. No new branch, dependency, contract,
+deployment or gate change. Acceptance: full hosted CI and independent re-review at the exact head.
+
+# Offline-aware checkout and opt-in encrypted invoice drafts, successor of #604/#591 (2026-11-26 UTC)
+
+Worker: ghostpay-78 worker; branch `claude/offline-drafts-successor-20261126` from main `194e225c`. Donors (left open,
+untouched): #604 `finish/offline-completion-20261124` `2f2c282e`, #591 `codex/offline-interrupted-invoice` `49862e2d`.
+Their receipt-binding half is already on main via #635 and is not ported. Owned paths: `apps/web/src/lib/browserOnline.ts`,
+`apps/web/src/lib/invoiceDraft{,.test}.ts`, `apps/web/src/lib/useInvoiceDraft{,.test}.ts(x)`, the offline handling in
+`apps/web/src/views/Pay.tsx` and its tests, the offline notice in `apps/web/src/AppShell.tsx`, the draft controls in
+`apps/web/src/views/CreateInvoice.tsx` (inside `InvoiceForm`), `apps/web/e2e/offline-session.spec.ts`, the offline notes
+in `docs/pages/README.md`, additive `app.offline`, `pay.offlineCheck`, `pay.retryCheck` and `create.draft.*` keys in the
+four locales and `apps/web/src/i18n/securityKeys.ts`, this entry.
+Continued by newghostpay-4e/features2 after that worker's machine crashed: also the interrupted wallet request cases in
+`apps/web/e2e/flows.spec.ts`; merged with current main. #710 (separate worker) also edits `Pay.tsx` and is not included.
+Acceptance: offline checkout fails closed and recovers only through an explicit retry; drafts are opt-in, tab-local,
+encrypted under the loaded seller's viewing key, strictly validated, refused for a chain or token the build does not
+offer or money terms the form would change (kept rather than converted), never store passphrases and never resurrect memo or line
+descriptions for a minimal-metadata draft; returned wallet hashes and unknown outcomes survive a connection loss; no new
+workspace dependency; hosted CI green at the exact head.
+
+# Cover lookups (#696): merge of main `e7e98109` and review follow-up — newghostpay-4e/features2 (2026-11-26 UTC)
+
+Worker: newghostpay-4e/features2, successor after a machine crash. Branch `claude/w-match-cover-20261125`, head
+`cb119fa1` merged with main `e7e98109` (#624, docs only; the sole conflict was this file, resolved as a union).
+Owned paths: the #696 entries below and this entry. Acceptance: independent review (worker "reviewer2") addressed,
+hosted CI green at the exact head.
+
+# Cover lookups (#696): integration and review follow-up (2026-11-26 UTC)
+
+Worker: newghostpay-7d/features, successor of the cut-off ghostpay-78 worker below. Branch
+`claude/w-match-cover-20261125`; its main `194e225c` merge `bb03c9a9` verified (only ACTIVE_WORK conflicted; catalogs
+and `securityKeys.ts` complete) and pushed. Owned paths: the ghostpay-78 entry below and this entry.
+Acceptance: independent review (worker "reviewer") addressed, current main merged, hosted CI green at the exact head.
+
+# Cover lookups (#696): third independent review and finish (2026-11-26 UTC)
+
+Worker: ghostpay-78 worker, continuing `newghostpay-77`'s parked branch `claude/w-match-cover-20261125`; base main
+`194e225c` merged (ACTIVE_WORK union). Owned paths: the #696 files (`apps/web/src/lib/matchCover.ts`, the cover hunks of
+`scanClient.ts`, `scanSpam.ts`, `Settings.tsx`, `Scan.tsx`, their tests, the three `scanLanes` catalog keys) and this
+entry. Acceptance: independent security/correctness review of cover v3 against the security invariants (opt-in, fail
+closed on unreadable settings, derived-key cleanup, no new egress, honest limits, route guard and #691 revocation, no
+anonymity wording); confirmed defects fixed with failing-then-passing tests; hosted CI green at the exact head.
+
+# Cover lookups (#696): successor work after the second review (2026-11-26 UTC)
+
+Worker: Claude Code session `newghostpay-77`, continuing `newghostpay-ae`'s parked branch `claude/w-match-cover-20261125`
+(confirmed unclaimed by peers); main `e1d0eb0f` merged. Owned paths: the #696 files below plus `Scan.tsx`'s route guard
+and the unreadable state of the scan-lane store. The second independent review rejected v2; design v3 and its limits:
+`docs/handoffs/MATCH_COVER_20261125.md`. Acceptance: the review's findings fixed or disclosed, regression tests that
+fail without them, a third independent review, hosted CI green on the exact head.
+
+# Cover lookups for matched router payments (owner-approved, opt-in) — 2026-11-25 UTC
+
+Worker: Claude Code session `newghostpay-ae`. Branch `claude/w-match-cover-20261125`, base main `1bea3df3`. The owner approved this slice in this session (new capability, off by default). W3 (ghostpay-backup-60) confirmed it is outside W3/P14 scope; ghostpay-42 informed.
+Problem: verifying a matched router payment sends receipt and transaction lookups that no non-matching announcement gets, so the RPC (and a second RPC) learn which announcements matched (docs/research/privacy-rpc-call-graph.md items 2-3).
+Owned paths: new `apps/web/src/lib/matchCover.ts` (+ tests), the per-page verification loop and an optional `matchCover` parameter in `apps/web/src/lib/scanClient.ts`, `matchCover` in `apps/web/src/lib/scanSpam.ts` scan-lane settings, the checkbox in `Settings.tsx`, the parameter and disclosure line in `Scan.tsx`, three `scanLanes`/`settings.scanLanes` catalog keys, an optional passthrough in `src/test/disclosureHarness.ts`, `src/lib/scanDisclosure.cover.test.ts`, the privacy-limits paragraph, call-graph Phase 8 note, this entry and a handoff.
+Not owned: `packages/chain-adapters` verification (unchanged), checkpoint/reorg logic, anything in #575/#546/#625/#653 beyond the loop hunk.
+Acceptance: off by default and byte-identical behaviour when off; real verification and its order unchanged; decoys through the same verification path on both providers with results discarded; deterministic decoys per payment and window from a viewing-key-derived secret; measured request shapes; truthful disclosure of what remains visible; full hosted CI; independent review.
+
+# Audit fixes F1-F4, F6, F7, F9 (permit clock, router buffer, HTTP 413 scan, sweep destination, embed focus, transfer estimate) — 2026-11-27 UTC
+
+Worker: local Claude Code maintenance/audit session on the existing merged branch
+`claude/a11y-reflow-checkvisibility-20261126` (fast-forwarded to main `3c324239`; no new branch). Owned paths:
+`apps/web/src/lib/payExec.ts` (final build time in `preparePayment` only) and its test;
+`packages/tx-review/src/{review,types}.ts`, `review.test.ts`, `DEVIATIONS.md` item 4;
+`apps/web/public/ghostpay-embed-v2.js` (`openFrame`) and `apps/web/src/embedV2.test.ts`;
+`packages/chain-adapters/src/{router,logs}.ts` and their tests; one comment in
+`packages/invoice-schema/src/passphrase.ts`; `apps/web/src/lib/scanSpam.ts` (`estimateSimilarTransfers` only) and its
+test; this entry. F9 is the duplicate-record defect recorded in review on #696 and #728. F2, F3 and F7 are the same
+changes already carried by draft #728, which stays open and untouched. Not claimed: refusing the fee recipient inside tx-review (the web check already
+refuses it), F5, F8. Acceptance: each new regression fails without its fix and passes with it; hosted CI green on the
+exact head; merge under the integration lock.
+
+---
+
+# P14 consolidation closure and residual handoff — 2026-11-27 UTC
+
+Coordinator `d81aef3d1ca8`; branch `finish/p14-consolidation-handoff-20261127-d81a`.
+Base: qualified F3 candidate `7a8e88d7083905013d0af310c845ba0c5f352dcb`; F3 integration
+and resulting-main gates remain pending at claim time. This is a documentation-only continuation.
+
+Implementation closure: #745/F2, #747/F4 and #749/F3 are merged, with 41/32/32 successful
+resulting-main checks respectively. Their owned runtime/test paths are released by this
+coordinator; the historical entries below are retained. F1 and every other worker’s ownership
+remain intact. Only the four documentation paths below remain owned until this checkpoint’s
+final verification comment closes them and records the explicit integration-lease release.
+
+Owned paths: this additive coordination entry; append-only updates to
+`docs/GHOSTPAY_CONSOLIDATION_TRACKER.md` and
+`docs/handoffs/P14_INDEXER_COMPLETION_20261127.md`; new
+`docs/consolidation/branch-completion-20261127/closed-residual-dispositions.json`.
+No runtime or other owner's path is claimed.
+
+Acceptance: retain all 61 source-pinned residual dispositions and their semantic evidence,
+distinguish represented/stopped/owned/dependent work, record actual P14 merge/check results,
+preserve local work and frozen refs, and leave exact resumption/lock-release evidence.
+Validate JSON/source-row consistency, document links, secret and whitespace checks; qualify
+the documentation candidate through normal gates after F3 resulting-main verification.
+Current owners of #744/#748/#728/#724/#632/#248/#243 and other unresolved work retain control.
+This checkpoint does not assert global semantic completion or authorize stopped work.
+
+---
+
+# P14 F3: source-bound indexer completion caveat (2026-11-27 UTC)
+
+Worker: ChatGPT coordinator `d81aef3d1ca8`; branch `finish/p14-indexer-completion-20261127-d81a`.
+Current incorporated main `6b323a99df1238cb5ebe7248528cc7bce5140e80` contains #745 and #747.
+#745's 41 resulting-main checks passed; #747's resulting-main checks are running. This branch
+retains prerequisite #747 head `1308f18574c78bdfd5602337c1c27a2c87a27d34` through ordinary ancestry.
+Complete qualification and verify each preceding main integration before merging the next queue item.
+Provenance: P14 #658 head `9aed3886693270524beb118685e5947469899c43`, tested evidence source
+`2ab3b243a57bb4e917fb6b9848f78a2a4347d312`, Spec 10 and the evidence matrix's open F3 finding.
+This is an incomplete integrated contract, not newly recovered unmerged donor code.
+
+Ownership refresh includes #728 `298257fd251cf0dd64dc80a92198d296672a6cab` and #724
+`2085ef4483d6387c4301a48c625e9e74c1042c4e`. Neither changes the completion/caveat keys or
+implements F3. Preserve their route/cover guards, checkpoint, auto-rescan and archive hunks, #720's
+manifest work, and all unrelated catalog additions. F1's claim explicitly excludes F2-F4.
+
+Owned paths: `apps/web/src/views/Scan.tsx` completion descriptors, completion announcement and its
+extraction annotation only; additive `scan.done.indexerCaveat` in `apps/web/locales/en.json`,
+`es.json`, `ja.json`, `ar.json` and the existing security-key group; new
+`apps/web/src/views/Scan.indexerCompletion.test.tsx`; new
+`apps/web/e2e/scan-indexer-completion.spec.ts`; F3 evidence-matrix entry,
+`docs/handoffs/P14_INDEXER_COMPLETION_20261127.md`, append-only tracker update and this claim.
+Runtime/catalog worker owns only the runtime/key files; unit worker owns only the new component test;
+browser worker owns only the new E2E test. Each uses a separate worktree; the coordinator alone integrates.
+
+Integration repair: the coordinator also owns only the two existing global Cancelled assertion sites
+in `apps/web/src/views/Scan.test.tsx` (three cases). Fresh #720/#724/#728 source/claim/comment review
+confirms these queries and their safety cases are unclaimed; #720's manifest tests remain untouched.
+Scope them to the visible outcome and correct live announcement, preserving every existing safety check.
+
+Acceptance: append an honest announcement-omission caveat using the plan captured for that run
+(`plan.indexerUrl`), with the same non-sensitive text in the accessible completion announcement.
+Retain the existing outcome/counts, cancelled/limit/error semantics, evidence status, checkpoints,
+route guards and automatic recheck policy. RPC completion has no indexer-specific caveat; later
+settings/locale changes never relabel the captured source, rescan or write a checkpoint.
+Catalog entries remain machine drafts under the existing security-key English fallback/native-review
+gate. Use real local mocked scan/omission fixtures and bounded Chromium/Firefox/WebKit desktop/mobile
+layout coverage, including RTL. No new provider service, verifier, chain, contract, default-mode change,
+experimental activation, dependency upgrade or stopped-product work is included.
+
+---
+
+# P14 F4: truthful scanner completion for late-payment review (2026-11-27 UTC)
+
+Worker: ChatGPT coordinator `d81aef3d1ca8`; branch `finish/p14-caught-up-20261127-d81a`, base main
+`9ae770203d69d23bdc8735912dfe98af5944d4d6`. Provenance: P14 #658 / `claude/priv-t02-rpc-disclosure`,
+source `9aed3886693270524beb118685e5947469899c43`; PRIV-06 test source
+`28725635c3c1f2f56a609533515115c6c4ec27b5`. This finishes an already-integrated incomplete
+contract; it is not newly recovered unmerged functionality. The F1 claim explicitly excludes F2-F4.
+The 154-PR inventory plus newly updated #745/#746/#744/#380/#726 were checked for these hunks:
+all eleven open runtime heads retain the misleading terminal calculation; no checkpoint-test or
+new seller-test path conflict was found. Existing #696/#728 cover/replay ownership and #720 manifest
+test ownership remain intact. PR #745 is separately implemented and awaiting its current hosted gates.
+
+Owned paths: only the `ScanProgress.caughtUp` comment and terminal progress expression in
+`apps/web/src/lib/scanClient.ts`; lag/boundary/recovery cases in
+`apps/web/src/lib/scanClient.checkpoint.test.ts`; new `apps/web/src/views/Scan.caughtUp.test.tsx`;
+the F4 evidence-matrix entry, `docs/handoffs/P14_CAUGHT_UP_COMPLETION_20261127.md`, an append-only
+consolidation-tracker entry and this claim. Runtime `Scan.tsx` and existing `Scan.test.tsx` are not owned.
+
+Acceptance: the flag requires an untruncated fetch and a cursor beyond that page's observed primary head.
+Secondary lag of one block, exactly finality depth and more than that depth reports false; no-secondary,
+equal-head and ahead-secondary controls retain true. Existing fetch bounds, records, checkpoint replay
+tails, discrepancy handling, lag diagnostics and terminal loop break remain unchanged. A real mocked
+late-payment journey retains verified evidence but withholds acceptance while the secondary is one block
+behind; an explicit rescan of the payment range after catch-up restores the existing seller-confirmed
+verification/acceptance journey. Use synthetic fixtures and a deterministic clock; preserve all existing
+failure-path assertions and release gates. This flag proves neither log completeness nor durable storage.
+No new chain, contract, service, experimental activation or stopped-product work is authorized by this claim.
+
+---
+
+# P14 F2: truthful light-source evidence label (2026-11-27 UTC)
+
+Worker: ChatGPT coordinator `d81aef3d1ca8`; branch `finish/core-branch-completion-20261127-d81a`, base main
+`9ae770203d69d23bdc8735912dfe98af5944d4d6`. This finishes an explicitly unclaimed follow-up of integrated P14
+(#658 / `claude/priv-t02-rpc-disclosure`), not a claim of newly recovered unmerged functionality. The current F1
+ownership entry explicitly leaves F2-F4 unclaimed. All 154 open PR heads were compared with main for the owned
+runtime paths; no source overlap was found. Old inherited README changes are not imported; the light-client row
+does not overlap their PIR/padded-range documentation edits.
+Owned paths: `packages/scan-source/src/light.ts` (evidence label/comment), `types.ts` (LightClient flag documentation),
+`composite.test.ts`, `light.evidence.test.ts`, and the light-client integrity row in `packages/scan-source/README.md`;
+the F2 row in `docs/research/privacy-evidence-matrix-2026-11-10.md`,
+`docs/handoffs/P14_LIGHT_EVIDENCE_COMPLETION_20261127.md`, an append-only consolidation-tracker update and this entry.
+Acceptance: a capability flag never advertises log-inclusion proof; successful header checks preserve every returned
+record and coverage value; invalid/missing/mismatched headers and unsupported chains still fail with the existing
+errors; omission and inclusion remain explicitly unverified; existing complete scan-source tests, typecheck, lint,
+build and affected app evidence checks pass; exact-candidate hosted gates and independent review precede integration.
+No proof verifier, backend, dependency, contract, chain expansion, light-client activation or privacy guarantee.
+Original donor and archive refs are unchanged. No integration lock is held by this worker.
+
+---
+
+# Browser self-check: mobile WebKit qualification (2026-11-26 UTC)
+
+Worker: Claude Code session on branch `nodata/fervent-mendel-ybw0va` (restarted from main `8c0b110d`). The two
+earlier self-check entries below are complete: #703 merged as `6c3acdd5` and #719 merged as `5b65ca3a`. Owned paths:
+`apps/web/playwright.mobile.config.ts` (testMatch and grep only), the path filter of
+`.github/workflows/mobile-browser-qualification.yml`, one row of `docs/handoffs/MOBILE_BROWSER_QUALIFICATION.md`, the
+follow-up list in `docs/handoffs/BROWSER_SELF_CHECKS_COMPLETION_20261126.md`, this entry. Acceptance: the existing
+`browser-checks.spec.ts` passes unchanged in the four mobile engine projects (two WebKit, two Chromium) for lean and
+full builds in hosted CI; no other spec, workflow step, permission or dependency changes.
+
+# REV-I5: roll back an unsent wallet attempt when the journal mirror write fails after the IndexedDB commit — 2026-11-26 UTC
+
+Worker: Claude session 01KtKj8kHRL9fZ7vjE4teVQN; branch `nodata/tender-mccarthy-a61kj6` (restarted from main `8c0b110d` after #723
+merged). Owned paths: the attempt bookkeeping in `apps/web/src/lib/wallet.ts` around `beginAttempt` (no change to the lock,
+the journal format or `duplicateAttemptJournal.ts`), one new regression next to the existing mirror-failure case in
+`apps/web/src/lib/walletJournal.adversarial.test.ts`, the REV-I5 row of `docs/engineering/SECURITY_FINDINGS.md`. Reuses the
+existing QA-5 rollback (`removeUnsentAttempt`). Not claimed: REV-I6, QA-I1, LATE-M1 (needs an owner design decision on a
+vault-presence marker), LATE-L1. Acceptance: the regression fails on main and passes with the fix; no wallet request is
+ever started for the rolled-back record; a record whose request reached the provider is never removed; web typecheck,
+lint, full tests; hosted CI; merge under the integration lock.
+
+---
+
+# P14 finding F1: scan checkpoint ownership (mitigates stale-run overwrites of a newer checkpoint) — 2026-11-26 UTC
+
+Worker: Claude session 01KtKj8kHRL9fZ7vjE4teVQN; branch `nodata/tender-mccarthy-a61kj6` (base main `601f2095`). Owned paths:
+`apps/web/src/lib/scanClient.ts` (checkpoint save guard and `localCheckpointStore.save` only), new
+`apps/web/src/lib/scanClient.checkpointOwnership.test.ts`, the two PRIV-06 `it.fails` cases in
+`apps/web/src/lib/scanClient.checkpoint.test.ts`, the replay-tail recording wrapper in `apps/web/src/lib/scanClient.test.ts`
+(forwards the new `expected` argument), the F1 rows of `docs/research/privacy-evidence-matrix-2026-11-10.md`,
+`apps/web/DEVIATIONS.md` (if needed) and `docs/handoffs/SCAN_CHECKPOINT_OWNERSHIP_20261126.md`. Overlap: #696 edits other
+regions of `scanClient.ts` (cover lookups); rebase/merge whichever lands second. Also owned: the `checkpointSeen` argument
+in `apps/web/src/views/Scan.tsx` (one line) and one regression in `apps/web/src/views/Scan.test.tsx`. Not claimed: F2-F4,
+other `Scan.tsx` changes; #725 owns `scanCursorSlot.ts`. Also `apps/web/src/i18n/LanguagePicker.test.tsx` (test timing only:
+the #696 hunk ported verbatim plus the same wait in the sibling case; it failed this PR's hosted `ts-test (web)`).
+Acceptance: both PRIV-06 expected-fail regressions pass as plain tests; a scan that owns the slot can still move its own
+checkpoint backward (reorg, replay, user restart); non-persisting stores keep today's behaviour; seeded multi-writer store
+fuzz; web typecheck, lint, tests and build; full hosted CI; independent review; merge only under the integration lock.
+
+---
+# Browser self-check: IndexedDB availability probe (2026-11-26 UTC)
+
+Worker: Claude Code session on branch `nodata/fervent-mendel-ybw0va` (restarted from main `e7e98109` after #703
+merged). Follow-up recorded in `docs/handoffs/BROWSER_SELF_CHECKS_COMPLETION_20261126.md`. Owned paths: the same
+self-check files as the #703 entry plus `apps/web/src/test/memoryIndexedDb.ts` (additive `deleteDatabase` and
+`databases` for tests only). Acceptance: a fourth local check opens a uniquely named temporary IndexedDB database,
+writes and reads one non-secret record, closes and deletes it; refused or missing IndexedDB reports unavailable, a
+wrong read, failed delete or no response within the deadline reports failed; nothing is left behind; no change to
+any existing IndexedDB store, vault, record format or network behaviour.
+
+# Stack #718: P13 backup test fixture correction (2026-11-26 UTC)
+
+Worker: newghostpay-4e (coordinator); branch `claude/consolidation-stack-20261126`. CI run 45832769192 failed once at
+`packages/confidential-amounts/src/future/p13/store.test.ts` because the "corrupt" record could equal the valid one
+(about 1 run in 64); the stack was held for a fixture correction. Owned path: that test only. The edit now changes a
+middle character to a different one and asserts it differs; every reject and no-write assertion is kept. No P13 runtime,
+dependency, contract or activation change. Acceptance: full hosted CI and independent re-review on the new head.
+
+# #706 journal model fuzzing — newghostpay-4e/features2 (2026-11-26 UTC)
+
+Worker: newghostpay-4e/features2, successor after a machine crash. Branch `claude/journal-fuzz-20261126`, local head
+`17d55c90` plus this change, merged with main `e7e98109`. Owned paths: `apps/web/src/lib/duplicateAttemptJournal.fuzz.test.ts`,
+#706's other paths and this entry. #710 (separate worker) also edits `duplicateAttemptJournal.ts` and adds
+`returned.fuzz`/`returned.stress` tests; this change edits no production file.
+Acceptance: the 2026-11-26T07:03:35Z review points (independent expected-state model, exact membership, deterministic
+sensitivity checks, schema refusal separated from schema-valid edits); every hosted check green at the exact head;
+independent review.
+
+## Post-#691/#692 journal fuzzing and audit fix — 2026-11-26 (ghostpay-backup-60)
+
+- Worker: Claude Code session `ghostpay-backup-60`. Branch `claude/journal-fuzz-20261126`, base main `e1d0eb0f7c8688ae280f774f36e01e08d2435deb`.
+- Owns: `apps/web/src/lib/duplicateAttemptJournal.fuzz.test.ts` (new seeded model fuzz: never-overwrite hash, duplicate refusal, malformed journal fails closed; a seeded mutant that overwrites hashes is caught), `apps/web/src/lib/duplicateAttemptJournal.clearUnsaved.test.ts` (new), the `clearAttempt` guard in `duplicateAttemptJournal.ts`, one new error key in four catalogs plus `securityKeys.ts`, and two rows in `docs/engineering/SECURITY_FINDINGS.md` (JRNL-L4 fixed; IDLE-M1 recorded as an accepted-design residual risk awaiting an owner decision, not changed).
+- Acceptance: the new regression is red before and green after; neighboring journal, policy, wallet-attempt and i18n suites pass; lint is clean; hosted CI is green on the exact head. No change to idle/recovery behavior, thresholds, dependencies, workflows or contracts.
+
+# #707 integration with main `e7e98109` — newghostpay-4e/features2 (2026-11-26 UTC)
+
+Worker: newghostpay-4e/features2, successor of the workers below after a machine crash. Branch
+`claude/p0-keys-m2b-successor-20261126`, head `9d373b2b` merged with main `e7e98109` (#624, docs only; the sole conflict
+was this file, resolved as a union). Owned paths: #707's owned paths below and this entry.
+Acceptance: every hosted check green at the exact head; independent review.
+
+# #707 CI repair — newghostpay-7d/features (2026-11-26 UTC)
+
+Worker: newghostpay-7d/features, successor of the cut-off ghostpay-78 worker below. Branch
+`claude/p0-keys-m2b-successor-20261126`, head `13bb8ffc`. Owned paths: #707's owned paths below and this entry.
+Change: removed the `exact` role-query option (TS2769, which failed the web build in four hosted checks) from
+`SellerKeys.stealthExport.test.tsx`; a string accessible name already matches exactly, so the assertion is unchanged.
+Acceptance: every hosted check green at the exact head.
+
+# #707 completion — ghostpay-78 worker (2026-11-26 UTC)
+
+Worker: ghostpay-78 worker, finishing PR #707 after its session ended. Branch `claude/p0-keys-m2b-successor-20261126`,
+head `45e4b222` merged with main `194e225c`. Owned paths: #707's owned paths below; the new recovery control's accessible
+name (`stealthExport.open.verify`, and `stealthExport.verify.differentFile` that names it) in the four catalogs and the
+specs/tests that reference it; review fixes in #707's own new source.
+Acceptance: hosted e2e (full/lean), Pages-on-anvil and all other checks green at the exact head; the established
+"Verify backup" keystore control keeps its name and every existing spec passes unchanged.
+
+# M2b P0-KEYS successor — #622 onto current main (2026-11-26 UTC)
+
+Worker: Claude Code session `ghostpay-backup-60` (successor; the #622 cloud coordinator `nifty-bohr` is not reachable locally and ghostpay-42 confirmed no driver). Branch `claude/p0-keys-m2b-successor-20261126` = #622 head `8c7ae937a3ef056cd646c5f2d955f803a5ecb2ce` (ancestry kept, original ref untouched) merged with main `e1d0eb0f`.
+Owned paths: #622's owned paths (entry below) and the merge resolution: four catalogs (union of #622's 44 keys and main), `SellerKeys.tsx` (StealthExportRecovery kept visible because recovery is allowed while idle-suspended; the archive stays hidden while suspended, per main), this entry.
+Acceptance: #622's acceptance below, plus #689 idle suspension: no export or master-key load may bypass suspended authority or the sole-copy replacement confirmation; fresh hosted CI on the exact head; independent review.
+
+# M2b P0-KEYS — archive, master backup and in-app recovery on top of main's individual export (2026-11-24 UTC)
+
+Worker: Claude Worker A (core implementation) under coordinator `session_01Tj2YczsZkZSBgfB5BugRcS` (nifty-bohr).
+Branch: `claude/nifty-bohr-5ra2ap`; exact base main `03695a7b`. Source: PR #372 head `055d33e0` (Spec 18) plus this
+worker's earlier extraction `d7a11357` (kept on `backup/m2-d7a11357`). Extends main's `07722292` individual export; does
+not replace it or its adaptations (`ExportRpc.assertCurrent`, no displayed file names, full credential reset).
+Owned paths: additive parts of `apps/web/src/lib/paymentKeyExport.ts` (archive, master backup, recovered-key holders,
+open/verify) and new tests beside it; `apps/web/src/components/StealthExport{Archive,Master,Recovery}.tsx` and new
+component tests; minimal generalisation of `StealthExportVerification.tsx`; additive mounts in `apps/web/src/views/Scan.tsx`
+(archive) and `SellerKeys.tsx` (master backup, open export; PRs #573/#530 also edit SellerKeys: mounts only); matching
+locale/security keys; a new archive/recovery e2e spec; `docs/engineering/milestones/M2-P0-KEYS.md`.
+Not owned: WalletAttempts*, duplicateAttemptJournal*, reconciliation*, Sweep, relayer, contracts, other docs/engineering files.
+Acceptance: encrypted all-discovered archive and master backup behind re-authentication; recovery of any
+ghostpay-stealth-* file in a fresh session; tampered/wrong-passphrase/oversize/wrong-chain/unknown-format refused; secrets
+wiped; lock/session/chain cancellation; full web, ux-vault and recovery gates; no new endpoint or fallback client.
+
+# Accessibility reflow counts rendered controls only (2026-11-26 UTC)
+
+Continued by worker `newghostpay-7d/small` after the claiming worker was cut off: reviewed the uncommitted one-line predicate change, committed it unchanged and opened the PR. Hosted CI is the gate; no Playwright run on this machine.
+
+Worker: ghostpay-78 worker; branch `claude/a11y-reflow-checkvisibility-20261126` from main `194e225c`. Ports the reflow predicate from open #632/#613 (their other contents untouched; those PRs keep their owners). Owned paths: the `assertReflow` control filter in `apps/web/e2e/accessibility.spec.ts` and this entry.
+Acceptance: the filter uses `element.checkVisibility()` (as main's `responsive-pages.spec.ts` already does) so controls inside a closed `<details>` with stale layout rectangles are not counted; every rendered control is still checked against the same viewport bounds and width rule; no assertion, viewport, tolerance, axe rule or timeout changes; full hosted CI (full/lean e2e, mobile) green at the exact head.
+
+# Multi-part QR note names the renamed import control (2026-11-26 UTC)
+
+Worker: ghostpay-78 worker; branch `claude/multipart-note-copy-20261126` from main `194e225c`. Ports d205fc30 from closed #664 (`claude/fc-integration-20261125`). Owned paths: the `create.qr.multipartNote` value in `apps/web/locales/{en,es,ja,ar}.json` and this entry.
+Acceptance: the note quotes main's exact `requestFile.summary` label "Scan an invoice QR or open a request file" in all four catalogs; only the quoted label changes; `node scripts/i18n/check.mjs` reports 0 errors; the CreateInvoice multi-part test passes; full hosted CI green at the exact head.
+
+# GP-PAGES-04 idle deadline and real page freeze qualification, successor of #582 (2026-11-26 UTC)
+
+Worker: ghostpay-78 worker; branch `claude/idle-sweep-freeze-tests-20261126` from main `194e225c` (#582 `test/gp-pages-04-frozen-page-sweep-resume` stays open and untouched; it was stacked on #544's old base).
+Owned paths: new `apps/web/src/lib/sweep.idleDeadline.test.tsx`, new `apps/web/e2e/idle-freeze.spec.ts`, this entry. Test-only; no product, workflow or dependency change.
+Acceptance: a delayed final Sweep simulation returning at 59,999 ms signs and hands off once, while 60,000 and 60,001 ms reach neither `signDigest` nor the handoff; a real Chromium freeze (CDP `Page.setWebLifecycleState`) for 59,999/60,000/60,001 ms and an early resume followed by a delayed periodic check lock or keep authority accordingly in the existing desktop e2e project (full and lean); hosted CI green at the exact head.
+
+# #637 completion — template import epoch bound (2026-11-26 UTC)
+
+Worker: ghostpay-78 worker; branch `automation/20261125/bug/template-import-epoch-bound` (existing #637 head `02d6a800`) merged with main `194e225c` (no rebase). Owned paths: #637's existing files (`packages/ux-schedule/src/template.ts`, `packages/ux-schedule/src/template.import-epoch.test.ts`, its handoff), the ACTIVE_WORK union resolution and this entry.
+Acceptance: `parseTemplates` rejects `updatedAtMs` above 8.64e15 (the same bound `readClock` enforces), keeps inclusive endpoints and ordinary round trips; `@ghostpay/ux-schedule` tests pass; full hosted CI green at the exact head before the PR is marked ready. No merge, no other branches.
+
+# GP-BUG — Template import accepts nonrepresentable epoch timestamps (2026-11-25 UTC)
+
+Worker: sequential bug-only coordinator; no independent verifier. Branch `automation/20261125/bug/template-import-epoch-bound`; base `c8e131c1402a96b5c9d5cd8dc5ae4f0c02188063`.
+Owned paths: `packages/ux-schedule/src/template.ts`, new `packages/ux-schedule/src/template.import-epoch.test.ts`, additive claim here, and `docs/handoffs/UX_SCHEDULE_TEMPLATE_IMPORT_EPOCH_20261125.md`.
+Discovery: 249 open PRs enumerated and all changed-file lists inspected for these paths; none edits them. Previous template clock rollback PR #565 is merged; preserve its monotone updates. Existing template.test.ts remains untouched. Recheck inventory before any integration.
+Reproduction: exact production blob ffaf6827ff814f40303a5127490caba98ea4c554; parseTemplates accepts 8640000000000001 for both timestamps even though readClock rejects it and JS Date cannot represent it. Minimal acceptance: reject timestamps beyond the same inclusive epoch upper bound as readClock with bad_time; retain valid epoch endpoints, normal imports, monotonic ordering, and atomic list validation. No Pages reachability or funds impact claimed.
+Integration lease generation 20 released, not acquired. GitHub DNS blocked native checkout; use isolated source-hash-matched reproduction and hosted exact-head CI; independent review required before merge. No deployment or shared branch edits.
+
+# #631 completion — negative handled timestamp (2026-11-26 UTC)
+
+Worker: ghostpay-78 worker; branch `automation/20261124T2125Z/bug/schedule-negative-handled` (existing #631 head `bc8fa946`) merged with main `194e225c` (no rebase). Owned paths: #631's existing files (`packages/ux-schedule/src/schedule.ts`, `packages/ux-schedule/src/schedule.negative-handled.test.ts`, its handoff), the ACTIVE_WORK union resolution and this entry.
+Acceptance: `markHandled` rejects negative and non-integer occurrence timestamps; nonnegative monotonic behavior unchanged; `@ghostpay/ux-schedule` tests pass; full hosted CI green at the exact head before the PR is marked ready. No merge, no other branches.
+
+# GP-BUG — Negative handled timestamp breaks recurring schedule evaluation (2026-11-24 UTC)
+
+Worker: sequential BUG-ONLY coordinator, isolated branch `automation/20261124T2125Z/bug/schedule-negative-handled`; base `c8e131c1402a96b5c9d5cd8dc5ae4f0c02188063`.
+Owned paths: `packages/ux-schedule/src/schedule.ts`, new `packages/ux-schedule/src/schedule.negative-handled.test.ts`, this additive ownership claim and `docs/handoffs/UX_SCHEDULE_NEGATIVE_HANDLED_20261124.md`. All 243 open PR changed-file inventories at discovery checked; none contains either product or regression path; no conflicting claim identified in main ACTIVE_WORK. Recheck before integration.
+Evidence: source blob a8161275fd2efd3c4f47a90a90cf9c4d24016e1c: markHandled accepts negative safe integers, producing lastHandledMs=-1 from a new schedule, whereas evaluateRecurrence rejects negative lastHandledMs. Source-body V8 probes show two failures and four controls passing. Acceptance: test-first rejection of negative timestamps for both fresh and already-handled schedules; preserve nonnegative monotonic behavior and normal evaluation. No funds, runtime changes outside this helper, deployment, or dependency changes. Generation-20 integration lease released, not acquired. Local git DNS unavailable; hosted CI and separate independent review remain mandatory. No direct browser reachability claimed.
+
+# #710 independent review follow-up and merge train #704 (2026-11-26 UTC)
+
+Worker: `newghostpay-4e/train2`, continuing the uncommitted work of `newghostpay-7d/train` after a host crash.
+Branches `claude/account-privacy-audit-20261126` (from head `f53e82f1`), `claude/global-masking-286-20261126` (from
+`5996aa49`) and `claude/fc05b-main-20261126` (train, from `bfbf6200`). Owned paths for the follow-up: the
+terminal-marker lines of `apps/web/src/views/Pay.tsx`, `apps/web/src/views/WalletPrivacy.lifecycle.test.tsx`,
+`apps/web/src/components/PrivacyControls.tsx`, `apps/web/src/components/QrFrame.tsx` and their tests,
+`docs/handoffs/ACCOUNT_PRIVACY_AUDIT_20261126.md`, this file's registry rebuild and this entry.
+`duplicateAttemptJournal.ts` is not changed.
+Acceptance: the review findings reproduce in failing tests and pass after the fixes, the existing pending/done
+no-extra-send cases and durable journal evidence are kept, `ACTIVE_WORK.md` differs from main by additions only,
+full hosted CI passes on the exact train head. No deployment, contracts, live wallets or funds.
+
+# FC-05b onto current main: Bitcoin retained-sweep and session pending-spend guards, superseding #669 (2026-11-26 UTC)
+
+Worker: Claude Code session `ghostpay-42`, continuing the orphaned FC round-1 PRs (entry below). Branch
+`claude/fc05b-main-20261126` (PR #704), base main `a9d2a033`, main merged in at `019d5d18`, `e1d0eb0f`, `6c3acdd5`. Input: #669 exact head `8ea606ff`, merged
+`--no-ff` as `a86cc353`. Donor branch and PR untouched. #669's CHANGES-REQUIRED review of the pending-spend guard
+(M1/L1/L2/M2) is addressed in `d22db6fa` (red tests), `ebda107d` (fix) and `b39bfd8e` (independent re-review fixes).
+Owned: `apps/web/src/features/btc/BtcView.tsx` and its pendingSpend/retainedSweep tests, the
+`btc.scan.pendingSpend` key in four locales and `securityKeys.ts`, #669's scanner/state/worker test additions, the
+FC-05b consolidation note, the Bitcoin case of `chainViews.i18n.test.tsx` "keeps an earlier broadcast reference separate", this entry. Stop-work check: full profile only, testnet proof of concept, sweep fund safety.
+No F14 routing or chain-scope change. Acceptance: M1/L2/M2 tests red at `a86cc353` and green at the head; hosted CI
+green at the exact head; merge through the shared lock queue.
+
+# #286 item 1: global sensitive-data masking onto current main (2026-11-26 UTC)
+
+Worker: Claude Code session `ghostpay-68`. Branch `claude/global-masking-286-20261126`, base main
+`e1d0eb0f7c8688ae280f774f36e01e08d2435deb`. Main has no masking module; the donor line (#569 `c30283d2` over #373,
+diverged 2026-11-20 by 319 files) is a mixed historical composition and is not merged. Narrow hand port of its masking
+mechanism (`privacyMode.tsx`, `SensitiveContent.tsx`, `PrivacyControls.tsx`, `PrivacyQuickHide.tsx`; spec
+`docs/privacy-release/v1-01-masking.md` on that line) with `Recovered-from:` trailers; donor refs untouched.
+Owned paths: new `apps/web/src/lib/privacyMode.tsx`, `apps/web/src/components/{SensitiveContent,PrivacyControls,PrivacyQuickHide}.tsx`
+and their tests; the provider/boundary hunks in `apps/web/src/AppShell.tsx`; the masked body of the wallet request
+review in `apps/web/src/components/WalletDisclosure.tsx`; one reveal-revocation line in `apps/web/src/lib/useWalletPrivacy.ts`;
+additive `privacyUx.*` catalog keys and a security-key group; user doc `docs/user/privacy-masking.md`; this entry and a handoff.
+Not owned: Settings model/`settings.ts` (the preference is a separate store so toggling never invalidates in-flight
+payment or Sweep consent bound to saved settings), clipboard (#687), account/vault revocation (#691), private history
+gate (#691), exports (#675), BTC/Solana/TRON PoC views, Pay/Sweep/Scan internals.
+Acceptance: default off; when on, masked routes, the live region and the wallet request review are absent from the
+live document (text, attributes, form values, accessibility tree), not merely blurred; reveal is deliberate, expires
+within 30 s on both clocks, fails closed on clock rollback and is revoked by navigation, lock, session change, hidden
+tab, page exit and wallet invalidation; drafts and sole-copy keys survive masking; unreadable or invalid saved
+preference fails closed to masked; light fuzz of the reveal clock model; web typecheck/lint/tests; hosted CI incl.
+full/lean browser on the exact head. No dependency, workflow, contract, network or deployment change.
+
+# Account/vault/session privacy: light fuzz, stress, QA and bug/security audit (2026-11-26 UTC)
+
+Worker: Claude Code session `ghostpay-68`, on the owner's instruction after reviewing #697/#698 (APPROVE sent to the
+integration coordinator `ghostpay-backup-60`). Branch `claude/account-privacy-audit-20261126`, base #698 head
+`f45025b5f2cfa27f938c10c35490b42768b8ae0a` (= #692 `c7b9badc` + #691 `6b4bbe17` + main `019d5d18`); rebased onto main
+after #697/#698 land. Does not push to or move the #697/#698 integration branches or any donor ref.
+Owned paths: new fuzz/stress test files beside `apps/web/src/lib/duplicateAttemptJournal.ts`,
+`apps/web/src/lib/useWalletPrivacy.ts` and `apps/web/src/components/SessionPresentationBoundary.tsx`; a narrow fix in a
+#691/#692 runtime file only for a defect confirmed by a failing test (reported to the coordinator first); this entry and
+`docs/handoffs/ACCOUNT_PRIVACY_AUDIT_20261126.md`.
+Acceptance: bounded fast-check properties (existing pinned dev dependency, no new packages) and stress cases pass; any
+confirmed defect gets a failing-then-passing regression; assertions, coverage thresholds, timeouts and release gates
+unchanged; affected web typecheck/lint/tests pass locally and full hosted CI passes on the exact head. No deployment,
+contracts, live wallets or funds.
+
+# Seller keystore recovery: audit follow-ups after the #693 close-out (2026-11-26 UTC)
+
+Worker: Claude Code session `newghostpay-77`; branch `claude/keystore-recovery-followups-20261126`, base main `e1d0eb0f`.
+Why: #693 verified complete (no regression). The close-out review and a follow-on audit of the same restore path found
+three gaps (a prompt bug, a restore step that could pass without running, a path filter that missed the spec's inputs).
+Owned paths: `scripts/recovery/stealth-export-recover.mjs` (terminal passphrase prompt only), its tests in
+`scripts/recovery/seller-keystore-recover.test.mjs`, the `paths` filter of
+`.github/workflows/mobile-browser-qualification.yml`, the wrong-passphrase step of
+`apps/web/e2e/devices-mobile-restore.spec.ts`, the header comment of test-only
+`packages/ux-vault/src/keystore-portable.vectors.testutil.ts`, this entry. No application, codec, format, vector or
+dependency change.
+Acceptance: the prompt fix has a regression test that fails without it; the WebKit phone/tablet workflow, with the
+changed restore spec, runs on the exact head; hosted CI green.
+
+# BUG — deterministic unsupported-locale formatter fallback (2026-11-25 local / 2026-11-26 UTC)
+
+Worker: GhostPay bug-only sequential worker. Branch `automation/20261126/bug/i18n-unsupported-locale-fallback`; base `a9d2a033c1055c59765b388a02512c6285764dae`. Owned paths: `packages/i18n/src/ux/format.ts`, new `packages/i18n/src/ux/format.unsupported-locale.test.ts`, this additive claim, new `docs/handoffs/I18N_UNSUPPORTED_LOCALE_FALLBACK_20261126.md`. Scope: existing documented English fallback for unsupported number/date locales; no new feature, amount parsing, fiat integration, network, payment, dependency or release changes. All 223 open PR file inventories from the initial date-partitioned search plus three newly published PRs (#697–699) checked without an overlap in `packages/i18n/src/ux/`; no direct formatter claim in main ACTIVE_WORK. Recheck before integration. Acceptance: test-first deterministic injected non-English default and native source-matched reproduction, preserve supported/invalid locale and RangeError behavior; exact-head CI, independent review and legitimate integration lease required. Baseline isolated Node 22.16.0 with LANG=de_DE.UTF-8: 8/12 probes pass, four fallback failures; four source Git blobs hash-verified. Generation 40 integration lease observed released, not acquired. No other branch writes or merge.
+
 # Security remediation PR #220 — refresh onto main `e7e98109` (2026-11-26 UTC)
 
 Worker: Claude session 01KtKj8hxPXds2YXGcbiFzEw; branch `security/mythril-full-remediation-20261118` (base `5467c158`, merged
@@ -10,6 +546,7 @@ Not claimed: `classifyAmount` tolerance validation (reported on #220 by the owne
 Acceptance: regression tests fail before / pass after each fix; full hosted CI green on the exact head except the base-wide Mythril gate.
 
 ---
+
 # #701 review upkeep (2026-11-26 UTC)
 
 Worker: `newghostpay-4e/reviewer2`; branch `nodata/zen-dirac-vkl84j` (#701), merged with main `e7e98109`. Owned paths:
@@ -4662,6 +5199,227 @@ required; no new local test run or browser execution is claimed.
 - Does not own, edit, merge, mark ready or take the integration lock for #691/#692/#697/#698; `ghostpay-backup-60` remains their sole integration coordinator (claim above). Original donor refs and #697/#698 heads are untouched.
 - Acceptance: record exact pins, remaining-difference analysis, actual local and hosted evidence for composition #698 `c2427b6f657b8ffd2c595ddb9dd47420480aa239` on main `019d5d18`, and the precise remaining integration steps. No runtime, test, threshold, dependency, workflow, contract or deployment change.
 - Result (2026-11-26): the coordinator merged #697 (`045ac2d3`) and #698 (`e1d0eb0f`) under lock generation 42. Resulting main tree `3dc2d13377e22fe12a1664559c7af6c5f381b257` is identical to the composition verified here; no source difference or defect remains. Main push CI on `e1d0eb0f` was still queued when first read; it later concluded success (run 45769417481, 07:35 UTC).
+
+
+## Privacy preview retention on page return — 2026-11-26 (9d8f)
+
+- Worker: ChatGPT coordinator `/root`, session `9d8f35d3c02b`; branch
+  `finish/privacy-preview-resume-20261126-9d8f`.
+- Base: current main `601f20955b435eede448c6d82d8315705d7e381d`.
+- Continue the merged #676/#681 presentation-only portion of #287 item 4:
+  recheck opted-in invoice/proof preview expiry and reconcile saved preferences
+  on page-history restoration, visibility changes and frozen-page resume.
+- Owns: `apps/web/src/lib/useInvoicePreviewRetention.ts`,
+  `apps/web/src/components/MetadataRetentionControls.tsx`, their focused tests,
+  `apps/web/src/components/PaymentProofQr.retention.test.tsx`,
+  `apps/web/src/views/CreateInvoice.retention.test.tsx`, a separate bounded
+  browser acceptance test if needed, `docs/specs/19-local-metadata-retention.md`,
+  this additive entry and `docs/handoffs/PRIVACY_PREVIEW_RESUME_20261126.md`.
+- Overlap checked against current main and open #696/#717/#718/#719/#722 file lists;
+  none owns these runtime files. Original #676 claim records its completed merge.
+- Acceptance: first supported lifecycle event rechecks expiry without a timer
+  tick; before-deadline and default-off previews remain; fresh saved policy is
+  used after missed storage events; invoice/proof scopes remain independent;
+  stale approvals and replaced previews cannot affect successors; event
+  listeners are removed on unmount; recovery/financial records and exports
+  remain intact. Deterministic synthetic regressions must fail before the
+  repair and pass afterward, followed by relevant typecheck/lint/build and
+  independent review.
+- Persistent vault timestamp retention and vault-format migration remain
+  deferred. No contract, dependency, wallet/network, active-worker branch,
+  privacy-profile activation, release-gate or deployment changes.
+
+## Orphaned-branch consolidation worker: scan checkpoint store refuses suspended sessions — 2026-11-26 (Claude session 01KtKj8j9nvFsJc4iTJPUGGm)
+
+- Worker: orphaned-branch consolidation worker, branch `nodata/clever-meitner-6a8eg0`, base main `601f20955b435eede448c6d82d8315705d7e381d`.
+- Feature 1 (one at a time): recover the unmerged commit `bbdc9a944` (also `d5fe06e7a`, carried by about 60 dormant `automation/*` and `claude/*` donor refs, never merged) onto current main. Main's `sessionViewingKey`/`sessionHolding` in `apps/web/src/lib/scanCursorSlot.ts` still match the key id while the sole-copy session is idle-suspended, so the cached checkpoint store keeps reading, writing and clearing, and an uncached name derivation throws instead of refusing.
+- Owns only `apps/web/src/lib/scanCursorSlot.ts`, `apps/web/src/lib/scanCursorSlot.test.ts` and this entry. No other path, dependency, workflow, contract or chain change. Donor refs are untouched.
+- Not claimed: #689/#691/#692 idle and account-privacy scopes (merged), #718 stack, #609, #707, the integration lock (held by `claude-newghostpay-7d`, generation 48); no merge is attempted until that lock is free.
+- Acceptance: the four regression tests recovered from `bbdc9a944` fail on main `601f2095` and pass with the fix; web typecheck, lint and tests for the affected workspace pass; hosted CI green on the exact head; the lock is acquired immediately before merge.
+
+## Orphaned-branch consolidation worker: QR assembler idle deadline ignores rejected chunks — 2026-11-26 (Claude session 01KtKj8j9nvFsJc4iTJPUGGm)
+
+- Worker: orphaned-branch consolidation worker, branch `nodata/clever-meitner-6a8eg0`, base main `cdddda0bf7beea89ed46c180050a3387336621c8` (feature 1 merged as #725; integration lock generation 52 acquired and released).
+- Feature 2 (one at a time): recover the unmerged donor commits `118ae827a` and `3f135bc46` (also `6b683651e`), carried by dormant `evidence/*` and `automation/*` donor refs. On main, `Assembler.add` in `packages/qr-exchange/src/assembler.ts` refreshes `#lastActivity` before it checks for `CHUNK_CONFLICT`, so a repeated CRC-valid conflicting chunk keeps an incomplete multi-part QR assembly alive indefinitely. The refresh now follows the conflict check; rejected chunks leave the idle deadline unchanged.
+- Owns only `packages/qr-exchange/src/assembler.ts`, `packages/qr-exchange/src/assembler.test.ts` (donor tests plus one seeded model test) and this entry. No dependency, workflow, contract or chain change. Donor refs are untouched.
+- Acceptance: the donor conflict test and the seeded model test fail on main `cdddda0b` and pass with the fix; qr-exchange package tests (14 files) and affected typecheck, lint and tests pass; hosted CI green on the exact head; the integration lock is acquired immediately before merge.
+
+## Orphaned-branch consolidation worker: Sweep signing revalidates the reviewed sweep — 2026-11-26 (Claude session 01KtKj8j9nvFsJc4iTJPUGGm)
+
+- Worker: orphaned-branch consolidation worker, branch `nodata/clever-meitner-6a8eg0`, base main `6209ba4377f858693b54df9d4354c02cc35c4348` (features 1 and 2 merged as #725 and #729; integration lock generations 52 and 53 acquired and released).
+- Feature 3 (one at a time): recover the unmerged donor commits `6ed5c66b5` (also `f2344b379`), `cc192b1e2`, `a603603d` (also `0f22c370`) and the tests `91af62ee2`, `8d7adf85d`, `43199c3fa`, carried by dormant `automation/*` donor refs. On main, `relayedSweep` and `directSweep` in `apps/web/src/lib/sweep.ts` derive the one-time key and sign without revalidating the review the user approved, so a review that was cancelled or changed during an RPC read still reaches the local signature (the view only refuses at the pre-handoff hook), and a native sweep signs whatever `eth_getBalance` returns instead of the reviewed amount. A session that locks before authorization escapes `guard` as an unhandled rejection.
+- Adaptation: the donor `Sweep.tsx` hunk that gated `setError` on unchanged scopes is not taken, because main intentionally shows the "review changed" message (`sweep.reviewChanged`) after such a change.
+- Owns only `apps/web/src/lib/sweep.ts`, `apps/web/src/lib/sweep.test.ts`, `apps/web/src/lib/sweep.reviewAuthority.test.ts` (new), `apps/web/src/views/Sweep.tsx`, `apps/web/src/views/Sweep.quoteLifecycle.test.tsx` and this entry. No dependency, workflow, contract, chain, relayer or locale change. Donor refs are untouched.
+- Acceptance: the 17 recovered tests fail on main `6209ba43` and pass with the fix; all sweep unit and view tests pass; affected typecheck, lint and tests pass; hosted CI green on the exact head; the integration lock is acquired immediately before merge.
+
+## Orphaned-branch consolidation worker: remove the legacy runtime-fetch unsigned-dev manifest loader — 2026-11-26 (Claude session 01KtKj8j9nvFsJc4iTJPUGGm)
+
+- Worker: orphaned-branch consolidation worker, branch `nodata/clever-meitner-6a8eg0`, base main `6e4d2b69cb3f280c7843ace8a059f4fe1ed49ec1` (features 1 to 3 merged as #725, #729 and #731; integration lock generations 52, 53 and 55 acquired and released).
+- Feature 4 (one at a time): recover the unmerged donor commit `c66b63a04` (also `2f0b2de51`, SEC-14 / D-09), carried by dormant `automation/*` and `claude/*` donor refs. On main, `apps/web/src/lib/manifest.ts` still exports `loadManifest`, a runtime fetch of `./deployments/<id>.json` verified with the legacy text scheme that accepts unsigned testnet manifests as `unsigned-dev` and `console.warn`s. Its only callers are tests; the app uses `loadBundledManifest`. It is removed, and `scan-bundle` now fails any build whose JS carries the acceptance warning or the legacy signing domain.
+- Adaptation: the donor test imported `stripComments` from `scan-bundle.mjs`, which main no longer exports (AST scanner since `81614e56`); the test now strips comments with the TypeScript printer. The `unsigned-dev` member stays in the `ManifestState` type for the views' warning of injected test states.
+- Owns only `apps/web/src/lib/manifest.ts`, `apps/web/src/lib/manifest.test.ts`, `apps/web/scripts/scan-bundle.mjs`, `apps/web/src/scanBundle.test.ts`, the audited-`fetch()` list in `apps/web/src/privacyInvariants.test.ts` (three sites become two) with its two references in `docs/threat-model/` and this entry. No dependency, workflow, contract, chain, relayer or locale change. `@ghostpay/chain-adapters` keeps its `verifyTextManifestSignature` export for the relayer and ops-monitor. Donor refs are untouched.
+- Acceptance: the 3 recovered tests fail on main `6e4d2b69` and pass with the change; a real `vite build` passes the extended `scan-bundle` gate; affected typecheck, lint and tests pass; hosted CI green on the exact head; the integration lock is acquired immediately before merge.
+
+## Orphaned-branch consolidation worker: CLI errors no longer echo pasted payment links or raw catalog keys — 2026-11-26 (Claude session 01KtKj8j9nvFsJc4iTJPUGGm)
+
+- Worker: orphaned-branch consolidation worker, branch `nodata/clever-meitner-6a8eg0`, base main `01c72bd586f0f2cfe023857273642f3ee6dedaf6` (features 1 to 4 merged as #725, #729, #731 and #733; integration lock generations 52, 53, 55 and 56 acquired and released).
+- Feature 5 (one at a time): recover the unmerged donor commit `b8e235d78` (R11-4, ported from an unpushed 2026-11-11 commit), which exists only on the dormant donor ref `claude/exciting-brown-7v69cr`. On main, `READ_FAILED` and `WRITE_FAILED` in `packages/cli` quote the whole path option value, so a bearer payment link (`#gpi=` fragment) pasted where a file name belongs lands in stderr and in the JSON error, and `i18n check` prints catalog keys and locale names raw, so a catalog key with terminal escape sequences can drive the terminal. Error text now shows only the quoted basename of a plain local path; URL-like values, fragments, queries, control or format characters and over-long names are replaced by a generic phrase, and `i18n check` escapes keys and locale names.
+- Owns only `packages/cli/src/io.ts`, `packages/cli/src/ctx.ts`, `packages/cli/src/commands/i18n.ts`, `packages/cli/src/untrusted-echo.test.ts` (new), a README note in `packages/cli/README.md` and this entry. No dependency, workflow, contract, chain, web or relayer change. Donor refs are untouched. The other `claude/exciting-brown-7v69cr` commits (R11-1 flag positions, R11-3 malformed observations, reconcile propose, relayer and relayer-guard changes) are not claimed here.
+- Acceptance: 7 of the 8 recovered tests fail on main `01c72bd5` and all pass with the change; CLI package tests (38 files) and affected typecheck, lint and tests pass; hosted CI green on the exact head; the integration lock is acquired immediately before merge.
+
+## Orphaned-branch consolidation worker: reconcile propose reports only freshly verified records as verified — 2026-11-26 (Claude session 01KtKj8j9nvFsJc4iTJPUGGm)
+
+- Worker: orphaned-branch consolidation worker, branch `nodata/clever-meitner-6a8eg0`, base main `b044dd452a932d3446c6155bf97e977b707c4c00` (features 1 to 5 merged as #725, #729, #731, #733 and #734; integration lock generations 52, 53, 55, 56 and 57 acquired and released).
+- Feature 6 (one at a time): recover the unmerged donor commit `0d387b42b` (R11-2, ported from an unpushed 2026-11-11 commit), which exists only on the dormant donor ref `claude/exciting-brown-7v69cr`. On main, `reconcile propose` in `packages/cli` builds proposals from stored plus current records but exports a proposal with `paymentVerifiedAtReview: true` for a stored record that was not among the observations verified in this run, and its listing reports `currentChainVerified: true` beside such a record. `reconcile confirm` still refuses it, so no state changes, but the report is untruthful about what was verified against the chain. `propose --out` now refuses such a record (`CURRENT_EVIDENCE_REQUIRED`, exit 1, no file written), and the listing sets `currentChainVerified` per proposal, true only for freshly verified records, with the top-level flag true only when every listed proposal is.
+- Owns only `packages/cli/src/commands/reconcile.ts`, `packages/cli/src/reconcile-stored-only.test.ts` (new), a README paragraph in `packages/cli/README.md` and this entry. No dependency, workflow, contract, chain, web or relayer change. Donor refs are untouched. The R11-1 global-switch commit on that ref is not claimed here.
+- Acceptance: the 4 recovered tests fail on main `b044dd45` and pass with the change; CLI package tests (39 files) and affected typecheck, lint and tests pass; hosted CI green on the exact head; the integration lock is acquired immediately before merge.
+
+## Orphaned-branch consolidation worker: CLI honours global switches only in flag positions — 2026-11-26 (Claude session 01KtKj8j9nvFsJc4iTJPUGGm)
+
+- Worker: orphaned-branch consolidation worker, branch `nodata/clever-meitner-6a8eg0`, base main `56bc550b27cb48fc88c6d1740e174cb2d9144d59` (features 1 to 6 merged as #725, #729, #731, #733, #734 and #735; integration lock generations 52, 53, 55, 56, 57 and 58 acquired and released).
+- Feature 7 (one at a time): recover the unmerged donor commit `6abf7c324` (R11-1, ported from an unpushed 2026-11-11 commit), which exists only on the dormant donor ref `claude/exciting-brown-7v69cr`. On main, `run()` in `packages/cli` removes `--help`, `-h` and `--version` from anywhere in argv before the command options are parsed, including where the token is the value of a value-taking option. `webhook verify --header --help --json` on a forged body therefore prints help with `ok: true` and exits 0 without checking the HMAC, and the same holds for every command (for example `invoice verify --pin --help`), so a script that trusts the exit status accepts an unverified document. `run()` now resolves the command from the leading words first and hands the rest to `parseArgs` with the command's own option spec; a global switch is recognised only in a flag position, a `--` token directly after a value-taking option is a missing value (exit 2, as main already does for other `--` tokens), `-h` there is that option's value, and nothing after `--` is a switch.
+- Owns only `packages/cli/src/args.ts`, `packages/cli/src/run.ts`, `packages/cli/src/global-switches.test.ts` (new), a README note in `packages/cli/README.md` and this entry. No dependency, workflow, contract, chain, web or relayer change. Donor refs are untouched.
+- Acceptance: 382 of the 390 recovered test cases fail on main `56bc550b` and all pass with the change; CLI package tests (40 files, 979 tests) and affected typecheck, lint and tests pass; hosted CI including the CLI operator qualification on Linux, macOS and Windows green on the exact head; the integration lock is acquired immediately before merge.
+
+## Orphaned-branch consolidation worker: recover two missing regression tests (final account reread, invoice paste focus) — 2026-11-26 (Claude session 01KtKj8j9nvFsJc4iTJPUGGm)
+
+- Worker: orphaned-branch consolidation worker, branch `nodata/clever-meitner-6a8eg0`, base main `8c0b110d8043b8895aae1422226ac6cafdab40a2` (features 1 to 7 merged as #725, #729, #731, #733, #734, #735 and #736; integration lock generations 52, 53, 55, 56, 57, 58 and 59 acquired and released).
+- Feature 8 (one at a time, test-only): recover two regression tests that exist only on dormant donor refs and cover behavior already correct on main. (1) `80d237fe6`: `apps/web/src/lib/wallet.finalAccount.test.ts` pins that the final wallet account reread (`recheckWallet`) rejects a silently changed account before sending, touching the attempt journal or requesting a typed-data signature, and still sends and records one attempt when the account is unchanged. Adapted to main: this node-environment file has no `navigator.locks`, so the success case passes the repo's `createTestLocks()` manager to `sendViaWallet`. A mutation check (turning the refusal at `wallet.ts:402` into a `return`) turns the two refusal tests red. (2) `b1176b395`: `apps/web/e2e/focus-scope.spec.ts` pins the accepted focus scope of the AppShell `[view, fragment]` effect (SEC-30 / R-04): a rejected paste keeps focus on Read, a successful load focuses `main`; it passes against current source in the desktop project.
+- Owns only `apps/web/src/lib/wallet.finalAccount.test.ts` (new), `apps/web/e2e/focus-scope.spec.ts` (new) and this entry. No production, dependency, workflow, contract or chain change. Donor refs are untouched.
+- Acceptance: both tests pass on main `8c0b110d`; the wallet test fails under the mutation above; affected typecheck, lint and tests pass; hosted CI (including e2e full and lean) green on the exact head; the integration lock is acquired immediately before merge.
+
+## Orphaned-branch consolidation worker: close the review gaps in the merged CLI fixes (R11-1, R11-2, R11-4) — 2026-11-27 (Claude session 01KtKj8j9nvFsJc4iTJPUGGm)
+
+- Worker: orphaned-branch consolidation worker, branch `nodata/clever-meitner-6a8eg0`, base main `34a7341dd7cbfa162a842c710f72ac9d0593c5df` (features 1 to 8 merged as #725, #729, #731, #733, #734, #735, #736 and #737; integration lock generations 52, 53, 55 to 60 acquired and released).
+- Feature 9 (one at a time): recover the unmerged donor commit `158bfdf89` ("close the gaps an independent review found in R11-1, R11-2, R11-4"), which exists only on the dormant donor ref `claude/exciting-brown-7v69cr` and fixes holes in the CLI fixes merged as #734, #735 and #736. (1) R11-1, major: when no command matches the leading words, `run()` still scanned the rest of argv for switches, so a mistyped command with an attacker-chosen header value (`webhok verify --header --version --json`, `webhook verifyy --header --help`, `split --total 10 --share --version`, `sandbox chain --seed --help`) printed version or help with `ok: true` and exit 0; only a switch directly behind the words now counts, and the unknown command is reported (exit 2). (2) R11-2, minor: the top-level `currentChainVerified` of `reconcile propose` was true for an empty listing; it is now true only when at least one proposal is listed and every listed proposal is freshly verified. (3) R11-4, minor: `displayPath` echoed `gpi=v1...` (a link fragment pasted without its `#`), other `key=value` text and the last segment of a network path; `=` is no longer an accepted name character and `//host/...` and UNC paths are withheld. README states the rule and the deliberate change that a command line with an error reports the error even when it also asks for help. Follow-up on the same head after an independent scoped review on #734 and #740: `displayPath` also withholds basenames shaped like secret material (a run of 32 or more hex characters, with or without `0x` and when nested, or a long mixed-case base64url token), covered for `READ_FAILED` and `WRITE_FAILED` in human and JSON modes with synthetic values; error codes and ordinary file names are unchanged.
+- Owns only `packages/cli/src/run.ts`, `packages/cli/src/io.ts`, `packages/cli/src/commands/reconcile.ts`, the three CLI test files `global-switches.test.ts`, `reconcile-stored-only.test.ts` and `untrusted-echo.test.ts`, the README rule in `packages/cli/README.md` and this entry. No dependency, workflow, contract, chain, web or relayer change. Donor refs are untouched. The R11-3 commit on that ref has no failing test on main and is not claimed.
+- Acceptance: the 9 new test cases fail on main `34a7341d` and all pass with the change; CLI package tests (40 files, 991 tests) and affected typecheck, lint and tests pass; hosted CI including the CLI operator qualification on Linux, macOS and Windows green on the exact head; the integration lock is acquired immediately before merge.
+
+## Orphaned-branch consolidation worker: saved Sweep attempt journal parsed with the strict JSON parser — 2026-11-27 (Claude session 01KtKj8j9nvFsJc4iTJPUGGm)
+
+- Worker: orphaned-branch consolidation worker, branch `nodata/clever-meitner-6a8eg0`, base main `b8f1c2eef09a823a931ac5c4cff9ae443b82acdb` (features 1 to 9 merged as #725, #729, #731, #733, #734, #735, #736, #737 and #740; integration lock generations 52 to 63 acquired and released by this worker).
+- Feature 10 (one at a time): recover the product change of the unmerged donor commit `81674a63f`, carried by the open draft evidence PR #349 (base `integration/ghostpay-main-recovered-fixes-20261120`, 59,904 added lines of census evidence, last activity 2026-11-21) and not on main. On main, `readSweepAttempts` in `apps/web/src/lib/sweepAttemptJournal.ts` parses the saved Sweep attempt journal with `JSON.parse`, which silently accepts duplicate keys (also escaped duplicates such as `"status"` twice), so a record can say one thing to the validator and another to a later reader. The adjacent wallet journal already uses the shared strict parser. The reader now uses `parseStrictJson` from `@ghostpay/invoice-schema` and keeps the existing `SweepJournalUnavailableError` and the original saved bytes when the state is malformed.
+- Owns only `apps/web/src/lib/sweepAttemptJournal.ts` (3 lines), `apps/web/src/lib/sweepAttemptJournal.strictJson.test.ts` (new) and this entry. No dependency (invoice-schema is already a web dependency), workflow, contract, chain, locale, fee, signing or storage-format change. PR #349 and its donor refs are untouched; the evidence paths in it are not recovered here.
+- Acceptance: 11 of the 12 recovered tests fail on main `b8f1c2ee` and all pass with the change; the 22 related journal, sweep and wallet test files pass; affected typecheck, lint and tests pass; hosted CI green on the exact head; the integration lock is acquired immediately before merge.
+
+## Orphaned-branch consolidation worker: idle-freeze fixture waits for DevToolsActivePort — 2026-11-27 (Claude session 01KtKj8j9nvFsJc4iTJPUGGm)
+
+- Worker: orphaned-branch consolidation worker, branch `nodata/clever-meitner-6a8eg0`, base main `3c324239cd2c0c4d22c547afcc0f67d5e154cc8f` (features 1 to 10 merged as #725, #729, #731, #733, #734, #735, #736, #737, #740 and #741; integration lock generations 52 to 64 acquired and released by this worker).
+- Feature 11 (one at a time, test infrastructure, not from a donor): the `nativePage` fixture of `apps/web/e2e/idle-freeze.spec.ts` (added by `fdb85e71`, merged through #718; its only entry in this ledger is the original owner entry, no open PR or branch claims it) launches Chromium with `--remote-debugging-port=0` and reads `DevToolsActivePort` once, immediately after `launchServer` resolves. Chromium can publish that file slightly later, so the read intermittently fails with `ENOENT` before any page exists. Observed on hosted CI twice on this worker's own PRs (run 45889530142 `e2e (full)` on #731 and run 45913336841 `e2e (lean)` on #740, both signature `idle-freeze.spec.ts:24 ENOENT … DevToolsActivePort`, 180 or 192 other tests passing), each time costing a re-run and hours of runner queue. The fixture now waits, bounded (15 s, 50 ms poll), for the file to exist with a numeric port on its first line; any error other than `ENOENT`, or no port within the bound, still fails the fixture. No freeze assertion, test case, timeout of the test or workflow is changed.
+- Owns only `apps/web/e2e/idle-freeze.spec.ts` (fixture helper) and this entry. No product, dependency, workflow or config change.
+- Acceptance: a deterministic simulation shows the single immediate read fails with `ENOENT` while the helper recovers from a late and from an empty file and still fails loudly for a file never written and for a non-`ENOENT` error; the spec passes 32 of 32 locally (4 cases x 8 repeats); eslint passes; affected typecheck, lint and tests pass; hosted CI green on the exact head; the integration lock is acquired immediately before merge.
+
+## Orphaned-branch consolidation worker: idle-lock and Settings import draft regression tests — 2026-11-27 (Claude session 01KtKj8j9nvFsJc4iTJPUGGm)
+
+- Worker: orphaned-branch consolidation worker, branch `nodata/clever-meitner-6a8eg0`, base main `9ae770203d69d23bdc8735912dfe98af5944d4d6` (features 1 to 11 merged as #725, #729, #731, #733, #734, #735, #736, #737, #740, #741 and #743; integration lock generations 52 to 65 acquired and released by this worker).
+- Feature 12 (one at a time, test-only, recovered from donors `33f21322f` and `925413661`): two regression tests for behaviour already on main. (a) `session.idleLock.test.ts`: after an idle lock, a retained copy with a valid vault credential cannot reach spending, raw-key or viewing-key access (`authorizeEncryptedVault`, `verifyVaultForCurrentSession`, `withSessionSecrets`, `revealViewingKey` all refuse and the raw-access callback never runs). (b) new `Settings.partialImportDrafts.test.tsx` (GP-BUG-04): a preferences-only settings import applies only the selected preferences, keeps unsaved RPC, second RPC, relayer and pinned-signer drafts, does not save them early, and a later explicit save keeps both. Adapted from the donor: main's default theme is already `dark`, so the imported theme is `light` (a `dark` import is a no-op with no Apply button), and the saved relayer URL has no trailing slash.
+- Owns only `apps/web/src/lib/session.idleLock.test.ts` (one case), `apps/web/src/views/Settings.partialImportDrafts.test.tsx` (new) and this entry. No product, dependency, workflow or config change. Not recovered: donor `59baeb77b` (`Scan.test.tsx` unsaved private tag label across lock; passes on main) because an earlier entry above claims a regression in the same file; left for that owner.
+- Acceptance: mutation checks turn both tests red (unconditional `setRelayer` in the import apply path fails the Settings test; `revealViewingKey` bypassing suspension fails the new idle-lock case); the web test files pass; affected typecheck, lint and tests pass; hosted CI green on the exact head; the integration lock is acquired immediately before merge.
+
+
+# GP-BUG — invoice link accepts browser-invalid ASCII IDN hosts (2026-11-26 UTC)
+
+Worker: sequential bug-only coordinator; branch `automation/20261126T2118Z/bug/invoice-link-invalid-host`; base `6e4d2b69cb3f280c7843ace8a059f4fe1ed49ec1`. Owned paths: `packages/payment-uri/src/invoice-link.ts`, new `packages/payment-uri/src/invoice-link.invalid-host.test.ts`, additive claim here, new `docs/handoffs/INVOICE_LINK_INVALID_HOST_20261126.md`. All 151 enumerated open PR changed-file inventories inspected with no overlap in these source/test paths; historical #670 merged. Main and newest PR list refreshed before branch creation. Acceptance: reject invalid punycode hosts via local URL parser, retain valid IDNs, ordinary hosts, default/nondefault port, allowlist and dev IPv4 behavior; no network requests, authentication, feature, dependency, contract, payment, fund, deployment or archived product change. Source-matched standalone Node 22/TS 5.8 baseline 8/12, candidate 12/12. Regression commit precedes production repair; full hosted CI and independent review required; integration lease generation 55 released, not acquired. Native full checkout unavailable (DNS failure).
+
+
+# GP-BUG — #732 exact-head reconciliation (2026-11-26 UTC)
+
+Worker: sequential bug-only coordinator; same owned branch `automation/20261126T2118Z/bug/invoice-link-invalid-host`. Main `b044dd452a932d3446c6155bf97e977b707c4c00`, prior head `0b2649c42bec9617c05965efcc91e3067358d4a2`; current main source blob matches original base; preserve exact regression and production blobs. Prior 151-PR inventory refreshed for all four open PRs updated since 21:18 UTC (#735, #380, #732, #726), no other source overlap; fresh full census attempted but connector call limit prevented completion. Prior five hosted workflows passed at prior head; no independent submitted review. Generation 57 lease released, not acquired. Keep draft, fresh CI and independent review required; no main merge.
+
+
+## BUG-ONLY — exact-payment tolerance validation (2026-11-26 UTC)
+
+Worker: sequential ChatGPT bug-repair coordinator; branch `automation/20261126T1728Z/bug/exact-payment-tolerance`; base `601f20955b435eede448c6d82d8315705d7e381d`. Own only `packages/ux-flow/src/reconcile.ts` (`classifyAmount`), new `packages/ux-flow/src/reconcile.exact-tolerance.test.ts`, this additive claim and `docs/handoffs/UX_FLOW_EXACT_TOLERANCE_20261126.md`. All 170 enumerated open PR changed-file inventories checked for reconcile paths; no overlap. #220 is merged and explicitly excludes this finding from its claim. Ordinary payment reconciliation only, no stopped product or proof authorization changes. Source-derived Node/TypeScript probe: 5 exact-payment invalid-tolerance cases fail, 13 neighboring cases pass. Acceptance: regression committed first, reject invalid tolerance for exact and non-exact amounts with BAD_TOLERANCE, retain exact bigint math and valid classifications; independent review, fresh hosted exact-head CI and legitimate lease required before merge. Lease generation 48 held by `claude-newghostpay-7d`; no takeover or merge. No full local checkout or browser test claimed.
+
+
+## BUG-ONLY — exact supported locale extension negotiation (2026-11-26 UTC)
+
+Worker: ChatGPT bug-repair round, sequential coordinator; no independent verifier. Branch `automation/20261126/bug/i18n-exact-extension-negotiation`, base `194e225cc115f894650b2e9ef3390854241e4143`. Own only `packages/i18n/src/negotiate.ts`, new `packages/i18n/src/negotiate.extensions.test.ts`, this additive claim, and `docs/handoffs/I18N_EXACT_EXTENSION_NEGOTIATION_20261126.md`.
+
+Observed: `negotiateLocale` drops extensions before comparing the exact canonical supported tag; it can select a different locale or mislabel a truncated match as exact. Exact source blobs matched, standalone Node 22/TypeScript 5.8.3 probes 10/14 baseline and 14/14 candidate, strict compilation passed. Acceptance: regression first; exact match before existing truncations, correct `how`, preserve preference order, fallbackChain/truncations, duplicate-q fix, invalid/default behavior and 32 cap. No new feature, dependency, release or payment/contract/network interaction. Historical same-source PR #506 merged; all 203 open PR changed-file lists inspected for negotiate/bcp47 paths, no conflict found, latest PR inventory unchanged before branch creation. Main lease generation 44 released at inspection, not acquired. Keep draft pending independent review and exact-head hosted CI, applicable browser and refreshed ownership. Direct Pages impact unverified.
+
+## Defensive repair train #724 + #732 + #726 + #713 + #715 — 2026-11-27 UTC (newghostpay-67 worker W2)
+
+- Branch: carrier `finish/privacy-preview-resume-20261126-9d8f` (#724). Base main `3f7fcd0a7042eef0f03f1b513bb65f1037998c07`.
+- Composed exact heads: #724 `0d083443fedf397765c5fcd712fb495771e351b3`, #732 `8fc4c2f5ee072b59948dce0ba72e254de6b435cd`, #726 `8e90e154c8e85188202d0425e68bd4e43d22bba2`, #713 `1d9a6b053e98ddb196304e608b23b2d52437dff7`, #715 `1fcadbff48c0840b2ca9ea291f5d849e38a969bd` (merged last; `--no-ff` merges; ACTIVE_WORK conflicts keep both sides).
+- Owns only the composition, this entry and any defect repair found in review. Donor branches are untouched.
+- Acceptance: AI source review of the four runtime diffs and the #715 build-guard diff; all PR checks green on the exact head. No merge into main, no integration lock, no deployment.
+
+# BUG — Share-target payment label ambiguity (2026-11-27 UTC)
+
+Worker: sequential bug-only coordinator; branch `automation/20261127T0420Z/bug/share-payment-label-ambiguity`; base `3c9fc0ab518b8a308716dc87cc860424118718eb`. Owned paths: `packages/ux-intake/src/deeplink.ts`, new `packages/ux-intake/src/deeplink.share-ambiguity.test.ts`, additive claim here and new `docs/handoffs/UX_INTAKE_SHARE_LABEL_AMBIGUITY_20261127.md`.
+All 155 open PR file inventories examined at discovery; none includes either owned source path. #424 is merged; preserve explicit-port rejection. Main unchanged on pre-claim recheck. Observed baseline: five exact Git blobs compiled with strict TypeScript 5.8.3; Node 22.16.0 synthetic probes 13/20 passed, seven label ambiguity failures. Existing display key omits parsed labels; distinct requests overwrite one another. Acceptance: different or absent/present labels yield `ambiguous-share` irrespective of ordering/channel; equal decoded labels still deduplicate; existing address, amount, asset, chain, fragment and warning behavior preserved; labels not added to safe display or logs. No feature, dependency, network or fund changes. Native checkout DNS blocked; hosted exact-head CI and independent review required. Generation 67 held by another worker; no integration lock acquired.
+
+
+# BUG — Preserve checksum diagnostics for duplicate shared payment requests (2026-11-27 UTC)
+
+Worker: sequential bug-only coordinator; branch `automation/20261127T0824Z/bug/share-checksum-warning`; base `1b07cd7b0614a342cc2d1b2ea0238a952957eadb`. Own only `packages/ux-intake/src/deeplink.ts`, new `packages/ux-intake/src/deeplink.share-checksum.test.ts`, this additive claim and new `docs/handoffs/UX_INTAKE_SHARE_CHECKSUM_WARNING_20261127.md`. Prior #748 ownership released in comment 7213490605 after merge. All 156 open file inventories inspected before #748 integration; immediately after merge the partitioned 155-open-PR list is exactly the same minus #748, with no competing parser or new test owner. Preserve all other source and claims.
+Observed: existing duplicate map overwrites an unverified-checksum diagnostic when a later equivalent input has no warning. Independent native verification comment 7210306424 reproduced the pre-existing defect; current main parser and address blobs verified locally in bounded extraction (Git SHA-1 recomputed) with 13/19 baseline vs 19/19 proposed map-loop cases. Acceptance: raw and payment URI duplicate warnings preserved regardless of input order, unflagged duplicates stay unflagged, canonical destination, amount/label identity, safe display and fragment warnings unchanged. Regression-first commit, minimal fix, fresh hosted CI and separate review required. Native checkout DNS blocked; no native test claim. Generation 68 released; no merge authorization until all gates pass. No stopped-feature, dependency, network, fund or release changes.
+
+## Integration of repair train #724 — 2026-11-27 UTC (local coordinator newghostpay-e3)
+
+- Branch: carrier `finish/privacy-preview-resume-20261126-9d8f` (#724), successor to the newghostpay-67 W2 claim (no longer running). Merged main `a7f9abf80f2c9aee9b7d130a9bbc3af1b8131053`; only conflict was this file, both sides kept.
+- Owns only the composition, this entry and any repair needed by hosted CI on the exact head. Acceptance: all PR checks green on the exact head, merge under the integration lock, resulting-main checks green.
+
+## Port of ERC-20 anvil and remaining fuzz suites from #751 — 2026-11-27 UTC (newghostpay-e3, coordinator)
+
+- Branch: existing merged `claude/idle-sweep-freeze-tests-20261126` fast-forwarded to main `3dba277e`; no new branch. Asked for by the #751 owner (comment on #751).
+- Owns only the 12 added test, test-utility and handoff files from `5ba3a468` and this entry. No product, dependency, workflow or config change.
+- Not ported: `reconciliationVault.replay.fuzz.test.ts` (needs #742). Acceptance: hosted CI green on the exact head, including the anvil and recovery jobs.
+
+## Defensive fixes from the second source audit (W4-1..W4-5) — 2026-11-27 UTC (newghostpay-e3 worker W4)
+
+- Branch: existing merged `claude/multipart-note-copy-20261126` (#712) fast-forwarded to main `1894b4bb`; no new branch.
+- Owns only: the payer proof receipt in `apps/web/src/views/Pay.tsx`; non-deep handling of wrong-view-tag records in `packages/ux-vault/src/reconciliation-portable.ts` and the `deep` page flag in `apps/web/src/lib/scanClient.ts`; `apps/web/src/lib/displayText.ts`; observer row 4 (`components/Disclosure.tsx`, four locales, `docs/threat-model/THREAT_MODEL.md`); `key()` in `packages/chain-adapters/src/scanVerify.ts`; their tests; this entry.
+- Shared files, separate hunks: `Pay.tsx`, `scanClient.ts` and locales with `claude/journal-fuzz-20261126` (W2); `Pay.tsx` and `reconciliation-portable.ts` with open #742.
+- Acceptance: each fix has a regression test that fails without it; no tombstone, reorg or depth rule weakened; no dependency, contract, workflow or activation change; draft PR, no merge.
+
+- Coordinator (newghostpay-e3) finished W4 stopped run and added W6-1/W6-2: also owns `StealthExportArchive.tsx` and its test, `securityKeys.ts` (one key), `chain-adapters/src/registryEns.ts` and its test.
+
+
+## BUG-ONLY: deep-link redirect validation order — 2026-11-27
+
+Worker: sequential GhostPay bug-repair coordinator; branch `automation/20261127T1524Z/bug/deeplink-redirect-order`, base `1894b4bbd31f4765e56bd5fb05d51342fc5bd8b7`. Own only `packages/ux-intake/src/deeplink.ts`, new `packages/ux-intake/src/deeplink.redirect-order.test.ts`, this additive entry and `docs/handoffs/DEEPLINK_REDIRECT_ORDER_20261127.md`.
+Ownership: all 146 open PR changed-file inventories in the partitioned snapshot through #755 checked, no matching parser or dedicated test path. Earlier #748/#752 repairs are already merged; preserve them. Rechecked main unchanged and recent open list unchanged. Generation 72 integration lease released, not acquired.
+Observed: R5 requires unsafe redirect parameters to reject the whole HTTPS deep link. The existing invoice-fragment and share-target returns precede validation. Exact local Git blob 30cd209628805ea78436beb2fca1d5e49297bcc8 transpiled with TypeScript 5.8.3, Node 22.16.0, synthetic mocked payload import boundary: 12/18 baseline, 18/18 proposed correction. This is not native full-package Vitest. Acceptance: commit regression first, move existing validation loop before both early returns, retain safe navigation, payload warnings and normal behavior; no dependencies, new functionality, release or deployment. All hosted exact-head checks, independent review, fresh ownership and legitimate lock acquisition required before any merge. All ten stopped workstreams untouched.
+
+
+---
+
+# Bug-only receipt input snapshot — 2026-11-27
+
+Worker: sequential GhostPay bug-repair worker; isolated branch `automation/20261127/bug/receipt-input-snapshot`, base `fd5e591151765b2dafe6345501ca40393e0f176a`. Own only `packages/ux-receipts/src/verify.ts`, new `packages/ux-receipts/src/verify.receipt-snapshot.test.ts`, this additive claim and `docs/handoffs/RECEIPT_INPUT_SNAPSHOT_20261127.md`. All 145 open PR file lists in the refreshed census were checked; no proposed source or new regression path overlaps. Historical source owners #449/#663/#690 merged; #450/#664 closed. Other receipt tests and manifests remain untouched. Original verifier blob `88b696d05bca3f2692e29256285f849458b53bfe` remains unchanged from prior isolated reproduction. Acceptance: regression-first, consistent digest/query/comparison snapshot despite caller mutation during await; preserve valid and invalid receipt semantics, no activation of unmounted utility, no new dependencies or network/fund/contract/deployment work. Prior isolated exact-blob red/green 5/9 to 9/9; no native checkout available. Exact-head hosted CI and genuine independent review required. Generation 76 released, not acquired. Draft only until qualification.
+
+## November 27 audit — Pages deployment archive
+
+Worker `pages` on `audit/nov27-pages-87060`, base `b890a76603b924829fdbe2b4fb2c5626f0cf4e36`. Own the packaging, independent archive verification and deployment dependency in `.github/workflows/pages.yml` and the matching archive regression. Preserve other workers' smoke and origin changes. Acceptance requires a non-publishing build to verify the exact uploaded deployment tar against separately retained build checksums and the full triggering SHA. A tar missing `.nojekyll` must fail. Only the coordinator integrates.
+## November 27 audit · LATE-L1 integration qualification
+
+Worker: Codex, branch `audit/nov27-late-87060`, base `b890a76603b924829fdbe2b4fb2c5626f0cf4e36`.
+Qualify existing PR #742 head `2b4826e01d5238a7f581ddd11f6910df827d465e` against this main.
+Own only this additive claim, resolving integration conflicts and any missing audit regression in the
+reconciliation tests. Preserve the PR's reconciliation and masking changes and all main-side changes.
+Acceptance: ordinary resume rechecks formerly verified unlinked candidates, withholds credit until verification
+and explicit seller acceptance, and permits checkpoints past never-verified candidates. Exercise repeated
+resume, reorg and the merged masking behavior. The audit coordinator handles remote integration.
+## November 27 audit — inventory
+
+Worker: audit coordinator's inventory reviewer, branch `audit/nov27-inventory-87060`, base `b890a76603b924829fdbe2b4fb2c5626f0cf4e36`. Trace individual and archive recovery-export lookups. Own the recovery-export record in docs/privacy/network-egress-inventory.json, its corresponding exposure matrix in docs/privacy/browser-network-isolation.md, and the inventory or export regression needed to establish request counts. Preserve user warnings and authorization.
+## November 27 audit — idle
+
+Worker: audit coordinator's idle reviewer, branch `audit/nov27-idle-87060`, base `b890a76603b924829fdbe2b4fb2c5626f0cf4e36`. Confirm the current IDLE-M1 owner decision and reproduce idle expiry, credential boundaries, encrypted backup and fresh-profile recovery. Own only this claim and focused sole-copy browser acceptance. Preserve custody policy until an explicit owner decision.
+The owner accepted the walk-up encrypted-export risk on November 27. Scope now includes the existing suspended-session warning in all four catalogs, session-security guide, finding and readiness registers, and the independent-keystore browser journey. No custody implementation changes.
+## 2026-11-27 — audit qualification of existing verification harnesses
+
+Codex audit qualification worker, branch `audit/nov27-qualification-87060`, base
+`b890a76603b924829fdbe2b4fb2c5626f0cf4e36`. Own only this additive claim and
+`docs/audits/nov27-qualification.md`. Verify the ERC-20 artifacts from #753,
+exercise the #665 independent verifier on the selected local candidate, and
+trace the elliptic advisory. The original verifier branches remain with their
+respective owners. Use disposable fixtures and record only sanitized results.
+## November 27 audit — approved Pages payment origin
+
+Worker Codex origin, branch `audit/nov27-origin-87060`, base `b890a76603b924829fdbe2b4fb2c5626f0cf4e36`. Own the Pages build origin, lean manifest and wallet gates, smoke origin checks, corresponding workflow arguments, docs and regressions. Preserve the signed manifest, on-chain read-back, shared-testnet decision and explicit local fixture. Acceptance requires zero wallet requests on origin mismatch, working approved-origin payment and manifest-free demo, and an independent post-deployment origin check. Coordinate workflow hunks with the deployment archive worker.
 
 # W5 independent payment-state verifier — 2026-11-25 UTC
 

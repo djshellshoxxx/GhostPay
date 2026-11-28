@@ -198,6 +198,21 @@ describe.each(FIXTURES)('$name outcomes use the current locale without repeating
     expect(screen.getByRole('alert').textContent).not.toContain(first);
     expect(screen.getByRole('alert').textContent).toContain('may have been sent');
     await act(async () => { release?.(); await Promise.resolve(); });
+    if (f.prefix === 'btc') {
+      // FC-05b: an input of a transaction this session handed to the server stays unavailable for a new sweep (the
+      // session pending-spend guard), so no second transaction can be signed over it. The earlier reference is still
+      // kept apart from the alert, under its own disclosure.
+      expect(screen.getByRole<HTMLInputElement>('checkbox', { name: /^Sweep / }).disabled).toBe(true);
+      const reviewButton = screen.queryByRole<HTMLButtonElement>('button', { name: 'Review sweep' });
+      expect(reviewButton === null || reviewButton.disabled).toBe(true);
+      expect(screen.queryByText('Signed transaction')).toBeNull();
+      expect(screen.queryByText(first, { exact: true })).toBeNull();
+      await user.click(screen.getByText('Transaction reference', { selector: 'summary' }));
+      expect(await screen.findByText(first, { exact: true })).toBeTruthy();
+      expect(screen.getByRole('alert').textContent).not.toContain(first);
+      expect(chain.broadcasts).toHaveLength(1);
+      return;
+    }
     const destination = f.prefix === 'btc' ? bech32.encode('bcrt', [0, ...bech32.toWords(new Uint8Array(20).fill(4))])
       : f.prefix === 'sol' ? base58.encode(new Uint8Array(32).fill(10)) : tronAddressFromHex(`41${'0a'.repeat(20)}`);
     const second = await sign(f, user, destination);

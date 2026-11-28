@@ -98,10 +98,10 @@ describe('light source evidence (PRIV-T07)', () => {
     expect(describeScanEvidence(s)).toStrictEqual({ blockIdentity: 'verified', recordInclusion: 'unverified', intervalCompleteness: 'unverified' });
   });
 
-  it('omission with verifiesLogs === true: integrity reads proof, yet completeness is still never claimed', async () => {
+  it('omission with verifiesLogs === true: integrity stays unverified and completeness is never claimed', async () => {
     const s = light(lc({ verifiesLogs: true }), range(RAW.filter((x) => x !== RAW[RAW.length - 1])));
     const r = await s.fetch(REQ);
-    expect(s.integrity).toBe('proof');
+    expect(s.integrity).toBe('unverified');
     expect(ids(r)).not.toContain(`${blockHash(1500n)}:2`);
     expect(describeScanEvidence(s, { lightClient: { verifiesLogs: true } })).toStrictEqual({
       blockIdentity: 'verified',
@@ -120,9 +120,24 @@ describe('light source evidence (PRIV-T07)', () => {
     for (const g of Object.values(getters)) expect(g).not.toHaveBeenCalled();
   });
 
-  it('LIMITATION (event proofs): integrity "proof" is derived from the lc.verifiesLogs flag alone, never from a checked proof', () => {
-    expect(light(lc({ verifiesLogs: true })).integrity).toBe('proof');
-    expect(light(lc({ verifiesLogs: false })).integrity).toBe('unverified');
+  it.each([
+    { verifiesLogs: false, integrity: 'unverified' },
+    { verifiesLogs: true, integrity: 'unverified' },
+    { verifiesLogs: false, integrity: 'proof' },
+    { verifiesLogs: true, integrity: 'proof' },
+  ] as const)('keeps the label unverified before and after fetch with verifiesLogs=$verifiesLogs and inner integrity=$integrity', async ({ verifiesLogs, integrity }) => {
+    const result = { ...await range().fetch(REQ), skipped: 3 };
+    const original = structuredClone(result);
+    const fetch = vi.fn(() => Promise.resolve(result));
+    const inner: PublicLogSource = { kind: 'range', integrity, fetch };
+    const source = light(lc({ verifiesLogs }), inner);
+
+    expect(source.integrity).toBe('unverified');
+    const returned = await source.fetch(REQ);
+    expect(source.integrity).toBe('unverified');
+    expect(fetch).toHaveBeenCalledExactlyOnceWith(REQ, undefined);
+    expect(returned).toBe(result);
+    expect(returned).toStrictEqual(original);
   });
 
   it('LIMITATION (stale state): lc.head() is never consulted, so a light client lagging behind the inner head only fails via blockHash', async () => {

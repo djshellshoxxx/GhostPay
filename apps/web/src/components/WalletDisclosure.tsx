@@ -2,7 +2,9 @@ import { Fragment, createContext, useContext, useEffect, useId, useLayoutEffect,
 import { SOURCE_TRANSLATOR, useI18nOptional } from '../i18n/context';
 import { subscribeAppLock } from '../lib/appLock';
 import { UserFacingError } from '../lib/errors';
+import { usePrivacy } from '../lib/privacyMode';
 import { subscribeSession } from '../lib/session';
+import { focusPrivacyControl } from './SensitiveContent';
 import { WalletDisclosureController, type PendingWalletDisclosure, type WalletDisclosureGate } from '../lib/walletDisclosure';
 import '../styles/walletDisclosure.css';
 
@@ -38,6 +40,11 @@ function DisclosureDialog(props: { readonly pending: PendingWalletDisclosure; re
   const description = useId();
   const dialog = useRef<HTMLDivElement>(null);
   const cancel = useRef<HTMLButtonElement>(null);
+  // Read when the dialog closes, not captured by the cleanup: a quick hide masks the page in the same update that
+  // cancels this review. A ref, so a mask change alone never reruns the focus cleanup.
+  const { masked } = usePrivacy();
+  const maskedNow = useRef(masked);
+  maskedNow.current = masked;
   const request = props.pending.request;
   useLayoutEffect(() => {
     cancel.current?.focus();
@@ -76,6 +83,12 @@ function DisclosureDialog(props: { readonly pending: PendingWalletDisclosure; re
       && opener.closest('[hidden], [inert]') === null) {
       opener.focus();
       if (document.activeElement === opener) return;
+    }
+    // Masked (#355): the opener's view has left the document, so the neutral privacy control in the shell, no longer
+    // inert at this point, is the safe target. An unmasked page keeps the heading fallback.
+    if (maskedNow.current) {
+      focusPrivacyControl();
+      if (document.activeElement instanceof HTMLElement && document.activeElement.matches('[data-privacy-safe-control]')) return;
     }
     focusPageHeading();
   }, [props.opener]);
@@ -159,12 +172,11 @@ export function WalletDisclosureProvider(props: { readonly scope: unknown; reado
       return Object.freeze({ assertCurrent });
     };
   }, [controller, props.scope]);
-  useLayoutEffect(() => {
-    const unmount = controller.mount();
-    // Main has no global privacy mask yet (#569): the dialog is always allowed to present while mounted.
-    controller.allowPresentation(true);
-    return unmount;
-  }, [controller]);
+  useLayoutEffect(() => controller.mount(), [controller]);
+  // #286 item 1: account, destination and amount are shown only on a revealed screen. Masking cancels an open review
+  // and refuses new ones (nothing reaches the wallet); the user reveals, then repeats the action.
+  const { masked } = usePrivacy();
+  useLayoutEffect(() => { controller.allowPresentation(!masked); }, [controller, masked]);
   useLayoutEffect(() => { controller.revoke(); }, [controller, props.scope, props.revokeOn]);
   useEffect(() => {
     const revoke = (): void => { controller.revoke(); };
