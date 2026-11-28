@@ -1,12 +1,13 @@
 {
   "format": "ghostpay-integration-lock/1",
-  "status": "held",
+  "status": "released",
   "owner": "chatgpt-nov27-sixfinding-20261128",
   "token": "cc5c54b2eb1661c48c3f2575f5e6afd8",
   "generation": 78,
   "base_sha": "b890a76603b924829fdbe2b4fb2c5626f0cf4e36",
   "acquired_at": "2026-11-28T07:00:08.000Z",
-  "heartbeat_at": "2026-11-28T07:00:08.000Z",
-  "expires_at": "2026-11-28T07:45:08.000Z",
-  "transport": "git-ref-nonforce-cas"
+  "heartbeat_at": "2026-11-28T07:00:34.000Z",
+  "expires_at": "2026-11-28T07:00:34.000Z",
+  "transport": "git-ref-nonforce-cas",
+  "released_at": "2026-11-28T07:00:34.000Z"
 }
