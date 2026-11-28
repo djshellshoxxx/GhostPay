@@ -52,7 +52,7 @@ Where a chain has no ERC-5564 announcer, deploying the CC0 reference through the
 
 ### Policy contracts (experimental; skip unless ADR-0014 changes)
 
-`script/DeployPolicy.s.sol` needs `FEE_RECIPIENT`, `FEE_TOKEN`, `FLAT_FEE` (in token base units), `MAX_FLAT_FEE` (hard upper bound that guards decimals typos) and the same chain variables. Do not deploy it for real use: there is no client support and no recovery path.
+`script/DeployPolicy.s.sol` needs `FEE_RECIPIENT`, `FEE_TOKEN`, `FLAT_FEE` (in token base units), `MAX_FLAT_FEE` (hard upper bound that guards decimals typos) and the same chain variables. `FLAT_FEE != 0` also needs `FEE_TOKEN_FREEZE_ACK` equal to `FEE_TOKEN`: an upgradeable or fee-switch fee token can freeze the counterfactual funds of every policy the factory creates (residual N1), so the script refuses a fee-charging factory without that token-specific statement; prefer `FLAT_FEE=0`. Do not deploy it for real use: there is no client support and no recovery path.
 
 ## 4. Verify what you deployed
 

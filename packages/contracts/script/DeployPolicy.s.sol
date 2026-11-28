@@ -20,6 +20,13 @@ import {PolicyAccountFactory} from "../src/PolicyAccountFactory.sol";
 ///   `0` explicitly disables the fee.
 /// - `MAX_FLAT_FEE` (required, no default): hard upper bound; `FLAT_FEE > MAX_FLAT_FEE` aborts. Guards
 ///   against decimals typos (1e18 on a 6-decimals token would make every deployment unusable).
+/// - `FEE_TOKEN_FREEZE_ACK` (required when `FLAT_FEE != 0`): must equal `FEE_TOKEN` exactly. Residual N1
+///   (REVIEW_FINDINGS R-11, SEC-E2-01): the immutable factory reverts every fee-charging `deploy` when a
+///   fee-token view reverts or a transfer moves an unexpected amount, so an upgradeable or fee-switch
+///   token can freeze the counterfactual funds of every policy created by this factory. Setting the
+///   variable records the operator's statement that this exact token is non-upgradeable, has no
+///   transfer fee or fee switch, and cannot pause or blacklist the factory, payer or recipient. With
+///   any doubt, deploy with `FLAT_FEE=0`.
 /// - `ALLOWED_CHAIN_IDS` (optional, comma separated, spaces tolerated) and `ALLOW_LOCAL=1`: see `Deploy`.
 /// Every immutable is read back after deployment and compared with the inputs.
 /// Sign with `--account`, `--ledger` or `--trezor`; never pass a raw private key on a shared machine.
@@ -37,6 +44,9 @@ contract DeployPolicy is DeployBase {
     /// @notice No contract code exists at the fee token address on this chain.
     /// @param feeToken The fee token address without code.
     error FeeTokenHasNoCode(address feeToken);
+    /// @notice `FLAT_FEE != 0` without `FEE_TOKEN_FREEZE_ACK` naming exactly this fee token (residual N1).
+    /// @param feeToken The configured fee token.
+    error FeeChargingFactoryNotAcknowledged(address feeToken);
 
     /// @notice Deploy and print the addresses.
     /// @return implementation The deployed (self-locked) implementation.
@@ -59,6 +69,13 @@ contract DeployPolicy is DeployBase {
 
         if (!_chainAllowed(block.chainid)) revert ChainNotAllowed(block.chainid);
         if (feeToken.code.length == 0) revert FeeTokenHasNoCode(feeToken);
+        if (flatFee != 0) {
+            string memory ackRaw = _env("FEE_TOKEN_FREEZE_ACK");
+            if (bytes(ackRaw).length == 0) revert FeeChargingFactoryNotAcknowledged(feeToken);
+            if (_parseChecksummedAddress("FEE_TOKEN_FREEZE_ACK", ackRaw) != feeToken) {
+                revert FeeChargingFactoryNotAcknowledged(feeToken);
+            }
+        }
         if (feeRecipient.code.length != 0) {
             console2.log(
                 "WARNING: feeRecipient is a contract; verify it can receive the fee token."

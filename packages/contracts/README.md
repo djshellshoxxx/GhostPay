@@ -159,9 +159,15 @@ Normative text: `docs/CONTRACTS_SPEC.md` section 4, fee F-SECURE in `docs/FEE_SC
   means locked funds); ERC-777/fee-on-transfer/rebasing tokens cannot be withdrawn; 2300-gas native senders cannot pay a clone (P14); not wallet-interoperable.
 
 ```bash
-FEE_RECIPIENT=<multisig> FEE_TOKEN=<stablecoin> FLAT_FEE=3000000 \
+FEE_RECIPIENT=<multisig> FEE_TOKEN=<stablecoin> FLAT_FEE=0 MAX_FLAT_FEE=0 \
 forge script script/DeployPolicy.s.sol --rpc-url "$RPC" --broadcast --account <keystore>
 ```
+
+`FLAT_FEE != 0` additionally needs `FEE_TOKEN_FREEZE_ACK=<FEE_TOKEN>` (the same checksummed address). Residual N1:
+the immutable factory reverts every fee-charging `deploy` when a fee-token view reverts or a transfer moves an
+unexpected amount, so an upgradeable, fee-switch, pausable or blacklisting token can freeze the counterfactual funds
+of every policy it creates. Set the acknowledgement only for a token known to have none of these properties; with
+any doubt deploy with `FLAT_FEE=0`. `scripts/pre-deploy-check.sh policy` applies the same rule.
 
 Verification: see "Verification status" above (the policy contracts are covered by the account unit/fuzz/invariant suites, the factory suite and the audit regression tests). No fork test, no live deployment, no external audit, and no independent
 review of the merkle-leaf format by a client implementation yet.

@@ -80,6 +80,14 @@ else
       bad "FLAT_FEE ($FLAT_FEE) exceeds MAX_FLAT_FEE ($MAX_FLAT_FEE)"
     else ok "FLAT_FEE <= MAX_FLAT_FEE"; fi
   fi
+  # Residual N1 (SEC-E2-01): a fee-charging factory freezes counterfactual funds if its fee token is upgradeable,
+  # has a fee switch or can make its views revert. DeployPolicy refuses FLAT_FEE != 0 unless FEE_TOKEN_FREEZE_ACK
+  # names exactly FEE_TOKEN; this mirrors that check.
+  if [[ "${FLAT_FEE:-}" =~ ^[0-9]+$ && -n "${FLAT_FEE#"${FLAT_FEE%%[!0]*}"}" ]]; then
+    if [[ -z "${FEE_TOKEN_FREEZE_ACK:-}" ]]; then bad "FLAT_FEE != 0 needs FEE_TOKEN_FREEZE_ACK=<FEE_TOKEN> (non-upgradeable, no fee switch; else use FLAT_FEE=0)"
+    elif [[ "$FEE_TOKEN_FREEZE_ACK" != "${FEE_TOKEN:-}" ]]; then bad "FEE_TOKEN_FREEZE_ACK must exactly match the checksummed FEE_TOKEN spelling"
+    else warn "FEE_TOKEN_FREEZE_ACK set: the operator states FEE_TOKEN is non-upgradeable with no fee switch, pause or blacklist"; fi
+  elif [[ "${FLAT_FEE:-}" =~ ^0+$ ]]; then ok "FLAT_FEE is 0: no fee token call is made by the factory"; fi
 fi
 
 if [[ -n "${RPC_URL:-}" ]]; then
