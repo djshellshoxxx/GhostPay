@@ -1,12 +1,11 @@
-# Completion consolidation candidate and qualification (2026-11-27 UTC)
+# Completion consolidation candidate and qualification (2026-11-27 UTC, closed 2026-11-28)
 
-Worker: Claude Code cloud session 01KtKj8iDjGeSrDZg41eqdMk; branch `nodata/beautiful-heisenberg-25ikdy` (base main `3f7fcd0a`, then merged
-with main `6b323a99`). **Qualification candidate only: not a merge request, no integration lock taken.** Owned paths: this
-entry, `docs/handoffs/COMPLETION_QUALIFICATION_20261127.md`, `docs/handoffs/ERC20_E2E_QUALIFICATION_20261127.md`, new
-`*.fuzz.test.ts` and `erc20*.anvil.test.ts` files, `apps/web/src/lib/invoiceDraft*.ts` and `useInvoiceDraft.ts` (Phase C
-repairs on top of #717), the draft hint and cover label keys in the four locale files, `docs/user/privacy-limits.md`,
-`apps/web/src/lib/walletDisclosure.callsites.test.ts`. Composes the open heads of #724, #728, #742, #744, #665 (and #745,
-#747, now on main). Does not claim any of those PRs' own files. Acceptance: see the handoff; hosted CI on the exact head.
+Worker: Claude Code cloud session 01KtKj8iDjGeSrDZg41eqdMk; branch `nodata/beautiful-heisenberg-25ikdy`. **Complete.** On the
+owner's request (2026-11-28) the last unmerged content of this branch (`docs/handoffs/COMPLETION_QUALIFICATION_20261127.md`
+and the `verification/independent-beta/**` harness carried from #665) is merged to `main`; the integration lock was
+`released` at that time and was not taken. Everything else from this work reached `main` earlier through #728 and #754.
+Owned paths released: this entry, the handoff above, `docs/handoffs/ERC20_E2E_QUALIFICATION_20261127.md`, the new
+`*.fuzz.test.ts` and `erc20*.anvil.test.ts` files and the draft files listed in the handoff. No active claim remains.
 
 ---
 # Static guide footer keyboard navigation
