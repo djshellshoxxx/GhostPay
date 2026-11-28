@@ -1,3 +1,28 @@
+# Spec 18 export lows CR-1 and CR-3/UX-01 — 2026-11-28 UTC
+
+Worker: Claude Code cloud session ghostpay-consolidation-9xhtxg; branch `claude/ghostpay-consolidation-9xhtxg-spec18-lows`
+(base main `70458ebe`, #762). Draft PR only: no merge, no integration lock.
+
+Owned paths (exact): `packages/ux-vault/src/stealth-export-portable.ts` (the `encryptPaymentKeys` input check and the
+format detection helpers only), `packages/ux-vault/src/stealth-export-portable.test.ts`,
+`packages/ux-vault/src/stealth-export-portable.property.test.ts`, `apps/web/src/lib/stealthExport.ts` (one re-export),
+`apps/web/src/lib/paymentKeyExport.ts` (the final refusal of `openStealthExport` and its one import only),
+`apps/web/src/lib/paymentKeyExport.recovery.test.ts`, `scripts/recovery/stealth-export-recover.test.mjs` (one
+cross-implementation case), `docs/specs/18-stealth-keypair-export-formats.md` section 9 (one sentence), this entry.
+
+Acceptance: CR-1, an export in which any (record, secret) pair has a key that does not control its own record refuses
+with `error.stealthExport.keyDoesNotMatch` whatever the input order, a dropped duplicate included; identical duplicates
+still collapse; the conflict and tie-break rules are unchanged. CR-3/UX-01, a file that claims another version of a
+spec 18 family (`ghostpay-stealth-{public,keypair,master}-vN`, N not 1) opens with
+`error.stealthExport.unsupportedVersion` instead of `invalidFile`, as the reference decoder reports it;
+`detectStealthExportFormat` keeps its signature. Each regression red on main and green with its fix; ux-vault and web
+build, typecheck, lint and full tests; recovery node tests; i18n check; lean web build with its bundle scan.
+
+Overlap: open #773 calls `detectStealthExportFormat` (unchanged here) from `apps/web/src/lib/recoveryFile.ts`; open
+#771/#769 own the other `paymentKeyExport.ts` hunks; all three also add entries to this file.
+
+---
+
 # Recorded low residuals (web) — 2026-11-27 UTC
 
 Worker: local Claude Code worker W7 on the existing merged branch `claude/consolidation-stack-20261126`, fast-forwarded
