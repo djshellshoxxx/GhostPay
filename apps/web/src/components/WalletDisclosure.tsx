@@ -1,3 +1,4 @@
+import { ControlTip } from './ControlTips';
 import { Fragment, createContext, useContext, useEffect, useId, useLayoutEffect, useMemo, useRef, useState, useSyncExternalStore, type ReactNode } from 'react';
 import { SOURCE_TRANSLATOR, useI18nOptional } from '../i18n/context';
 import { subscribeAppLock } from '../lib/appLock';
@@ -113,14 +114,14 @@ function DisclosureDialog(props: { readonly pending: PendingWalletDisclosure; re
         </>}
       </dl>
       {request.method === 'eth_sendTransaction' && <p>{t('wallet.disclosure.contractEffects')}</p>}
-      <details><summary>{t('wallet.disclosure.details')}</summary>
+      <details><ControlTip message="wallet.disclosure.payloadHint"><summary>{t('wallet.disclosure.details')}</summary></ControlTip>
         <p>{t('wallet.disclosure.payloadHint')}</p>
-        <pre dir="ltr" tabIndex={0}>{request.requestJson}</pre>
+        <ControlTip message="wallet.disclosure.payloadHint"><pre dir="ltr" tabIndex={0}>{request.requestJson}</pre></ControlTip>
       </details>
       <p className="hint">{t('wallet.disclosure.expiry')}</p>
       <div className="wallet-disclosure-actions">
-        <button type="button" className="btn" ref={cancel} onClick={() => { props.controller.cancel(props.pending); }}>{t('wallet.disclosure.cancel')}</button>
-        <button type="button" className="btn primary" onClick={() => { props.controller.approve(props.pending); }}>{t('wallet.disclosure.continue')}</button>
+        <ControlTip message="tips.walletCancel"><button type="button" className="btn" ref={cancel} onClick={() => { props.controller.cancel(props.pending); }}>{t('wallet.disclosure.cancel')}</button></ControlTip>
+        <ControlTip message="wallet.disclosure.intro"><button type="button" className="btn primary" onClick={() => { props.controller.approve(props.pending); }}>{t('wallet.disclosure.continue')}</button></ControlTip>
       </div>
     </div>
   </div>;

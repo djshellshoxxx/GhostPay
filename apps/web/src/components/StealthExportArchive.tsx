@@ -1,3 +1,4 @@
+import { ControlTip } from './ControlTips';
 import { useEffect, useId, useRef, useState, type FormEvent, type ReactNode } from 'react';
 import { captureUserMessage, displayMessage, type DisplayMessage } from '../lib/errors';
 import { describePaymentArchive, exportPaymentArchive, type ExportRpc } from '../lib/paymentKeyExport';
@@ -96,9 +97,9 @@ export function StealthExportArchive(props: { readonly matches: readonly ScanMat
   return (
     <div className="stealth-export" data-testid="payment-keys-archive">
       <p>
-        <button type="button" className="btn" aria-expanded={open} aria-controls={panelId} onClick={() => { if (open) close(); else setOpen(true); }}>
+        <ControlTip message="stealthExport.archive.rpcPrivacy"><button type="button" className="btn" aria-expanded={open} aria-controls={panelId} onClick={() => { if (open) close(); else setOpen(true); }}>
           {t('stealthExport.archive.open')}
-        </button>
+        </button></ControlTip>
       </p>
       {open && (
         <section id={panelId} className="panel stack" aria-labelledby={`${panelId}-h`}>
@@ -114,8 +115,8 @@ export function StealthExportArchive(props: { readonly matches: readonly ScanMat
               <form onSubmit={onSubmit} className="stack" autoComplete="off">
                 <CredentialFields value={credential} onChange={setCredential} disabled={busy} />
                 <NewPassphraseFields value={newPass} onChange={setNewPass} disabled={busy} />
-                <button type="submit" className="btn" data-testid="payment-keys-archive-download" disabled={busy || !credentialReady(credential)}>{t('stealthExport.archive.download')}</button>
-                {busy && <button type="button" className="btn" onClick={() => { op.stop(); reset(); setMessage(undefined); }}>{t('stealthExport.cancel')}</button>}
+                <ControlTip message="stealthExport.archive.rpcPrivacy"><button type="submit" className="btn" data-testid="payment-keys-archive-download" disabled={busy || !credentialReady(credential)}>{t('stealthExport.archive.download')}</button></ControlTip>
+                {busy && <ControlTip message="tips.cancel"><button type="button" className="btn" onClick={() => { op.stop(); reset(); setMessage(undefined); }}>{t('stealthExport.cancel')}</button></ControlTip>}
               </form>
               {generated !== undefined && <StealthExportVerification file={generated} downloadStarted={downloadStarted} onRetryDownload={() => { download(generated); }} announce={props.announce} />}
             </>

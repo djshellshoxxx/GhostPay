@@ -13,18 +13,19 @@
     <link rel="stylesheet" href="./help.css" />
   </head>
   <body>
-    <a class="skip" href="#content">Skip to help</a>
+    <a class="skip" href="#content" title="Move past the navigation to the main content on this page.">Skip to help</a>
     <header class="site-header">
       <div class="brand"><img src="./favicon.svg" width="32" height="32" alt="" />GhostPay</div>
       <h1>Invoices, receipts and recovery</h1>
       <p class="intro">A guide to the web app: what each step does, what it proves, what it does not, and what is still planned. This page works without JavaScript. Keep your app tab open if it holds keys or unsaved work.</p>
+      <label class="guide-tip-switch"><input id="guide-tips" type="checkbox" title="Keep the instructions for links, tables and expandable sections visible on this page." /> Show control tips</label>
     </header>
     <nav class="site-nav" aria-label="Site">
       <ul>
-        <li><a href="./">Open app</a></li>
-        <li><a href="./help.html" aria-current="page">Help</a></li>
-        <li><a href="./privacy.html">Privacy</a></li>
-        <li><a href="https://github.com/djshellshoxxx/GhostPay">Source repository</a></li>
+        <li><a href="./" title="Open the interactive payment and recovery client.">Open app</a></li>
+        <li><a href="./help.html" aria-current="page" title="Read how to pay an invoice, receive funds and recover seller keys.">Help</a></li>
+        <li><a href="./privacy.html" title="Review which payment details other people and service providers can see.">Privacy</a></li>
+        <li><a href="https://github.com/djshellshoxxx/GhostPay" title="Visit the GhostPay source repository on GitHub.">Source repository</a></li>
       </ul>
     </nav>
     <main id="content" tabindex="-1">
@@ -34,24 +35,24 @@
 
       <h2>On this page</h2>
       <ul class="contents">
-        <li><a href="#start-here">Start here (plain language)</a></li>
-        <li><a href="#how-payment-works">How a payment works</a></li>
-        <li><a href="#keys-backups">Keys and backups</a></li>
-        <li><a href="#wallet">Connect a wallet</a></li>
-        <li><a href="#invoice">Create an invoice</a></li>
-        <li><a href="#pay">Pay an invoice</a></li>
-        <li><a href="#evidence">What counts as evidence</a></li>
-        <li><a href="#receipts">Receipts and QR codes</a></li>
-        <li><a href="#files">Choose the correct file</a></li>
-        <li><a href="#devices">Share public configuration and settings</a></li>
-        <li><a href="#rpc">RPC and network configuration</a></li>
-        <li><a href="#privacy-summary">Privacy in brief</a></li>
-        <li><a href="#merchants">Merchant guidance</a></li>
-        <li><a href="#help-tips">Contextual help in the app</a></li>
-        <li><a href="#glossary">Technical glossary</a></li>
-        <li><a href="#accessibility">Accessibility and layout</a></li>
-        <li><a href="#troubleshooting">Troubleshooting</a></li>
-        <li><a href="#technology">Technology and attribution</a></li>
+        <li><a href="#start-here" title="Go to the section “Start here (plain language)” on this page.">Start here (plain language)</a></li>
+        <li><a href="#how-payment-works" title="Go to the section “How a payment works” on this page.">How a payment works</a></li>
+        <li><a href="#keys-backups" title="Go to the section “Keys and backups” on this page.">Keys and backups</a></li>
+        <li><a href="#wallet" title="Go to the section “Connect a wallet” on this page.">Connect a wallet</a></li>
+        <li><a href="#invoice" title="Go to the section “Create an invoice” on this page.">Create an invoice</a></li>
+        <li><a href="#pay" title="Go to the section “Pay an invoice” on this page.">Pay an invoice</a></li>
+        <li><a href="#evidence" title="Go to the section “What counts as evidence” on this page.">What counts as evidence</a></li>
+        <li><a href="#receipts" title="Go to the section “Receipts and QR codes” on this page.">Receipts and QR codes</a></li>
+        <li><a href="#files" title="Go to the section “Choose the correct file” on this page.">Choose the correct file</a></li>
+        <li><a href="#devices" title="Go to the section “Share public configuration and settings” on this page.">Share public configuration and settings</a></li>
+        <li><a href="#rpc" title="Go to the section “RPC and network configuration” on this page.">RPC and network configuration</a></li>
+        <li><a href="#privacy-summary" title="Go to the section “Privacy in brief” on this page.">Privacy in brief</a></li>
+        <li><a href="#merchants" title="Go to the section “Merchant guidance” on this page.">Merchant guidance</a></li>
+        <li><a href="#help-tips" title="Go to the section “Contextual help in the app” on this page.">Contextual help in the app</a></li>
+        <li><a href="#glossary" title="Go to the section “Technical glossary” on this page.">Technical glossary</a></li>
+        <li><a href="#accessibility" title="Go to the section “Accessibility and layout” on this page.">Accessibility and layout</a></li>
+        <li><a href="#troubleshooting" title="Go to the section “Troubleshooting” on this page.">Troubleshooting</a></li>
+        <li><a href="#technology" title="Go to the section “Technology and attribution” on this page.">Technology and attribution</a></li>
       </ul>
 
       <p class="legend"><strong>Status labels used in this guide:</strong>
@@ -96,7 +97,7 @@
         <h3>In more detail</h3>
         <p>An invoice asks for a payment. It does not prove one happened. The payment goes to a one-time stealth address derived for that payment. The seller's viewing key lets the seller's browser recognise payments made to such addresses. The seller then reconciles what was found with the invoice. Reconciliation is a local suggestion until the seller confirms it.</p>
         <details>
-          <summary>Technical details: stealth addresses and announcements</summary>
+          <summary title="Open or close the explanation of stealth addresses and announcements.">Technical details: stealth addresses and announcements</summary>
           <div class="technical">
             <p>The seller publishes a meta-address (a pair of public keys). A payer derives a one-time address from it and sends funds there. An announcement records enough data for the viewing key holder to detect the payment. This follows the ERC-5564 stealth address pattern, and the public registry follows ERC-6538. The contracts also route payments through GhostPay's router, which takes a 0.25% fee. Section 6 and the glossary explain what each state means.</p>
           </div>
@@ -114,7 +115,7 @@
           <li>Keep other backups separate. Tag archives, reconciliation history and public configuration do not replace the keystore.</li>
         </ol>
         <h3>Which backup restores what</h3>
-        <div class="table-wrap" tabindex="0" role="region" aria-labelledby="backup-table-caption">
+        <div class="table-wrap" title="Focus this table and use the arrow keys to read columns that extend beyond the screen." tabindex="0" role="region" aria-labelledby="backup-table-caption">
           <table>
             <caption id="backup-table-caption">Backup files, what they restore, and what they do not</caption>
             <thead><tr><th scope="col">File or action</th><th scope="col">Restores</th><th scope="col">Does not restore</th><th scope="col">Status</th></tr></thead>
@@ -131,9 +132,9 @@
           </table>
         </div>
         <details>
-          <summary>Technical details: key protection</summary>
+          <summary title="Open or close the explanation of key protection.">Technical details: key protection</summary>
           <div class="technical">
-            <p>Keystores use scrypt (N = 2^17) to derive a key from the passphrase, after NFKC normalisation, and AES-256-GCM for authenticated encryption. Idle lock is 15 minutes by default (range 1 to 240) and clears keys from memory; it does not erase stored records. Saved records live in this browser's IndexedDB, localStorage or sessionStorage as described in <a href="./privacy.html#local">privacy and local data</a>.</p>
+            <p>Keystores use scrypt (N = 2^17) to derive a key from the passphrase, after NFKC normalisation, and AES-256-GCM for authenticated encryption. Idle lock is 15 minutes by default (range 1 to 240) and clears keys from memory; it does not erase stored records. Saved records live in this browser's IndexedDB, localStorage or sessionStorage as described in <a href="./privacy.html#local" title="Open the guide to privacy and local data.">privacy and local data</a>.</p>
           </div>
         </details>
       </section>
@@ -149,7 +150,7 @@
         </ol>
         <p>Wallet support is listed in the table in section 10. WalletConnect is <span class="status status-planned">Planned</span> and not wired into the app. Hardware-wallet behaviour depends on the wallet you use and is not verified by this project.</p>
         <details>
-          <summary>Technical details: how requests are sent</summary>
+          <summary title="Open or close the explanation of how requests are sent.">Technical details: how requests are sent</summary>
           <div class="technical">
             <p>Discovery uses EIP-6963 announcements, with the injected <code>window.ethereum</code> object only as a fallback. Chain switching uses <code>wallet_switchEthereumChain</code> once for the invoice's chain. Token approvals are exact to the invoice amount, and revocation sets the allowance to zero. Permits use <code>eth_signTypedData_v4</code> when the token supports them.</p>
           </div>
@@ -161,7 +162,7 @@
         <p>Use <strong>Create invoice</strong> to set the network, the asset, the exact amount, the line items, the expiry and the fee policy. A fixed token amount must be greater than zero. Each invoice needs at least one line item with a description, a quantity and a unit price. Memo text is limited to 500 characters. Expiry defaults to 24 hours and can be set from 1 to 2160 hours.</p>
         <p>The fee policy decides who bears GhostPay's 0.25% router fee. <em>Seller pays</em> is the default: the payer sends the invoice amount and the seller receives the net amount. <em>Payer pays</em> adds the fee to the amount the payer sends, so the seller may receive up to one base unit more than the net figure.</p>
         <h3>Link modes</h3>
-        <div class="table-wrap" tabindex="0" role="region" aria-labelledby="link-table-caption">
+        <div class="table-wrap" title="Focus this table and use the arrow keys to read columns that extend beyond the screen." tabindex="0" role="region" aria-labelledby="link-table-caption">
           <table>
             <caption id="link-table-caption">Invoice protection modes</caption>
             <thead><tr><th scope="col">Mode</th><th scope="col">What the link contains</th><th scope="col">Who can read it</th></tr></thead>
@@ -177,7 +178,7 @@
         <p><strong>Matching is off by default.</strong> If you register an invoice for local matching, GhostPay can later suggest that a scanned payment corresponds to it. You confirm each suggestion. Registration never marks an invoice as paid.</p>
         <p><span class="status status-experimental">Experimental</span> Fiat-quoted invoices need a price feed and are available only in the full build on testnet feeds. Do not use them for real pricing.</p>
         <details>
-          <summary>Technical details: envelope and fragments</summary>
+          <summary title="Open or close the explanation of envelope and fragments.">Technical details: envelope and fragments</summary>
           <div class="technical">
             <p>An encrypted invoice is an envelope with a version prefix (<code>gpi=v1.</code>) placed after <code>#</code>. Passphrase protection uses scrypt (N = 2^17) with AES-256-GCM. The envelope header is not authenticated until decryption succeeds, so do not rely on its visible fields alone. Plain envelopes carry no key at all.</p>
           </div>
@@ -194,7 +195,7 @@
         </ol>
         <p><strong>An unknown outcome may already be on-chain.</strong> After a transaction is sent, any failure other than a user rejection is recorded as <em>unknown</em>. A timeout, disconnected provider or closed prompt does not prove nothing was sent. Check the wallet and the transaction reference before you start another payment. Clearing a local record only removes it from this browser. It cannot cancel a transaction.</p>
         <details>
-          <summary>Technical details: states GhostPay records</summary>
+          <summary title="Open or close the explanation of states GhostPay records.">Technical details: states GhostPay records</summary>
           <div class="technical">
             <p>The app tracks a transaction through prepared, awaiting authorization, signed, broadcast attempted, broadcast unknown, pending confirmation, confirmed, failed, replaced, reorganised, unsupported and verification incomplete. A post-broadcast check reports whether the node already sees the transaction. A node that does not see it yet is shown as "not visible yet", not as a failure.</p>
           </div>
@@ -204,7 +205,7 @@
       <section aria-labelledby="evidence">
         <h2 id="evidence">6. What counts as evidence</h2>
         <p>These checks answer different questions. None of them alone shows that the seller is who they claim to be.</p>
-        <div class="table-wrap" tabindex="0" role="region" aria-labelledby="evidence-table-caption">
+        <div class="table-wrap" title="Focus this table and use the arrow keys to read columns that extend beyond the screen." tabindex="0" role="region" aria-labelledby="evidence-table-caption">
           <table>
             <caption id="evidence-table-caption">Evidence states and what each one means</caption>
             <thead><tr><th scope="col">State</th><th scope="col">What it means</th><th scope="col">What it does not mean</th></tr></thead>
@@ -232,7 +233,7 @@
 
       <section aria-labelledby="files">
         <h2 id="files">8. Choose the correct file</h2>
-        <div class="table-wrap" tabindex="0" role="region" aria-labelledby="files-table-caption">
+        <div class="table-wrap" title="Focus this table and use the arrow keys to read columns that extend beyond the screen." tabindex="0" role="region" aria-labelledby="files-table-caption">
           <table>
             <caption id="files-table-caption">What each import expects</caption>
             <thead><tr><th scope="col">Import</th><th scope="col">Expected file and purpose</th></tr></thead>
@@ -268,7 +269,7 @@
           <li><strong>Do not put secrets in a URL you save.</strong> Saved settings are stored in this browser without encryption, and a key in a path or query string is visible there.</li>
         </ul>
         <h3>Networks and features</h3>
-        <div class="table-wrap" tabindex="0" role="region" aria-labelledby="network-table-caption">
+        <div class="table-wrap" title="Focus this table and use the arrow keys to read columns that extend beyond the screen." tabindex="0" role="region" aria-labelledby="network-table-caption">
           <table>
             <caption id="network-table-caption">Networks and features, with their status</caption>
             <thead><tr><th scope="col">Network or feature</th><th scope="col">Status and gate</th></tr></thead>
@@ -289,7 +290,7 @@
         </div>
         <p>The published Pages copy is a reduced build. It omits the Bitcoin, Solana and TRON views, policy accounts, the tag archive, fiat pricing and the merchant profile panel. Use the full build from source to test those.</p>
         <details>
-          <summary>Technical details: endpoint validation and fail-closed behaviour</summary>
+          <summary title="Open or close the explanation of endpoint validation and fail-closed behaviour.">Technical details: endpoint validation and fail-closed behaviour</summary>
           <div class="technical">
             <p>Endpoint validation accepts https (and wss, which the browser transport refuses). Requests omit credentials and refuse redirects. The optional second provider is used for verification only when it is set. The app's verification check compares each covered read and does not retry, so a mismatch is not hidden. The library also contains a reconciled client that retries once after a short pause for tip races; the app does not use it. On a mismatch the deployment becomes unverified, so payments stop.</p>
           </div>
@@ -298,14 +299,14 @@
 
       <section aria-labelledby="privacy-summary">
         <h2 id="privacy-summary">11. Privacy in brief</h2>
-        <p>Stealth addresses reduce address reuse for the seller. They do not hide the public transaction graph. Moving funds from a one-time address to a wallet you already use can link the payment to that wallet. The <a href="./privacy.html">privacy page</a> has a feature-by-feature matrix showing what each action reveals, where data is stored, and what is not yet protected.</p>
+        <p>Stealth addresses reduce address reuse for the seller. They do not hide the public transaction graph. Moving funds from a one-time address to a wallet you already use can link the payment to that wallet. The <a href="./privacy.html" title="Review which payment details other people and service providers can see.">privacy page</a> has a feature-by-feature matrix showing what each action reveals, where data is stored, and what is not yet protected.</p>
         <p>The app has no analytics, telemetry, third-party scripts or remote fonts. Outbound requests go to the page's own host and to endpoints you enter or choose in the app, such as RPC, scan, relayer, wallet and chain-node addresses, plus a merchant profile URL when you press Load. These statements describe the app code. They do not describe your hosting provider, network, browser or extensions.</p>
       </section>
 
       <section aria-labelledby="merchants">
         <h2 id="merchants">12. Merchant guidance</h2>
         <p>A merchant workflow today is: set up keys and back them up; create one invoice per sale; share it; scan for payments; review matches yourself; keep receipts and exported backups. Keep aggregate bookkeeping outside the app. GhostPay's beta and v1.0 focus on private payments and recovery; excluded products have no scheduled restart.</p>
-        <div class="table-wrap" tabindex="0" role="region" aria-labelledby="merchant-table-caption">
+        <div class="table-wrap" title="Focus this table and use the arrow keys to read columns that extend beyond the screen." tabindex="0" role="region" aria-labelledby="merchant-table-caption">
           <table>
             <caption id="merchant-table-caption">Merchant capabilities and their status</caption>
             <thead><tr><th scope="col">Capability</th><th scope="col">Status</th><th scope="col">Notes</th></tr></thead>
@@ -327,12 +328,13 @@
 
       <section aria-labelledby="help-tips">
         <h2 id="help-tips">13. Contextual help in the app</h2>
-        <p>Some controls in the app have a small <span class="kbd">?</span> button. Its explanation is also available to screen readers.</p>
+        <p>Hover over a control or focus it with the keyboard to read its tip. Press Escape to dismiss it. On a touchscreen, select <strong>Show control tips</strong> in the header to read instructions beside controls, including disabled ones, before using them.</p>
+        <p>Some controls also have a small <span class="kbd">?</span> button. Its explanation is also available to screen readers.</p>
         <ul>
           <li><strong>Keyboard:</strong> press <span class="kbd">Tab</span> to reach the button. Press <span class="kbd">Enter</span> or <span class="kbd">Space</span> to keep the explanation open, and press again to close it.</li>
           <li><strong>Mouse and touch:</strong> hover, or tap the button. Tapping elsewhere closes an explanation you opened.</li>
           <li><strong>Escape</strong> closes an open explanation without changing the control it describes.</li>
-          <li><strong>Explanations never cover a control.</strong> They take space in the page flow and wrap on narrow screens.</li>
+          <li><strong>Expanded explanations from the ? button</strong> take space in the page flow and wrap on narrow screens.</li>
         </ul>
         <p>On this page, sections marked <em>Technical details</em> are disclosures. Open them with the keyboard or mouse. They work without JavaScript.</p>
       </section>
@@ -411,7 +413,7 @@
 
       <section aria-labelledby="troubleshooting">
         <h2 id="troubleshooting">16. Troubleshooting</h2>
-        <div class="table-wrap" tabindex="0" role="region" aria-labelledby="trouble-table-caption">
+        <div class="table-wrap" title="Focus this table and use the arrow keys to read columns that extend beyond the screen." tabindex="0" role="region" aria-labelledby="trouble-table-caption">
           <table>
             <caption id="trouble-table-caption">Choose the next step from the state you see</caption>
             <thead><tr><th scope="col">What you see</th><th scope="col">What to do</th></tr></thead>
@@ -430,18 +432,18 @@
 
       <section aria-labelledby="technology">
         <h2 id="technology">17. Technology and attribution</h2>
-        <p>The <a href="https://github.com/djshellshoxxx/GhostPay">GhostPay source repository</a> contains the implementation, development status, issue tracker and release evidence. Opening it contacts GitHub; the running app stays in its original tab.</p>
+        <p>The <a href="https://github.com/djshellshoxxx/GhostPay" title="Visit the GhostPay source repository on GitHub.">GhostPay source repository</a> contains the implementation, development status, issue tracker and release evidence. Opening it contacts GitHub; the running app stays in its original tab.</p>
         <p>GhostPay builds on independent projects and standards. Their authors do not endorse or audit GhostPay by being listed here.</p>
         <ul>
-          <li><a href="https://eips.ethereum.org/EIPS/eip-5564">ERC-5564 stealth addresses</a> and <a href="https://eips.ethereum.org/EIPS/eip-6538">ERC-6538 public meta-address registry</a>: the official standards list their authors and specifications.</li>
-          <li><a href="https://github.com/bitcoin/bips/blob/master/bip-0352.mediawiki">Bitcoin BIP-352 Silent Payments</a>: the basis of the separate experimental Bitcoin flow. <a href="https://bitcoin.org/">About Bitcoin</a>.</li>
-          <li><a href="https://paulmillr.com/noble/">Noble and Scure cryptographic libraries</a>: Paul Miller and contributors; MIT licensed.</li>
-          <li><a href="https://viem.sh/">viem</a>: the wevm project; MIT licensed. <a href="https://react.dev/">React</a>: the React project; MIT licensed.</li>
-          <li><a href="https://github.com/kazuhikoarase/qrcode-generator">qrcode-generator</a>: Kazuhiko Arase; MIT licensed. <a href="https://github.com/cozmo/jsQR">jsQR</a>: Cosmo Wolfe and contributors; Apache-2.0 licensed.</li>
+          <li><a href="https://eips.ethereum.org/EIPS/eip-5564" title="Open the external reference for ERC-5564 stealth addresses.">ERC-5564 stealth addresses</a> and <a href="https://eips.ethereum.org/EIPS/eip-6538" title="Open the external reference for ERC-6538 public meta-address registry.">ERC-6538 public meta-address registry</a>: the official standards list their authors and specifications.</li>
+          <li><a href="https://github.com/bitcoin/bips/blob/master/bip-0352.mediawiki" title="Open the external reference for Bitcoin BIP-352 Silent Payments.">Bitcoin BIP-352 Silent Payments</a>: the basis of the separate experimental Bitcoin flow. <a href="https://bitcoin.org/" title="Open the external reference for About Bitcoin.">About Bitcoin</a>.</li>
+          <li><a href="https://paulmillr.com/noble/" title="Open the external reference for Noble and Scure cryptographic libraries.">Noble and Scure cryptographic libraries</a>: Paul Miller and contributors; MIT licensed.</li>
+          <li><a href="https://viem.sh/" title="Open the external reference for viem.">viem</a>: the wevm project; MIT licensed. <a href="https://react.dev/" title="Open the external reference for React.">React</a>: the React project; MIT licensed.</li>
+          <li><a href="https://github.com/kazuhikoarase/qrcode-generator" title="Open the external reference for qrcode-generator.">qrcode-generator</a>: Kazuhiko Arase; MIT licensed. <a href="https://github.com/cozmo/jsQR" title="Open the external reference for jsQR.">jsQR</a>: Cosmo Wolfe and contributors; Apache-2.0 licensed.</li>
         </ul>
-        <p>See the repository's <a href="https://github.com/djshellshoxxx/GhostPay/blob/main/THIRD_PARTY.md">third-party register</a> for the broader dependency inventory. GhostPay's own licensing decision is separate from its dependencies' licenses.</p>
+        <p>See the repository's <a href="https://github.com/djshellshoxxx/GhostPay/blob/main/THIRD_PARTY.md" title="Open the external reference for third-party register.">third-party register</a> for the broader dependency inventory. GhostPay's own licensing decision is separate from its dependencies' licenses.</p>
       </section>
     </main>
-    <footer class="site-footer"><p>English help for the November 2026 product-completion work. Follow the status and verification messages in your installed build.</p><ul><li><a href="./privacy.html">Privacy and local data</a></li><li><a href="#content">Back to top</a></li></ul></footer>
+    <footer class="site-footer"><p>English help for the November 2026 product-completion work. Follow the status and verification messages in your installed build.</p><ul><li><a href="./privacy.html" title="Review which payment details other people and service providers can see.">Privacy and local data</a></li><li><a href="#content" title="Move past the navigation to the main content on this page.">Back to top</a></li></ul></footer>
   </body>
 </html>

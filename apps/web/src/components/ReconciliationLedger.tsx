@@ -1,3 +1,4 @@
+import { ControlTip } from './ControlTips';
 import { findChain, tokensForChain } from '@ghostpay/chain-adapters';
 import { createInvoicePaymentSummarizer } from '@ghostpay/ux-vault/portable';
 import { useEffect, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from 'react';
@@ -79,8 +80,8 @@ function ProposalView(props: {
         <p>{t('ledger.late.decision')}</p>
         {props.onAcceptLate === undefined
           ? <p>{t('ledger.late.rescan')}</p>
-          : <button type="button" className="btn" disabled={props.busy}
-              onClick={() => props.onAcceptLate?.(invoice.invoiceDigest)}>{t('ledger.late.accept')}</button>}
+          : <ControlTip message="ledger.late.decision"><button type="button" className="btn" disabled={props.busy}
+              onClick={() => props.onAcceptLate?.(invoice.invoiceDigest)}>{t('ledger.late.accept')}</button></ControlTip>}
       </Notice>
     );
   }
@@ -98,12 +99,12 @@ function ProposalView(props: {
   return (
     <div className="ledger-proposal">
       <p>{t('ledger.ui.exactLocalMatchProposedInvoice')}<Mono>{proposal.invoice.invoiceDigest}</Mono>{t('ledger.ui.sameChainAssetAndRouterNetAmountObservedWithinIts')}</p>
-      <button
+      <ControlTip message="tips.matchInvoice"><button
         type="button"
         className="btn"
         disabled={props.busy}
         onClick={() => props.onConfirm(proposal.invoice.invoiceDigest)}
-      >{t('ledger.ui.confirmProposedInvoiceMatch')}</button>
+      >{t('ledger.ui.confirmProposedInvoiceMatch')}</button></ControlTip>
     </div>
   );
 }
@@ -136,7 +137,7 @@ function MatchLedgerAction(props: {
         hint={t('ledger.ui.yourAnnotationOnlyTheInvoiceIsNotOpenedOrChecked')}
       >
         {(id, describedBy) => (
-          <input
+          <ControlTip message="ledger.ui.yourAnnotationOnlyTheInvoiceIsNotOpenedOrChecked"><input
             id={id}
             aria-describedby={describedBy}
             className="mono"
@@ -145,10 +146,10 @@ function MatchLedgerAction(props: {
             value={invoiceDigest}
             onChange={(event) => setInvoiceDigest(event.target.value)}
             placeholder="0x…"
-          />
+          /></ControlTip>
         )}
       </Field>
-      <button
+      <ControlTip message="ledger.ui.selectedObservationsAreEncryptedOnThisDeviceWithYourViewing"><button
         type="button"
         className="btn"
         disabled={props.busy}
@@ -162,7 +163,7 @@ function MatchLedgerAction(props: {
             props.onError(publicLedgerError(error));
           }
         }}
-      >{t('ledger.ui.addVerifiedPaymentToLedger')}</button>
+      >{t('ledger.ui.addVerifiedPaymentToLedger')}</button></ControlTip>
       </>}
       <ProposalView
         proposal={props.proposal}
@@ -414,17 +415,17 @@ export function ReconciliationLedger(props: ReconciliationLedgerProps): ReactNod
       )}
       {error !== undefined && <Notice kind="error">{userMessage(error, t)}</Notice>}
       {!unlocked ? (
-        <button
+        <ControlTip message="tips.unlockLedger"><button
           type="button"
           className="btn"
           disabled={busy || props.sellerKeyId === undefined}
           onClick={() => run(() => Promise.resolve(), true)}
-        >{t('ledger.ui.unlockEncryptedReconciliationVault')}</button>
+        >{t('ledger.ui.unlockEncryptedReconciliationVault')}</button></ControlTip>
       ) : (
         <>
           <div className="actions">
-            <button type="button" className="btn" onClick={reset}>{t('ledger.ui.lockReconciliationVault')}</button>
-            <button
+            <ControlTip message="tips.lockLedger"><button type="button" className="btn" onClick={reset}>{t('ledger.ui.lockReconciliationVault')}</button></ControlTip>
+            <ControlTip message="help.ledgerBackupFile"><button
               type="button"
               className="btn"
               disabled={busy}
@@ -435,8 +436,8 @@ export function ReconciliationLedger(props: ReconciliationLedgerProps): ReactNod
                   downloadText('ghostpay-reconciliation-encrypted.json', encrypted, 'application/json');
                 })
               }
-            >{t('ledger.ui.exportEncryptedReconciliationBackup')}</button>
-            <button
+            >{t('ledger.ui.exportEncryptedReconciliationBackup')}</button></ControlTip>
+            <ControlTip message="ledger.ui.deleteEncryptedObservationsInThisSellerAndChainScopeReorg"><button
               type="button"
               className="btn btn-danger"
               disabled={busy}
@@ -448,11 +449,11 @@ export function ReconciliationLedger(props: ReconciliationLedgerProps): ReactNod
                 )
                   run(async (current) => current.clearRecords());
               }}
-            >{t('ledger.ui.deleteEncryptedObservations')}</button>
+            >{t('ledger.ui.deleteEncryptedObservations')}</button></ControlTip>
           </div>
           <Field label={t('ledger.search')}>
             {(id) => (
-              <input id={id} type="search" value={query} onChange={(event) => setQuery(event.target.value)} />
+              <ControlTip message="tips.searchLedger"><input id={id} type="search" value={query} onChange={(event) => setQuery(event.target.value)} /></ControlTip>
             )}
           </Field>
           <p className="hint">{t('ledger.recordCount', { count: records.length })}</p>
@@ -558,7 +559,7 @@ export function ReconciliationLedger(props: ReconciliationLedgerProps): ReactNod
             hint={t('ledger.ui.onlyThisVaultSEncryptedFormatIsAcceptedPlaintextLegacy')}
           >
             {(id, describedBy) => (
-              <textarea
+              <ControlTip message="ledger.ui.onlyThisVaultSEncryptedFormatIsAcceptedPlaintextLegacy"><textarea
                 id={id}
                 aria-describedby={describedBy}
                 rows={3}
@@ -570,12 +571,12 @@ export function ReconciliationLedger(props: ReconciliationLedgerProps): ReactNod
                   setBackup(event.target.value);
                   setPreview(undefined);
                 }}
-              />
+              /></ControlTip>
             )}
           </Field>
           <Field label={t('ledger.ui.encryptedReconciliationBackupFile')} help={{ label: t('help.about', { control: t('ledger.ui.encryptedReconciliationBackupFile') }), text: t('help.ledgerBackupFile') }}>
             {(id, describedBy) => (
-              <input
+              <ControlTip message="help.ledgerBackupFile"><input
                 id={id}
                 aria-describedby={describedBy}
                 type="file"
@@ -611,10 +612,10 @@ export function ReconciliationLedger(props: ReconciliationLedgerProps): ReactNod
                     },
                   );
                 }}
-              />
+              /></ControlTip>
             )}
           </Field>
-          <button
+          <ControlTip message="help.ledgerBackupFile"><button
             type="button"
             className="btn"
             disabled={busy || backup === ''}
@@ -627,7 +628,7 @@ export function ReconciliationLedger(props: ReconciliationLedgerProps): ReactNod
                 if (backupRevision.current === backupId) setPreview(staged);
               });
             }}
-          >{t('ledger.ui.previewEncryptedBackup')}</button>
+          >{t('ledger.ui.previewEncryptedBackup')}</button></ControlTip>
           {preview !== undefined && (
             <div className="panel">
               {preview.readOnly && (
@@ -637,7 +638,7 @@ export function ReconciliationLedger(props: ReconciliationLedgerProps): ReactNod
                 {t('ledger.import.counts', { records: preview.recordCount, invoices: preview.invoiceCount, receipts: preview.receiptCount })}{' '}
                 {t('ledger.import.invalidated', { count: preview.invalidatedCount })}{' '}
                 {t('ledger.import.meaning')}</p>
-              <button
+              <ControlTip message="tips.restoreLedger"><button
                 type="button"
                 className="btn"
                 disabled={busy}
@@ -649,7 +650,7 @@ export function ReconciliationLedger(props: ReconciliationLedgerProps): ReactNod
                     setBackup('');
                   })
                 }
-              >{t('ledger.ui.activatePreviewedHistoricalRecords')}</button>
+              >{t('ledger.ui.activatePreviewedHistoricalRecords')}</button></ControlTip>
             </div>
           )}
         </>
@@ -657,7 +658,7 @@ export function ReconciliationLedger(props: ReconciliationLedgerProps): ReactNod
       <div className="panel">
         <h4>{t('ledger.legacy.title')}</h4>
         <p className="hint">{t('ledger.ui.legacyDataIsUntrustedAndMayHaveBeenEditedIt')}</p>
-        <button
+        <ControlTip message="ledger.ui.legacyDataIsUntrustedAndMayHaveBeenEditedIt"><button
           type="button"
           className="btn"
           onClick={() => {
@@ -668,8 +669,8 @@ export function ReconciliationLedger(props: ReconciliationLedgerProps): ReactNod
               setError(publicLedgerError(cause));
             }
           }}
-        >{t('ledger.ui.readUntrustedLegacyRecords')}</button>
-        <button
+        >{t('ledger.ui.readUntrustedLegacyRecords')}</button></ControlTip>
+        <ControlTip message="ledger.ui.exportUntrustedLegacyRecordsAsPlaintextThisRevealsTheStored"><button
           type="button"
           className="btn"
           onClick={() => {
@@ -689,8 +690,8 @@ export function ReconciliationLedger(props: ReconciliationLedgerProps): ReactNod
               setError(publicLedgerError(cause));
             }
           }}
-        >{t('ledger.ui.exportUntrustedLegacyPlaintext')}</button>
-        <button
+        >{t('ledger.ui.exportUntrustedLegacyPlaintext')}</button></ControlTip>
+        <ControlTip message="ledger.ui.deleteAllLegacyPlaintextReconciliationDataIncludingUnreadableRecords"><button
           type="button"
           className="btn btn-danger"
           onClick={() => {
@@ -708,7 +709,7 @@ export function ReconciliationLedger(props: ReconciliationLedgerProps): ReactNod
               setError(new UserFacingError({ key: 'ledger.ui.legacyPlaintextDataCouldNotBeDeleted' }));
             }
           }}
-        >{t('ledger.ui.deleteLegacyPlaintextRecords')}</button>
+        >{t('ledger.ui.deleteLegacyPlaintextRecords')}</button></ControlTip>
         {legacy !== undefined && (
           <ul>
             {legacy.map((record) => (
@@ -800,7 +801,7 @@ function InvoiceRegistry(props: {
                 {(states.length === 0 || states.includes('ledger.late.accepted') || states.includes('ledger.ui.linkedToAVerifiedObservation')) && (
                   <InvoicePaymentSummary summary={summarize?.(invoice) ?? { kind: 'unavailable' }} />
                 )}
-                <button
+                <ControlTip message="ledger.ui.removeThisInvoiceRegistrationSavedObservationsAndLinksAreKept"><button
                   type="button"
                   className="btn"
                   disabled={props.busy}
@@ -808,19 +809,19 @@ function InvoiceRegistry(props: {
                     if (window.confirm(t('ledger.ui.removeThisInvoiceRegistrationSavedObservationsAndLinksAreKept')))
                       props.onRemove(invoice.invoiceDigest);
                   }}
-                >{t('ledger.ui.removeRegistration')}</button>
+                >{t('ledger.ui.removeRegistration')}</button></ControlTip>
               </li>
               );
             })}
           </ul>
-          <button
+          <ControlTip message="ledger.ui.removeAllInvoiceRegistrationsInThisSellerAndChainScope"><button
             type="button"
             className="btn btn-danger"
             disabled={props.busy}
             onClick={() => {
               if (window.confirm(t('ledger.ui.removeAllInvoiceRegistrationsInThisSellerAndChainScope'))) props.onClear();
             }}
-          >{t('ledger.ui.removeAllInvoiceRegistrations')}</button>
+          >{t('ledger.ui.removeAllInvoiceRegistrations')}</button></ControlTip>
         </>
       )}
     </div>
@@ -852,7 +853,7 @@ function ReceiptArchive(props: {
                   <bdi dir="ltr">{receipt.amountMinorUnits}</bdi>{t('ledger.ui.baseUnitsOf')}<bdi dir="ltr">{receipt.asset}</bdi>{t('ledger.ui.issued')}{' '}
                   {new Date(receipt.issuedAt * 1000).toISOString()}{t('ledger.ui.archived')}{new Date(archivedAt).toISOString()}.
                 </p>
-                <button
+                <ControlTip message="ledger.ui.deleteThisArchivedReceiptFromThisDevice"><button
                   type="button"
                   className="btn"
                   disabled={props.busy}
@@ -860,12 +861,12 @@ function ReceiptArchive(props: {
                     if (window.confirm(t('ledger.ui.deleteThisArchivedReceiptFromThisDevice')))
                       props.onRemove(receipt.signature);
                   }}
-                >{t('ledger.ui.deleteArchivedReceipt')}</button>
+                >{t('ledger.ui.deleteArchivedReceipt')}</button></ControlTip>
               </li>
             ))}
           </ul>
           <div className="actions">
-            <button
+            <ControlTip message="ledger.ui.exportArchivedReceiptsAsPlaintextJSONTheFileRevealsPayment"><button
               type="button"
               className="btn"
               disabled={props.busy}
@@ -873,15 +874,15 @@ function ReceiptArchive(props: {
                 if (window.confirm(t('ledger.ui.exportArchivedReceiptsAsPlaintextJSONTheFileRevealsPayment')))
                   props.onExport();
               }}
-            >{t('ledger.ui.exportArchivedReceipts')}</button>
-            <button
+            >{t('ledger.ui.exportArchivedReceipts')}</button></ControlTip>
+            <ControlTip message="ledger.ui.deleteAllArchivedReceiptsInThisSellerAndChainScope"><button
               type="button"
               className="btn btn-danger"
               disabled={props.busy}
               onClick={() => {
                 if (window.confirm(t('ledger.ui.deleteAllArchivedReceiptsInThisSellerAndChainScope'))) props.onClear();
               }}
-            >{t('ledger.ui.deleteAllArchivedReceipts')}</button>
+            >{t('ledger.ui.deleteAllArchivedReceipts')}</button></ControlTip>
           </div>
         </>
       )}

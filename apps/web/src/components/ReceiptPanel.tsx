@@ -1,3 +1,4 @@
+import { ControlTip } from './ControlTips';
 import { findChain, tokensForChain } from '@ghostpay/chain-adapters';
 import { openFragment, type ParsedInvoice } from '@ghostpay/invoice-schema';
 import { useEffect, useRef, useState, type ReactNode } from 'react';
@@ -269,7 +270,7 @@ export function ReceiptPanel(props: ReceiptPanelProps): ReactNode {
       {txHash === undefined ? (
         <>
           <Notice kind="info">{t('receipt.hashMissing')}</Notice>
-          <button type="button" className="btn btn-primary" disabled>{t('receipt.sign')}</button>
+          <ControlTip message="receipt.intro"><button type="button" className="btn btn-primary" disabled>{t('receipt.sign')}</button></ControlTip>
         </>
       ) : (
         <>
@@ -282,33 +283,33 @@ export function ReceiptPanel(props: ReceiptPanelProps): ReactNode {
           <h5>{t('receipt.bindHeading')}</h5>
           <p className="hint">{t('receipt.bindHint')}</p>
           <Field label={t('receipt.invoiceLink')}>
-            {(id) => <textarea id={id} dir="ltr" rows={3} autoComplete="off" value={invoiceInput} onChange={(e) => { invalidateInvoice(); setInvoiceInput(e.target.value); setInvoicePassphrase(''); }} disabled={!eligible} />}
+            {(id) => <ControlTip message="receipt.bindHint"><textarea id={id} dir="ltr" rows={3} autoComplete="off" value={invoiceInput} onChange={(e) => { invalidateInvoice(); setInvoiceInput(e.target.value); setInvoicePassphrase(''); }} disabled={!eligible} /></ControlTip>}
           </Field>
           <Field label={t('receipt.passphrase')}>
-            {(id) => <input id={id} type="password" autoComplete="off" value={invoicePassphrase} onChange={(e) => { invalidateInvoice(); setInvoicePassphrase(e.target.value); }} disabled={!eligible} />}
+            {(id) => <ControlTip message="tips.invoicePass"><input id={id} type="password" autoComplete="off" value={invoicePassphrase} onChange={(e) => { invalidateInvoice(); setInvoicePassphrase(e.target.value); }} disabled={!eligible} /></ControlTip>}
           </Field>
-          <label><input type="checkbox" checked={invoiceConsent} onChange={(e) => { invalidateInvoice(); setInvoiceConsent(e.target.checked); }} disabled={!eligible} /> {t('receipt.openConsent')}</label>
+          <label><ControlTip message="receipt.bindHint"><input type="checkbox" checked={invoiceConsent} onChange={(e) => { invalidateInvoice(); setInvoiceConsent(e.target.checked); }} disabled={!eligible} /></ControlTip> {t('receipt.openConsent')}</label>
           <div className="actions">
-            <button type="button" className="btn" disabled={!eligible || !invoiceConsent || invoiceBusy || invoiceInput.trim() === ''} onClick={() => { loadInvoice(() => Promise.resolve(invoiceInput)); }}>{t('receipt.validate')}</button>
-            {invoiceBusy && <button type="button" className="btn" onClick={() => { invalidateInvoice(); setInvoicePassphrase(''); }}>{t('receipt.cancel')}</button>}
+            <ControlTip message="receipt.bindHint"><button type="button" className="btn" disabled={!eligible || !invoiceConsent || invoiceBusy || invoiceInput.trim() === ''} onClick={() => { loadInvoice(() => Promise.resolve(invoiceInput)); }}>{t('receipt.validate')}</button></ControlTip>
+            {invoiceBusy && <ControlTip message="tips.cancel"><button type="button" className="btn" onClick={() => { invalidateInvoice(); setInvoicePassphrase(''); }}>{t('receipt.cancel')}</button></ControlTip>}
           </div>
           <Field label={t('receipt.invoiceFile')} hint={t('receipt.invoiceFileHint')} help={{ label: t('help.about', { control: t('receipt.invoiceFile') }), text: t('help.receiptInvoiceFile') }}>
-            {(id, describedBy) => <input id={id} aria-describedby={describedBy} type="file" accept="text/plain,.txt" disabled={!eligible || !invoiceConsent || invoiceBusy} onChange={(e) => { const file = e.currentTarget.files?.[0]; e.currentTarget.value = ''; if (file !== undefined) loadInvoice(() => file.text(), file.size); }} />}
+            {(id, describedBy) => <ControlTip message="help.receiptInvoiceFile"><input id={id} aria-describedby={describedBy} type="file" accept="text/plain,.txt" disabled={!eligible || !invoiceConsent || invoiceBusy} onChange={(e) => { const file = e.currentTarget.files?.[0]; e.currentTarget.value = ''; if (file !== undefined) loadInvoice(() => file.text(), file.size); }} /></ControlTip>}
           </Field>
           {boundInvoice === undefined ? (lean ? null : (
             <Field label={t('receipt.manualDigest')} hint={t('receipt.manualDigestHint')}>
-              {(id, describedBy) => <input id={id} aria-describedby={describedBy} dir="ltr" className="mono" inputMode="text" autoComplete="off" value={invoiceDigest} onChange={(e) => { invalidateInvoice(); setInvoiceDigest(e.target.value); }} disabled={!eligible || receipt !== undefined} placeholder="0x…" />}
+              {(id, describedBy) => <ControlTip message="receipt.manualDigestHint"><input id={id} aria-describedby={describedBy} dir="ltr" className="mono" inputMode="text" autoComplete="off" value={invoiceDigest} onChange={(e) => { invalidateInvoice(); setInvoiceDigest(e.target.value); }} disabled={!eligible || receipt !== undefined} placeholder="0x…" /></ControlTip>}
             </Field>
           )) : (
             <>
               <Notice kind="ok">{t('receipt.validated')}</Notice>
               <dl className="details"><dt>{t('receipt.validatedDigest')}</dt><dd><Mono>{boundInvoice.binding.invoiceDigest}</Mono></dd><dt>{t('receipt.invoiceSigner')}</dt><dd><Mono>{boundInvoice.binding.invoiceSignerPublicKey}</Mono></dd></dl>
-              <label><input type="checkbox" checked={signConsent} onChange={(e) => { setSignConsent(e.target.checked); }} disabled={receipt !== undefined} /> {t('receipt.signConsent')}</label>
-              <p><button type="button" className="btn" onClick={() => { invalidateInvoice(); setInvoiceDigest(''); }}>{t('receipt.clearBinding')}</button></p>
+              <label><ControlTip message="receipt.boundHint"><input type="checkbox" checked={signConsent} onChange={(e) => { setSignConsent(e.target.checked); }} disabled={receipt !== undefined} /></ControlTip> {t('receipt.signConsent')}</label>
+              <p><ControlTip message="tips.clearBinding"><button type="button" className="btn" onClick={() => { invalidateInvoice(); setInvoiceDigest(''); }}>{t('receipt.clearBinding')}</button></ControlTip></p>
             </>
           )}
           <div className="actions">
-            <button type="button" className="btn btn-primary" onClick={createReceipt} disabled={!eligible || txHash === undefined || receipt !== undefined || invoiceBusy || (boundInvoice !== undefined && !signConsent)}>{t('receipt.sign')}</button>
+            <ControlTip message="receipt.boundHint"><button type="button" className="btn btn-primary" onClick={createReceipt} disabled={!eligible || txHash === undefined || receipt !== undefined || invoiceBusy || (boundInvoice !== undefined && !signConsent)}>{t('receipt.sign')}</button></ControlTip>
           </div>
           {error !== undefined && <Notice kind="error">{displayMessage(error, t)}</Notice>}
           {receipt !== undefined && (
@@ -324,15 +325,15 @@ export function ReceiptPanel(props: ReceiptPanelProps): ReactNode {
                 <dt>{t('receipt.issued')}</dt><dd>{new Date(receipt.issuedAt * 1000).toISOString()}</dd>
                 <dt>{t('receipt.signerKey')}</dt><dd><Mono>{receipt.signerPublicKey}</Mono></dd>
               </dl>
-              <Field label={t('receipt.json')}>{(id) => <textarea id={id} dir="ltr" className="mono receipt-json" readOnly rows={8} value={receiptText ?? ''} onFocus={(e) => { e.currentTarget.select(); }} />}</Field>
+              <Field label={t('receipt.json')}>{(id) => <ControlTip message="receipt.attestation"><textarea id={id} dir="ltr" className="mono receipt-json" readOnly rows={8} value={receiptText ?? ''} onFocus={(e) => { e.currentTarget.select(); }} /></ControlTip>}</Field>
               <div className="actions receipt-actions">
                 <CopyButton text={receiptText ?? ''} label={t('receipt.copy')} />
-                <button type="button" className="btn" onClick={() => { downloadText('ghostpay-receipt.json', receiptText ?? '', 'application/json'); }}>{t('receipt.download')}</button>
-                <button type="button" className="btn" onClick={showQr}>{t('receipt.showQr')}</button>
-                <button type="button" className="btn" onClick={() => { print(); }}>{t('receipt.print')}</button>
-                <button type="button" className="btn" onClick={archiveReceipt} disabled={archive !== 'idle' || archivePending}>
+                <ControlTip message="tips.saveReceipt"><button type="button" className="btn" onClick={() => { downloadText('ghostpay-receipt.json', receiptText ?? '', 'application/json'); }}>{t('receipt.download')}</button></ControlTip>
+                <ControlTip message="help.receiptQr"><button type="button" className="btn" onClick={showQr}>{t('receipt.showQr')}</button></ControlTip>
+                <ControlTip message="tips.print"><button type="button" className="btn" onClick={() => { print(); }}>{t('receipt.print')}</button></ControlTip>
+                <ControlTip message="receipt.archiveHint"><button type="button" className="btn" onClick={archiveReceipt} disabled={archive !== 'idle' || archivePending}>
                   {archive === 'done' ? t('receipt.archived') : t('receipt.archive')}
-                </button>
+                </button></ControlTip>
               </div>
               <p className="hint">{t('receipt.archiveHint')}</p>
               <p className="hint">{t('receipt.qrHint')}</p>

@@ -1,3 +1,4 @@
+import { ControlTip } from '../components/ControlTips';
 import { useEffect, useState, type ReactNode } from 'react';
 import { ChainFeeList, useLimits } from '../components/Disclosure';
 import { Mono } from '../components/Common';
@@ -40,23 +41,23 @@ export function Home(): ReactNode {
         <article className="card">
           <h3>{t('home.seller.title')}</h3>
           <p>{t('home.seller.body')}</p>
-          <button type="button" className="btn btn-primary" onClick={() => { app.setView('seller'); }}>
+          <ControlTip message="home.seller.body"><button type="button" className="btn btn-primary" onClick={() => { app.setView('seller'); }}>
             {t('home.seller.button')}
-          </button>
+          </button></ControlTip>
         </article>
         <article className="card">
           <h3>{t('home.pay.title')}</h3>
           <p>{t('home.pay.body')}</p>
-          <button type="button" className="btn btn-primary" onClick={() => { app.setView('pay'); }}>
+          <ControlTip message="home.pay.body"><button type="button" className="btn btn-primary" onClick={() => { app.setView('pay'); }}>
             {t('home.pay.button')}
-          </button>
+          </button></ControlTip>
         </article>
         <article className="card">
           <h3>{t('home.sweep.title')}</h3>
           <p>{t('home.sweep.body')}</p>
-          <button type="button" className="btn btn-primary" onClick={() => { app.setView('sweep'); }}>
+          <ControlTip message="home.sweep.body"><button type="button" className="btn btn-primary" onClick={() => { app.setView('sweep'); }}>
             {t('home.sweep.button')}
-          </button>
+          </button></ControlTip>
         </article>
       </div>
 
@@ -67,23 +68,23 @@ export function Home(): ReactNode {
         ))}
       </ul>
       <p>
-        <button type="button" className="link-btn" onClick={() => { app.setView('about'); }}>
+        <ControlTip message="tips.about"><button type="button" className="link-btn" onClick={() => { app.setView('about'); }}>
           {t('home.readFull')}
-        </button>
+        </button></ControlTip>
       </p>
 
       <h3>{t('home.fees')}</h3>
       <ChainFeeList />
 
       <h3>{t('home.release.title')}</h3>
-      <p>
+      <ControlTip message="home.release.compare"><p>
         {t('home.release.label')}{' '}
         {hash === undefined ? t('home.release.computing') : hash === 'unavailable' ? t('home.release.unavailable') : (
           <>
             <Mono>{hash.sha256}</Mono> ({hash.file})
           </>
         )}
-      </p>
+      </p></ControlTip>
       <p className="hint">{t('home.release.compare')}</p>
     </section>
   );

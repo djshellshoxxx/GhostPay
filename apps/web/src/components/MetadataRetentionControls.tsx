@@ -1,3 +1,4 @@
+import { ControlTip } from './ControlTips';
 import { useEffect, useRef, useState, useSyncExternalStore, type ReactNode } from 'react';
 import { SOURCE_TRANSLATOR, useI18nOptional } from '../i18n/context';
 import { readRetentionDelay, RETENTION_POLICIES, RETENTION_REGISTRIES, writeRetentionDelay, type RetentionPreview, type RetentionScope } from '../lib/metadataRetention';
@@ -52,7 +53,7 @@ function PresentationRetentionControls({ scope, manual }: { readonly scope: Rete
   }, [delay, policy, scope]);
   return <section className="stack" aria-label={t(`${prefix}.title`)}>
     <Field label={t(`${prefix}.label`)} hint={t(`${prefix}.scope`)}>
-      {(id, describedBy) => <select id={id} aria-describedby={describedBy} value={delay} onChange={(event) => {
+      {(id, describedBy) => <ControlTip message={scope === 'proof' ? 'retention.proof.scope' : 'retention.scope'}><select id={id} aria-describedby={describedBy} value={delay} onChange={(event) => {
         const next = Number(event.target.value);
         if (next !== 0 && next !== 300_000 && next !== 900_000 && next !== 3_600_000) return;
         setMessage(writeRetentionDelay(next, undefined, scope) ? 'saved' : 'storage');
@@ -61,31 +62,31 @@ function PresentationRetentionControls({ scope, manual }: { readonly scope: Rete
         <option value={300_000}>{t('retention.minutes5')}</option>
         <option value={900_000}>{t('retention.minutes15')}</option>
         <option value={3_600_000}>{t('retention.hour1')}</option>
-      </select>}
+      </select></ControlTip>}
     </Field>
     {!manual && <p className="hint">{t('retention.settings.where')}</p>}
-    {manual && <button ref={previewButton} type="button" className="btn" onClick={() => {
+    {manual && <ControlTip message="tips.previewCleanup"><button ref={previewButton} type="button" className="btn" onClick={() => {
       setMessage(undefined);
       const plan = registry.preview();
       setReview({ plan, revision: registry.getRevision() });
-    }}>{t(`${prefix}.preview`)}</button>}
+    }}>{t(`${prefix}.preview`)}</button></ControlTip>}
     {manual && preview !== undefined && <div role="group" aria-label={t(`${prefix}.confirmTitle`)}>
       <p>{t(`${prefix}.count`, { count: preview.count })}</p>
       <p>{t(`${prefix}.preserved`)}</p>
-      <button type="button" className="btn" disabled={preview.count === 0} onClick={() => {
+      <ControlTip message={scope === 'proof' ? 'retention.proof.preserved' : 'retention.preserved'}><button type="button" className="btn" disabled={preview.count === 0} onClick={() => {
         if (review?.revision !== registry.getRevision()) {
           closeReview(); setMessage('stale'); return;
         }
         const result = registry.confirm(preview);
         closeReview();
         setMessage(result.kind === 'stale' ? 'stale' : result.failed > 0 ? 'failed' : 'cleared');
-      }}>{t(`${prefix}.confirm`)}</button>
-      <button type="button" className="btn" onClick={closeReview}>{t('retention.cancel')}</button>
+      }}>{t(`${prefix}.confirm`)}</button></ControlTip>
+      <ControlTip message="tips.cancel"><button type="button" className="btn" onClick={closeReview}>{t('retention.cancel')}</button></ControlTip>
     </div>}
     {/* Always mounted, so a screen reader announces each outcome when it appears (Notice itself is not live). */}
-    <div aria-live="polite">
+    <ControlTip message="tips.cleanupStatus"><div aria-live="polite">
       {message !== undefined && <Notice kind={message === 'saved' || message === 'cleared' ? 'ok' : 'warn'}>{t(message === 'saved' || message === 'cleared' ? `${prefix}.${message}` : `retention.${message}`)}</Notice>}
-    </div>
+    </div></ControlTip>
   </section>;
 }
 

@@ -1,3 +1,4 @@
+import { ControlTip } from '../components/ControlTips';
 import { FRAGMENT_PREFIX, MAX_DECODED_BYTES, invoiceDigest, openFragment, type OpenFragmentResult, type ParsedInvoice } from '@ghostpay/invoice-schema';
 import { Fragment, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import type { BuiltPayment, Hex } from '@ghostpay/chain-adapters';
@@ -1265,24 +1266,24 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
         <WalletAttempts wallet={wallet} getRpc={app.getRpc} />
         {walletChangeNotice}
         {inputRejection !== undefined && <Notice kind="error" title={t('pay.rejected.title')}>{displayMessage(inputRejection, t)}{` ${inputRejection === SUPPORTED_INVOICE_ERROR ? t('pay.rejected.controlsUnavailable') : t('pay.rejected.nothingSent')}`}</Notice>}
-        {fragment !== undefined && inputRejection === undefined && <p role="status">{t('pay.reading')}</p>}
+        {fragment !== undefined && inputRejection === undefined && <ControlTip message="tips.requestStatus"><p role="status">{t('pay.reading')}</p></ControlTip>}
         {needsPassphrase && (
           <form onSubmit={onUnlock} className="stack">
             <Notice kind="warn" title={t('pay.passphrase.title')}>
               {t('pay.passphrase.body')}
             </Notice>
             <Field label={t('pay.passphrase.label')}>
-              {(id, describedBy) => <input aria-describedby={describedBy} id={id} type="password" autoComplete="off" value={invoicePassphrase} onChange={(e) => { setInvoicePassphrase(e.target.value); }} />}
+              {(id, describedBy) => <ControlTip message="pay.passphrase.body"><input aria-describedby={describedBy} id={id} type="password" autoComplete="off" value={invoicePassphrase} onChange={(e) => { setInvoicePassphrase(e.target.value); }} /></ControlTip>}
             </Field>
-            <button type="submit" className="btn btn-primary" disabled={unlocking || invoicePassphrase === ''}>{unlocking ? t('pay.passphrase.opening') : t('pay.passphrase.open')}</button>
+            <ControlTip message="tips.unlockInvoice"><button type="submit" className="btn btn-primary" disabled={unlocking || invoicePassphrase === ''}>{unlocking ? t('pay.passphrase.opening') : t('pay.passphrase.open')}</button></ControlTip>
           </form>
         )}
         <details ref={invoiceQrDisclosure} onToggle={(event) => { if (!event.currentTarget.open) invalidateInvoiceQr(); }}>
-          <summary>{t('requestFile.summary')}</summary>
+          <ControlTip message="requestFile.hint"><summary>{t('requestFile.summary')}</summary></ControlTip>
           <p>{t('pay.scan.intro')}</p>
           <PaymentRequestFileInput key={invoiceQrReset} scopeKey={invoiceQrScope} supersededEpoch={invoiceFileEpoch} onInputChange={(reason) => (reason === 'select' ? beginInvoiceFile() : invalidateInvoiceQr())} onText={(text, signal) => importInvoiceQr(text, signal, 'file')} />
           <CameraImporter key={`${invoiceQrReset}:${invoiceCameraReset}`} multipart label={t('pay.scan.importLabel')} scopeKey={invoiceQrScope} onInputChange={invalidateFromCamera} onText={importInvoiceQr} />
-          <button type="button" className="btn" onClick={resetInvoiceQr}>{t('requestFile.clear')}</button>
+          <ControlTip message="tips.discardPreview"><button type="button" className="btn" onClick={resetInvoiceQr}>{t('requestFile.clear')}</button></ControlTip>
           {invoiceQrError !== undefined && <Notice kind="error" title={t(invoiceQrError.source === 'file' ? 'requestFile.rejected' : 'pay.scan.rejected')}>{displayMessage(invoiceQrError.message, t)}</Notice>}
           {invoiceQrPreview !== undefined && (
             <section aria-label={t(invoiceQrPreview.source === 'file' ? 'requestFile.reviewAria' : 'pay.scan.reviewAria')}>
@@ -1291,20 +1292,20 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
                 ? <p>{t('pay.scan.needsPassphrase')}</p>
                 : <p>{invoiceQrPreview.result.parsed.verification.signatureValid ? t('pay.scan.chainValid', { chain: String(invoiceQrPreview.result.parsed.invoice.chainId) }) : t('pay.scan.chainInvalid', { chain: String(invoiceQrPreview.result.parsed.invoice.chainId) })}</p>}
               <p>{t('pay.scan.openNote')}</p>
-              <button type="button" className="btn" onClick={openInvoiceQr}>{t(invoiceQrPreview.source === 'file' ? 'requestFile.open' : 'pay.scan.open')}</button>
+              <ControlTip message="pay.scan.openNote"><button type="button" className="btn" onClick={openInvoiceQr}>{t(invoiceQrPreview.source === 'file' ? 'requestFile.open' : 'pay.scan.open')}</button></ControlTip>
             </section>
           )}
         </details>
         <form onSubmit={onPasteSubmit} className="stack">
           <div className="field">
             <label htmlFor="paste">{needsPassphrase ? t('pay.paste.labelAlt') : t('pay.paste.label')}</label>
-            <textarea id="paste" dir="ltr" rows={3} value={paste} onChange={(e) => { setPaste(e.target.value); }} spellCheck={false} />
+            <ControlTip message="pay.paste.hintLocal"><textarea id="paste" dir="ltr" rows={3} value={paste} onChange={(e) => { setPaste(e.target.value); }} spellCheck={false} /></ControlTip>
             <p className="hint">{t('pay.paste.hintLocal')}</p>
             <p className="hint">
               {t('pay.paste.hintHistory')}
             </p>
           </div>
-          <button type="submit" className="btn btn-primary">{t('pay.read')}</button>
+          <ControlTip message="tips.readInvoice"><button type="submit" className="btn btn-primary">{t('pay.read')}</button></ControlTip>
         </form>
       </section>
     );
@@ -1351,7 +1352,7 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
         <Notice kind="error">
           {displayMessage(ctxError, t)}{' '}
           {online && phase === 'review' && review.blockers.length === 0 &&
-            <button type="button" className="btn" onClick={() => { void refreshContext(); }}>{t('pay.retryCheck')}</button>}
+            <ControlTip message="tips.retryChain"><button type="button" className="btn" onClick={() => { void refreshContext(); }}>{t('pay.retryCheck')}</button></ControlTip>}
         </Notice>
       )}
       {review.warnings.length > 0 && (
@@ -1360,7 +1361,7 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
         </Notice>
       )}
 
-      <dl className="details">
+      <ControlTip message="tips.summary"><dl className="details">
         <dt>{t('pay.chain')}</dt>
         <dd>{review.chain?.name ?? t('pay.chain.unknown', { chain: String(inv.chainId) })}</dd>
         <dt>{t('pay.token')}</dt>
@@ -1391,10 +1392,10 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
         <dd><Mono>{payeeFingerprint(inv.metaAddress)}</Mono>{` ${t('pay.sellerFingerprintNote')}`}</dd>
         <dt>{t('pay.privatePart')}</dt>
         <dd>{parsed.passphraseProtected ? t('pay.privatePart.passphrase') : parsed.encrypted ? t('pay.privatePart.key') : t('pay.privatePart.plain')}</dd>
-      </dl>
+      </dl></ControlTip>
 
       {inv.lineItems.length > 0 && (
-        <div className="table-wrap" role="region" aria-label={t('pay.lineItems')} tabIndex={0}>
+        <ControlTip message="tips.table"><div className="table-wrap" role="region" aria-label={t('pay.lineItems')} tabIndex={0}>
           <table>
             <caption>{t('pay.lineItems')}</caption>
             <thead>
@@ -1411,7 +1412,7 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
             </tbody>
           </table>
           <p>{t('pay.tax', { rate: String(inv.tax.rateBps / 100), amount: formatFiat(BigInt(inv.tax.minorUnits), inv.fiat.currency) })}</p>
-        </div>
+        </div></ControlTip>
       )}
       {inv.memo !== undefined && (
         <p className="wrap">
@@ -1429,7 +1430,7 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
       />
 
       {ctx !== undefined && (
-        <dl className="details amounts">
+        <ControlTip message="tips.summary"><dl className="details amounts">
           <dt>{t('pay.gross')}</dt>
           <dd>{formatUnits(ctx.request.grossAmount, decimals)} {symbol}</dd>
           <dt>{t('pay.checkoutFee')}</dt>
@@ -1442,7 +1443,7 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
           <dd><Mono>{ctx.manifest.feeRecipient}</Mono></dd>
           <dt>{t('pay.destination')}</dt>
           <dd>{t('pay.destinationNote')}</dd>
-        </dl>
+        </dl></ControlTip>
       )}
       {ctx !== undefined && (
         <section className="panel" aria-labelledby="seller-receipt-h">
@@ -1451,22 +1452,22 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
             {t('pay.receipt.intro')}
           </p>
           <p className="hint">{t('pay.receipt.privacy')}</p>
-          <label><input type="checkbox" checked={receiptConsent} onChange={(event) => {
+          <label><ControlTip message="pay.receipt.privacy"><input type="checkbox" checked={receiptConsent} onChange={(event) => {
             setReceiptConsent(event.target.checked);
             receiptImportRevision.current += 1;
             receiptBusyRef.current = false;
             setReceiptBusy(false);
             setBoundReceipt(undefined);
             setReceiptError(undefined);
-          }} /> {t('pay.receipt.consent')}</label>
+          }} /></ControlTip> {t('pay.receipt.consent')}</label>
           <form className="stack" onSubmit={onImportReceipt}>
             <Field label={t('pay.receipt.fileLabel')} help={{ label: t('help.about', { control: t('pay.receipt.fileLabel') }), text: t('help.receiptFile') }}>
-              {(id, describedBy) => <input aria-describedby={describedBy} id={id} type="file" accept="application/json,.json" />}
+              {(id, describedBy) => <ControlTip message="help.receiptFile"><input aria-describedby={describedBy} id={id} type="file" accept="application/json,.json" /></ControlTip>}
             </Field>
             <Field label={t('pay.receipt.keyLabel')} hint={t('pay.receipt.keyHint')}>
-              {(id, describedBy) => <input aria-describedby={describedBy} id={id} className="mono" type="text" autoComplete="off" spellCheck={false} value={receiptTrustedKey} onChange={(event) => { setReceiptTrustedKey(event.target.value); setBoundReceipt(undefined); setReceiptError(undefined); }} placeholder="02… or 03…" />}
+              {(id, describedBy) => <ControlTip message="pay.receipt.keyHint"><input aria-describedby={describedBy} id={id} className="mono" type="text" autoComplete="off" spellCheck={false} value={receiptTrustedKey} onChange={(event) => { setReceiptTrustedKey(event.target.value); setBoundReceipt(undefined); setReceiptError(undefined); }} placeholder="02… or 03…" /></ControlTip>}
             </Field>
-            <button type="submit" className="btn" disabled={receiptBusy || ctx === undefined}>{receiptBusy ? t('pay.receipt.checking') : t('pay.receipt.check')}</button>
+            <ControlTip message="tips.checkReceipt"><button type="submit" className="btn" disabled={receiptBusy || ctx === undefined}>{receiptBusy ? t('pay.receipt.checking') : t('pay.receipt.check')}</button></ControlTip>
           </form>
           <CameraImporter
             key={fragment ?? ''}
@@ -1500,7 +1501,7 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
         <fieldset className="options">
           <legend>{t('pay.options')}</legend>
           <div className="check">
-            <input id="delay" type="checkbox" checked={useDelay} onChange={(e) => { setUseDelay(e.target.checked); }} />
+            <ControlTip message="pay.delay.hint"><input id="delay" type="checkbox" checked={useDelay} onChange={(e) => { setUseDelay(e.target.checked); }} /></ControlTip>
             <label htmlFor="delay">
               {t('pay.delay.label', { min: String(Math.round(app.settings.delayMinSec / 60)), max: String(Math.round(app.settings.delayMaxSec / 60)) })}
             </label>
@@ -1512,7 +1513,7 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
           {isErc20 && parsed !== undefined && bufferOffered(parsed.invoice) && (
             <>
               <div className="check">
-                <input
+                <ControlTip message="tips.buffer"><input
                   id="buf"
                   type="checkbox"
                   checked={useBuffer}
@@ -1521,7 +1522,7 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
                     setBufferQuote(undefined);
                     if (e.target.checked) void refreshBuffer();
                   }}
-                />
+                /></ControlTip>
                 <label htmlFor="buf">{t('pay.buffer.label')}</label>
               </div>
               {useBuffer && (
@@ -1535,16 +1536,16 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
       )}
 
       {phase === 'waiting' && schedule !== undefined && (
-        <div className="panel" role="status">
+        <ControlTip message="pay.delay.hint"><div className="panel" role="status">
           <p>
             <strong>{t('pay.waiting.notice')}</strong>
           </p>
           <p>{t('pay.waiting.left', { time: formatCountdown(schedule.remainingMs) })}</p>
           <div className="actions">
-            <button type="button" className="btn" onClick={() => { scheduler.current?.sendNow(); }}>{t('pay.sendNow')}</button>
-            <button type="button" className="btn btn-danger" onClick={() => { scheduler.current?.cancel(); }}>{t('pay.cancel')}</button>
+            <ControlTip message="tips.sendNow"><button type="button" className="btn" onClick={() => { scheduler.current?.sendNow(); }}>{t('pay.sendNow')}</button></ControlTip>
+            <ControlTip message="tips.cancelDelay"><button type="button" className="btn btn-danger" onClick={() => { scheduler.current?.cancel(); }}>{t('pay.cancel')}</button></ControlTip>
           </div>
-        </div>
+        </div></ControlTip>
       )}
 
       {alreadyRequested && <Notice kind="warn" title={t('pay.alreadyRequested.title')}>{t('pay.alreadyRequested.body')}</Notice>}
@@ -1559,10 +1560,10 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
               <ul className="plain-list">
                 {wallets?.map((w) => (
                   <li key={w.id}>
-                    <button type="button" className="btn" disabled={!online} onClick={() => { onConnect(w); }}>
+                    <ControlTip message="tips.connect"><button type="button" className="btn" disabled={!online} onClick={() => { onConnect(w); }}>
                       {w.icon !== undefined && <img src={w.icon} alt="" width={20} height={20} />} {t('pay.connect', { name: w.name })}
                       {w.rdns !== undefined && <span className="hint"> ({w.rdns})</span>}
-                    </button>
+                    </button></ControlTip>
                     {warnings.get(w.id)?.map((message) => (
                       <p key={message} className="hint" role="note">⚠ {message}</p>
                     ))}
@@ -1576,9 +1577,9 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
             </p>
           )}
           {wallet !== undefined && built === undefined && (
-            <button type="button" className="btn btn-primary" onClick={onPrepare} disabled={!online || phase === 'busy' || ctx === undefined}>
+            <ControlTip message="tips.prepare"><button type="button" className="btn btn-primary" onClick={onPrepare} disabled={!online || phase === 'busy' || ctx === undefined}>
               {t('pay.prepare')}
-            </button>
+            </button></ControlTip>
           )}
         </div>
       )}
@@ -1621,7 +1622,7 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
           </p>
           <div className="actions">
             <CopyButton text={result.hash} label={t('pay.copyHash')} />
-            <button
+            <ControlTip message="tips.saveProof"><button
               type="button"
               className="btn"
               onClick={() => {
@@ -1631,7 +1632,7 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
               }}
             >
               {t('pay.receipt.download')}
-            </button>
+            </button></ControlTip>
           </div>
           {proofReceipt !== undefined && <PaymentProofQr receipt={proofReceipt} sourceIdentity={proofSource} />}
         </div>
@@ -1639,17 +1640,17 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
 
       <div className="actions">
         {phase === 'review' && (
-          <button type="button" className="btn btn-primary" onClick={onContinue} disabled={!online || review.blockers.length > 0 || ctx === undefined}>
+          <ControlTip message={useDelay ? 'pay.delay.hint' : 'tips.finalReview'}><button type="button" className="btn btn-primary" onClick={onContinue} disabled={!online || review.blockers.length > 0 || ctx === undefined}>
             {useDelay ? t('pay.startDelay') : t('pay.continue')}
-          </button>
+          </button></ControlTip>
         )}
         {phase !== 'done' && phase !== 'submitted' && (
-          <button type="button" className="btn" onClick={forget}>{t('pay.forget')}</button>
+          <ControlTip message="tips.forgetInvoice"><button type="button" className="btn" onClick={forget}>{t('pay.forget')}</button></ControlTip>
         )}
         {!app.settings.autoClearFragment && (
-          <button type="button" className="btn" onClick={() => { clearFragment(location, history); }}>
+          <ControlTip message="tips.removeLink"><button type="button" className="btn" onClick={() => { clearFragment(location, history); }}>
             {t('pay.removeLink')}
-          </button>
+          </button></ControlTip>
         )}
       </div>
     </section>
@@ -1681,7 +1682,7 @@ function FinalPreview(props: {
       <h3 id="final-h">{t('pay.final.heading')}</h3>
       <p>{t('pay.final.intro')}</p>
       <DestinationReuseNotice notice={props.notice} />
-      <dl className="details">
+      <ControlTip message="tips.finalReview"><dl className="details">
         <dt>{t('pay.final.method')}</dt>
         <dd>{decoded.method}</dd>
         <dt>{t('pay.final.contract')}</dt>
@@ -1698,18 +1699,18 @@ function FinalPreview(props: {
         <dd>{formatUnits(built.tx.value, 18)} {ctx.chain.nativeSymbol}{p.method === 'payERC20WithBuffer' ? ` ${t('pay.final.bufferNote')}` : ''}</dd>
         <dt>{t('pay.final.deadline')}</dt>
         <dd>{formatUnix(Number(p.deadline))}</dd>
-      </dl>
+      </dl></ControlTip>
       {props.approval !== undefined && (
         <div className="notice notice-warn" role="note">
           <strong className="notice-title">{props.granted !== undefined ? t('pay.approval.confirmedTitle') : props.approval.required ? t('pay.approval.neededTitle') : t('pay.approval.presentTitle')}</strong>
-          <dl className="details">
+          <ControlTip message="tips.allowance"><dl className="details">
             <dt>{t('pay.approval.spender')}</dt>
             <dd><Mono>{props.approval.spender}</Mono></dd>
             <dt>{t('pay.approval.before')}</dt>
             <dd>{formatUnits(props.approval.have, dec)} {sym}</dd>
             <dt>{props.approval.required ? t('pay.approval.exact') : t('pay.approval.needed')}</dt>
             <dd>{formatUnits(props.approval.need, dec)} {sym}</dd>
-          </dl>
+          </dl></ControlTip>
           {props.granted !== undefined ? (
             <p>{props.approvalHash === undefined ? t('pay.approval.confirmed') : renderParts(trParts('pay.approval.confirmedHash', { hash: props.approvalHash }), monoTag('hash'))}</p>
           ) : props.approval.required ? (
@@ -1719,20 +1720,22 @@ function FinalPreview(props: {
           )}
           {props.granted !== undefined && props.granted > props.approval.need && (
             <div>
-              <p role="alert">{t('pay.approval.excessAlert')}</p>
+              <ControlTip message="tips.allowance"><p role="alert">{t('pay.approval.excessAlert')}</p></ControlTip>
               <p>{renderParts(trParts('pay.approval.excess', { granted: formatUnits(props.granted, dec), symbol: sym, need: formatUnits(props.approval.need, dec) }), { b: (c) => <strong>{c}</strong> })}</p>
             </div>
           )}
           {props.granted !== undefined && (
-            <p>{t('pay.approval.now', { granted: formatUnits(props.granted, dec), symbol: sym })} <button type="button" className="btn" onClick={props.onRevoke} disabled={props.busy}>{t('pay.approval.revoke')}</button></p>
+            <p>{t('pay.approval.now', { granted: formatUnits(props.granted, dec), symbol: sym })} <ControlTip message="tips.revoke"><button type="button" className="btn" onClick={props.onRevoke} disabled={props.busy}>{t('pay.approval.revoke')}</button></ControlTip></p>
           )}
         </div>
       )}
-      <button type="button" className="btn btn-primary" onClick={props.onSend} disabled={props.busy}>
+      <ControlTip message={props.approval?.required === true && props.granted === undefined ? 'pay.approval.explain' : 'tips.send'}><button type="button" className="btn btn-primary" onClick={props.onSend} disabled={props.busy}>
         {props.approval?.required === true && props.granted === undefined ? t('pay.final.sendApprove') : t('pay.final.send')}
-      </button>
+      </button></ControlTip>
     </div>
   );
 }
 
 // i18n-use: error.pay.aGasBufferNeedsAnRPCForThisChainTo help.about help.receiptFile pay.announce.approvalUnverified pay.announce.cancelled pay.announce.connected pay.announce.delayDone pay.announce.paymentUnverified pay.announce.prepared pay.announce.previous pay.announce.revoked pay.announce.scheduled pay.announce.submitted pay.approval.before pay.approval.confirmed pay.approval.confirmedHash pay.approval.confirmedTitle pay.approval.enough pay.approval.exact pay.approval.excess pay.approval.explain pay.approval.needed pay.approval.neededTitle pay.approval.now pay.approval.presentTitle pay.approval.revoke pay.approval.spender pay.buffer.estimate pay.buffer.estimating pay.buffer.label pay.buffer.notAccepted pay.buffer.title pay.cancel pay.cannotProceed pay.chain pay.chain.unknown pay.checkAmount pay.checkoutFee pay.col.description pay.col.qty pay.col.unit pay.connect pay.connected pay.continue pay.copyHash pay.delay.hint pay.delay.label pay.destination pay.destinationNote pay.done.hash pay.done.heading pay.error.expiredWaiting pay.error.invoiceLink pay.error.invoiceQrLink pay.error.invoiceQrOtherFamily pay.error.noManifest pay.error.receiptConsent pay.error.receiptTooLarge pay.error.receiptUpdating pay.error.reviewChanged pay.error.sellerKeysChanged pay.error.supportedInvoice pay.expires pay.feePayer pay.feePayer.payer pay.feePayer.seller pay.feeRecipient pay.fiatNotChecked pay.fiatStated pay.final.bufferNote pay.final.contract pay.final.deadline pay.final.destination pay.final.fee pay.final.feeLine pay.final.gross pay.final.heading pay.final.intro pay.final.method pay.final.native pay.final.net pay.final.netLine pay.final.send pay.final.sendApprove pay.fixed.unknownToken pay.fixedTokenAmount pay.forget pay.gross pay.invoiceTotal pay.lineItems pay.lookingWallets pay.memo.flagged pay.memo.label pay.nativeCoin pay.nativeCoinTitle pay.netReceives pay.noWallet pay.options pay.passphrase.body pay.passphrase.label pay.passphrase.open pay.passphrase.opening pay.passphrase.title pay.paste.hintHistory pay.paste.hintLocal pay.paste.label pay.paste.labelAlt pay.prepare pay.previous.body pay.previous.title pay.pricing pay.pricing.fixed pay.pricing.quote pay.privatePart pay.privatePart.key pay.privatePart.passphrase pay.privatePart.plain pay.public.body pay.public.title pay.read pay.reading pay.receipt.check pay.receipt.checking pay.receipt.consent pay.receipt.download pay.receipt.download.confirm pay.receipt.fileLabel pay.receipt.heading pay.receipt.intro pay.receipt.keyHint pay.receipt.keyLabel pay.receipt.matchInvoiceKey pay.receipt.matchTrustedKey pay.receipt.matches pay.receipt.privacy pay.receipt.rejected pay.receipt.scanLabel pay.rejected.controlsUnavailable pay.rejected.nothingSent pay.rejected.title pay.removeLink pay.router pay.scan.chainInvalid pay.scan.chainValid pay.scan.importLabel pay.scan.intro pay.scan.needsPassphrase pay.scan.open pay.scan.openNote pay.scan.rejected pay.scan.reviewAria pay.scan.reviewHeading pay.sellerFingerprint pay.sellerFingerprintNote pay.sellerMeta pay.sendNow pay.sent.approvalTitle pay.sent.body pay.sent.paymentTitle pay.signature pay.startDelay pay.status.included pay.status.pending pay.status.permitUnsupported pay.status.reverted pay.status.unverified pay.status.walletWaiting pay.tax pay.title.input pay.title.review pay.token pay.token.nativeNote pay.verify.noRpc pay.verify.notVisible pay.verify.unverified pay.verify.verified pay.waiting.left pay.waiting.notice pay.wallet transaction.approved.announceNotSent transaction.approved.announceUnknown
+
+// i18n-use: tips.send

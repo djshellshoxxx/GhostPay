@@ -1,3 +1,4 @@
+import { ControlTip, ControlTipsProvider, ControlTipsSwitch } from './components/ControlTips';
 import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore, type ReactNode } from 'react';
 import { WalletDisclosureProvider } from './components/WalletDisclosure';
 import { SessionPresentationBoundary } from './components/SessionPresentationBoundary';
@@ -65,6 +66,11 @@ export interface AppShellProps {
   readonly mainPrelude?: ReactNode;
   readonly profile?: 'full' | 'lean';
 }
+
+const NAV_HELP: Partial<Record<ViewId, MessageKey>> = {
+  home: 'tips.home', seller: 'home.seller.body', create: 'tips.navCreate', pay: 'home.pay.body',
+  scan: 'tips.navScan', sweep: 'home.sweep.body', registry: 'tips.registry', settings: 'tips.settings', about: 'tips.about',
+};
 
 export const CORE_ORDER: readonly ViewId[] = Object.freeze<ViewId[]>(['home', 'seller', 'create', 'pay', 'scan', 'sweep', 'registry', 'settings', 'about']);
 
@@ -428,10 +434,11 @@ export function AppShell(props: AppShellProps): ReactNode {
 
   return (
     <AppContext.Provider value={state}>
+      <ControlTipsProvider>
       <SessionPresentationBoundary>
       <PrivacyProvider enabled={privacyEnabled} scope={privacyScope}>
       <WalletDisclosureProvider scope={walletDisclosureScope} revokeOn={walletDisclosureRevision}>
-      <a className="skip" href="#main" onClick={() => { main.current?.focus(); }}>{t('app.shell.skip')}</a>
+      <ControlTip message="tips.skip"><a className="skip" href="#main" onClick={() => { main.current?.focus(); }}>{t('app.shell.skip')}</a></ControlTip>
       <header className="site-header">
         <h1>GhostPay</h1>
         <p className="tagline">{t('app.shell.tagline')}</p>
@@ -439,13 +446,14 @@ export function AppShell(props: AppShellProps): ReactNode {
           <ul className="nav">
             {order.map((v) => (
               <li key={v}>
-                <button type="button" className="nav-btn" data-view={v} disabled={suspended && v !== 'seller'} aria-current={view === v ? 'page' : undefined} onClick={() => { setView(v); }}>
+                <ControlTip message={NAV_HELP[v] ?? 'tips.otherPage'}><button type="button" className="nav-btn" data-view={v} disabled={suspended && v !== 'seller'} aria-current={view === v ? 'page' : undefined} onClick={() => { setView(v); }}>
                   {t(VIEW_LABELS[v])}
-                </button>
+                </button></ControlTip>
               </li>
             ))}
           </ul>
         </nav>
+        <ControlTipsSwitch />
         <PrivacyControls />
       </header>
       <main id="main" tabIndex={-1} ref={main}>
@@ -455,20 +463,20 @@ export function AppShell(props: AppShellProps): ReactNode {
         {session !== undefined && backup?.backedUp === true && backup.verified === false && (
           <Notice kind="warn" title={t('app.backup.unverified.title')}>
             {t('app.backup.unverified.body')}
-            {view !== 'seller' && <> <button type="button" className="btn" onClick={() => { setViewState('seller'); }}>{t('app.backup.unverified.action')}</button></>}
+            {view !== 'seller' && <> <ControlTip message="sellerKeys.verify.explain"><button type="button" className="btn" onClick={() => { setViewState('seller'); }}>{t('app.backup.unverified.action')}</button></ControlTip></>}
           </Notice>
         )}
         {session !== undefined && backup?.backedUp === false && (
           // Payments stay sweepable from typed hex when only the signing key generated for it is unsaved (C-R10).
           <Notice kind="warn" title={backup.signerOnly ? t('app.backup.signerOnly.title') : t('app.backup.title')}>
             {backup.signerOnly ? t('app.backup.signerOnly.body') : t('app.backup.body')}
-            {view !== 'seller' && <> <button type="button" className="btn" onClick={() => { setViewState('seller'); }}>{t('app.backup.action')}</button></>}
+            {view !== 'seller' && <> <ControlTip message="tips.keystoreDownload"><button type="button" className="btn" onClick={() => { setViewState('seller'); }}>{t('app.backup.action')}</button></ControlTip></>}
           </Notice>
         )}
         {session === undefined && idleWipedAfterMinutes !== undefined && (
           <Notice kind="info">
             {t('app.idle.wipedNotice', { minutes: idleWipedAfterMinutes })}{' '}
-            <button type="button" className="btn" onClick={() => { setIdleWipedAfterMinutes(undefined); }}>{t('app.idle.dismiss')}</button>
+            <ControlTip message="tips.dismissNotice"><button type="button" className="btn" onClick={() => { setIdleWipedAfterMinutes(undefined); }}>{t('app.idle.dismiss')}</button></ControlTip>
           </Notice>
         )}
         <CopiedBackupNotice />
@@ -487,16 +495,19 @@ export function AppShell(props: AppShellProps): ReactNode {
         <BrowserChecks />
         <p>{t('app.shell.footer')}</p>
         <ul className="footer-links">
-          <li><a href="./help.html" target="_blank" rel="noopener noreferrer">{t('app.shell.help')} <span className="sr-only">{t('app.shell.newTab')}</span></a></li>
-          <li><a href="./privacy.html" target="_blank" rel="noopener noreferrer">{t('app.shell.privacy')} <span className="sr-only">{t('app.shell.newTab')}</span></a></li>
-          <li><a href="./help.html#technology" target="_blank" rel="noopener noreferrer">{t('footer.sources')} <span className="sr-only">{t('app.shell.newTab')}</span></a></li>
+          <li><ControlTip message="tips.helpPage"><a href="./help.html" target="_blank" rel="noopener noreferrer">{t('app.shell.help')} <span className="sr-only">{t('app.shell.newTab')}</span></a></ControlTip></li>
+          <li><ControlTip message="tips.privacyPage"><a href="./privacy.html" target="_blank" rel="noopener noreferrer">{t('app.shell.privacy')} <span className="sr-only">{t('app.shell.newTab')}</span></a></ControlTip></li>
+          <li><ControlTip message="tips.sources"><a href="./help.html#technology" target="_blank" rel="noopener noreferrer">{t('footer.sources')} <span className="sr-only">{t('app.shell.newTab')}</span></a></ControlTip></li>
         </ul>
       </footer>
       </WalletDisclosureProvider>
       </PrivacyProvider>
       </SessionPresentationBoundary>
+      </ControlTipsProvider>
     </AppContext.Provider>
   );
 }
 
 // i18n-use: app.idle.tagsLocked app.idle.kept app.idle.wiped settings.changedElsewhere
+
+// i18n-use: tips.home tips.navCreate tips.navScan tips.otherPage tips.registry tips.settings tips.languageStatus

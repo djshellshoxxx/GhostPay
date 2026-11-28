@@ -187,6 +187,7 @@ const USE_PATTERNS = [
   /(?<![\w.$])t\(\s*(['"`])([A-Za-z0-9_.]+)\1/g, // t('key')
   /\.t\(\s*(['"`])([A-Za-z0-9_.]+)\1/g, // i18n.t('key')
   /<Trans\b[^>]*?\bid=(['"])([A-Za-z0-9_.]+)\1/g, // <Trans id="key" />
+  /<ControlTip\b[^>]*?\bmessage=(['"])([A-Za-z0-9_.]+)\1/g, // <ControlTip message="key">
 ];
 const HINT_RE = /i18n-use:\s*([A-Za-z0-9_. ,]+)/g; // comment for keys built dynamically
 

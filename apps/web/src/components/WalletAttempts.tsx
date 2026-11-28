@@ -1,3 +1,4 @@
+import { ControlTip } from './ControlTips';
 import { CHAINS, type RpcClient } from '@ghostpay/chain-adapters';
 import { useContext, useEffect, useLayoutEffect, useRef, useState, type ReactNode } from 'react';
 import { linkReplacement, resolveAttempt, type AttemptResolution } from '../lib/attemptStatus';
@@ -86,20 +87,20 @@ function AttemptRow({ attempt, getRpc, t, capture }: {
   return <li>
     <p>{t('walletAttempts.line', { kind: attempt.kind, chainId: String(attempt.chainId) })} · <Mono>{attempt.account}</Mono> · {attempt.hash === undefined ? t('walletAttempts.unknown') : <>{t('walletAttempts.returnedHash')} <Mono>{attempt.hash}</Mono></>}</p>
     {attempt.hash !== undefined && getRpc !== undefined && <>
-      <button type="button" className="btn" disabled={busy} onClick={() => { void check(); }}>{t('walletAttempts.check')}</button>
+      <ControlTip message="tips.txCheck"><button type="button" className="btn" disabled={busy} onClick={() => { void check(); }}>{t('walletAttempts.check')}</button></ControlTip>
       <details>
-        <summary>{t('walletAttempts.replacement')}</summary>
+        <ControlTip message="tips.replaceTx"><summary>{t('walletAttempts.replacement')}</summary></ControlTip>
         <label>
           {t('walletAttempts.replacementHash')}
-          <input dir="ltr" autoComplete="off" spellCheck={false} maxLength={66} value={replacement} onChange={(event) => { setReplacement(event.target.value); }} />
+          <ControlTip message="tips.hash"><input dir="ltr" autoComplete="off" spellCheck={false} maxLength={66} value={replacement} onChange={(event) => { setReplacement(event.target.value); }} /></ControlTip>
         </label>
-        <button type="button" className="btn" disabled={busy || replacement.trim() === ''} onClick={() => { void check(replacement); }}>{t('walletAttempts.link')}</button>
+        <ControlTip message="tips.replaceTx"><button type="button" className="btn" disabled={busy || replacement.trim() === ''} onClick={() => { void check(replacement); }}>{t('walletAttempts.link')}</button></ControlTip>
       </details>
     </>}
-    {outcome !== undefined && <p role="status" className="status">{statusText(outcome, attempt, t)}</p>}
+    {outcome !== undefined && <ControlTip message="tips.txStatus"><p role="status" className="status">{statusText(outcome, attempt, t)}</p></ControlTip>}
     {outcome?.state === 'replaced' && <p>{t('walletAttempts.replacementHash')}: <Mono>{outcome.hash}</Mono></p>}
     {error !== undefined && <Notice kind="error">{displayMessage(error, t)}</Notice>}
-    <button type="button" className="btn" disabled={busy} onClick={() => {
+    <ControlTip message="walletAttempts.confirmClear"><button type="button" className="btn" disabled={busy} onClick={() => {
       let scope: WalletPrivacyScope;
       try { scope = lease(); } catch { return; }
       if (!window.confirm(t('walletAttempts.confirmClear'))) return;
@@ -109,7 +110,7 @@ function AttemptRow({ attempt, getRpc, t, capture }: {
       void clearAttemptLocked(attempt.id, true)
         .catch((e: unknown) => { if (current(scope)) setError(captureUserMessage(e)); })
         .finally(() => { if (current(scope)) setBusy(false); });
-    }}>{t('walletAttempts.clear')}</button>
+    }}>{t('walletAttempts.clear')}</button></ControlTip>
   </li>;
 }
 
@@ -146,14 +147,14 @@ function OwnedAttempts({ wallet, getRpc, t, capture }: {
     {attempts.length === 0 && error === undefined && <p>{t('walletAttempts.noneForWallet')}</p>}
     {returned && <>
       <Notice kind="warn">{t('walletAttempts.unsaved')}</Notice>
-      <button type="button" className="btn" disabled={saving} onClick={() => {
+      <ControlTip message="tips.retrySave"><button type="button" className="btn" disabled={saving} onClick={() => {
         let scope: WalletPrivacyScope;
         try { scope = capture(); } catch { return; }
         setSaving(true);
         const live = (): boolean => { try { scope.assertCurrent(); return mounted.current; } catch { return false; } };
         void retryReturnedAttempts().catch((e: unknown) => { if (live()) setError(captureUserMessage(e)); })
           .finally(() => { if (live()) setSaving(false); });
-      }}>{t('walletAttempts.retrySave')}</button>
+      }}>{t('walletAttempts.retrySave')}</button></ControlTip>
     </>}
     <ul className="plain-list">{attempts.map((attempt) => <AttemptRow key={`${attempt.id}:${attempt.hash ?? ''}`} attempt={attempt} getRpc={getRpc} t={t} capture={capture} />)}</ul>
   </>;
@@ -234,27 +235,27 @@ export function WalletAttempts({ getRpc, wallet: supplied }: { readonly getRpc?:
     {error !== undefined && <Notice kind="error">{displayMessage(error, t)}</Notice>}
     {unownedUnsaved && <>
       <Notice kind="warn">{t('walletAttempts.unsavedOther')}</Notice>
-      <button type="button" className="btn" disabled={saving} onClick={retrySaving}>{t('walletAttempts.retrySave')}</button>
+      <ControlTip message="tips.retrySave"><button type="button" className="btn" disabled={saving} onClick={retrySaving}>{t('walletAttempts.retrySave')}</button></ControlTip>
     </>}
     {wallet !== undefined
       ? <OwnedAttempts key={owner.generation} wallet={wallet} getRpc={getRpc} t={t} capture={privacy.capture} />
       : <>
         <p>{t('walletAttempts.connectToReveal')}</p>
         {services !== undefined && <>
-          <label>{t('walletAttempts.recoveryChain')} <select value={chainId ?? ''} disabled={busy} onChange={(event) => {
+          <label>{t('walletAttempts.recoveryChain')} <ControlTip message="tips.network"><select value={chainId ?? ''} disabled={busy} onChange={(event) => {
             privacy.invalidate(); setChainId(Number(event.target.value));
-          }}>{chains.map((chain) => <option key={chain.chainId} value={chain.chainId}>{chain.name}</option>)}</select></label>
-          <button type="button" className="btn" disabled={busy || chainId === undefined} onClick={() => {
+          }}>{chains.map((chain) => <option key={chain.chainId} value={chain.chainId}>{chain.name}</option>)}</select></ControlTip></label>
+          <ControlTip message="walletAttempts.connectToReveal"><button type="button" className="btn" disabled={busy || chainId === undefined} onClick={() => {
             let scope: WalletPrivacyScope;
             try { scope = privacy.begin(); } catch (e) { setError(captureUserMessage(e)); return; }
             setBusy(true); setError(undefined);
             void services.discoverWallets().then((found) => { scope.assertCurrent(); setWallets(found); })
               .catch((e: unknown) => { if (!scope.signal.aborted) setError(captureUserMessage(e)); })
               .finally(() => { if (!scope.signal.aborted) setBusy(false); });
-          }}>{t('walletAttempts.findWallet')}</button>
+          }}>{t('walletAttempts.findWallet')}</button></ControlTip>
           {wallets?.length === 0 && <p>{t('pay.noWallet')}</p>}
           {wallets?.map((info) => <div key={info.id}>
-            <button type="button" className="btn" disabled={busy} onClick={() => { void connect(info); }}>{t('pay.connect', { name: info.name })}</button>
+            <ControlTip message="tips.connect"><button type="button" className="btn" disabled={busy} onClick={() => { void connect(info); }}>{t('pay.connect', { name: info.name })}</button></ControlTip>
             {(warnings.get(info.id) ?? []).map((warning) => <p key={warning} className="hint">{warning}</p>)}
           </div>)}
         </>}

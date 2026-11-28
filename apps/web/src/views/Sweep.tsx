@@ -1,3 +1,4 @@
+import { ControlTip } from '../components/ControlTips';
 import { subscribeAppLock } from '../lib/appLock';
 import { usePresentationGeneration } from '../components/SessionPresentationBoundary';
 import { findChain, findToken, type Address } from '@ghostpay/chain-adapters';
@@ -160,7 +161,7 @@ function SweepPanel(): ReactNode {
       <section aria-labelledby="sw-h">
         <h2 id="sw-h">{t('sweep.title')}</h2>
         <Notice kind="info">{t('sweep.choosePayment')}</Notice>
-        <button type="button" className="btn btn-primary" onClick={() => { app.setView('scan'); }}>{t('sweep.goToScan')}</button>
+        <ControlTip message="tips.selectScan"><button type="button" className="btn btn-primary" onClick={() => { app.setView('scan'); }}>{t('sweep.goToScan')}</button></ControlTip>
       </section>
     );
   }
@@ -449,7 +450,7 @@ function SweepPanel(): ReactNode {
   return (
     <section aria-labelledby="sw-h">
       <h2 id="sw-h">{t('sweep.title')}</h2>
-      <dl className="details">
+      <ControlTip message="tips.summary"><dl className="details">
         <dt>{t('sweep.chain')}</dt>
         <dd>{findChain(chainId)?.name ?? String(chainId)}</dd>
         <dt>{t('sweep.oneTimeAddress')}</dt>
@@ -458,11 +459,11 @@ function SweepPanel(): ReactNode {
         <dd>{symbol} {tokenAddr === 'native' ? '' : <Mono>{tokenAddr}</Mono>}</dd>
         <dt>{t('sweep.balanceOnChain')}</dt>
         <dd>{balance === undefined ? t(balanceAsked ? 'sweep.balanceUnknown' : 'sweep.balanceNotRead') : `${formatUnits(balance, decimals)} ${symbol}`}</dd>
-      </dl>
+      </dl></ControlTip>
       <Notice kind="warn">
         {t(privatePathRequired ? 'sweep.balanceRead.warning' : 'sweep.balanceRead.note')}
         <br />
-        <button type="button" className="btn" disabled={busy} onClick={onReadBalance}>{t('sweep.balanceRead.button')}</button>
+        <ControlTip message="sweep.balanceRead.note"><button type="button" className="btn" disabled={busy} onClick={onReadBalance}>{t('sweep.balanceRead.button')}</button></ControlTip>
       </Notice>
       {balanceNoRpc && <Notice kind="warn">{t('sweep.balanceRead.noRpc')}</Notice>}
       <ManifestBanner manifest={manifest} />
@@ -473,14 +474,14 @@ function SweepPanel(): ReactNode {
       </Notice>
 
       <div className="stack">
-        <Field label={t('sweep.destination.label')}>{(id) => <input id={id} spellCheck={false} value={destination} onChange={(e) => { setDestination(e.target.value); setQuote(undefined); }} placeholder="0x…" />}</Field>
+        <Field label={t('sweep.destination.label')}>{(id) => <ControlTip message="tips.destination"><input id={id} spellCheck={false} value={destination} onChange={(e) => { setDestination(e.target.value); setQuote(undefined); }} placeholder="0x…" /></ControlTip>}</Field>
         <DestinationReuseNotice notice={reuseNotice} />
         {(vaultState === 'saved' || vaultStepUp) && (
           <Field label={t('sweep.vaultPass.label')} hint={t('sweep.vaultPass.hint')}>
-            {(id, d) => <input id={id} aria-describedby={d} type="password" autoComplete="off" name="ghostpay-step-up-sweep" ref={bindVaultInput} value={vaultPass} onChange={(e) => { setVaultPass(e.target.value); }} />}
+            {(id, d) => <ControlTip message="sweep.vaultPass.hint"><input id={id} aria-describedby={d} type="password" autoComplete="off" name="ghostpay-step-up-sweep" ref={bindVaultInput} value={vaultPass} onChange={(e) => { setVaultPass(e.target.value); }} /></ControlTip>}
           </Field>
         )}
-        {vaultState === 'checking' && !vaultStepUp && <p role="status">{t('sweep.vaultChecking')}</p>}
+        {vaultState === 'checking' && !vaultStepUp && <ControlTip message="tips.vaultStatus"><p role="status">{t('sweep.vaultChecking')}</p></ControlTip>}
         {vaultState === 'error' && !vaultStepUp && <Notice kind="error">{t('sweep.vaultError')}</Notice>}
         {loaded !== undefined && (
           <CameraImporter
@@ -502,11 +503,11 @@ function SweepPanel(): ReactNode {
         <fieldset>
           <legend>{t('sweep.feeLegend')}</legend>
           <div className="check">
-            <input id="m-relay" type="radio" name="mode" checked={mode === 'relayer'} onChange={() => { setMode('relayer'); }} />
+            <ControlTip message="tips.relay"><input id="m-relay" type="radio" name="mode" checked={mode === 'relayer'} onChange={() => { setMode('relayer'); }} /></ControlTip>
             <label htmlFor="m-relay">{t('sweep.modeRelayer')}</label>
           </div>
           <div className="check">
-            <input id="m-direct" type="radio" name="mode" checked={mode === 'direct'} onChange={() => { setMode('direct'); }} />
+            <ControlTip message="tips.direct"><input id="m-direct" type="radio" name="mode" checked={mode === 'direct'} onChange={() => { setMode('direct'); }} /></ControlTip>
             <label htmlFor="m-direct">{t('sweep.modeDirect')}</label>
           </div>
         </fieldset>
@@ -514,22 +515,22 @@ function SweepPanel(): ReactNode {
         {mode === 'relayer' ? (
           <>
             {!relayerOk && <Notice kind="info">{t('sweep.relayerNeeds')}</Notice>}
-            <button type="button" className="btn" onClick={onQuote} disabled={busy || !relayerOk || balance === undefined || balance === 0n}>{t('sweep.getQuote')}</button>
+            <ControlTip message="tips.quote"><button type="button" className="btn" onClick={onQuote} disabled={busy || !relayerOk || balance === undefined || balance === 0n}>{t('sweep.getQuote')}</button></ControlTip>
             {quote !== undefined && (
               <div className="panel">
                 <p>{t('sweep.relayerFee', { amount: `${formatUnits(quote.quote.fee, decimals)} ${symbol}` })} <Mono>{quote.quote.feeTo}</Mono></p>
                 <p>{t('sweep.youReceive', { amount: `${formatUnits(quote.net, decimals)} ${symbol}` })}</p>
-                <button type="button" className="btn btn-primary" onClick={onRelay} disabled={busy || signingLocked}>{t('sweep.signRelayer')}</button>
+                <ControlTip message="tips.signRelay"><button type="button" className="btn btn-primary" onClick={onRelay} disabled={busy || signingLocked}>{t('sweep.signRelayer')}</button></ControlTip>
               </div>
             )}
           </>
         ) : (
-          <button type="button" className="btn btn-primary" onClick={onDirect} disabled={busy || signingLocked || balance === undefined || balance === 0n}>{t('sweep.signDirect')}</button>
+          <ControlTip message="tips.signDirect"><button type="button" className="btn btn-primary" onClick={onDirect} disabled={busy || signingLocked || balance === undefined || balance === 0n}>{t('sweep.signDirect')}</button></ControlTip>
         )}
       </div>
 
-      {busy && <p role="status">{t('sweep.working')}</p>}
-      {busy && vaultPhase === 'authorizing' && <button type="button" className="btn" onClick={cancelVaultCheck}>{t('sweep.cancelVault')}</button>}
+      {busy && <ControlTip message="tips.work"><p role="status">{t('sweep.working')}</p></ControlTip>}
+      {busy && vaultPhase === 'authorizing' && <ControlTip message="tips.cancel"><button type="button" className="btn" onClick={cancelVaultCheck}>{t('sweep.cancelVault')}</button></ControlTip>}
       {error !== undefined && <Notice kind="error">{displayMessage(error, t)}</Notice>}
       {dryRunSkipped && <Notice kind="warn">{t('sweep.dryRunUnavailable')}</Notice>}
       {journalBroken && <Notice kind="warn" title={t('sweep.journalBroken.title')}>{t('sweep.journalBroken.body')}</Notice>}
@@ -555,7 +556,7 @@ function SweepPanel(): ReactNode {
           {isUnresolvedAttempt(attempt) && (
             <>
               <br />
-              <button type="button" className="btn" onClick={onCheckStatus} disabled={checking}>{t('sweep.checkStatus')}</button>
+              <ControlTip message="tips.txCheck"><button type="button" className="btn" onClick={onCheckStatus} disabled={checking}>{t('sweep.checkStatus')}</button></ControlTip>
             </>
           )}
           {replacementLimitReached && signingLocked && attempt.order === undefined && <><br />{t('sweep.resign.limit')}</>}
@@ -564,7 +565,7 @@ function SweepPanel(): ReactNode {
               <br />
               {t('sweep.resign.hint', { nonce: String(resignNonce) })}
               <br />
-              <button type="button" className="btn" onClick={onResign} disabled={busy || balance === undefined || balance === 0n}>{t('sweep.resign.button')}</button>
+              <ControlTip message="tips.resign"><button type="button" className="btn" onClick={onResign} disabled={busy || balance === undefined || balance === 0n}>{t('sweep.resign.button')}</button></ControlTip>
             </>
           )}
           {checkNote !== undefined && <><br />{displayMessage(checkNote, t)}</>}

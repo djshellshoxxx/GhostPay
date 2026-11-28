@@ -1,3 +1,4 @@
+import { ControlTip } from '../components/ControlTips';
 import { useId, type ReactNode } from 'react';
 import { hasCatalog } from './catalog';
 import { useI18n } from './context';
@@ -25,7 +26,7 @@ export function LanguagePicker(props: { readonly allowPseudo?: boolean }): React
   return (
     <div className="field">
       <label htmlFor={id}>{i18n.t('i18n.picker.label')}</label>
-      <select
+      <ControlTip message="i18n.picker.hint"><select
         id={id}
         aria-describedby={i18n.persisted ? hintId : `${hintId} ${persistenceId}`}
         aria-busy={i18n.status === 'loading'}
@@ -43,15 +44,15 @@ export function LanguagePicker(props: { readonly allowPseudo?: boolean }): React
             </option>
           );
         })}
-      </select>
+      </select></ControlTip>
       <p id={hintId} className="hint">
         {i18n.t('i18n.picker.hint')}
       </p>
-      <p className="hint" role="status" aria-live="polite" aria-atomic="true">
+      <ControlTip message="tips.languageStatus"><p className="hint" role="status" aria-live="polite" aria-atomic="true">
         {i18n.status === 'loading' ? i18n.t('i18n.picker.loading') : ''}
-      </p>
-      {!i18n.persisted && <p id={persistenceId} className="hint" role="status">{i18n.t('i18n.picker.notPersisted')}</p>}
-      {i18n.status === 'error' && <p role="alert">{i18n.t('i18n.loadFailed')}</p>}
+      </p></ControlTip>
+      {!i18n.persisted && <ControlTip message="tips.languageStatus"><p id={persistenceId} className="hint" role="status">{i18n.t('i18n.picker.notPersisted')}</p></ControlTip>}
+      {i18n.status === 'error' && <ControlTip message="tips.languageStatus"><p role="alert">{i18n.t('i18n.loadFailed')}</p></ControlTip>}
     </div>
   );
 }

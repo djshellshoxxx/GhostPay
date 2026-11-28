@@ -1,3 +1,4 @@
+import { ControlTip } from './ControlTips';
 import { useEffect, useId, useRef, type ReactNode } from 'react';
 import { subscribeAppLock } from '../lib/appLock';
 import { UserFacingError, type DisplayMessage } from '../lib/errors';
@@ -57,29 +58,29 @@ export function CredentialFields(props: { readonly value: CredentialInput; reado
       <legend>{t('stealthExport.auth.legend')}</legend>
       <p className="hint">{t('stealthExport.auth.hint')}</p>
       <div className="check">
-        <input id={`${group}-vault`} type="radio" name={`${group}-kind`} checked={kind === 'vault'} onChange={() => { props.onChange({ kind: 'vault', passphrase: '', file: undefined }); }} />
+        <ControlTip message="tips.vaultAuth"><input id={`${group}-vault`} type="radio" name={`${group}-kind`} checked={kind === 'vault'} onChange={() => { props.onChange({ kind: 'vault', passphrase: '', file: undefined }); }} /></ControlTip>
         <label htmlFor={`${group}-vault`}>{t('stealthExport.auth.vault')}</label>
       </div>
       <div className="check">
-        <input id={`${group}-keystore`} type="radio" name={`${group}-kind`} checked={kind === 'keystore'} onChange={() => { props.onChange({ kind: 'keystore', passphrase: '', file: undefined }); }} />
+        <ControlTip message="tips.fileAuth"><input id={`${group}-keystore`} type="radio" name={`${group}-kind`} checked={kind === 'keystore'} onChange={() => { props.onChange({ kind: 'keystore', passphrase: '', file: undefined }); }} /></ControlTip>
         <label htmlFor={`${group}-keystore`}>{t('stealthExport.auth.keystore')}</label>
       </div>
       {kind === 'vault' ? (
         <Field label={t('stealthExport.auth.vaultPassphrase')}>
-          {(id) => <input id={id} type="password" autoComplete="off" name="ghostpay-export-vault-step-up" value={passphrase} onChange={(e) => { props.onChange({ ...props.value, passphrase: e.target.value }); }} />}
+          {(id) => <ControlTip message="tips.vaultPass"><input id={id} type="password" autoComplete="off" name="ghostpay-export-vault-step-up" value={passphrase} onChange={(e) => { props.onChange({ ...props.value, passphrase: e.target.value }); }} /></ControlTip>}
         </Field>
       ) : (
         <>
           <Field label={t('stealthExport.auth.keystoreFile')}>{(id) => <>
-            <input id={id} aria-describedby={file === undefined ? undefined : `${id}-file`} type="file" accept="application/json,.json" onChange={(e) => {
+            <ControlTip message="help.keystoreFile"><input id={id} aria-describedby={file === undefined ? undefined : `${id}-file`} type="file" accept="application/json,.json" onChange={(e) => {
               const chosen = e.currentTarget.files?.[0]; e.currentTarget.value = '';
               if (chosen === undefined) return;
               props.onChange({ ...props.value, file: chosen });
-            }} />
+            }} /></ControlTip>
             {file !== undefined && <p className="hint" id={`${id}-file`}>{t('upload.selectedFile')}</p>}
           </>}</Field>
           <Field label={t('stealthExport.auth.keystorePassphrase')}>
-            {(id) => <input id={id} type="password" autoComplete="off" name="ghostpay-export-keystore-step-up" value={passphrase} onChange={(e) => { props.onChange({ ...props.value, passphrase: e.target.value }); }} />}
+            {(id) => <ControlTip message="tips.filePass"><input id={id} type="password" autoComplete="off" name="ghostpay-export-keystore-step-up" value={passphrase} onChange={(e) => { props.onChange({ ...props.value, passphrase: e.target.value }); }} /></ControlTip>}
           </Field>
         </>
       )}
@@ -120,12 +121,12 @@ export function NewPassphraseFields(props: { readonly value: NewPassphrase; read
   return (
     <>
       <Field label={t('stealthExport.pass.new')} {...(showing ? { hint: t('sellerKeys.suggested', { words: GENERATED_PASSPHRASE_WORDS, bits: GENERATED_PASSPHRASE_BITS }) } : {})}>
-        {(id, d) => <input id={id} aria-describedby={d} disabled={props.disabled === true} type={showing ? 'text' : 'password'} autoComplete="new-password" spellCheck={false} value={pass} onChange={(e) => { props.onChange({ ...props.value, pass: e.target.value }); }} />}
+        {(id, d) => <ControlTip message="tips.newPass"><input id={id} aria-describedby={d} disabled={props.disabled === true} type={showing ? 'text' : 'password'} autoComplete="new-password" spellCheck={false} value={pass} onChange={(e) => { props.onChange({ ...props.value, pass: e.target.value }); }} /></ControlTip>}
       </Field>
-      {pass !== '' && <p className="hint" aria-live="polite">{t('stealthExport.pass.strength', { level: t(level) })}</p>}
-      <p><button type="button" className="btn" disabled={props.disabled === true} onClick={() => { const next = generatePassphrase(); props.onChange({ pass: next, pass2: '', suggested: next }); }}>{t('stealthExport.pass.suggest')}</button></p>
+      {pass !== '' && <ControlTip message="tips.strength"><p className="hint" aria-live="polite">{t('stealthExport.pass.strength', { level: t(level) })}</p></ControlTip>}
+      <p><ControlTip message="tips.suggest"><button type="button" className="btn" disabled={props.disabled === true} onClick={() => { const next = generatePassphrase(); props.onChange({ pass: next, pass2: '', suggested: next }); }}>{t('stealthExport.pass.suggest')}</button></ControlTip></p>
       <Field label={t('stealthExport.pass.repeat')}>
-        {(id) => <input id={id} type="password" disabled={props.disabled === true} autoComplete="new-password" value={pass2} onChange={(e) => { props.onChange({ ...props.value, pass2: e.target.value }); }} />}
+        {(id) => <ControlTip message="tips.repeat"><input id={id} type="password" disabled={props.disabled === true} autoComplete="new-password" value={pass2} onChange={(e) => { props.onChange({ ...props.value, pass2: e.target.value }); }} /></ControlTip>}
       </Field>
     </>
   );

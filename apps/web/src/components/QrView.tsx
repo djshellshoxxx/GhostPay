@@ -1,3 +1,4 @@
+import { ControlTip } from './ControlTips';
 import { useMemo, type ReactNode } from 'react';
 import { makeQr, qrPath, qrSvgText, qrViewSize } from '../lib/qr';
 import { UserFacingError, captureUserMessage, displayMessage, type DisplayMessage } from '../lib/errors';
@@ -25,14 +26,14 @@ export function QrView(props: { readonly text: string; readonly caption: string;
   // Preserve module geometry at responsive widths; snapping fractional modules can make a valid QR unreadable.
   return (
     <figure className="qr">
-      <svg viewBox={`0 0 ${String(n)} ${String(n)}`} role="img" aria-label={props.caption} shapeRendering="geometricPrecision" className="qr-svg">
+      <ControlTip message="tips.qr"><svg viewBox={`0 0 ${String(n)} ${String(n)}`} role="img" aria-label={props.caption} shapeRendering="geometricPrecision" className="qr-svg">
         <title>{props.caption}</title>
         <rect width={n} height={n} className="qr-bg" />
         <path d={qrPath(result.m)} className="qr-fg" />
-      </svg>
+      </svg></ControlTip>
       {props.bare === true ? null : <figcaption>{props.caption}</figcaption>}
       {props.bare === true ? null : (
-      <button
+      <ControlTip message="tips.saveQr"><button
         type="button"
         className="btn"
         onClick={() => {
@@ -40,7 +41,7 @@ export function QrView(props: { readonly text: string; readonly caption: string;
         }}
       >
         {t('qrView.download')}
-      </button>
+      </button></ControlTip>
       )}
     </figure>
   );

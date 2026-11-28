@@ -1,3 +1,4 @@
+import { ControlTip } from './ControlTips';
 import type { InvoicePaymentSummary as PaymentSummary } from '@ghostpay/ux-vault/portable';
 import type { ReactNode } from 'react';
 import { SOURCE_TRANSLATOR, useI18nOptional } from '../i18n/context';
@@ -15,7 +16,7 @@ const COMPARISON: Record<PaymentSummary['kind'], MessageKey> = {
 export function InvoicePaymentSummary({ summary }: { readonly summary: PaymentSummary }): ReactNode {
   const t = useI18nOptional()?.t ?? SOURCE_TRANSLATOR.t;
   return (
-    <section aria-label={t('ledger.amounts.heading')}>
+    <ControlTip message="ledger.amounts.evidence"><section aria-label={t('ledger.amounts.heading')}>
       <p><strong>{t(COMPARISON[summary.kind])}</strong></p>
       {summary.kind !== 'unavailable' && summary.kind !== 'unlinked' && (
         <>
@@ -25,6 +26,6 @@ export function InvoicePaymentSummary({ summary }: { readonly summary: PaymentSu
         </>
       )}
       <p className="hint">{t('ledger.amounts.evidence')}</p>
-    </section>
+    </section></ControlTip>
   );
 }

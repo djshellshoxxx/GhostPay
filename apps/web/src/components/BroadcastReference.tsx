@@ -1,3 +1,4 @@
+import { ControlTip } from './ControlTips';
 import { useState, type ReactNode } from 'react';
 import { SOURCE_TRANSLATOR, useI18nOptional } from '../i18n/context';
 import { Mono } from './Common';
@@ -8,7 +9,7 @@ export function BroadcastReference({ reference }: { readonly reference: string }
   const [open, setOpen] = useState(false);
   return (
     <details onToggle={(event) => { setOpen(event.currentTarget.open); }}>
-      <summary>{t('chainView.broadcast.reference')}</summary>
+      <ControlTip message="tips.txRef"><summary>{t('chainView.broadcast.reference')}</summary></ControlTip>
       {open && <Mono>{reference}</Mono>}
     </details>
   );

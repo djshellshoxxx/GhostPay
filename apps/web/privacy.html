@@ -13,18 +13,19 @@
     <link rel="stylesheet" href="./help.css" />
   </head>
   <body>
-    <a class="skip" href="#content">Skip to privacy information</a>
+    <a class="skip" href="#content" title="Move past the navigation to the main content on this page.">Skip to privacy information</a>
     <header class="site-header">
       <div class="brand"><img src="./favicon.svg" width="32" height="32" alt="" />GhostPay</div>
       <h1>Privacy and local data</h1>
       <p class="intro">Stealth addresses reduce address reuse. They do not hide the public transaction graph, and they do not make your device, browser, wallet, provider or host trustworthy.</p>
+      <label class="guide-tip-switch"><input id="guide-tips" type="checkbox" title="Keep the instructions for links, tables and expandable sections visible on this page." /> Show control tips</label>
     </header>
     <nav class="site-nav" aria-label="Site">
       <ul>
-        <li><a href="./">Open app</a></li>
-        <li><a href="./help.html">Help</a></li>
-        <li><a href="./privacy.html" aria-current="page">Privacy</a></li>
-        <li><a href="https://github.com/djshellshoxxx/GhostPay">Source repository</a></li>
+        <li><a href="./" title="Open the interactive payment and recovery client.">Open app</a></li>
+        <li><a href="./help.html" title="Read how to pay an invoice, receive funds and recover seller keys.">Help</a></li>
+        <li><a href="./privacy.html" aria-current="page" title="Review which payment details other people and service providers can see.">Privacy</a></li>
+        <li><a href="https://github.com/djshellshoxxx/GhostPay" title="Visit the GhostPay source repository on GitHub.">Source repository</a></li>
       </ul>
     </nav>
     <main id="content" tabindex="-1">
@@ -35,7 +36,7 @@
       <section aria-labelledby="matrix">
         <h2 id="matrix">Feature privacy matrix</h2>
         <p>Each row describes one feature. Status labels follow the same meanings as the help guide. Where a feature sends data to a service, the service is named. Read the limits column before you use a feature with real information.</p>
-        <div class="table-wrap" tabindex="0" role="region" aria-labelledby="matrix-caption">
+        <div class="table-wrap" title="Focus this table and use the arrow keys to read columns that extend beyond the screen." tabindex="0" role="region" aria-labelledby="matrix-caption">
           <table class="matrix">
             <caption id="matrix-caption">What each feature stores, exposes and leaves unprotected</caption>
             <thead><tr><th scope="col">Feature and status</th><th scope="col">Stored in this browser</th><th scope="col">Who can observe it</th><th scope="col">Limits and risks</th></tr></thead>
@@ -155,7 +156,7 @@
 
       <section aria-labelledby="services">
         <h2 id="services">Who receives requests</h2>
-        <div class="table-wrap" tabindex="0" role="region" aria-labelledby="services-caption">
+        <div class="table-wrap" title="Focus this table and use the arrow keys to read columns that extend beyond the screen." tabindex="0" role="region" aria-labelledby="services-caption">
           <table>
             <caption id="services-caption">Recipients and what each can see</caption>
             <thead><tr><th scope="col">Recipient</th><th scope="col">What it can see</th></tr></thead>
@@ -209,9 +210,9 @@
       <section aria-labelledby="verification">
         <h2 id="verification">Keep evidence claims separate</h2>
         <p>A valid invoice asks for payment. A seller receipt signature attests to its signed fields and key control. An observation reports data. Verified payment evidence requires the relevant checks against the correct chain, transaction, recipient, asset, amount and finality. None of these alone establishes the human identity of a seller.</p>
-        <p>Read the <a href="./help.html#evidence">payment-evidence guide</a> and the source repository's <a href="https://github.com/djshellshoxxx/GhostPay/blob/main/SECURITY.md">security policy</a>.</p>
+        <p>Read the <a href="./help.html#evidence" title="Open the guide to payment-evidence guide.">payment-evidence guide</a> and the source repository's <a href="https://github.com/djshellshoxxx/GhostPay/blob/main/SECURITY.md" title="Open the external reference for security policy.">security policy</a>.</p>
       </section>
     </main>
-    <footer class="site-footer"><p>Privacy explanation for the current product scope. It is not a hosting provider's retention policy.</p><ul><li><a href="./help.html">Help and recovery</a></li><li><a href="#content">Back to top</a></li></ul></footer>
+    <footer class="site-footer"><p>Privacy explanation for the current product scope. It is not a hosting provider's retention policy.</p><ul><li><a href="./help.html" title="Read how to pay an invoice, receive funds and recover seller keys.">Help and recovery</a></li><li><a href="#content" title="Move past the navigation to the main content on this page.">Back to top</a></li></ul></footer>
   </body>
 </html>

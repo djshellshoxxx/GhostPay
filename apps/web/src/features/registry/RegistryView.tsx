@@ -1,3 +1,4 @@
+import { ControlTip } from '../../components/ControlTips';
 import { buildLookupCall, buildRegisterKeysCall, ERC6538_REGISTRY_ADDRESS, lookupMetaAddress, resolveRegistryRegistrant, verifyRegistry, type RegistryCall } from '@ghostpay/chain-adapters';
 import { useWalletDisclosure } from '../../components/WalletDisclosure';
 import { useEffect, useRef, useState, type ReactNode } from 'react';
@@ -297,9 +298,9 @@ export function RegistryView(): ReactNode {
       </p>
       <Field label={t('registry.network')}>
         {(id) => (
-          <select id={id} value={chainId ?? ''} onChange={(e) => { setChainId(Number(e.target.value)); }}>
+          <ControlTip message="tips.network"><select id={id} value={chainId ?? ''} onChange={(e) => { setChainId(Number(e.target.value)); }}>
             {chains.map((c) => <option key={c.chainId} value={c.chainId}>{c.name}</option>)}
-          </select>
+          </select></ControlTip>
         )}
       </Field>
 
@@ -320,30 +321,30 @@ export function RegistryView(): ReactNode {
           </section>
           <p>
             <label>
-              <input type="checkbox" checked={consent} onChange={(e) => { setConsent(e.target.checked); }} /> {t('registry.consent')}
+              <ControlTip message="tips.registryConsent"><input type="checkbox" checked={consent} onChange={(e) => { setConsent(e.target.checked); }} /></ControlTip> {t('registry.consent')}
             </label>
           </p>
           {consent && wallet === undefined && (
             <>
-              <p><button type="button" className="btn" onClick={onDiscover}>{t('registry.findWallets')}</button></p>
+              <p><ControlTip message="tips.findWallets"><button type="button" className="btn" onClick={onDiscover}>{t('registry.findWallets')}</button></ControlTip></p>
               {wallets?.length === 0 && <Notice kind="warn">{t('registry.noWallet')}</Notice>}
               {wallets?.map((w) => (
-                <button key={w.id} type="button" className="btn" onClick={() => { onConnect(w); }}>{t('registry.connect', { name: w.name })}</button>
+                <ControlTip key={w.id} message="tips.connect"><button type="button" className="btn" onClick={() => { onConnect(w); }}>{t('registry.connect', { name: w.name })}</button></ControlTip>
               ))}
             </>
           )}
           {wallet !== undefined && <p>{t('registry.walletLabel')} <Mono>{wallet.account}</Mono> {t('registry.onChain', { chain: chain?.name ?? String(wallet.chainId) })}</p>}
           {wallet !== undefined && reviewed === undefined && (
             <div className="actions">
-              <button type="button" className="btn" disabled={busy || !consent} onClick={() => { onReview('publish'); }}>{t('registry.reviewPublish')}</button>
-              <button type="button" className="btn" disabled={busy || !consent} onClick={() => { onReview('clear'); }}>{t('registry.reviewClear')}</button>
+              <ControlTip message="tips.reviewEntry"><button type="button" className="btn" disabled={busy || !consent} onClick={() => { onReview('publish'); }}>{t('registry.reviewPublish')}</button></ControlTip>
+              <ControlTip message="registry.clearNote"><button type="button" className="btn" disabled={busy || !consent} onClick={() => { onReview('clear'); }}>{t('registry.reviewClear')}</button></ControlTip>
             </div>
           )}
           {reviewed !== undefined && chain !== undefined && (
             <>
               <h4>{t('registry.reviewHeading')}</h4>
               <CallPreview call={reviewed} chainName={chain.name} />
-              <button type="button" className="btn btn-primary" disabled={busy || !consent} onClick={onPublish}>{reviewAction === 'clear' ? t('registry.clearEntry') : t('registry.publishEntry')}</button>
+              <ControlTip message={reviewAction === 'clear' ? 'registry.clearNote' : 'tips.publish'}><button type="button" className="btn btn-primary" disabled={busy || !consent} onClick={onPublish}>{reviewAction === 'clear' ? t('registry.clearEntry') : t('registry.publishEntry')}</button></ControlTip>
             </>
           )}
         </BackupGate>
@@ -361,7 +362,7 @@ export function RegistryView(): ReactNode {
             try { setScannedMeta(parsePublicMetaQr(text)); setScanError(undefined); return true; }
             catch (e) { setScannedMeta(undefined); setScanError(captureUserMessage(e)); return false; }
           }} />
-        <button type="button" className="btn" onClick={() => { setScanEpoch((epoch) => epoch + 1); setScannedMeta(undefined); setScanError(undefined); }}>{t('registry.clearQr')}</button>
+        <ControlTip message="tips.discardPreview"><button type="button" className="btn" onClick={() => { setScanEpoch((epoch) => epoch + 1); setScannedMeta(undefined); setScanError(undefined); }}>{t('registry.clearQr')}</button></ControlTip>
         {scanError !== undefined && <Notice kind="error">{displayMessage(scanError, t)}</Notice>}
         {scannedMeta !== undefined && <><h4>{t('registry.scannedHeading')}</h4><p><Mono>{scannedMeta}</Mono></p><CopyButton text={scannedMeta} label={t('registry.copyScanned')} /></>}
       </section>
@@ -369,9 +370,9 @@ export function RegistryView(): ReactNode {
       <h3>{t('registry.lookupHeadingH3')}</h3>
       <p className="hint">{t('registry.ensHint')}</p>
       <Field label={t('registry.lookupLabel')}>
-        {(id) => <input id={id} type="text" autoComplete="off" spellCheck={false} value={who} onChange={(e) => { setWho(e.target.value); }} />}
+        {(id) => <ControlTip message="registry.ensHint"><input id={id} type="text" autoComplete="off" spellCheck={false} value={who} onChange={(e) => { setWho(e.target.value); }} /></ControlTip>}
       </Field>
-      <button type="button" className="btn" disabled={busy || who.trim() === ''} onClick={onLookup}>{t('registry.lookup')}</button>
+      <ControlTip message="tips.lookup"><button type="button" className="btn" disabled={busy || who.trim() === ''} onClick={onLookup}>{t('registry.lookup')}</button></ControlTip>
       {look !== undefined && <Notice kind={look.kind}>{displayMessage(look.text, t)}</Notice>}
       {found !== undefined && chain !== undefined && (
         <>
@@ -396,3 +397,5 @@ export function RegistryView(): ReactNode {
 }
 
 // i18n-use: registry.sessionChanged registry.txChanged registry.noRpc registry.waiting registry.walletReturned registry.submissionOutcome registry.submitted registry.what.registration registry.what.clear registry.verified registry.notSeen registry.clearNote registry.announceSubmitted
+
+// i18n-use: tips.publish

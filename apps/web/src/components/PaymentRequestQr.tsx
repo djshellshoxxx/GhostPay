@@ -1,3 +1,4 @@
+import { ControlTip } from './ControlTips';
 import { useId, useMemo, useState, type ReactNode } from 'react';
 import { buildEip681Erc20, buildEip681Native, buildSolanaPay, buildTronUri, type TronNetwork } from '@ghostpay/payment-uri';
 import { SOURCE_TRANSLATOR, useI18nOptional } from '../i18n/context';
@@ -118,23 +119,23 @@ export function PaymentProofQr(props: { readonly receipt: LocalReceipt; readonly
       <p className="hint" data-testid="proof-disclaimer">{t('proof.disclaimer')}</p>
       <div className="actions">
         {shown ? (
-          <button type="button" className="btn" onClick={() => { setShown(false); }}>{t('proof.hide')}</button>
+          <ControlTip message="tips.hideProof"><button type="button" className="btn" onClick={() => { setShown(false); }}>{t('proof.hide')}</button></ControlTip>
         ) : (
-          <button type="button" className="btn" onClick={show}>{t('proof.show')}</button>
+          <ControlTip message="tips.showProof"><button type="button" className="btn" onClick={show}>{t('proof.show')}</button></ControlTip>
         )}
         <CopyButton text={text} label={t('proof.copy')} />
-        <button type="button" className="btn" onClick={() => { downloadText('ghostpay-proof-of-payment.json', text, 'application/json'); }}>{t('proof.download')}</button>
+        <ControlTip message="tips.saveProof"><button type="button" className="btn" onClick={() => { downloadText('ghostpay-proof-of-payment.json', text, 'application/json'); }}>{t('proof.download')}</button></ControlTip>
       </div>
       {error !== undefined && <Notice kind="error">{error}</Notice>}
-      <div aria-live="polite">
+      <ControlTip message="tips.previewStatus"><div aria-live="polite">
         {proofExpired && !shown && <Notice kind="info">{t('retention.proof.expired')}</Notice>}
-      </div>
+      </div></ControlTip>
       <MetadataRetentionControls scope="proof" />
       {shown && (
         <>
           <QrFrame kind={kindForPayload('payment-proof', { unverified: props.receipt.status !== 'included' })} text={compact} caption={t('proof.qrCaption')} />
           <label htmlFor={textId}>{t('proof.textLabel')}</label>
-          <textarea id={textId} className="mono receipt-json" dir="ltr" readOnly rows={8} value={text} />
+          <ControlTip message="tips.proofText"><textarea id={textId} className="mono receipt-json" dir="ltr" readOnly rows={8} value={text} /></ControlTip>
         </>
       )}
     </section>
@@ -173,15 +174,15 @@ export function PlainPaymentRequest(props: PlainPaymentRequestProps): ReactNode 
         : { family: 'tron', recipient: to, network: props.tronNetwork ?? 'mainnet', ...(amt === '' ? {} : { amount: amt }) };
   return (
     <details className="plain-request">
-      <summary>{t('plainRequest.summary')}</summary>
+      <ControlTip message="tips.plainRequest"><summary>{t('plainRequest.summary')}</summary></ControlTip>
       <p className="hint">{t('plainRequest.hint', { network: props.networkLabel })}</p>
       <div className="field">
         <label htmlFor={recipientId}>{t('plainRequest.recipient')}</label>
-        <input id={recipientId} className="mono" dir="ltr" autoComplete="off" spellCheck={false} value={recipient} onChange={(e) => { setRecipient(e.target.value); }} />
+        <ControlTip message="tips.recipient"><input id={recipientId} className="mono" dir="ltr" autoComplete="off" spellCheck={false} value={recipient} onChange={(e) => { setRecipient(e.target.value); }} /></ControlTip>
       </div>
       <div className="field">
         <label htmlFor={amountId}>{t('plainRequest.amount')}</label>
-        <input id={amountId} inputMode="decimal" autoComplete="off" value={amount} onChange={(e) => { setAmount(e.target.value); }} />
+        <ControlTip message="create.tokenAmount.hint"><input id={amountId} inputMode="decimal" autoComplete="off" value={amount} onChange={(e) => { setAmount(e.target.value); }} /></ControlTip>
       </div>
       {spec !== undefined && <PaymentRequestQr spec={spec} testnet={props.testnet} title={t('plainRequest.title', { network: props.networkLabel })} />}
     </details>

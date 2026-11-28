@@ -1,3 +1,4 @@
+import { ControlTip } from './ControlTips';
 import { FEE_SCHEDULE } from '@ghostpay/chain-adapters';
 import { useEffect, useState, type ReactNode } from 'react';
 import type { MessageKey } from '../i18n/catalog';
@@ -93,7 +94,7 @@ export function ObserverTable(): ReactNode {
   const i18n = useI18nOptional();
   const t = i18n?.t ?? SOURCE_TRANSLATOR.t;
   return (
-    <div className="table-wrap" role="region" aria-label={t('about.learns')} tabIndex={0}>
+    <ControlTip message="tips.table"><div className="table-wrap" role="region" aria-label={t('about.learns')} tabIndex={0}>
       <table>
         <caption>{t('about.learns')}</caption>
         <thead>
@@ -113,7 +114,7 @@ export function ObserverTable(): ReactNode {
           ))}
         </tbody>
       </table>
-    </div>
+    </div></ControlTip>
   );
 }
 

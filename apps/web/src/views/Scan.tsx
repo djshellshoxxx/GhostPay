@@ -1,3 +1,4 @@
+import { ControlTip } from '../components/ControlTips';
 import { findChain, tokensForChain, verifyClaimedPayment, type RpcClient } from '@ghostpay/chain-adapters';
 import { useEffect, useRef, useState, useSyncExternalStore, type ReactNode } from 'react';
 import { Field, Mono, Notice } from '../components/Common';
@@ -166,7 +167,7 @@ export function Scan(): ReactNode {
       <section aria-labelledby="scan-h">
         <h2 id="scan-h">{t('scan.title')}</h2>
         <Notice kind="info">{t('scan.needKeys')}</Notice>
-        <button type="button" className="btn btn-primary" onClick={() => { app.setView('seller'); }}>{t('scan.goSeller')}</button>
+        <ControlTip message="home.seller.body"><button type="button" className="btn btn-primary" onClick={() => { app.setView('seller'); }}>{t('scan.goSeller')}</button></ControlTip>
       </section>
     );
   }
@@ -461,7 +462,7 @@ export function Scan(): ReactNode {
         {t('scan.rpcPrivacy.body')}
       </Notice>
       <details className="panel">
-        <summary>{t('scan.disclosure.summary')}</summary>
+        <ControlTip message="scan.disclosure.hint"><summary>{t('scan.disclosure.summary')}</summary></ControlTip>
         <ul>
           {describeScanDisclosureMessages(scanPrivacy, { hasSecondary: (app.settings.rpcUrlsSecondary[String(chainId)] ?? '') !== '' }).map((row) => (
             <li key={row.party.key}><strong>{displayMessage(row.party, t)}:</strong> {displayMessage(row.learns, t)}</li>
@@ -474,48 +475,48 @@ export function Scan(): ReactNode {
       <div className="stack">
         <Field label={t('scan.chain')}>
           {(id) => (
-            <select id={id} value={chainId} onChange={(e) => { setChainId(Number(e.target.value)); }} disabled={running}>
+            <ControlTip message="tips.network"><select id={id} value={chainId} onChange={(e) => { setChainId(Number(e.target.value)); }} disabled={running}>
               {services.chains.map((c) => (
                 <option key={c.chainId} value={c.chainId}>{c.name}</option>
               ))}
-            </select>
+            </select></ControlTip>
           )}
         </Field>
         {manifest?.status === 'loaded' && manifest.trust === 'unsigned-dev' && <Notice kind="warn">{manifest.warning ?? t('scan.manifest.unsignedFallback')}</Notice>}
         {manifest !== undefined && manifest.status !== 'loaded' && <Notice kind="warn">{t('scan.manifest.disabled')}</Notice>}
         <Field label={t('scan.startBlock')} hint={checkpoint === undefined ? t('scan.startBlock.hint') : t('scan.startBlock.checkpoint', { block: checkpoint.nextBlock.toString() })}>
-          {(id, d) => <input id={id} aria-describedby={d} inputMode="numeric" value={start} onChange={(e) => { setStart(e.target.value); }} disabled={running} />}
+          {(id, d) => <ControlTip message="tips.startBlock"><input id={id} aria-describedby={d} inputMode="numeric" value={start} onChange={(e) => { setStart(e.target.value); }} disabled={running} /></ControlTip>}
         </Field>
         {checkpoint !== undefined && (
           <div className="check">
-            <input id="resume" type="checkbox" checked={resume} onChange={(e) => { setResume(e.target.checked); }} />
+            <ControlTip message="tips.resumeScan"><input id="resume" type="checkbox" checked={resume} onChange={(e) => { setResume(e.target.checked); }} /></ControlTip>
             <label htmlFor="resume">{t('scan.resume')}</label>
           </div>
         )}
         <div className="check">
-          <input id="deep-scan" type="checkbox" checked={deepScan} onChange={(e) => { setDeepScan(e.target.checked); }} disabled={running} />
+          <ControlTip message="scan.deepScan.warn"><input id="deep-scan" type="checkbox" checked={deepScan} onChange={(e) => { setDeepScan(e.target.checked); }} disabled={running} /></ControlTip>
           <label htmlFor="deep-scan">{t('scan.deepScan')}</label>
         </div>
         {deepScan && <Notice kind="warn">{t('scan.deepScan.warn')}</Notice>}
         <div className="check">
-          <input id="auto-rescan" type="checkbox" checked={autoRescan} onChange={(e) => { setAutoRescan(e.target.checked); }} aria-describedby="auto-rescan-hint" />
+          <ControlTip message="scan.autoRescan.hint"><input id="auto-rescan" type="checkbox" checked={autoRescan} onChange={(e) => { setAutoRescan(e.target.checked); }} aria-describedby="auto-rescan-hint" /></ControlTip>
           <label htmlFor="auto-rescan">{t('scan.autoRescan')}</label>
         </div>
         <p id="auto-rescan-hint" className="hint">{t('scan.autoRescan.hint')}</p>
         <div className="actions">
-          <button type="button" className="btn btn-primary" onClick={() => { begin(); }} disabled={running}>{t('scan.start')}</button>
-          <button type="button" className="btn" onClick={() => { setAutoRescan(false); abort.current?.abort(); }} disabled={!running}>{t('scan.cancel')}</button>
+          <ControlTip message="scan.intro"><button type="button" className="btn btn-primary" onClick={() => { begin(); }} disabled={running}>{t('scan.start')}</button></ControlTip>
+          <ControlTip message="tips.cancelScan"><button type="button" className="btn" onClick={() => { setAutoRescan(false); abort.current?.abort(); }} disabled={!running}>{t('scan.cancel')}</button></ControlTip>
           {checkpoint !== undefined && (
-            <button type="button" className="btn" onClick={() => { if (keyId !== undefined) services.checkpoints.clear(chainId, keyId); setResume(false); app.announce(t('scan.checkpointCleared')); }} disabled={running}>
+            <ControlTip message="tips.checkpoint"><button type="button" className="btn" onClick={() => { if (keyId !== undefined) services.checkpoints.clear(chainId, keyId); setResume(false); app.announce(t('scan.checkpointCleared')); }} disabled={running}>
               {t('scan.clearCheckpoint')}
-            </button>
+            </button></ControlTip>
           )}
         </div>
       </div>
-      <div role="status" aria-live="polite" className="status">
+      <ControlTip message="tips.scanProgress"><div role="status" aria-live="polite" className="status">
         {progress !== undefined && t('scan.progress', { block: progress.nextBlock.toString(), scanned: String(progress.scanned), matches: String(progress.matches), hasSkipped: progress.skipped > 0 ? 'yes' : 'no', skipped: String(progress.skipped), limit: progress.limitReached ? 'yes' : 'no' })}
         {running && progress === undefined && t('scan.starting')}
-      </div>
+      </div></ControlTip>
       {done !== undefined && <Notice kind="ok">{done.map((m) => show(m, t)).join(' ')}</Notice>}
       {privacyNote !== undefined && <Notice kind="info" title={t('scan.privacySet.title')}>{describePrivacySet(privacyNote, t)}</Notice>}
       {routerOnlyNote !== undefined && <Notice kind="warn">{routerOnlyNote}</Notice>}
@@ -629,9 +630,9 @@ function Matches(props: { readonly exportRpc: ExportRpc | undefined; readonly ch
                 <div className="row">
                   <div className="field">
                     <label htmlFor={`tag-${id}`}>{t('scan.tag.label')}</label>
-                    <input id={`tag-${id}`} value={label[id] ?? ''} maxLength={200} onChange={(e) => { setLabel({ ...label, [id]: e.target.value }); }} />
+                    <ControlTip message="tips.tag"><input id={`tag-${id}`} value={label[id] ?? ''} maxLength={200} onChange={(e) => { setLabel({ ...label, [id]: e.target.value }); }} /></ControlTip>
                   </div>
-                  <button
+                  <ControlTip message="tips.saveTag"><button
                     type="button"
                     className="btn"
                     onClick={() => {
@@ -666,7 +667,7 @@ function Matches(props: { readonly exportRpc: ExportRpc | undefined; readonly ch
                     }}
                   >
                     {t('scan.tag.save')}
-                  </button>
+                  </button></ControlTip>
                 </div>
               )}
               {m.announcement.schemeId === 1n && (
@@ -675,9 +676,9 @@ function Matches(props: { readonly exportRpc: ExportRpc | undefined; readonly ch
               {m.receipt === 'verified' && m.metadata !== undefined && props.receiptSignerPublicKey !== undefined && props.receiptSignerPublicKey === props.sellerSignerPublicKey && (
                 <ReceiptPanel match={m} sellerSignerPublicKey={props.receiptSignerPublicKey} />
               )}
-              <button type="button" className="btn btn-primary" onClick={() => { app.selectForSweep({ match: m, chainId: m.chainId }); app.setView('sweep'); }}>
+              <ControlTip message="tips.selectSweep"><button type="button" className="btn btn-primary" onClick={() => { app.selectForSweep({ match: m, chainId: m.chainId }); app.setView('sweep'); }}>
                 {t('scan.sweep')}
-              </button>
+              </button></ControlTip>
             </li>
           );
         })}
@@ -745,7 +746,7 @@ function Tags(props: { readonly chainId: number; readonly sellerKeyId: string | 
       {err !== undefined && <Notice kind="error">{show(err, t)}</Notice>}
       <div className="actions">
         {!unlocked ? (
-          <button
+          <ControlTip message="tips.unlockTags"><button
             type="button"
             className="btn"
             onClick={() => {
@@ -779,13 +780,13 @@ function Tags(props: { readonly chainId: number; readonly sellerKeyId: string | 
             }}
           >
             {t('scan.tags.unlock')}
-          </button>
+          </button></ControlTip>
         ) : (
-          <button type="button" className="btn" onClick={() => { services.vault.lock(); setList(undefined); force((n) => n + 1); app.announce(t('scan.tags.locked')); }}>
+          <ControlTip message="tips.lockTags"><button type="button" className="btn" onClick={() => { services.vault.lock(); setList(undefined); force((n) => n + 1); app.announce(t('scan.tags.locked')); }}>
             {t('scan.tags.lock')}
-          </button>
+          </button></ControlTip>
         )}
-        <button
+        <ControlTip message="scan.tags.deleteConfirm"><button
           type="button"
           className="btn btn-danger"
           onClick={() => {
@@ -804,7 +805,7 @@ function Tags(props: { readonly chainId: number; readonly sellerKeyId: string | 
           }}
         >
           {t('scan.tags.deleteAll')}
-        </button>
+        </button></ControlTip>
       </div>
       {unlocked && list !== undefined && (
         <ul className="plain-list">

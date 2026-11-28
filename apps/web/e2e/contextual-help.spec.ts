@@ -106,11 +106,15 @@ for (const [how, open] of [
       f.addEventListener('submit', (event) => { event.preventDefault(); (window as unknown as { submits: number }).submits += 1; }, true);
     });
     const help = page.getByRole('button', { name: 'About Keystore file', exact: true });
-    const closedY = (await decrypt.boundingBox())?.y ?? 0;
+    await page.mouse.move(0, 0);
+    await expect(help).toHaveAttribute('aria-expanded', 'false');
+    // Focus or a pointer move may scroll the viewport. Compare positions in the document.
+    const documentY = (): Promise<number> => decrypt.evaluate((button) => button.getBoundingClientRect().top + window.scrollY);
+    const closedY = await documentY();
     await open(help);
     await expect(help).toHaveAttribute('aria-expanded', 'true');
     // The open explanation sits in the page flow above the button.
-    expect((await decrypt.boundingBox())?.y ?? 0).toBeGreaterThan(closedY);
+    expect(await documentY()).toBeGreaterThan(closedY);
     await decrypt.click();
     await expect.poll(() => page.evaluate(() => (window as unknown as { submits: number }).submits)).toBe(1);
     await expect(help).toHaveAttribute('aria-expanded', 'false');

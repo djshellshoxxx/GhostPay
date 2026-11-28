@@ -1,3 +1,4 @@
+import { ControlTip } from './ControlTips';
 import { useEffect, useId, useState, type ReactNode } from 'react';
 import { SOURCE_TRANSLATOR, useI18nOptional } from '../i18n/context';
 import type { MessageKey } from '../i18n/catalog';
@@ -66,7 +67,7 @@ export function BrowserChecks(): ReactNode {
   return (
     <section className="browser-checks" aria-label={t('app.checks.title')}>
       <details>
-        <summary>{t('app.checks.title')}: {summary}</summary>
+        <ControlTip message="app.checks.limits"><summary>{t('app.checks.title')}: {summary}</summary></ControlTip>
         {checks !== undefined && (
           <ul className="browser-checks-list">
             {checks.map((check) => {
@@ -74,7 +75,7 @@ export function BrowserChecks(): ReactNode {
               return (
                 <li key={check.id}>
                   <span>{t(LABELS[check.id])}</span>
-                  <strong data-result={check.status} aria-describedby={check.status === 'pass' ? undefined : explainId}>{t(RESULTS[check.status])}</strong>
+                  <ControlTip message="app.checks.limits"><strong data-result={check.status} aria-describedby={check.status === 'pass' ? undefined : explainId}>{t(RESULTS[check.status])}</strong></ControlTip>
                   {check.status !== 'pass' && (
                     <p id={explainId} className="browser-checks-explain">{t(EXPLANATIONS[check.id][check.status])}</p>
                   )}
