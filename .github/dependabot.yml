@@ -2,7 +2,12 @@
 version: 2
 updates:
   - package-ecosystem: github-actions
-    directory: /
+    # "/" alone scans only .github/workflows and a root action.yml; the composite actions under .github/actions/*
+    # pin actions too (actions/cache v5.0.5, setup-node v7.1.0, foundry-toolchain v1.9.2) and were left behind when the
+    # workflows moved to actions/cache v6.1.0.
+    directories:
+      - /
+      - /.github/actions/*
     schedule:
       interval: weekly
       day: monday

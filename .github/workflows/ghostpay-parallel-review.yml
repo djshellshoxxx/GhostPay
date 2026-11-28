@@ -84,7 +84,7 @@ jobs:
       - name: One API-funded research pass
         id: codex
         continue-on-error: true
-        uses: openai/codex-action@bdf19a4a223ec2549a3e2274a0cf61556bc07675 # v1
+        uses: openai/codex-action@bdf19a4a223ec2549a3e2274a0cf61556bc07675 # v1.13
         with:
           openai-api-key: ${{ secrets.GHOSTPAY_OPENAI_API_KEY || secrets.OPENAI_API_KEY }}
           permission-profile: ':workspace'
@@ -248,7 +248,7 @@ jobs:
 
       - name: Open independent draft research PR
         if: steps.stage.outputs.ready == 'true'
-        uses: peter-evans/create-pull-request@22a9089034f40e5a961c8808d113e2c98fb63676 # v7
+        uses: peter-evans/create-pull-request@22a9089034f40e5a961c8808d113e2c98fb63676 # v7.0.11
         with:
           token: ${{ secrets.GHOSTPAY_GITHUB_TOKEN || github.token }}
           branch: codex/ghostpay-research-${{ matrix.lane }}-${{ github.run_id }}
