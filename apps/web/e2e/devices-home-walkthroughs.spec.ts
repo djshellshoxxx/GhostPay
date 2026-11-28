@@ -62,11 +62,10 @@ test('returning to Home with keys loaded preserves the seller identity', async (
   await expect(page.locator('#keys-h').locator('..').getByText(identity, { exact: true }).first()).toBeVisible();
 });
 
-test('translated homepage controls fit with doubled text, including right-to-left reading order', async ({ page }) => {
-  for (const locale of ['en', 'es', 'ja', 'ar']) {
+for (const locale of ['en', 'es', 'ja', 'ar']) {
+  test(`translated homepage controls fit with doubled text in ${locale}`, async ({ page }) => {
+    await page.addInitScript(lang => localStorage.setItem('ghostpay.locale', lang), locale);
     await page.goto('/');
-    await page.evaluate(lang => localStorage.setItem('ghostpay.locale', lang), locale);
-    await page.reload();
     await expect(page.locator('html')).toHaveAttribute('lang', locale);
     if (locale === 'ar') await expect(page.locator('html')).toHaveAttribute('dir', 'rtl');
     await page.evaluate(() => { document.documentElement.style.fontSize = '200%'; });
@@ -84,5 +83,5 @@ test('translated homepage controls fit with doubled text, including right-to-lef
     await summary.focus();
     await page.keyboard.press('Space');
     await expect(page.locator('#home-sample')).toHaveJSProperty('open', false);
-  }
-});
+  });
+}
