@@ -228,7 +228,8 @@ describe('versioning and KDF bounds from untrusted links', () => {
   it('unknown fragment versions and algorithms fail closed before any crypto', async () => {
     const f = await encodeFragment(sampleSigned());
     const body = f.slice(FRAGMENT_PREFIX.length);
-    for (const prefix of ['#gpi=v2.', '#gpi=v0.', '#gpi=V1.', '#GPI=v1.', '#gpi=v1', 'gpi=v1.']) {
+    expect(await errName(parseFragment('#gpi=v2.' + body))).toBe('UnsupportedError');
+    for (const prefix of ['#gpi=v0.', '#gpi=V1.', '#GPI=v1.', '#gpi=v1', 'gpi=v1.']) {
       expect(await errName(parseFragment(prefix + body))).toBe('FragmentFormatError');
     }
     const env = envOf(f);

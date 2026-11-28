@@ -148,7 +148,7 @@ describe('opt-in trusted-signer parsing (restored from PR #218)', () => {
     await rejectsWith(parseFragment('invalid', options), 'FRAGMENT_FORMAT');
     const plain = envelopeOf(await encodeFragment(sampleSigned()));
     delete plain['sig'];
-    await rejectsWith(parseFragment(fragmentOf(plain), options), 'SCHEMA');
+    await rejectsWith(parseFragment(fragmentOf(plain), options), 'MISSING_SIGNATURE');
     plain['sig'] = 'bad';
     await rejectsWith(openFragment(fragmentOf(plain), options), 'SCHEMA');
     const encrypted = envelopeOf(await encodeFragment(sampleSigned(), { encrypt: true }));

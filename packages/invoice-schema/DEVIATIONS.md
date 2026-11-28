@@ -42,5 +42,12 @@
     `InvalidSignatureError` (`INVALID_SIGNATURE`) before a valid but unpinned key throws `UntrustedSignerError`
     (`UNTRUSTED_SIGNER`). An empty or missing pin set rejects every parsed invoice. `openFragment` can still
     request a passphrase before an invoice exists to authenticate. Earlier validation errors retain their types.
-    Both codes have static guidance in `packages/ux-core`. This is an additive shared API restoration: no current
-    browser caller opts in, no signature/encryption format changes, and default invoice review is unchanged.
+    Both codes have static guidance in `packages/ux-core`. This additive shared API restoration does not opt users in;
+    browser callers choose the enforcement policy. No signature/encryption format changes, and default invoice review is unchanged.
+16. **Precise verification failures for invoice inspection.** Missing `sig` in a recognized signed container is now
+    `MissingSignatureError` (`MISSING_SIGNATURE`); unknown extra fields still fail strict schema validation. Unknown
+    positive numeric fragment/body versions are `UnsupportedError`; malformed version values remain format/schema
+    errors. Missing Web Crypto, an unavailable AES key import, and an aborted/unsupported AES operation are now
+    `VerificationUnavailableError` (`VERIFICATION_UNAVAILABLE`). Previously these conditions were conflated with
+    generic schema, format, unsupported-format or decryption failures. All new errors have fixed input-free messages.
+    These classifications do not accept any new invoice representation, change signing bytes or relax the pin policy.

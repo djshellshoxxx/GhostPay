@@ -42,11 +42,34 @@ checking the pins. A valid signature from a key outside the pin set throws `Untr
 66-character hex keys, without a `0x` prefix. Only an absent option or explicit `false` disables the guard;
 other values from untyped callers enforce it. Earlier format, schema and decryption errors retain their types.
 
+The shared parser does not choose an expected seller for the caller. When checking one seller, pass only that
+seller's pinned key. Supplying several keys means **any** of them is permitted; a caller must not pass its whole
+address book when it intends to authenticate one selected seller.
+
 Without a passphrase, `openFragment` can return `needsPassphrase` before the policy is checked. Its header
 is unauthenticated; it is not a trusted invoice. Reuse the same required-pinning policy when opening the
 decrypted invoice. The default parser still returns signature/trust information for review; callers must
-block `invalid-signature` results. The current browser Pay flow uses that default, blocks invalid signatures,
-and labels unpinned keys. Adding this shared option does not make Pay require pinned sellers.
+block `invalid-signature` results. Browser callers choose whether to require a selected pinned identity; adding
+this shared option never opts a user in automatically.
+
+### Verification failures
+
+`MissingSignatureError` (`MISSING_SIGNATURE`, path `sig`) distinguishes a recognized signed container without its
+signature from an invalid signature. A malformed signature field remains `SchemaError` with path `sig`; an otherwise
+well-formed signature that does not verify yields `signatureValid: false`, or `InvalidSignatureError` under the strict
+pin policy. Missing signer fields, unsupported signer encodings and other malformed invoice values still fail schema
+validation. Unknown positive numeric envelope or invoice versions and unknown envelope algorithms give `UnsupportedError`.
+Supported body versions remain 1 and 2 inside envelope prefix `#gpi=v1.`; `alg: "none"` means no encryption, never no signature.
+
+`VerificationUnavailableError` (`VERIFICATION_UNAVAILABLE`) means a required local Web Crypto operation is unavailable
+or interrupted. It cannot be represented as a valid or invalid cryptographic signature. Plaintext invoice signature
+verification uses noble and works without Web Crypto; encrypted invoices need Web Crypto to recover the signed payload.
+Missing Web Crypto, failed AES key import and an aborted/unsupported AES operation give this fixed error instead of
+exposing provider exception text. Wrong passphrases and failed GCM authentication retain their existing indistinguishable
+decryption errors. A passphrase prompt remains unauthenticated and must not be displayed as a verified invoice.
+
+See [the signer verification specification](../../docs/specs/INVOICE_SIGNER_VERIFICATION.md) for the authenticated field
+set, compatibility rules and trust boundaries.
 
 ### Passphrase-protected links (ADR-0020)
 

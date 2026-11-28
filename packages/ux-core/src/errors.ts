@@ -26,6 +26,8 @@ export const INVOICE_CODES = [
   'UNSUPPORTED',
   'UNTRUSTED_SIGNER',
   'INVALID_SIGNATURE',
+  'MISSING_SIGNATURE',
+  'VERIFICATION_UNAVAILABLE',
 ] as const;
 
 /** Codes of `ChainAdapterError` (packages/chain-adapters). */
@@ -351,8 +353,8 @@ const CATALOG: Readonly<Record<string, Entry>> = Object.freeze({
     'browser',
   ),
   UNSUPPORTED: E(
-    'This browser or invoice version is not supported.',
-    'A required feature or invoice version is missing.',
+    'This invoice version or algorithm is not supported.',
+    'The link names an unsupported format or encryption parameter.',
     ['update', 'docs'],
     'error',
     'pre',
@@ -373,6 +375,22 @@ const CATALOG: Readonly<Record<string, Entry>> = Object.freeze({
     'error',
     'pre',
     'invoice-link',
+  ),
+  MISSING_SIGNATURE: E(
+    'The invoice signature is missing.',
+    'The link has no signature to authenticate its invoice. An unsigned link cannot match a trusted signer.',
+    LINK,
+    'error',
+    'pre',
+    'invoice-link',
+  ),
+  VERIFICATION_UNAVAILABLE: E(
+    'Local invoice verification is unavailable.',
+    'A required browser cryptographic operation is unavailable or was interrupted. No signature result is available.',
+    ['reload', 'update', 'docs'],
+    'error',
+    'pre',
+    'browser',
   ),
   // Chain adapter
   INVALID_INPUT: E(

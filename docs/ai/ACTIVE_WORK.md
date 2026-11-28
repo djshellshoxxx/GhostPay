@@ -1,3 +1,22 @@
+# November 28 — signer branch CI
+
+Codex CI qualification on `ci/243-signer-qualification-nov28`, based on `276aed60f19671cc6fa551be616b61041cb45b50`. Scope covers failing test fixtures and workspace metadata after checking existing successor fixes. Acceptance requires the original assertions, targeted test runs and an exact-head CI check.
+
+# Pinned invoice signer completion — 2026-11-18
+
+Worker: ChatGPT coordinator, protocol_validation, pin_management, and independent integration/security reviewers.
+Branch: `chatgpt/ghostpay-pinned-signer-completion-20261119`.
+Base: `198aa5baff22272453733a0f3dcfcac0e0994eec` (PR #238; includes PR #234 at `5e9e7be70399a9818579cf87bd494e013e25d4f9`).
+Owned paths: invoice-schema validation/error regressions; Pay inspection and focused lifecycle tests;
+new invoice signer pin store/component and tests; additive signer i18n entries; dedicated browser acceptance;
+user/developer signer documentation and this task's source-pinned qualification report.
+Acceptance: preserve canonical secp256k1 signatures and all existing envelope formats; explicit local seller-key
+pins and confirmed replacement; accurately separate signature validity from selected-key trust; invalid/missing/
+unsupported/malformed/unavailable states; no stale asynchronous trust, cross-seller substitution or new network
+requests; execute focused and full applicable qualification, and obtain independent security review.
+PR #239/#240 recovery, #241 network isolation, session key lifecycles, unrelated lint/dependency gates and Mythril
+findings remain separately owned. No smart-contract changes, main merge, deployment or release.
+
 # Pages smoke render-error regression — 2026-11-18
 
 Worker: security_recovery, independent Pages review lane. Branch:

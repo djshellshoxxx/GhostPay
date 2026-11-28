@@ -440,12 +440,12 @@ describe('passphrase-protected links (A256GCM-PW, ADR-0020)', () => {
     }
   });
 
-  it('missing Web Crypto is UnsupportedError, not a wrong-passphrase error', async () => {
+  it('missing Web Crypto is VerificationUnavailableError, not a wrong-passphrase error', async () => {
     const f = await pwEncode(sampleSigned());
     const desc = Object.getOwnPropertyDescriptor(globalThis, 'crypto');
     Object.defineProperty(globalThis, 'crypto', { value: undefined, configurable: true });
     try {
-      expect(await errName(parseFragment(f, { passphrase: PASS }))).toBe('UnsupportedError');
+      expect(await errName(parseFragment(f, { passphrase: PASS }))).toBe('VerificationUnavailableError');
     } finally {
       if (desc !== undefined) Object.defineProperty(globalThis, 'crypto', desc);
     }

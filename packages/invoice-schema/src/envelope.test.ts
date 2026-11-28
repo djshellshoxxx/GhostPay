@@ -336,8 +336,8 @@ describe('encrypted fragments (AES-256-GCM, ADR-0005)', () => {
       configurable: true,
     });
     try {
-      expect(await code(encodeFragment(s, { encrypt: true }))).toBe('UnsupportedError');
-      expect(await code(parseFragment(f))).toBe('UnsupportedError');
+      expect(await code(encodeFragment(s, { encrypt: true }))).toBe('VerificationUnavailableError');
+      expect(await code(parseFragment(f))).toBe('VerificationUnavailableError');
     } finally {
       if (saved) Object.defineProperty(globalThis, 'crypto', saved);
     }
@@ -410,7 +410,6 @@ describe('parser failure classes', () => {
       '',
       '#',
       '#gpi=',
-      '#gpi=v2.abc',
       'gpi=v1.abc',
       '#gpi=v1',
       '#GPI=v1.abc',
@@ -423,7 +422,7 @@ describe('parser failure classes', () => {
     }
     expect(await code(parseFragment(undefined as never))).toBe('FragmentFormatError');
     expect(await code(parseFragment(5 as never))).toBe('FragmentFormatError');
-    expect(await code(parseFragment('#gpi=v2.abc'))).toBe('FragmentFormatError');
+    expect(await code(parseFragment('#gpi=v2.abc'))).toBe('UnsupportedError');
   });
   it('base64url violations', async () => {
     const good = (await encodeFragment(sampleSigned())).slice(FRAGMENT_PREFIX.length);
@@ -498,7 +497,7 @@ describe('parser failure classes', () => {
     expect(await code(parseFragment(frag({ ...env, alg: 5 })))).toBe('UnsupportedError');
     expect(await code(parseFragment(frag({ inv: env['inv'], sig: env['sig'] })))).toBe('UnsupportedError');
     expect(await code(parseFragment(frag({ ...env, extra: 1 })))).toBe('SchemaError');
-    expect(await code(parseFragment(frag({ alg: 'none', inv: env['inv'] })))).toBe('SchemaError');
+    expect(await code(parseFragment(frag({ alg: 'none', inv: env['inv'] })))).toBe('MissingSignatureError');
     expect(await code(parseFragment(frag({ ...env, sig: 'AB' })))).toBe('SchemaError');
     expect(await code(parseFragment(frag({ ...env, sig: (env['sig'] as string).toUpperCase() })))).toBe(
       'SchemaError',
