@@ -1,7 +1,7 @@
 # Spec 18 export lows CR-1 and CR-3/UX-01 — 2026-11-28 UTC
 
 Worker: Claude Code cloud session ghostpay-consolidation-9xhtxg; branch `claude/ghostpay-consolidation-9xhtxg-spec18-lows`
-(base main `70458ebe`, #762). Draft PR only: no merge, no integration lock.
+(base main `70458ebe`, #762; merged with main `0934ea09`, #768). Draft PR #779 only: no merge, no integration lock.
 
 Owned paths (exact): `packages/ux-vault/src/stealth-export-portable.ts` (the `encryptPaymentKeys` input check and the
 format detection helpers only), `packages/ux-vault/src/stealth-export-portable.test.ts`,
@@ -19,7 +19,9 @@ spec 18 family (`ghostpay-stealth-{public,keypair,master}-vN`, N not 1) opens wi
 build, typecheck, lint and full tests; recovery node tests; i18n check; lean web build with its bundle scan.
 
 Overlap: open #773 calls `detectStealthExportFormat` (unchanged here) from `apps/web/src/lib/recoveryFile.ts`; open
-#771/#769 own the other `paymentKeyExport.ts` hunks; all three also add entries to this file.
+#769/#771/#773 do not touch `paymentKeyExport.ts` or `stealthExport.ts` (GitHub file lists, 2026-11-28); all three add
+entries to this file. Once #773 lands, its selection-time `recognizeRecoveryFile` should call
+`isUnsupportedStealthExportVersion` so a later-version file is named as such before `openStealthExport` runs.
 
 ---
 
