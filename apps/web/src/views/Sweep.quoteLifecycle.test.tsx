@@ -27,7 +27,7 @@ const QUOTE = 'Get relayer quote';
 const SIGN = 'Sign and submit to relayer';
 const DIRECT = 'Sign and broadcast directly';
 const RESIGN = 'Sign a replacement with the same nonce';
-const HASH = '0x' + '34'.repeat(32);
+const HASH = `0x${'34'.repeat(32)}` as const;
 const ORIGINAL_DIRECT_LOCK: sweepLib.SweepLock = {
   chainId: CHAIN, owner: OWNER, nonce: 7, expectedHash: `0x${'12'.repeat(32)}`,
   otherHashes: [`0x${'56'.repeat(32)}`], status: 'unknown-after-handoff',
@@ -340,11 +340,15 @@ function directResult(input: sweepLib.DirectSweepInput): sweepLib.DirectSweepRes
 }
 
 async function reviewedDirect(m: ReturnType<typeof mount>, resign: boolean): Promise<void> {
+  vi.spyOn(sweepLib, 'reviewDirectSweep').mockImplementation(({ target, destination, amount }) => Promise.resolve<sweepLib.DirectSweepReview>({
+    owner: target.owner, destination, sent: amount, feeBudget: 1n, digest: HASH, simulation: 'ok',
+  }));
   await ready(m);
   fireEvent.click(screen.getByLabelText(/^Directly/));
   if (resign) act(() => { beginSweepAttempt(ORIGINAL_DIRECT_LOCK); });
   await settle();
-  expect(screen.getByRole<HTMLButtonElement>('button', { name: resign ? RESIGN : DIRECT }).disabled).toBe(false);
+  fireEvent.click(screen.getByRole('button', { name: resign ? 'Review replacement' : 'Review direct sweep' }));
+  await waitFor(() => { expect(screen.getByRole<HTMLButtonElement>('button', { name: resign ? RESIGN : DIRECT }).disabled).toBe(false); });
 }
 
 describe.each(['direct', 'same-nonce replacement'] as const)('Sweep %s signing context', (flow) => {

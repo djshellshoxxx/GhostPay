@@ -11,7 +11,7 @@ import { ManifestBanner } from '../components/ManifestBanner';
 import { verifyManifestForFlow } from '../lib/manifest';
 import { UserFacingError, displayMessage, captureUserMessage, type DisplayMessage } from '../lib/errors';
 import { formatUnits } from '../lib/format';
-import { checkDestination, directSweep, DirectSweepOutcomeUnknownError, getSweepQuote, isUnresolvedAttempt, readBalance, reconcileSweepLock, relayedSweep, sweepPermitRefusalKey, sweepPermitSuggestsDirect, RELAYED_EXPIRY_MARGIN_SECONDS, type DirectSweepResult, type RelayedOrderRef, type SweepLock, type SweepQuoteView, type SweepTarget } from '../lib/sweep';
+import { checkDestination, directSweep, DirectSweepOutcomeUnknownError, getSweepQuote, isUnresolvedAttempt, readBalance, reconcileSweepLock, reviewDirectSweep, relayedSweep, sweepPermitRefusalKey, sweepPermitSuggestsDirect, RELAYED_EXPIRY_MARGIN_SECONDS, type DirectSweepResult, type DirectSweepReview, type RelayedOrderRef, type SweepLock, type SweepQuoteView, type SweepTarget } from '../lib/sweep';
 import { RelayerRefusedError } from '../lib/relayerClient';
 import { authorizeEncryptedVault, readEncryptedVault } from '../lib/keyVault';
 import { captureSessionGuard, captureSessionVersionGuard, getSessionBackup, subscribeSessionBackup } from '../lib/session';
@@ -51,7 +51,7 @@ function SweepPanel(): ReactNode {
   const manifest = useManifest(chainId);
   const [destination, setDestination] = useState('');
   const seller = app.session?.metaAddress;
-  const [mode, setMode] = useState<'relayer' | 'direct'>('relayer');
+  const [selectedMode, setMode] = useState<'relayer' | 'direct'>();
   const [balance, setBalance] = useState<bigint | undefined>(undefined);
   // Every balance lookup names this one-time address to the Settings RPC and needs its own click.
   const [privatePathRequired] = useState(() => privatePathForbidsDirect(loadScanPrivacy(browserStorage())));
@@ -71,6 +71,7 @@ function SweepPanel(): ReactNode {
   const [balanceNoRpc, setBalanceNoRpc] = useState(false);
   const quoteOperation = useRef(0);
   const [quote, setQuote] = useState<SweepQuoteView | undefined>(undefined);
+  const [directReview, setDirectReview] = useState<{ terms: DirectSweepReview; replaces?: SweepLock }>();
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<DisplayMessage | undefined>(undefined);
   const [hash, setHash] = useState<string | undefined>(undefined);
@@ -124,11 +125,14 @@ function SweepPanel(): ReactNode {
     setBalanceAsked(false);
     setBalanceNoRpc(false);
     setQuote(undefined);
+    setDirectReview(undefined);
   }), []);
 
   const meta = sel?.match.metadata;
   const tokenAddr: Address | 'native' | undefined = meta === undefined ? undefined : meta.kind === 'native' ? 'native' : meta.token;
   const tokenCfg = chainId === undefined || tokenAddr === undefined || tokenAddr === 'native' ? undefined : findToken(chainId, tokenAddr);
+  const relayerOk = tokenCfg?.permit === true && app.settings.relayerUrl !== '';
+  const mode = relayerOk ? (selectedMode ?? 'relayer') : 'direct';
   const decimals = tokenAddr === 'native' ? 18 : (tokenCfg?.decimals ?? 18);
   const symbol = tokenAddr === 'native' ? (chainId === undefined ? '' : (findChain(chainId)?.nativeSymbol ?? '')) : (tokenCfg?.symbol ?? t('sweep.tokenFallback'));
 
@@ -147,11 +151,13 @@ function SweepPanel(): ReactNode {
     setBalanceAsked(false);
     setBalanceNoRpc(false);
     setQuote(undefined);
+    setDirectReview(undefined);
     return () => { balanceOperation.current += 1; };
   }, [balanceScope]);
 
   useEffect(() => {
     setQuote(undefined);
+    setDirectReview(undefined);
     return () => { quoteOperation.current += 1; };
   }, [quoteScope]);
 
@@ -185,7 +191,6 @@ function SweepPanel(): ReactNode {
     checkDestinationReuse({ kind: 'sweep', metaAddress: seller }, chainId, address, true);
   };
   const loaded = manifest?.status === 'loaded' ? manifest.manifest : undefined;
-  const relayerOk = tokenCfg?.permit === true && app.settings.relayerUrl !== '';
   const nowSec = (): number => Math.floor(services.nowMs() / 1000);
 
   const onReadBalance = (): void => {
@@ -200,6 +205,7 @@ function SweepPanel(): ReactNode {
     setBalanceAsked(true);
     setBalanceNoRpc(false);
     setQuote(undefined);
+    setDirectReview(undefined);
     setError(undefined);
     void (async () => {
       try {
@@ -336,18 +342,48 @@ function SweepPanel(): ReactNode {
     });
   };
 
-  const onDirect = (): void => {
-    if (signingLocked) return;
-    sweepDirectly(false);
-  };
-
-  const onResign = (): void => {
-    if (resignNonce === undefined) return;
-    sweepDirectly(true);
+  const previewDirect = (resign: boolean): void => {
+    const id = ++quoteOperation.current;
+    const balanceId = balanceOperation.current;
+    const liveSession = captureSessionVersionGuard();
+    const current = (): boolean => id === quoteOperation.current && balanceId === balanceOperation.current && currentQuoteScope.current === quoteScope;
+    const assertCurrent = (): void => {
+      if (!current()) throw new UserFacingError({ key: 'sweep.reviewChanged' });
+      liveSession();
+      assertRouteCurrent();
+    };
+    setDirectReview(undefined);
+    setError(undefined);
+    setBusy(true);
+    void (async () => {
+      try {
+        assertCurrent();
+        const rpc = await app.getRpc(chainId);
+        assertCurrent();
+        await verified(rpc);
+        assertCurrent();
+        if (loaded === undefined || balance === undefined || rpc === undefined) throw new Error('state');
+        const dest = checkDestination(destination, target.owner, loaded);
+        const replaces = resign ? resignableLock() : undefined;
+        if (replaces === undefined) assertNoUnresolvedAttempt();
+        const terms = await reviewDirectSweep({
+          target, manifest: loaded, destination: dest, amount: balance, rpc, assertReviewCurrent: assertCurrent,
+          ...(replaces === undefined ? {} : { replaceNonce: replaces.nonce }),
+        });
+        assertCurrent();
+        setDirectReview(replaces === undefined ? { terms } : { terms, replaces });
+      } catch (e) {
+        if (current()) setError(captureUserMessage(e));
+      } finally {
+        setBusy(false);
+      }
+    })();
   };
 
   /** `resign`: sign a replacement for the direct sweep whose handoff outcome is unknown, with exactly its nonce. */
   const sweepDirectly = (resign: boolean): void => {
+    if (directReview === undefined || resign !== (directReview.replaces !== undefined)) return;
+    const { terms, replaces: reviewedLock } = directReview;
     const balanceId = balanceOperation.current;
     const quoteId = quoteOperation.current;
     void guard(async (assertCurrent) => {
@@ -369,6 +405,10 @@ function SweepPanel(): ReactNode {
       let replaces: (SweepLock & { readonly nonce: number }) | undefined;
       if (resign) replaces = resignableLock();
       else assertNoUnresolvedAttempt();
+      if (replaces?.expectedHash !== reviewedLock?.expectedHash || replaces?.nonce !== reviewedLock?.nonce) {
+        setDirectReview(undefined);
+        throw new UserFacingError({ key: 'sweep.reviewChanged' });
+      }
       // The lock is persisted before handoff; on an uncertain outcome it simply stays as begun (unknown-after-handoff).
       // A replacement takes over the recorded lock only by compare-and-swap and only with the same nonce, and the lock
       // as recorded keeps the replaced hashes.
@@ -376,7 +416,7 @@ function SweepPanel(): ReactNode {
       let res: DirectSweepResult;
       try {
         res = await directSweep({
-          target, manifest: loaded, destination: dest, amount: balance, rpc, assertReviewCurrent,
+          target, manifest: loaded, destination: dest, amount: balance, rpc, assertReviewCurrent, review: terms,
           ...(replaces === undefined ? {} : { replaceNonce: replaces.nonce }),
           onBeforeHandoff: (a) => {
             assertReviewCurrent();
@@ -385,11 +425,13 @@ function SweepPanel(): ReactNode {
           },
         });
       } catch (e) {
+        setDirectReview(undefined);
         // The transaction may be on the network with its dry run skipped: that warning applies here too (B-R6).
         if (e instanceof DirectSweepOutcomeUnknownError) setDryRunSkipped(e.simulation === 'unavailable');
         throw e;
       }
       if (handoff.lock !== undefined) resolveSweepAttempt(handoff.lock, { ...handoff.lock, status: res.attempt.status });
+      setDirectReview(undefined);
       setDryRunSkipped(res.simulation === 'unavailable');
       app.announce(latestT.current('sweep.announceBroadcast'));
       return true;
@@ -416,6 +458,31 @@ function SweepPanel(): ReactNode {
   };
 
   const pendingNote: DisplayMessage = { key: attempt?.order !== undefined ? 'sweep.note.pendingRelayed' : 'sweep.note.pendingDirect' };
+
+  const directControls = (resign: boolean): ReactNode => {
+    const terms = directReview !== undefined && resign === (directReview.replaces !== undefined) &&
+      (!resign || directReview.replaces?.expectedHash === attempt?.expectedHash) ? directReview.terms : undefined;
+    const blocked = busy || (resign ? resignNonce === undefined : signingLocked) || balance === undefined || balance === 0n;
+    const feeSymbol = findChain(chainId)?.nativeSymbol ?? '';
+    return <>
+      <button type="button" className="btn" onClick={() => { previewDirect(resign); }} disabled={blocked}>
+        {t(resign ? 'sweep.reviewReplacement' : 'sweep.reviewDirect')}
+      </button>
+      {terms !== undefined && <div className="panel" role="region" aria-label={t('sweep.reviewDirect')}>
+        <dl className="details">
+          <dt>{t('sweep.oneTimeAddress')}</dt><dd><Mono>{terms.owner}</Mono></dd>
+          <dt>{t('sweep.destination.label')}</dt><dd><Mono>{terms.destination}</Mono></dd>
+          <dt>{t('sweep.asset')}</dt><dd>{symbol} {tokenAddr !== 'native' && <Mono>{tokenAddr}</Mono>}</dd>
+          <dt>{t('sweep.feeBudget')}</dt><dd>{formatUnits(terms.feeBudget, 18)} {feeSymbol}</dd>
+        </dl>
+        <p>{t('sweep.youReceive', { amount: `${formatUnits(terms.sent, decimals)} ${symbol}` })}</p>
+        {terms.simulation === 'unavailable' && <Notice kind="warn">{t('sweep.previewDryRunUnavailable')}</Notice>}
+      </div>}
+      <button type="button" className="btn btn-primary" onClick={() => { sweepDirectly(resign); }} disabled={blocked || terms === undefined}>
+        {t(resign ? 'sweep.resign.button' : 'sweep.signDirect')}
+      </button>
+    </>;
+  };
 
   const onCheckStatus = (): void => {
     if (attempt === undefined) return;
@@ -502,7 +569,7 @@ function SweepPanel(): ReactNode {
         <fieldset>
           <legend>{t('sweep.feeLegend')}</legend>
           <div className="check">
-            <input id="m-relay" type="radio" name="mode" checked={mode === 'relayer'} onChange={() => { setMode('relayer'); }} />
+            <input id="m-relay" disabled={!relayerOk} type="radio" name="mode" checked={mode === 'relayer'} onChange={() => { setMode('relayer'); }} />
             <label htmlFor="m-relay">{t('sweep.modeRelayer')}</label>
           </div>
           <div className="check">
@@ -510,10 +577,10 @@ function SweepPanel(): ReactNode {
             <label htmlFor="m-direct">{t('sweep.modeDirect')}</label>
           </div>
         </fieldset>
+        {!relayerOk && <Notice kind="info">{t('sweep.relayerNeeds')}</Notice>}
 
         {mode === 'relayer' ? (
           <>
-            {!relayerOk && <Notice kind="info">{t('sweep.relayerNeeds')}</Notice>}
             <button type="button" className="btn" onClick={onQuote} disabled={busy || !relayerOk || balance === undefined || balance === 0n}>{t('sweep.getQuote')}</button>
             {quote !== undefined && (
               <div className="panel">
@@ -524,7 +591,7 @@ function SweepPanel(): ReactNode {
             )}
           </>
         ) : (
-          <button type="button" className="btn btn-primary" onClick={onDirect} disabled={busy || signingLocked || balance === undefined || balance === 0n}>{t('sweep.signDirect')}</button>
+          directControls(false)
         )}
       </div>
 
@@ -564,7 +631,7 @@ function SweepPanel(): ReactNode {
               <br />
               {t('sweep.resign.hint', { nonce: String(resignNonce) })}
               <br />
-              <button type="button" className="btn" onClick={onResign} disabled={busy || balance === undefined || balance === 0n}>{t('sweep.resign.button')}</button>
+              {directControls(true)}
             </>
           )}
           {checkNote !== undefined && <><br />{displayMessage(checkNote, t)}</>}
@@ -581,4 +648,4 @@ function SweepPanel(): ReactNode {
   );
 }
 
-// i18n-use: sweep.announceBroadcast sweep.announceRelayer sweep.asset sweep.attempt.executed sweep.attempt.expired sweep.attempt.expiredBody sweep.attempt.included sweep.attempt.refused sweep.attempt.refusedBody sweep.attempt.relayerHashUnverified sweep.attempt.replaced sweep.attempt.replacedBody sweep.attempt.reverted sweep.attempt.unknown sweep.attempt.unknownDirect sweep.attempt.unknownRelayed sweep.balanceOnChain sweep.balanceRead.button sweep.balanceNotRead sweep.balanceRead.noRpc sweep.balanceRead.note sweep.balanceRead.warning sweep.balanceUnknown sweep.cancelVault sweep.chain sweep.checkExplorer sweep.checkStatus sweep.choosePayment sweep.copyHash sweep.destination.label sweep.dryRunUnavailable sweep.feeLegend sweep.getQuote sweep.goToScan sweep.importQr sweep.journalBroken.body sweep.journalBroken.title sweep.keysGone sweep.modeDirect sweep.modeRelayer sweep.noManifest sweep.note.checkFailed sweep.note.lockChanged sweep.note.noRpc sweep.note.pendingDirect sweep.note.pendingRelayed sweep.note.rpcForgot sweep.oneTimeAddress sweep.payerFollow.body sweep.payerFollow.title sweep.paymentsDisabledChain sweep.pendingBlocksSigning sweep.permit.directFallback sweep.permit.withFallback sweep.relayerFee sweep.relayerNeeds sweep.reviewChanged sweep.routeChanged sweep.resign.button sweep.resign.hint sweep.resign.limit sweep.resign.nothingPending sweep.signDirect sweep.signRelayer sweep.submitted sweep.title sweep.tokenFallback sweep.tokenNotAllowed sweep.txHash sweep.vaultCancelled sweep.vaultCancelledKeys sweep.vaultChecking sweep.vaultError sweep.vaultPass.hint sweep.vaultPass.label sweep.working sweep.youReceive
+// i18n-use: sweep.reviewDirect sweep.reviewReplacement sweep.feeBudget sweep.previewDryRunUnavailable sweep.announceBroadcast sweep.announceRelayer sweep.asset sweep.attempt.executed sweep.attempt.expired sweep.attempt.expiredBody sweep.attempt.included sweep.attempt.refused sweep.attempt.refusedBody sweep.attempt.relayerHashUnverified sweep.attempt.replaced sweep.attempt.replacedBody sweep.attempt.reverted sweep.attempt.unknown sweep.attempt.unknownDirect sweep.attempt.unknownRelayed sweep.balanceOnChain sweep.balanceRead.button sweep.balanceNotRead sweep.balanceRead.noRpc sweep.balanceRead.note sweep.balanceRead.warning sweep.balanceUnknown sweep.cancelVault sweep.chain sweep.checkExplorer sweep.checkStatus sweep.choosePayment sweep.copyHash sweep.destination.label sweep.dryRunUnavailable sweep.feeLegend sweep.getQuote sweep.goToScan sweep.importQr sweep.journalBroken.body sweep.journalBroken.title sweep.keysGone sweep.modeDirect sweep.modeRelayer sweep.noManifest sweep.note.checkFailed sweep.note.lockChanged sweep.note.noRpc sweep.note.pendingDirect sweep.note.pendingRelayed sweep.note.rpcForgot sweep.oneTimeAddress sweep.payerFollow.body sweep.payerFollow.title sweep.paymentsDisabledChain sweep.pendingBlocksSigning sweep.permit.directFallback sweep.permit.withFallback sweep.relayerFee sweep.relayerNeeds sweep.reviewChanged sweep.routeChanged sweep.resign.button sweep.resign.hint sweep.resign.limit sweep.resign.nothingPending sweep.signDirect sweep.signRelayer sweep.submitted sweep.title sweep.tokenFallback sweep.tokenNotAllowed sweep.txHash sweep.vaultCancelled sweep.vaultCancelledKeys sweep.vaultChecking sweep.vaultError sweep.vaultPass.hint sweep.vaultPass.label sweep.working sweep.youReceive

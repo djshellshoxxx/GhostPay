@@ -5,11 +5,9 @@ A *sweep* moves the funds of a one-time address to a wallet you choose (a direct
 > **Read this first.**
 >
 > 1. **The payer can follow the stealth address to your destination.** The payer knows the one-time address they paid, and anyone can watch it on a block explorer. When you sweep to wallet `W`, the chain publicly shows `payer -> one-time address -> W`. If `W` is a wallet you use for other things, the payer (and everyone else) learns it is yours, and can see its balance and other incoming payments.
-> 2. **Use a fresh destination for every sweep** (for example a new address from a hardware wallet or an HD account you do not use for anything else). The app recommends a fresh destination, but it does not check whether an address has been used. Do not reuse one destination for several customers.
+> 2. **Use a fresh destination for every sweep** (for example a new address from a hardware wallet or an HD account you do not use for anything else). GhostPay warns when the destination matches another one-time address in your scan or a sweep destination remembered by this browser. This local check cannot establish whether an address is fresh. Do not reuse one destination for several customers.
 > 3. **The relayer sees what you are doing.** A relayer learns the one-time address, destination, token, amount, fee, your IP address (the reference relayer hashes it for rate limits, but the operator and any proxy in front of it can see it) and the timing, and can refuse or delay your request. It cannot change the destination or amount you signed.
 > 4. **Gasless is not unlinkable.** Using a relayer removes the need to put gas into the one-time address; it does not remove the on-chain link from one-time address to destination. Funding the one-time address with gas from your own wallet is worse: it links that wallet to the address directly.
-
-The app's current Sweep page shows a generic linkability notice; the sharper payer-follows-funds wording and a warning for destinations that already have history are being added (audit D1, in progress).
 
 ## Steps
 
@@ -18,7 +16,7 @@ The app's current Sweep page shows a generic linkability notice; the sharper pay
 3. Enter your **destination**. Use a fresh address you control.
 4. Choose how the network fee is paid:
    - **Through the relayer:** needs a relayer URL in Settings and a token that supports ERC-2612 `permit` (for example USDC). The relayer fee is deducted from the swept amount. You get a quote showing the fee and what you receive, then sign.
-   - **Directly:** the one-time address must already hold native coin for gas. The app signs an ordinary transfer with the stealth key and broadcasts it through your RPC. For native coin it sends the balance minus the worst-case network fee: the gas estimated for your destination at twice the current gas price and, on OP Stack chains (Base, OP), twice the L1 data fee and operator fee quoted by the chain's fee oracle. The unused part of that reserve stays at the one-time address.
+   - **Directly:** the one-time address must already hold native coin for gas. Choose **Review direct sweep** to check the source, destination, asset, network fee budget in native coin and the exact amount to receive. This requests fee estimates and a dry run from your Settings RPC. Choose **Sign and broadcast directly** to confirm. A change in the transaction, fee reserve or dry-run result requires a fresh review. The same review is required before signing a same-nonce replacement. For native coin it sends the balance minus the worst-case network fee: the gas estimated for your destination at twice the current gas price and, on OP Stack chains (Base, OP), twice the L1 data fee and operator fee quoted by the chain's fee oracle. The unused part of that reserve stays at the one-time address.
 5. The stealth key is derived in memory only for the signature and never displayed or stored. Because it is signed inside the page, there is no wallet confirmation on this path: **a compromised page could sweep to an attacker.** Read the destination on screen before you sign.
 6. Keep the transaction hash and check it on a block explorer you trust.
 

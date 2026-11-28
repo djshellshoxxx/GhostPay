@@ -72,9 +72,13 @@ function mount(rpcReady: Promise<void> = Promise.resolve()) {
 
 async function ready(): Promise<void> {
   fireEvent.click(screen.getByRole('button', { name: READ }));
+  vi.spyOn(sweepLib, 'reviewDirectSweep').mockImplementation(({ target, destination, amount }) => Promise.resolve<sweepLib.DirectSweepReview>({
+    owner: target.owner, destination, sent: amount, feeBudget: 1n, digest: HASH, simulation: 'ok',
+  }));
   await screen.findByText('5 USDC');
   fireEvent.change(screen.getByLabelText(/^Destination address/), { target: { value: DESTINATION } });
   fireEvent.click(screen.getByLabelText(/^Directly/));
+  fireEvent.click(screen.getByRole('button', { name: 'Review direct sweep' }));
   await waitFor(() => { expect(screen.getByRole<HTMLButtonElement>('button', { name: DIRECT }).disabled).toBe(false); });
 }
 
