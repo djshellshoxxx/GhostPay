@@ -21,7 +21,7 @@ import { recordFromObservedMatch } from '../lib/reconciliationLedger';
 import { createCurrentReconciliationVault } from '../lib/reconciliationVault';
 import { randomDelayMs } from '../lib/jitter';
 import type { TagPayload } from '../lib/tags';
-import { useApp } from '../state';
+import { useApp, type ScanOwner } from '../state';
 import { SOURCE_TRANSLATOR, useI18nOptional } from '../i18n/context';
 import type { MessageKey } from '../i18n/catalog';
 import type { MessageValues } from '../i18n/message';
@@ -84,7 +84,10 @@ export function Scan(): ReactNode {
   const latestT = useLatestScanT(t);
   const app = useApp();
   const services = useServices();
-  const [chainId, setChainId] = useState<number>(services.chains[0]?.chainId ?? 84532);
+  const [chainId, setChainId] = useState<number>(() => {
+    if (app.scanOwner !== undefined && app.scanOwner.session === app.session) return app.scanOwner.chainId;
+    return services.chains[0]?.chainId ?? 84532;
+  });
   const [start, setStart] = useState('');
   const [resume, setResume] = useState(true);
   const [deepScan, setDeepScan] = useState(false);
@@ -95,7 +98,9 @@ export function Scan(): ReactNode {
   const [privacyNote, setPrivacyNote] = useState<AnonymitySet | undefined>(undefined);
   const [routerOnlyBlocks, setRouterOnlyBlocks] = useState<readonly bigint[] | undefined>(undefined);
   const [lagNote, setLagNote] = useState<ScanText | undefined>(undefined);
-  const [scanOwner, setScanOwner] = useState<{ readonly exportRpc: ExportRpc; readonly chainId: number; readonly keyId: string; readonly signerPublicKey: string } | undefined>(undefined);
+  const [localOwner, setLocalOwner] = useState<ScanOwner>();
+  const scanOwner = app.setScanOwner === undefined ? localOwner : app.scanOwner;
+  const setScanOwner = app.setScanOwner ?? setLocalOwner;
   const [lateReview, setLateReview] = useState<{
     readonly matches: readonly ScanMatch[];
     readonly verify: (match: ScanMatch) => Promise<boolean>;
@@ -111,7 +116,7 @@ export function Scan(): ReactNode {
   const scanLanes = loadScanLanes(browserStorage());
   const keyId = app.session === undefined ? undefined : checkpointKeyId(app.session.spendingPublicKey, app.session.viewingPublicKey);
   const checkpoint = keyId === undefined ? undefined : services.checkpoints.load(chainId, keyId);
-  const ownsCurrentScope = scanOwner !== undefined && keyId !== undefined && scanOwner.chainId === chainId && scanOwner.keyId === keyId && scanOwner.signerPublicKey === app.session?.signerPublicKey;
+  const ownsCurrentScope = scanOwner !== undefined && scanOwner.session === app.session && keyId !== undefined && scanOwner.chainId === chainId && scanOwner.keyId === keyId && scanOwner.signerPublicKey === app.session?.signerPublicKey;
   const autoArmed = autoRescan && !running && error === undefined && done !== undefined && ownsCurrentScope && checkpoint !== undefined;
 
   useEffect(() => {
@@ -143,7 +148,7 @@ export function Scan(): ReactNode {
     setLateReview(undefined);
     setProgress(undefined);
     setDone(undefined);
-  }), [app.setMatches]);
+  }), [app.setMatches, setScanOwner]);
 
   useEffect(() => {
     const scope = startingScope.current;
@@ -153,13 +158,13 @@ export function Scan(): ReactNode {
   }, [app.session?.signerPublicKey, chainId, keyId]);
 
   useEffect(() => {
-    if (scanOwner !== undefined && (scanOwner.chainId !== chainId || scanOwner.keyId !== keyId || scanOwner.signerPublicKey !== app.session?.signerPublicKey)) {
+    if (scanOwner !== undefined && (scanOwner.session !== app.session || scanOwner.chainId !== chainId || scanOwner.keyId !== keyId || scanOwner.signerPublicKey !== app.session?.signerPublicKey)) {
       abort.current?.abort();
       app.setMatches([]);
       setScanOwner(undefined);
       setLateReview(undefined);
     }
-  }, [app.session?.signerPublicKey, app.setMatches, chainId, keyId, scanOwner]);
+  }, [app.session, app.setMatches, chainId, keyId, scanOwner, setScanOwner]);
 
   if (app.session === undefined) {
     return (
@@ -171,7 +176,7 @@ export function Scan(): ReactNode {
     );
   }
 
-  const scanMatchesCurrentScope = scanOwner !== undefined && scanOwner.chainId === chainId && scanOwner.keyId === keyId && scanOwner.signerPublicKey === app.session.signerPublicKey;
+  const scanMatchesCurrentScope = scanOwner !== undefined && scanOwner.session === app.session && scanOwner.chainId === chainId && scanOwner.keyId === keyId && scanOwner.signerPublicKey === app.session.signerPublicKey;
   const scopedMatches = scanMatchesCurrentScope ? app.matches.filter((match) => match.chainId === chainId) : [];
   const routerOnlyNote = routerOnlyBlocks === undefined ? undefined : describeRouterOnly(routerOnlyBlocks, t);
 
@@ -182,7 +187,14 @@ export function Scan(): ReactNode {
     // An automatic re-check only continues a clean scan of this exact scope from its checkpoint, and keeps its results.
     const append = opts?.append === true;
     if (append && (!scanMatchesCurrentScope || checkpoint === undefined)) return;
-    const seed: readonly ScanMatch[] = append ? scopedMatches : [];
+    // A manual checkpoint resume is a continuation too. A deliberate rescan rebuilds from chain evidence.
+    let keep = (append || resume) && checkpoint !== undefined && scanMatchesCurrentScope;
+    if (keep) {
+      try { scanOwner?.exportRpc.assertCurrent?.(); } catch { keep = false; }
+    }
+    // Entries inside the replayed range may have disappeared without changing the preceding anchor.
+    // Rebuild those entries from this run, including when a pending payment becomes final.
+    const seed = keep && checkpoint !== undefined ? scopedMatches.filter((match) => match.announcement.blockNumber < checkpoint.nextBlock) : [];
     const guardSession = captureSessionGuard();
     const scope = { chainId, keyId, signerPublicKey: sessionAtStart.signerPublicKey };
     const ctl = new AbortController();
@@ -195,10 +207,8 @@ export function Scan(): ReactNode {
     setPrivacyNote(undefined);
     setRouterOnlyBlocks(undefined);
     setLagNote(undefined);
-    if (!append) {
-      setScanOwner(undefined);
-      app.setMatches([]);
-    }
+    if (!keep) setScanOwner(undefined);
+    app.setMatches(seed);
     const scopeKeysAreCurrent = (): boolean => {
       try { guardSession(); return true; } catch { return false; }
     };
@@ -257,12 +267,14 @@ export function Scan(): ReactNode {
         if (rpc2 !== undefined) rpc2 = guardScanClient(rpc2, assertScanPath);
         assertScopeCurrent();
         let cursor = resume || append ? checkpoint : undefined;
+        let recoveryStart = checkpoint?.recoveryStart;
         if (cursor === undefined) {
           if (!/^\d{1,15}$/.test(start.trim())) {
             setError(msg('scan.error.startBlock'));
             return;
           }
           cursor = { nextBlock: BigInt(start.trim()) };
+          if (recoveryStart === undefined || cursor.nextBlock < recoveryStart) recoveryStart = cursor.nextBlock;
         }
         const checked = await verifyManifestState(manifest, rpc);
         assertScopeCurrent();
@@ -281,13 +293,14 @@ export function Scan(): ReactNode {
               (plan.endpoint === undefined && loadSettings().rpcUrls[String(chainId)] !== selectedRpcUrl)) {
             throw new UserFacingError({ key: 'error.paymentKeyExport.noRpc' });
           }
+          assertScanPath();
         };
         const exportRpc: ExportRpc = {
           chainId: rpc.chainId,
           request: (method, params) => rpc.request(method, params),
           assertCurrent: assertScanRoute,
         };
-        setScanOwner({ ...scope, exportRpc });
+        setScanOwner({ ...scope, session: sessionAtStart, exportRpc });
         let found: ScanMatch[] = [...seed];
         let quarantined: ScanMatch[] = [];
         // Only a copy of the viewing key leaves the session, and runScan wipes it; spending and signing keys stay boxed.
@@ -326,6 +339,7 @@ export function Scan(): ReactNode {
           // The checkpoint this render showed and `cursor` was chosen against: a change by another tab since then is
           // foreign to this run, even if it happened during the awaits above.
           checkpointSeen: checkpoint ?? null,
+          ...(recoveryStart === undefined ? {} : { recoveryStart }),
           onProgress: (nextProgress) => {
             if (!scopeIsCurrent()) return;
             caughtUp = nextProgress.caughtUp;
@@ -490,6 +504,15 @@ export function Scan(): ReactNode {
           <div className="check">
             <input id="resume" type="checkbox" checked={resume} onChange={(e) => { setResume(e.target.checked); }} />
             <label htmlFor="resume">{t('scan.resume')}</label>
+          </div>
+        )}
+        {checkpoint !== undefined && (
+          <div>
+            <button type="button" className="btn" disabled={running} onClick={() => {
+              setResume(false);
+              setStart(checkpoint.recoveryStart?.toString() ?? '');
+            }}>{t('scan.recover')}</button>
+            <p className="hint">{t('scan.recover.hint')}</p>
           </div>
         )}
         <div className="check">

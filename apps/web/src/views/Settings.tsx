@@ -1,4 +1,5 @@
-import { useEffect, useId, useMemo, useRef, useState, type FormEvent, type ReactNode } from 'react';
+import { useCallback, useEffect, useId, useImperativeHandle, useLayoutEffect, useMemo, useRef, useState, type Ref, type ReactNode } from 'react';
+import { SettingsLeaveGuard, useSettingsValidation } from './SettingsDraft';
 import { CameraImporter } from '../components/CameraImporter';
 import { QrFrame } from '../components/QrFrame';
 import {
@@ -26,8 +27,8 @@ function followMap(typed: Readonly<Record<string, string>>, before: Readonly<Rec
   return out;
 }
 
-function rpcDraftChanged(draft: Readonly<Record<string, string>>, saved: Readonly<Record<string, string>>): boolean {
-  return Object.keys({ ...saved, ...draft }).some((chain) => (draft[chain] ?? '') !== (saved[chain] ?? ''));
+function mapChanged(draft: Readonly<Record<string, string>>, saved: Readonly<Record<string, string>>): boolean {
+  return Object.keys({ ...draft, ...saved }).some((key) => (draft[key] ?? '') !== (saved[key] ?? ''));
 }
 
 export function Settings(): ReactNode {
@@ -47,30 +48,21 @@ export function Settings(): ReactNode {
   const [clipboardDelaySec, setClipboardDelaySec] = useState(s.invoiceLinkClipboardDelaySec);
   const [autoClear, setAutoClear] = useState(s.autoClearFragment);
   const [pins, setPins] = useState(s.pinnedSigners.join('\n'));
-  const [message, setMessage] = useState<{ kind: 'ok' | 'error' | 'warn'; text: DisplayMessage; field?: string } | undefined>(undefined);
+  const [message, setMessage] = useState<{ kind: 'ok' | 'error' | 'warn'; text: DisplayMessage } | undefined>(undefined);
   const [checks, setChecks] = useState<Record<string, DisplayMessage>>({});
-  const form = useRef<HTMLFormElement>(null);
-  const errorId = useId();
-  const testRevision = useRef(new Map<number, number>());
+  const testRevision = useRef(new Map<string, number>());
   const mounted = useRef(true);
+  const validation = useSettingsValidation();
+  const [saveRefused, setSaveRefused] = useState(false);
+  // i18n-use: settings.unsaved settings.draft.clean settings.rpc.url settings.rpc.secondary.label settings.rpc.test settings.rpc.testSecondary settings.announce settings.storageUnavailable
+  const dirty = saveRefused || mapChanged(rpc, s.rpcUrls) || mapChanged(rpc2, s.rpcUrlsSecondary)
+    || relayer !== s.relayerUrl || minSec !== s.delayMinSec || maxSec !== s.delayMaxSec || lock !== String(s.lockTimeoutMin)
+    || theme !== s.theme || clipboardDelaySec !== s.invoiceLinkClipboardDelaySec || autoClear !== s.autoClearFragment
+    || pins !== s.pinnedSigners.join('\n');
+  const [scanDirty, setScanDirty] = useState(false);
+  const scanSave = useRef<() => boolean>(null);
 
   useEffect(() => { mounted.current = true; return () => { mounted.current = false; }; }, []);
-
-  const dirty = rpcDraftChanged(rpc, s.rpcUrls) || rpcDraftChanged(rpc2, s.rpcUrlsSecondary) ||
-    relayer !== s.relayerUrl || minSec !== s.delayMinSec || maxSec !== s.delayMaxSec ||
-    lock !== String(s.lockTimeoutMin) || theme !== s.theme || autoClear !== s.autoClearFragment ||
-    clipboardDelaySec !== s.invoiceLinkClipboardDelaySec || pins !== s.pinnedSigners.join('\n');
-
-  useEffect(() => {
-    if (message?.field === undefined) return;
-    const control = form.current?.elements.namedItem(message.field);
-    if (control instanceof HTMLElement) control.focus();
-  }, [message]);
-
-  const validationProps = (name: string, hint?: string) => {
-    const invalid = message?.field === name;
-    return { name, 'aria-invalid': invalid || undefined, 'aria-describedby': invalid ? [hint, errorId].filter(Boolean).join(' ') : hint };
-  };
 
   // The saved values this form last followed. Another tab's save is shown wherever it changed one, so that saving this
   // form cannot put the old value back; fields it did not change keep what was typed.
@@ -98,85 +90,88 @@ export function Settings(): ReactNode {
     if (changed) setMessage({ kind: 'warn', text: { key: 'settings.changedElsewhere' } });
   }, [s]);
 
-  const invalidateTest = (chainId: number): void => {
-    testRevision.current.set(chainId, (testRevision.current.get(chainId) ?? 0) + 1);
-    setChecks((current) => { const next = { ...current }; delete next[chainId]; return next; });
+  const invalidateTest = (key: string): void => {
+    testRevision.current.set(key, (testRevision.current.get(key) ?? 0) + 1);
+    setChecks((current) => { const next = { ...current }; delete next[key]; return next; });
   };
 
-  // A saved-settings change invalidates pending RPC tests (the exchange section resets its own review and export).
-  useEffect(() => {
-    for (const [chainId, revision] of testRevision.current) testRevision.current.set(chainId, revision + 1);
-    setChecks({});
-  }, [s]);
-
-  const onSave = (e: FormEvent): void => {
-    e.preventDefault();
-    let field: string | undefined;
-    const checkedUrls = (draft: Readonly<Record<string, string>>, prefix: string): Record<string, string> => {
-      const urls: Record<string, string> = {};
-      for (const [chain, value] of Object.entries(draft)) {
-        if (value.trim() === '') continue;
-        field = `${prefix}-${chain}`;
-        urls[chain] = checkRpcUrl(value);
+  // Imports and cross-tab saves can change an endpoint without an input change event.
+  const lastUrls = useRef({ primary: rpc, secondary: rpc2 });
+  useLayoutEffect(() => {
+    for (const [kind, urls] of [['primary', rpc], ['secondary', rpc2]] as const) {
+      const before = lastUrls.current[kind];
+      for (const chainId of Object.keys({ ...before, ...urls })) {
+        if ((before[chainId] ?? '') !== (urls[chainId] ?? '')) invalidateTest(`${kind}-${chainId}`);
       }
-      return urls;
-    };
+    }
+    lastUrls.current = { primary: rpc, secondary: rpc2 };
+  }, [rpc, rpc2]);
+
+  const save = (): boolean => {
+    let field = '';
+    validation.clear();
+    setMessage(undefined);
     try {
-      const rpcUrls = checkedUrls(rpc, 'rpc');
-      const rpcUrlsSecondary = checkedUrls(rpc2, 'secondary');
+      const readUrls = (values: Record<string, string>, kind: string): Record<string, string> => {
+        const urls: Record<string, string> = {};
+        for (const [chainId, url] of Object.entries(values)) {
+          if (url.trim() === '') continue;
+          field = `${kind}-${chainId}`;
+          urls[chainId] = checkRpcUrl(url);
+        }
+        return urls;
+      };
+      const rpcUrls = readUrls(rpc, 'primary');
+      const rpcUrlsSecondary = readUrls(rpc2, 'secondary');
       field = 'relayer';
       const relayerUrl = checkRelayerUrl(relayer);
-      field = 'delay-min';
-      checkDelayRange(minSec, minSec);
-      field = 'delay-max';
+      field = !Number.isInteger(minSec) || minSec < 0 || minSec > 86400 ? 'minSec' : 'maxSec';
       checkDelayRange(minSec, maxSec);
       field = 'lock';
       const lockTimeoutMin = Number(lock);
-      if (!Number.isInteger(lockTimeoutMin) || lockTimeoutMin < 1 || lockTimeoutMin > 240) {
-        throw new UserFacingError({ key: 'settings.error.lock' });
-      }
+      if (!Number.isInteger(lockTimeoutMin) || lockTimeoutMin < 1 || lockTimeoutMin > 240) throw new UserFacingError({ key: 'settings.error.lock' });
+      const pinnedSigners = pins.split('\n').map((line) => line.trim().toLowerCase()).filter(Boolean);
       field = 'pins';
-      const pinnedSigners = pins
-        .split('\n')
-        .map((l) => l.trim().toLowerCase())
-        .filter((l) => l !== '');
-      if (pinnedSigners.some((p) => !/^(?:02|03)[0-9a-f]{64}$/.test(p))) {
-        throw new UserFacingError({ key: 'settings.error.pins' });
-      }
+      if (pinnedSigners.some((pin) => !/^(?:02|03)[0-9a-f]{64}$/.test(pin))) throw new UserFacingError({ key: 'settings.error.pins' });
+      field = '';
       const next: SettingsData = {
         rpcUrls, rpcUrlsSecondary, relayerUrl, delayMinSec: minSec, delayMaxSec: maxSec,
         lockTimeoutMin, theme, autoClearFragment: autoClear, invoiceLinkClipboardDelaySec: clipboardDelaySec, pinnedSigners,
       };
-      field = undefined;
       const saved = app.updateSettings(next);
       followed.current = next;
-      // Show the canonical values that were actually applied, including normalized URLs.
       setRpc(rpcUrls);
       setRpc2(rpcUrlsSecondary);
       setRelayer(relayerUrl);
       setLock(String(lockTimeoutMin));
       setPins(pinnedSigners.join('\n'));
+      setSaveRefused(!saved);
       setMessage(saved ? { kind: 'ok', text: { key: 'settings.saved' } } : { kind: 'warn', text: { key: 'settings.storageUnavailable' } });
-      app.announce(t('settings.announce'));
+      if (saved) app.announce(t('settings.announce'));
+      return saved;
     } catch (err) {
-      setMessage({ kind: 'error', text: captureUserMessage(err), ...(field === undefined ? {} : { field }) });
+      const text = captureUserMessage(err);
+      if (field && validation.form.current?.elements.namedItem(field)) validation.reject(field, text);
+      else setMessage({ kind: 'error', text });
+      return false;
     }
   };
 
-  const onTest = (chainId: number): void => {
+  const onTest = (chainId: number, kind: 'primary' | 'secondary'): void => {
     const chain = services.chains.find((c) => c.chainId === chainId);
-    const url = rpc[String(chainId)] ?? '';
     if (chain === undefined) return;
-    const revision = (testRevision.current.get(chainId) ?? 0) + 1;
-    testRevision.current.set(chainId, revision);
-    const current = (): boolean => mounted.current && testRevision.current.get(chainId) === revision;
-    setChecks((c) => ({ ...c, [chainId]: { key: 'settings.rpc.checking' } }));
+    const key = `${kind}-${chainId}`;
+    const url = (kind === 'primary' ? rpc : rpc2)[chainId] ?? '';
+    const revision = (testRevision.current.get(key) ?? 0) + 1;
+    testRevision.current.set(key, revision);
+    const current = (): boolean => mounted.current && testRevision.current.get(key) === revision;
+    setChecks((c) => ({ ...c, [key]: { key: 'settings.rpc.checking' } }));
     void (async () => {
       try {
         await services.createRpc(chain, checkRpcUrl(url));
-        if (current()) setChecks((c) => ({ ...c, [chainId]: { key: 'settings.rpc.connected' } }));
+        if (current()) setChecks((c) => ({ ...c, [key]: { key: 'settings.rpc.connected' } }));
       } catch (err) {
-        if (current()) setChecks((c) => ({ ...c, [chainId]: err instanceof Error && err.name === 'ChainAdapterError' ? { key: 'settings.rpc.failed' } : captureUserMessage(err) }));
+        if (current()) setChecks((c) => ({ ...c, [key]: err instanceof Error && err.name === 'ChainAdapterError' ? { key: 'settings.rpc.failed' } : captureUserMessage(err) }));
       }
     })();
   };
@@ -194,47 +189,60 @@ export function Settings(): ReactNode {
       {/* #287 item 4: device-local, default-off preferences for closing on-screen previews; they save immediately. */}
       <MetadataRetentionControls manual={false} />
       <MetadataRetentionControls scope="proof" manual={false} />
-      <form ref={form} onSubmit={onSave} className="stack" noValidate onChange={(event) => {
-        const target = event.target;
-        if (message?.field === undefined || !(target instanceof HTMLInputElement || target instanceof HTMLTextAreaElement)) return;
-        if (target.name === message.field || (message.field.startsWith('delay-') && target.name.startsWith('delay-'))) setMessage(undefined);
-      }}>
+      <form ref={validation.form} onSubmit={(e) => { e.preventDefault(); save(); }}
+        onChange={() => { validation.clear(); setMessage((prior) => prior?.kind === 'ok' ? prior : undefined); }} className="stack" noValidate>
+        <p className="hint" role="status">{t(dirty ? 'settings.unsaved' : 'settings.draft.clean')}</p>
         <fieldset>
           <legend>{t('settings.rpc.legend')}</legend>
           <p className="hint">{t('settings.rpc.hint')}</p>
           {services.chains.map((c) => (
             <div key={c.chainId} className="rpc-row">
-              <Field label={t('settings.rpc.url', { chain: c.name })} help={{ label: t('help.about', { control: t('settings.rpc.url', { chain: c.name }) }), text: t('help.rpc') }}>
-                {(id, describedBy) => <input id={id} {...validationProps(`rpc-${String(c.chainId)}`, describedBy)} type="url" dir="ltr" spellCheck={false} value={rpc[String(c.chainId)] ?? ''} onChange={(e) => { invalidateTest(c.chainId); setRpc({ ...rpc, [String(c.chainId)]: e.target.value }); }} />}
-              </Field>
-              <Field label={t('settings.rpc.secondary.label', { chain: c.name })} hint={t('settings.rpc.secondary.hint')}>
-                {(id, d) => <input id={id} {...validationProps(`secondary-${String(c.chainId)}`, d)} type="url" spellCheck={false} value={rpc2[String(c.chainId)] ?? ''} onChange={(e) => { setRpc2({ ...rpc2, [String(c.chainId)]: e.target.value }); }} />}
-              </Field>
-              <div className="rpc-test-row">
-                <button type="button" className="btn" onClick={() => { onTest(c.chainId); }}>{t('settings.rpc.test', { chain: c.name })}</button>
-                <p role="status" className="hint">{displayMessage(checks[c.chainId] ?? '', t)}</p>
-              </div>
+              {(['primary', 'secondary'] as const).map((kind) => {
+                const primary = kind === 'primary';
+                const key = `${kind}-${c.chainId}`;
+                const label = t(primary ? 'settings.rpc.url' : 'settings.rpc.secondary.label', { chain: c.name });
+                return (
+                  <Field key={kind} label={label} error={validation.fieldError(key)} {...(primary
+                    ? { help: { label: t('help.about', { control: label }), text: t('help.rpc') } }
+                    : { hint: t('settings.rpc.secondary.hint') })}>
+                    {(id, d) => <input id={id} {...validation.control(key)} aria-describedby={d} type="url" dir="ltr" spellCheck={false}
+                      value={(primary ? rpc : rpc2)[c.chainId] ?? ''} onChange={(e) => {
+                        const value = e.target.value;
+                        (primary ? setRpc : setRpc2)((urls) => ({ ...urls, [c.chainId]: value }));
+                      }} />}
+                  </Field>
+                );
+              })}
+              {(['primary', 'secondary'] as const).map((kind) => {
+                const label = t(kind === 'primary' ? 'settings.rpc.test' : 'settings.rpc.testSecondary', { chain: c.name });
+                return (
+                  <div key={kind} className="rpc-test-row">
+                    <button type="button" className="btn" onClick={() => onTest(c.chainId, kind)}>{label}</button>
+                    <p role="status" aria-label={label} className="hint">{displayMessage(checks[`${kind}-${c.chainId}`] ?? '', t)}</p>
+                  </div>
+                );
+              })}
             </div>
           ))}
         </fieldset>
         <fieldset>
           <legend>{t('settings.relayer.legend')}</legend>
-          <Field label={t('settings.relayer.label')} hint={t('settings.relayer.hint')}>
-            {(id, d) => <input id={id} {...validationProps('relayer', d)} type="url" spellCheck={false} value={relayer} onChange={(e) => { setRelayer(e.target.value); }} />}
+          <Field error={validation.fieldError('relayer')} label={t('settings.relayer.label')} hint={t('settings.relayer.hint')}>
+            {(id, d) => <input id={id} {...validation.control('relayer')} aria-describedby={d} type="url" spellCheck={false} value={relayer} onChange={(e) => { setRelayer(e.target.value); }} />}
           </Field>
         </fieldset>
         <fieldset>
           <legend>{t('settings.delay.legend')}</legend>
-          <Field label={t('settings.delay.min')}>{(id) => <input id={id} {...validationProps('delay-min')} type="number" min={0} value={minSec} onChange={(e) => { setMinSec(Number(e.target.value)); }} />}</Field>
-          <Field label={t('settings.delay.max')}>{(id) => <input id={id} {...validationProps('delay-max')} type="number" min={0} value={maxSec} onChange={(e) => { setMaxSec(Number(e.target.value)); }} />}</Field>
+          <Field error={validation.fieldError('minSec')} label={t('settings.delay.min')}>{(id, d) => <input id={id} {...validation.control('minSec')} aria-describedby={d} type="number" min={0} value={minSec} onChange={(e) => { setMinSec(Number(e.target.value)); }} />}</Field>
+          <Field error={validation.fieldError('maxSec')} label={t('settings.delay.max')}>{(id, d) => <input id={id} {...validation.control('maxSec')} aria-describedby={d} type="number" min={0} value={maxSec} onChange={(e) => { setMaxSec(Number(e.target.value)); }} />}</Field>
           <p className="hint">{t('settings.delay.range', { min: minSec, max: maxSec })}</p>
         </fieldset>
         <fieldset>
           <legend>{t('settings.safety.legend')}</legend>
-          <Field label={t('settings.lock.idleLabel')} hint={t('settings.lock.keysHint')}>
-            {(id, d) => <input id={id} {...validationProps('lock', d)} type="number" min={1} max={240} value={lock} onChange={(e) => { setLock(e.target.value); }} />}
+          <Field error={validation.fieldError('lock')} label={t('settings.lock.idleLabel')} hint={t('settings.lock.keysHint')}>
+            {(id, d) => <input id={id} {...validation.control('lock')} aria-describedby={d} type="number" min={1} max={240} value={lock} onChange={(e) => { setLock(e.target.value); }} />}
           </Field>
-          {lock !== '' && <p className="hint">{t('settings.lock.summary', { minutes: Number(lock) })}</p>}
+          <p className="hint">{t('settings.lock.summary', { minutes: lock })}</p>
           <Field label={t('settings.theme.label')}>
             {(id) => (
               <select id={id} value={theme} onChange={(e) => { setTheme(e.target.value as SettingsData['theme']); }}>
@@ -259,19 +267,19 @@ export function Settings(): ReactNode {
               </select>
             )}
           </Field>
-          <Field label={t('settings.pins.label')} hint={t('settings.pins.hint')}>
-            {(id, d) => <textarea id={id} {...validationProps('pins', d)} rows={3} spellCheck={false} value={pins} onChange={(e) => { setPins(e.target.value); }} />}
+          <Field error={validation.fieldError('pins')} label={t('settings.pins.label')} hint={t('settings.pins.hint')}>
+            {(id, d) => <textarea id={id} {...validation.control('pins')} aria-describedby={d} rows={3} spellCheck={false} value={pins} onChange={(e) => { setPins(e.target.value); }} />}
           </Field>
           <p className="hint">{t('settings.pins.count', { count: pins.split('\n').filter((line) => line.trim() !== '').length })}</p>
         </fieldset>
         <button type="submit" className="btn btn-primary">{t('settings.save')}</button>
-        {dirty && <p role="status">{t('settings.unsaved')}</p>}
-        {message !== undefined && (message.kind !== 'ok' || !dirty) && (
-          <Notice kind={message.kind}><span id={message.field === undefined ? undefined : errorId}>{displayMessage(message.text, t)}</span></Notice>
-        )}
+        {message !== undefined && (message.kind !== 'ok' || !dirty) && <Notice kind={message.kind}>{displayMessage(message.text, t)}</Notice>}
       </form>
-      <ScanPrivacySection />
-      <SettingsExchangeSection onApplied={(next, applied) => {
+      <ScanPrivacySection saveRef={scanSave} onDirty={setScanDirty} />
+      <SettingsLeaveGuard dirty={dirty || scanDirty} save={() => (!dirty || save()) && (!scanDirty || scanSave.current?.() === true)} />
+      <SettingsExchangeSection onApplied={(next, applied, saved) => {
+        validation.clear();
+        setSaveRefused(!saved);
         // Only the form fields of applied sections follow the import; other unsaved edits stay as typed.
         followed.current = next;
         if (applied.preferences === true) { setMinSec(next.delayMinSec); setMaxSec(next.delayMaxSec); setLock(String(next.lockTimeoutMin)); setTheme(next.theme); setAutoClear(next.autoClearFragment); }
@@ -303,7 +311,7 @@ const fingerprint = (key: string): string => shortHex(key, 10, 8);
  * confirmation for relayer and signer changes, then one validated save. Scanning alone never applies anything, and
  * no imported endpoint is contacted while reviewing.
  */
-function SettingsExchangeSection({ onApplied }: { readonly onApplied: (next: SettingsData, applied: SettingsExchangeSelection) => void }): ReactNode {
+function SettingsExchangeSection({ onApplied }: { readonly onApplied: (next: SettingsData, applied: SettingsExchangeSelection, saved: boolean) => void }): ReactNode {
   const app = useApp();
   const services = useServices();
   const i18n = useI18nOptional();
@@ -363,7 +371,7 @@ function SettingsExchangeSection({ onApplied }: { readonly onApplied: (next: Set
       setMessage({ kind: 'error', text: err instanceof UserFacingError ? captureUserMessage(err) : { key: 'settings.exchange.applyFailed' } });
       return;
     }
-    onApplied(next, selection);
+    onApplied(next, selection, saved);
     setPreview(undefined); setConfirming(false);
     setMessage(saved ? { kind: 'ok', text: { key: 'settings.saved' } } : { kind: 'warn', text: { key: 'settings.storageUnavailable' } });
   };
@@ -497,68 +505,178 @@ function SettingsExchangeSection({ onApplied }: { readonly onApplied: (next: Set
   );
 }
 
-/** The stored text of both scan option records, to notice that another tab saved since this form was filled. */
-function scanOptionsText(): string {
+/** Compare both raw storage records before writing, including when the storage event is still queued. */
+function storedScanRecords() {
   const read = (key: string): string | null | undefined => { try { return browserStorage()?.getItem(key); } catch { return undefined; } };
-  return JSON.stringify([read(SCAN_PRIVACY_KEY), read(SCAN_LANES_KEY)]);
+  return { privacy: read(SCAN_PRIVACY_KEY), lanes: read(SCAN_LANES_KEY) };
+}
+
+function followValue<T>(draft: T, before: T, saved: T): T {
+  return Object.is(before, saved) ? draft : saved;
+}
+
+function changedFields<T extends object>(draft: T, saved: T, except: readonly (keyof T)[] = []): boolean {
+  const keys = Object.keys({ ...draft, ...saved }) as (keyof T)[];
+  return keys.some((key) => !except.includes(key) && !Object.is(draft[key], saved[key]));
+}
+
+function sameScanRoute(a: ScanPrivacySettings, b: ScanPrivacySettings): boolean {
+  return a.transport === b.transport && a.source === b.source && a.requireProxy === b.requireProxy;
+}
+
+function followScanPrivacy(draft: ScanPrivacySettings, before: ScanPrivacySettings, saved: ScanPrivacySettings): ScanPrivacySettings {
+  if (before.unreadable || saved.unreadable) return saved;
+  // Endpoints belong to their transport and source. Never copy a draft endpoint into a different route.
+  const newEndpoints = mapChanged(before.endpoints, saved.endpoints) || mapChanged(before.indexerUrls, saved.indexerUrls);
+  const useSavedRoute = !sameScanRoute(before, saved) || (!sameScanRoute(before, draft) && newEndpoints);
+  const route = useSavedRoute ? saved : draft;
+  const delayChanged = before.jitterMinMs !== saved.jitterMinMs || before.jitterMaxMs !== saved.jitterMaxMs;
+  return {
+    ...route,
+    endpoints: useSavedRoute ? saved.endpoints : followMap(draft.endpoints, before.endpoints, saved.endpoints),
+    indexerUrls: useSavedRoute ? saved.indexerUrls : followMap(draft.indexerUrls, before.indexerUrls, saved.indexerUrls),
+    windowBlocks: followValue(draft.windowBlocks, before.windowBlocks, saved.windowBlocks),
+    openLaneBudget: followValue(draft.openLaneBudget, before.openLaneBudget, saved.openLaneBudget),
+    jitterMinMs: delayChanged ? saved.jitterMinMs : draft.jitterMinMs,
+    jitterMaxMs: delayChanged ? saved.jitterMaxMs : draft.jitterMaxMs,
+  };
+}
+
+function followScanLanes(draft: ScanLaneSettings, before: ScanLaneSettings, saved: ScanLaneSettings): ScanLaneSettings {
+  if (before.unreadable || saved.unreadable) return saved;
+  return {
+    matchCover: followValue(draft.matchCover, before.matchCover, saved.matchCover),
+    privacySetTransfers: followValue(draft.privacySetTransfers, before.privacySetTransfers, saved.privacySetTransfers),
+    spamScoring: followValue(draft.spamScoring, before.spamScoring, saved.spamScoring),
+    floodPerBlock: followValue(draft.floodPerBlock, before.floodPerBlock, saved.floodPerBlock),
+  };
 }
 
 /** Spec 10 / 05 options. Own storage key and own save, so the main settings form and its exchange format are unchanged. */
 // i18n-use: settings.scanLanes.errFlood
-function ScanPrivacySection(): ReactNode {
+function ScanPrivacySection({ saveRef, onDirty }: {
+  readonly saveRef: Ref<() => boolean>;
+  readonly onDirty: (dirty: boolean) => void;
+}): ReactNode {
   const app = useApp();
   const services = useServices();
   const i18n = useI18nOptional();
   const t = i18n?.t ?? SOURCE_TRANSLATOR.t;
   // What this form was filled from: saving over a newer save could undo a private path or cover lookups turned on there.
-  const filledFrom = useRef<string | undefined>(undefined);
-  const [cfg, setCfg] = useState<ScanPrivacySettings>(() => {
-    filledFrom.current = scanOptionsText();
-    return loadScanPrivacy(browserStorage());
-  });
+  const [initialRecords] = useState(storedScanRecords);
+  const filledFrom = useRef(initialRecords);
+  const reviewBeforeLeaving = useRef(false);
+  const [cfg, setCfg] = useState<ScanPrivacySettings>(() => loadScanPrivacy(browserStorage()));
   // Spec 05 lane and privacy-set options: own key, saved by the same button.
   const [lanes, setLanes] = useState<ScanLaneSettings>(() => loadScanLanes(browserStorage()));
   const [message, setMessage] = useState<{ kind: 'ok' | 'error' | 'warn'; text: DisplayMessage } | undefined>(undefined);
+  const baseline = useRef({ cfg, lanes });
+  const [saveRefused, setSaveRefused] = useState(false);
+  const dirty = saveRefused || mapChanged(cfg.endpoints, baseline.current.cfg.endpoints)
+    || mapChanged(cfg.indexerUrls, baseline.current.cfg.indexerUrls)
+    || changedFields(cfg, baseline.current.cfg, ['endpoints', 'indexerUrls'])
+    || changedFields(lanes, baseline.current.lanes);
+  useLayoutEffect(() => { onDirty(dirty); }, [dirty, onDirty]);
+  const validation = useSettingsValidation();
   const set = (patch: Partial<ScanPrivacySettings>): void => { setCfg((c) => ({ ...c, ...patch })); setMessage(undefined); };
   const setLane = (patch: Partial<ScanLaneSettings>): void => { setLanes((c) => ({ ...c, ...patch })); setMessage(undefined); };
   const num = (v: string): number => (v.trim() === '' ? Number.NaN : Number(v));
 
-  const onSave = (e: FormEvent): void => {
-    e.preventDefault();
-    if (scanOptionsText() !== filledFrom.current) {
-      filledFrom.current = scanOptionsText();
-      setCfg(loadScanPrivacy(browserStorage()));
-      setLanes(loadScanLanes(browserStorage()));
-      setMessage({ kind: 'warn', text: { key: 'settings.changedElsewhere' } });
-      return;
+  const clearValidation = validation.clear;
+  const refreshStored = useCallback((): boolean => {
+    const records = storedScanRecords();
+    const previous = filledFrom.current;
+    if (records.privacy === previous.privacy && records.lanes === previous.lanes) return false;
+    const stored = { cfg: loadScanPrivacy(browserStorage()), lanes: loadScanLanes(browserStorage()) };
+    const before = baseline.current;
+    filledFrom.current = records;
+    baseline.current = stored;
+    if (records.privacy !== previous.privacy) {
+      setCfg((draft) => records.privacy == null ? stored.cfg : followScanPrivacy(draft, before.cfg, stored.cfg));
     }
+    if (records.lanes !== previous.lanes) {
+      setLanes((draft) => records.lanes == null ? stored.lanes : followScanLanes(draft, before.lanes, stored.lanes));
+    }
+    clearValidation();
+    setSaveRefused(false);
+    reviewBeforeLeaving.current = true;
+    setMessage({ kind: 'warn', text: { key: 'settings.changedElsewhere' } });
+    return true;
+  }, [clearValidation]);
+
+  useEffect(() => {
+    const onStorage = (event: StorageEvent): void => {
+      if (event.storageArea !== null && event.storageArea !== browserStorage()) return;
+      if (event.key === null || event.key === SCAN_PRIVACY_KEY || event.key === SCAN_LANES_KEY) refreshStored();
+    };
+    window.addEventListener('storage', onStorage);
+    refreshStored();
+    return () => { window.removeEventListener('storage', onStorage); };
+  }, [refreshStored]);
+
+  const save = (leaving = false): boolean => {
+    const needsReview = refreshStored() || (leaving && reviewBeforeLeaving.current);
+    reviewBeforeLeaving.current = false;
+    if (needsReview) {
+      setMessage({ kind: 'warn', text: { key: 'settings.changedElsewhere' } });
+      return false;
+    }
+    validation.clear();
+    setMessage(undefined);
+    let field = '';
     try {
       const endpoints: Record<string, string> = {};
-      for (const [k, v] of Object.entries(cfg.endpoints)) if (v.trim() !== '') endpoints[k] = checkScanEndpoint(v, cfg.transport);
+      for (const [k, v] of Object.entries(cfg.endpoints)) {
+        if (v.trim() === '') continue;
+        field = `endpoint-${k}`;
+        endpoints[k] = checkScanEndpoint(v, cfg.transport);
+      }
       const indexerUrls: Record<string, string> = {};
-      for (const [k, v] of Object.entries(cfg.indexerUrls)) if (v.trim() !== '') indexerUrls[k] = checkIndexerUrl(v, cfg.transport);
+      for (const [k, v] of Object.entries(cfg.indexerUrls)) {
+        if (v.trim() === '') continue;
+        field = `indexer-${k}`;
+        indexerUrls[k] = checkIndexerUrl(v, cfg.transport);
+      }
       const ok = (n: number, min: number, max: number): boolean => Number.isInteger(n) && n >= min && n <= max;
+      field = 'window';
       if (!ok(cfg.windowBlocks, 0, 100_000)) throw new UserFacingError({ key: 'settings.scanPrivacy.errWindow' });
+      field = !ok(cfg.jitterMinMs, 0, 10_000) ? 'jitterMin' : 'jitterMax';
       if (!ok(cfg.jitterMinMs, 0, 10_000) || !ok(cfg.jitterMaxMs, 0, 10_000) || cfg.jitterMinMs > cfg.jitterMaxMs) throw new UserFacingError({ key: 'settings.scanPrivacy.errDelays' });
+      field = 'budget';
       if (!ok(cfg.openLaneBudget, 1, 100_000)) throw new UserFacingError({ key: 'settings.scanPrivacy.errBudget' });
+      field = 'flood';
       if (!ok(lanes.floodPerBlock, 1, MAX_FLOOD_PER_BLOCK)) throw new UserFacingError({ key: 'settings.scanLanes.errFlood' });
+      field = '';
       const next = { ...cfg, endpoints, indexerUrls };
       const savedPrivacy = saveScanPrivacy(browserStorage(), next);
-      // A successful save replaces settings that could not be read: show what is saved now, without the lock.
-      setCfg(savedPrivacy ? loadScanPrivacy(browserStorage()) : next);
       const saved = savedPrivacy && saveScanLanes(browserStorage(), lanes);
-      if (saved) setLanes(loadScanLanes(browserStorage()));
-      filledFrom.current = scanOptionsText();
+      // Preserve unsaved edits if only one of the two local writes succeeded.
+      if (savedPrivacy) {
+        baseline.current.cfg = loadScanPrivacy(browserStorage());
+        setCfg(baseline.current.cfg);
+      }
+      if (saved) {
+        baseline.current.lanes = loadScanLanes(browserStorage());
+        setLanes(baseline.current.lanes);
+      }
+      setSaveRefused(!saved);
+      filledFrom.current = storedScanRecords();
       setMessage(saved ? { kind: 'ok', text: { key: 'settings.scanPrivacy.saved' } } : { kind: 'warn', text: { key: 'settings.scanPrivacy.refused' } });
+      return saved;
     } catch (err) {
-      setMessage({ kind: 'error', text: captureUserMessage(err) });
+      const text = captureUserMessage(err);
+      if (field && validation.form.current?.elements.namedItem(field)) validation.reject(field, text);
+      else setMessage({ kind: 'error', text });
+      return false;
     }
   };
+  useImperativeHandle(saveRef, () => () => save(true));
 
   return (
-    <form onSubmit={onSave} className="stack" noValidate>
+    <form ref={validation.form} onChange={() => { validation.clear(); reviewBeforeLeaving.current = false; }} onSubmit={(e) => { e.preventDefault(); save(); }} className="stack" noValidate>
       <fieldset>
         <legend>{t('settings.scanPrivacy.legend')}</legend>
+        <p className="hint" role="status">{t(dirty ? 'settings.unsaved' : 'settings.draft.clean')}</p>
         <p className="hint">
           {t('settings.scanPrivacy.hint')}
         </p>
@@ -576,8 +694,8 @@ function ScanPrivacySection(): ReactNode {
           <label htmlFor="scan-require-proxy">{t('settings.scanPrivacy.requireProxy')}</label>
         </div>
         {services.chains.map((c) => (
-          <Field key={c.chainId} label={t('settings.scanPrivacy.endpoint', { chain: c.name })} hint={cfg.transport === 'local-proxy' ? t('settings.scanPrivacy.endpointRequired') : t('settings.scanPrivacy.endpointOptional')}>
-            {(id, d) => <input id={id} aria-describedby={d} type="url" spellCheck={false} value={cfg.endpoints[String(c.chainId)] ?? ''} onChange={(e) => { set({ endpoints: { ...cfg.endpoints, [String(c.chainId)]: e.target.value } }); }} />}
+          <Field error={validation.fieldError(`endpoint-${c.chainId}`)} key={c.chainId} label={t('settings.scanPrivacy.endpoint', { chain: c.name })} hint={cfg.transport === 'local-proxy' ? t('settings.scanPrivacy.endpointRequired') : t('settings.scanPrivacy.endpointOptional')}>
+            {(id, d) => <input id={id} {...validation.control(`endpoint-${c.chainId}`)} aria-describedby={d} type="url" spellCheck={false} value={cfg.endpoints[String(c.chainId)] ?? ''} onChange={(e) => { set({ endpoints: { ...cfg.endpoints, [String(c.chainId)]: e.target.value } }); }} />}
           </Field>
         ))}
         <Field label={t('settings.scanPrivacy.source')}>
@@ -589,20 +707,20 @@ function ScanPrivacySection(): ReactNode {
           )}
         </Field>
         {cfg.source === 'indexer' && services.chains.map((c) => (
-          <Field key={c.chainId} label={t('settings.scanPrivacy.indexerUrl', { chain: c.name })}>
-            {(id) => <input id={id} type="url" spellCheck={false} value={cfg.indexerUrls[String(c.chainId)] ?? ''} onChange={(e) => { set({ indexerUrls: { ...cfg.indexerUrls, [String(c.chainId)]: e.target.value } }); }} />}
+          <Field error={validation.fieldError(`indexer-${c.chainId}`)} key={c.chainId} label={t('settings.scanPrivacy.indexerUrl', { chain: c.name })}>
+            {(id, d) => <input id={id} aria-describedby={d} {...validation.control(`indexer-${c.chainId}`)} type="url" spellCheck={false} value={cfg.indexerUrls[String(c.chainId)] ?? ''} onChange={(e) => { set({ indexerUrls: { ...cfg.indexerUrls, [String(c.chainId)]: e.target.value } }); }} />}
           </Field>
         ))}
-        <Field label={t('settings.scanPrivacy.window')} hint={t('settings.scanPrivacy.windowHint')}>
-          {(id, d) => <input id={id} aria-describedby={d} type="number" min={0} value={Number.isNaN(cfg.windowBlocks) ? '' : cfg.windowBlocks} onChange={(e) => { set({ windowBlocks: num(e.target.value) }); }} />}
+        <Field error={validation.fieldError('window')} label={t('settings.scanPrivacy.window')} hint={t('settings.scanPrivacy.windowHint')}>
+          {(id, d) => <input id={id} {...validation.control('window')} aria-describedby={d} type="number" min={0} value={Number.isNaN(cfg.windowBlocks) ? '' : cfg.windowBlocks} onChange={(e) => { set({ windowBlocks: num(e.target.value) }); }} />}
         </Field>
-        <Field label={t('settings.scanPrivacy.jitterMin')}>{(id) => <input id={id} type="number" min={0} value={Number.isNaN(cfg.jitterMinMs) ? '' : cfg.jitterMinMs} onChange={(e) => { set({ jitterMinMs: num(e.target.value) }); }} />}</Field>
-        <Field label={t('settings.scanPrivacy.jitterMax')}>{(id) => <input id={id} type="number" min={0} value={Number.isNaN(cfg.jitterMaxMs) ? '' : cfg.jitterMaxMs} onChange={(e) => { set({ jitterMaxMs: num(e.target.value) }); }} />}</Field>
-        <Field label={t('settings.scanPrivacy.budget')} hint={t('settings.scanPrivacy.budgetHint')}>
-          {(id, d) => <input id={id} aria-describedby={d} type="number" min={1} value={Number.isNaN(cfg.openLaneBudget) ? '' : cfg.openLaneBudget} onChange={(e) => { set({ openLaneBudget: num(e.target.value) }); }} />}
+        <Field error={validation.fieldError('jitterMin')} label={t('settings.scanPrivacy.jitterMin')}>{(id, d) => <input id={id} aria-describedby={d} {...validation.control('jitterMin')} type="number" min={0} value={Number.isNaN(cfg.jitterMinMs) ? '' : cfg.jitterMinMs} onChange={(e) => { set({ jitterMinMs: num(e.target.value) }); }} />}</Field>
+        <Field error={validation.fieldError('jitterMax')} label={t('settings.scanPrivacy.jitterMax')}>{(id, d) => <input id={id} aria-describedby={d} {...validation.control('jitterMax')} type="number" min={0} value={Number.isNaN(cfg.jitterMaxMs) ? '' : cfg.jitterMaxMs} onChange={(e) => { set({ jitterMaxMs: num(e.target.value) }); }} />}</Field>
+        <Field error={validation.fieldError('budget')} label={t('settings.scanPrivacy.budget')} hint={t('settings.scanPrivacy.budgetHint')}>
+          {(id, d) => <input id={id} {...validation.control('budget')} aria-describedby={d} type="number" min={1} value={Number.isNaN(cfg.openLaneBudget) ? '' : cfg.openLaneBudget} onChange={(e) => { set({ openLaneBudget: num(e.target.value) }); }} />}
         </Field>
-        <Field label={t('settings.scanLanes.flood')} hint={t('settings.scanLanes.floodHint')}>
-          {(id, d) => <input id={id} aria-describedby={d} type="number" min={1} max={MAX_FLOOD_PER_BLOCK} value={Number.isNaN(lanes.floodPerBlock) ? '' : lanes.floodPerBlock} onChange={(e) => { setLane({ floodPerBlock: num(e.target.value) }); }} />}
+        <Field error={validation.fieldError('flood')} label={t('settings.scanLanes.flood')} hint={t('settings.scanLanes.floodHint')}>
+          {(id, d) => <input id={id} {...validation.control('flood')} aria-describedby={d} type="number" min={1} max={MAX_FLOOD_PER_BLOCK} value={Number.isNaN(lanes.floodPerBlock) ? '' : lanes.floodPerBlock} onChange={(e) => { setLane({ floodPerBlock: num(e.target.value) }); }} />}
         </Field>
         <div className="check">
           <input id="scan-spam-score" type="checkbox" checked={lanes.spamScoring} onChange={(e) => { setLane({ spamScoring: e.target.checked }); }} />

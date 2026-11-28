@@ -4,6 +4,16 @@ import type { MessageKey } from './catalog';
  * Explicit keys, not substring/prefix heuristics. Update the exhaustive classification test with new source messages.
  */
 export const SECURITY_KEY_GROUPS = {
+  pagesMirror: [
+    'pagesMirror.development',
+    'pagesMirror.demo',
+    'pagesMirror.beta',
+    'pagesMirror.testKeys',
+    'pagesMirror.manifest',
+    'pagesMirror.shared',
+    'pagesMirror.integrity',
+    'pagesMirror.verify',
+  ],
   // #286 item 1: global sensitive-data masking controls and their limits.
   privacyMasking: [
     'privacyUx.modeLabel',
@@ -2214,6 +2224,10 @@ export const SECURITY_KEYS: ReadonlySet<MessageKey> = new Set<MessageKey>(Object
 
 /** Only explicitly classified neutral UI may use an unreviewed catalog. Future keys fail closed to reviewed/source text. */
 export const NEUTRAL_KEY_LIST = [
+  'pagesMirror.title',
+  'pagesMirror.details',
+  'pagesMirror.english',
+
   'app.checks.title',
   'app.checks.running',
   'app.checks.ready',
@@ -2314,6 +2328,13 @@ export const NEUTRAL_KEY_LIST = [
   'settings.title',
   'settings.rpc.legend',
   'settings.rpc.url',
+  'settings.rpc.testSecondary',
+  'settings.draft.clean',
+  'settings.leave.title',
+  'settings.leave.body',
+  'settings.leave.stay',
+  'settings.leave.discard',
+  'settings.leave.save',
   'settings.rpc.test',
   'settings.rpc.checking',
   'settings.rpc.secondary.label',
@@ -2630,6 +2651,8 @@ export const NEUTRAL_KEY_LIST = [
   'scan.startBlock',
   'scan.startBlock.hint',
   'scan.startBlock.checkpoint',
+  'scan.recover',
+  'scan.recover.hint',
   'scan.resume',
   'scan.deepScan',
   'scan.autoRescan',

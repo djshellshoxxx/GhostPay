@@ -9,6 +9,10 @@ The follow-up on PR #768 starts at `0d7d069da7e0145b8a373e45de150e82744713ca` an
 the `<noscript>` navigation in `apps/web/index.html` to this claim. With JavaScript disabled,
 the first Tab must reveal the skip link, Enter must focus main, and the next Tab must reach the inline help guide.
 
+## UX audit integration for Scan, Settings, private navigation and release language
+
+Codex owns integration of the remaining audited fixes on `ux/audit-settings-scan-navigation`, on top of PR #770 (`0a158a511cdd6c870d959b7f2846d96a8aba7315`, main `0934ea094cb1db90293b74d2d1e9d9324e09a883`). Sources are the audited candidate `af44b70f6bff623c78156089fdfccd97992684ba` and its recorded regression suites. The scope is the Scan result lifecycle, private browser navigation, Settings drafts and the language of the release notice and guide links. Verify against the lean Pages build with payments disabled, real browser storage events and the existing accessibility changes. Export cancellation, sweep fee consent, file recovery, contextual help and the one-release homepage are tracked in their own PRs.
+
 # Recorded low residuals (web) — 2026-11-27 UTC
 
 Worker: local Claude Code worker W7 on the existing merged branch `claude/consolidation-stack-20261126`, fast-forwarded

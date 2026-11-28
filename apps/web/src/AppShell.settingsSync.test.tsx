@@ -162,6 +162,69 @@ describe('settings saved by another tab', () => {
     expect(JSON.parse(window.localStorage.getItem(SCAN_PRIVACY_KEY)!)).toMatchObject({ requireProxy: true });
   });
 
+  it('keeps an unrelated scan draft when a save races another tab, and writes only on a second save', () => {
+    shell();
+    fireEvent.click(screen.getByRole('button', { name: 'Settings' }));
+    const endpoint = screen.getByLabelText<HTMLInputElement>('Base Sepolia scan endpoint');
+    const blocks = screen.getByLabelText<HTMLInputElement>(/Fixed scan window/);
+    const save = screen.getByRole('button', { name: 'Save scan privacy' });
+    fireEvent.change(endpoint, { target: { value: 'https://draft.example/' } });
+    fireEvent.change(blocks, { target: { value: '207' } });
+    const other = { ...DEFAULT_SCAN_PRIVACY, windowBlocks: 303 };
+    window.localStorage.setItem(SCAN_PRIVACY_KEY, JSON.stringify(other));
+    window.localStorage.setItem(SCAN_LANES_KEY, JSON.stringify({ ...DEFAULT_SCAN_LANES, matchCover: true }));
+    fireEvent.click(save);
+    expect(endpoint.value).toBe('https://draft.example/');
+    expect(blocks.value).toBe('303');
+    expect(screen.getByLabelText<HTMLInputElement>(/Blur which payments matched/).checked).toBe(true);
+    expect(window.localStorage.getItem(SCAN_PRIVACY_KEY)).toBe(JSON.stringify(other));
+    expect(screen.getByText(/Settings changed in another tab/)).toBeTruthy();
+    fireEvent.click(save);
+    expect(JSON.parse(window.localStorage.getItem(SCAN_PRIVACY_KEY)!)).toMatchObject({
+      endpoints: { [String(CHAIN)]: 'https://draft.example/' }, windowBlocks: 303,
+    });
+    expect(JSON.parse(window.localStorage.getItem(SCAN_LANES_KEY)!)).toMatchObject({ matchCover: true });
+  });
+
+  it('updates an open form on a storage notification without moving an endpoint draft to a different transport', () => {
+    shell();
+    fireEvent.click(screen.getByRole('button', { name: 'Settings' }));
+    const endpoint = screen.getByLabelText<HTMLInputElement>('Base Sepolia scan endpoint');
+    const blocks = screen.getByLabelText<HTMLInputElement>(/Fixed scan window/);
+    fireEvent.change(endpoint, { target: { value: 'https://direct.example/' } });
+    fireEvent.change(blocks, { target: { value: '207' } });
+    const route = { ...DEFAULT_SCAN_PRIVACY, transport: 'local-proxy', requireProxy: true, endpoints: { [String(CHAIN)]: 'http://127.0.0.1:8545/' } };
+    window.localStorage.setItem(SCAN_PRIVACY_KEY, JSON.stringify(route));
+    act(() => { window.dispatchEvent(new StorageEvent('storage', { key: SCAN_PRIVACY_KEY, storageArea: window.localStorage })); });
+    expect(screen.getByLabelText<HTMLSelectElement>('Scan transport').value).toBe('local-proxy');
+    expect(endpoint.value).toBe('http://127.0.0.1:8545/');
+    expect(blocks.value).toBe('207');
+    expect(window.localStorage.getItem(SCAN_PRIVACY_KEY)).toBe(JSON.stringify(route));
+    window.localStorage.clear();
+    act(() => { window.dispatchEvent(new StorageEvent('storage', { key: null, storageArea: window.localStorage })); });
+    expect(endpoint.value).toBe('');
+    expect(blocks.value).toBe(String(DEFAULT_SCAN_PRIVACY.windowBlocks));
+    expect(window.localStorage.getItem(SCAN_PRIVACY_KEY)).toBeNull();
+  });
+
+  it('honors a removed endpoint and preserves edits to independent lane options', () => {
+    window.localStorage.setItem(SCAN_PRIVACY_KEY, JSON.stringify({ ...DEFAULT_SCAN_PRIVACY, endpoints: { [String(CHAIN)]: OLD } }));
+    shell();
+    fireEvent.click(screen.getByRole('button', { name: 'Settings' }));
+    const endpoint = screen.getByLabelText<HTMLInputElement>('Base Sepolia scan endpoint');
+    const flood = screen.getByLabelText<HTMLInputElement>(/flood threshold/i);
+    fireEvent.change(endpoint, { target: { value: NEW } });
+    fireEvent.change(flood, { target: { value: '41' } });
+    window.localStorage.setItem(SCAN_PRIVACY_KEY, JSON.stringify(DEFAULT_SCAN_PRIVACY));
+    window.localStorage.setItem(SCAN_LANES_KEY, JSON.stringify({ ...DEFAULT_SCAN_LANES, matchCover: true }));
+    act(() => { window.dispatchEvent(new StorageEvent('storage', { key: SCAN_LANES_KEY })); });
+    expect(endpoint.value).toBe('');
+    expect(flood.value).toBe('41');
+    fireEvent.click(screen.getByRole('button', { name: 'Save scan privacy' }));
+    expect(JSON.parse(window.localStorage.getItem(SCAN_PRIVACY_KEY)!)).toMatchObject({ endpoints: {} });
+    expect(JSON.parse(window.localStorage.getItem(SCAN_LANES_KEY)!)).toMatchObject({ floodPerBlock: 41, matchCover: true });
+  });
+
   it('refuse the Settings form save that races the notification', () => {
     shell();
     fireEvent.click(screen.getByRole('button', { name: 'Settings' }));

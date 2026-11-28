@@ -1,5 +1,5 @@
 import { createContext, useContext, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from 'react';
-import { AppContext, type AppState } from '../state';
+import { AppContext, type AppState, type ScanOwner } from '../state';
 import { subscribeAppLock } from '../lib/appLock';
 import { clearFragment, readInvoiceFragment } from '../lib/fragment';
 import { subscribeSession } from '../lib/session';
@@ -18,6 +18,7 @@ export function SessionPresentationBoundary({ children }: { readonly children: R
   current.current = app;
   const revision = useRef(0);
   const [generation, setGeneration] = useState(0);
+  const [scanOwner, setScanOwner] = useState<ScanOwner>();
   const mounted = useRef(true);
   useLayoutEffect(() => {
     mounted.current = true;
@@ -26,6 +27,7 @@ export function SessionPresentationBoundary({ children }: { readonly children: R
       if (state === undefined) return;
       ++revision.current;
       setGeneration(revision.current);
+      setScanOwner(undefined);
       state.setMatches([]);
       state.selectForSweep(undefined);
       state.announce('');
@@ -41,12 +43,13 @@ export function SessionPresentationBoundary({ children }: { readonly children: R
   const writers = useMemo(() => {
     const live = (): AppState | undefined => mounted.current && revision.current === generation ? current.current : undefined;
     return {
+      setScanOwner: (owner) => { if (live() !== undefined) setScanOwner(owner); },
       setMatches: (matches) => live()?.setMatches(matches),
       selectForSweep: (target) => live()?.selectForSweep(target),
       setFragment: (value) => live()?.setFragment(value),
       announce: (message) => live()?.announce(message),
-    } satisfies Pick<AppState, 'setMatches' | 'selectForSweep' | 'setFragment' | 'announce'>;
+    } satisfies Pick<AppState, 'setScanOwner' | 'setMatches' | 'selectForSweep' | 'setFragment' | 'announce'>;
   }, [generation]);
-  const scoped = useMemo(() => app === undefined ? undefined : { ...app, ...writers }, [app, writers]);
+  const scoped = useMemo(() => app === undefined ? undefined : { ...app, ...writers, scanOwner }, [app, writers, scanOwner]);
   return <GenerationContext.Provider value={generation}><AppContext.Provider value={scoped}>{children}</AppContext.Provider></GenerationContext.Provider>;
 }

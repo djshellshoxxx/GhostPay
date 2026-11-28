@@ -4,6 +4,7 @@ import { App } from './App';
 import { createDefaultServices } from './lib/defaultServices';
 import { ServicesContext } from './lib/services';
 import { I18nProvider } from './i18n/context';
+import { MirrorNoticeLanguage } from './i18n/MirrorNoticeLanguage';
 import './styles/app.css';
 
 /**
@@ -40,6 +41,7 @@ if (root === null) throw new Error('missing #root');
 createRoot(root, ROOT_ERROR_HANDLERS).render(
   <StrictMode>
     <I18nProvider target={document.documentElement}>
+      <MirrorNoticeLanguage />
       <ServicesContext.Provider value={createDefaultServices()}>
         <App />
       </ServicesContext.Provider>

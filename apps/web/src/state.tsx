@@ -1,5 +1,6 @@
 import { createContext, useContext, useSyncExternalStore } from 'react';
 import type { RpcClient } from '@ghostpay/chain-adapters';
+import type { ExportRpc } from './lib/paymentKeyExport';
 import type { ScanMatch } from './lib/scanClient';
 import type { SweepLock } from './lib/sweep';
 import { UserFacingError } from './lib/errors';
@@ -26,6 +27,15 @@ export const VIEW_LABELS: Readonly<Record<ViewId, MessageKey>> = {
   about: 'app.nav.about',
 };
 
+/** In-memory authority for the displayed scan. A presentation lock or seller replacement revokes it. */
+export interface ScanOwner {
+  readonly session: SessionPublic;
+  readonly chainId: number;
+  readonly keyId: string;
+  readonly signerPublicKey: string;
+  readonly exportRpc: ExportRpc;
+}
+
 export interface AppState {
   readonly view: ViewId;
   readonly setView: (v: ViewId) => void;
@@ -39,6 +49,8 @@ export interface AppState {
   /** Invoice fragment read at load or pasted by the user; held in memory only. */
   readonly fragment: string | undefined;
   readonly setFragment: (f: string | undefined) => void;
+  readonly scanOwner?: ScanOwner | undefined;
+  readonly setScanOwner?: (owner: ScanOwner | undefined) => void;
   readonly matches: readonly ScanMatch[];
   readonly setMatches: (m: readonly ScanMatch[]) => void;
   readonly sweepTarget: { readonly match: ScanMatch; readonly chainId: number } | undefined;

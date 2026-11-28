@@ -90,8 +90,13 @@ export interface ScanTelemetry {
 
 export { checkpointKeyId } from '@ghostpay/ux-vault/portable';
 
+/** The optional origin is a block the seller entered, independent of whether any payments were found. */
+export interface SavedScanCursor extends ScanCursor {
+  readonly recoveryStart?: bigint;
+}
+
 export interface CheckpointStore {
-  load(chainId: number, keyId: string): ScanCursor | undefined;
+  load(chainId: number, keyId: string): SavedScanCursor | undefined;
   /**
    * Stores the resume cursor. Without `expected` the write is forward-only: a cursor older than the stored one is refused.
    * With `expected` (the cursor the writer last read or wrote, `null` for none) it is a compare-and-swap: the write happens
@@ -99,7 +104,7 @@ export interface CheckpointStore {
    * claim replay, a deliberate restart), while a scan that lost the slot to another scan cannot overwrite it. A wrapper must
    * forward `expected`: dropping it turns runScan's rewinds into forward-only saves, which this store refuses.
    */
-  save(chainId: number, keyId: string, cursor: ScanCursor, expected?: ScanCursor | null): void;
+  save(chainId: number, keyId: string, cursor: SavedScanCursor, expected?: ScanCursor | null): void;
   clear(chainId: number, keyId: string): void;
 }
 
@@ -123,6 +128,8 @@ export interface ScanParams {
    * Omitted: the run reads the slot at entry, which suits callers that start right after reading it.
    */
   readonly checkpointSeen?: ScanCursor | null;
+  /** Earliest known seller-selected range start, independent of discoveries. */
+  readonly recoveryStart?: bigint;
   readonly onProgress?: (p: ScanProgress) => void;
   readonly onMatch?: (m: ScanMatch) => void;
   /** Preserve relevant evidence before a checkpoint can advance past it. */
@@ -660,7 +667,8 @@ export async function runScan(p: ScanParams): Promise<{ readonly matches: readon
           if (!sameCursor(stored, ownedCheckpoint)) {
             checkpointYielded = true;
           } else {
-            p.checkpoints.save(p.chain.chainId, p.keyId, saved as ScanCursor, stored ?? null);
+            const checkpoint = saved as ScanCursor;
+            p.checkpoints.save(p.chain.chainId, p.keyId, p.recoveryStart === undefined ? checkpoint : { ...checkpoint, recoveryStart: p.recoveryStart }, stored ?? null);
             // Own what the slot holds now: the saved cursor, or the unchanged one when the write was lost to a full or
             // failing storage (retried at the next page). Anything else is another writer's, so yield to it.
             const after = loadCheckpoint(p.checkpoints, p.chain.chainId, p.keyId);
@@ -891,21 +899,25 @@ function sweepLegacySlots(storage: StorageLike | undefined): void {
   }
 }
 
-function parseCursor(text: string): ScanCursor | undefined {
-  const o = JSON.parse(text) as { nextBlock?: unknown; last?: { number?: unknown; hash?: unknown } };
+function parseCursor(text: string): SavedScanCursor | undefined {
+  const o = JSON.parse(text) as { nextBlock?: unknown; recoveryStart?: unknown; last?: { number?: unknown; hash?: unknown } };
   if (typeof o.nextBlock !== 'string' || !/^\d{1,20}$/.test(o.nextBlock)) return undefined;
+  const cursor: SavedScanCursor = {
+    nextBlock: BigInt(o.nextBlock),
+    ...(typeof o.recoveryStart === 'string' && /^\d{1,15}$/.test(o.recoveryStart) ? { recoveryStart: BigInt(o.recoveryStart) } : {}),
+  };
   const last = o.last;
   if (last !== undefined && typeof last.number === 'string' && /^\d{1,20}$/.test(last.number) && typeof last.hash === 'string' && /^0x[0-9a-f]{64}$/.test(last.hash)) {
-    return { nextBlock: BigInt(o.nextBlock), last: { number: BigInt(last.number), hash: last.hash as `0x${string}` } };
+    return { ...cursor, last: { number: BigInt(last.number), hash: last.hash as `0x${string}` } };
   }
-  return { nextBlock: BigInt(o.nextBlock) };
+  return cursor;
 }
 
 /** localCheckpointStore's read result when getItem throws (distinct from an empty or malformed slot). */
 const UNREADABLE: unique symbol = Symbol('unreadable checkpoint slot');
 
-const encodeCursor = (cursor: ScanCursor): string =>
-  JSON.stringify({ nextBlock: cursor.nextBlock.toString(), ...(cursor.last === undefined ? {} : { last: { number: cursor.last.number.toString(), hash: cursor.last.hash } }) });
+const encodeCursor = (cursor: ScanCursor, recoveryStart?: bigint): string =>
+  JSON.stringify({ nextBlock: cursor.nextBlock.toString(), ...(recoveryStart === undefined ? {} : { recoveryStart: recoveryStart.toString() }), ...(cursor.last === undefined ? {} : { last: { number: cursor.last.number.toString(), hash: cursor.last.hash } }) });
 
 /**
  * Whether verifying this router announcement reaches the network: the same conditions `verifyClaimedPayment` checks
@@ -923,7 +935,7 @@ function sendsLookups(chain: ChainConfig, router: Address, a: ScannedAnnouncemen
 }
 
 /**
- * Public scan cursor persistence (block number and hash only; no keys, no matches). Tolerates storage failures.
+ * Public scan cursor persistence (public block bounds and hash only; no keys, no matches). Tolerates storage failures.
  *
  * v4 names use #211's HKDF and session-bound key lending, with a distinct version from both incompatible v3 formats.
  * Without the matching loaded seller keys nothing is read or written. Legacy v1/v2/v3 cursors are never read: the scan
@@ -938,7 +950,7 @@ export function localCheckpointStore(storage: StorageLike | undefined, viewingKe
    * The stored cursor. `undefined` is an empty slot, or a value that was read but is unparsable or malformed (overwritten,
    * never trusted). UNREADABLE means getItem itself failed: the slot may hold a newer cursor, so it must not be replaced.
    */
-  const read = (name: string): ScanCursor | undefined | typeof UNREADABLE => {
+  const read = (name: string): SavedScanCursor | undefined | typeof UNREADABLE => {
     let text: string | null | undefined;
     try { text = storage?.getItem(name); } catch { return UNREADABLE; }
     if (text === null || text === undefined) return undefined;
@@ -964,7 +976,10 @@ export function localCheckpointStore(storage: StorageLike | undefined, viewingKe
         const current = read(name);
         if (current === UNREADABLE) return;
         if (expected === undefined ? current !== undefined && cursor.nextBlock < current.nextBlock : !sameCursor(current, expected ?? undefined)) return;
-        storage?.setItem(name, encodeCursor(cursor));
+        const { recoveryStart } = cursor;
+        let earliest = current?.recoveryStart;
+        if (recoveryStart !== undefined && /^\d{1,15}$/.test(recoveryStart.toString()) && (earliest === undefined || recoveryStart < earliest)) earliest = recoveryStart;
+        storage?.setItem(name, encodeCursor(cursor, earliest));
         storage?.removeItem(legacyCheckpointSlot(chainId, keyId));
       } catch {
         /* checkpoints are an optimisation */

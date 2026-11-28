@@ -61,6 +61,25 @@ describe('checkpoint format reconciliation', () => {
     expect(restarted.load(1, keyId)).toBeUndefined();
   });
 
+  it('keeps the earliest user-selected recovery block, respecting a competing cursor and explicit clear', () => {
+    const keyId = install();
+    const storage = memory();
+    const first = localCheckpointStore(storage);
+    const second = localCheckpointStore(storage);
+    first.save(CHAIN, keyId, { ...CURSOR, recoveryStart: 20n }, null);
+    second.save(CHAIN, keyId, { nextBlock: 200n, recoveryStart: 90n }, CURSOR);
+    first.save(CHAIN, keyId, { nextBlock: 500n, recoveryStart: 1n }, CURSOR);
+    expect(second.load(CHAIN, keyId)).toEqual({ nextBlock: 200n, recoveryStart: 20n });
+    first.save(CHAIN, keyId, { ...CURSOR, recoveryStart: 10n }, { nextBlock: 200n });
+    expect(second.load(CHAIN, keyId)).toEqual({ ...CURSOR, recoveryStart: 10n });
+    expect(second.load(1, keyId)).toBeUndefined();
+    clearSession(false);
+    expect(first.load(CHAIN, keyId)).toBeUndefined();
+    install();
+    second.clear(CHAIN, keyId);
+    expect(first.load(CHAIN, keyId)).toBeUndefined();
+  });
+
   it('refuses storage reads and writes for another seller key ID while keys are loaded', () => {
     const aliceId = install();
     const bobId = install(BOB);
