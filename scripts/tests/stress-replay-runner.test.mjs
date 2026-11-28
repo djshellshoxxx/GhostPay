@@ -16,6 +16,7 @@ test('keeps retries disabled even when a caller supplies a retry override', () =
 
 test('redacts key-like values without mangling browser executable paths', () => {
   assert.equal(redactDiagnostics('password=hunter2'), 'password=[redacted]');
+  assert.equal(redactDiagnostics('backup password=my private phrase, other=kept'), 'backup password=[redacted], other=kept');
   assert.equal(redactDiagnostics('0x' + 'a'.repeat(40)), '[redacted]');
   const executable = '/home/agent/.cache/ms-playwright/firefox-1489/firefox/firefox';
   assert.equal(redactDiagnostics(executable), executable);

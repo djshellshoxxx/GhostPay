@@ -2,7 +2,7 @@ const SECRET_PATTERNS = [
   /0x[a-f\d]{40,}/gi,
   /\b[a-f\d]{64,}\b/gi,
   /\b[A-Za-z0-9_-]{64,}\b/g,
-  /((?:password|passphrase|private[_ -]?key|secret|keystore)\s*[:=]\s*)[^\s,;]+/gi,
+  /((?:password|passphrase|private[_ -]?key|secret|keystore)\s*[:=]\s*)(?:"[^"]*"|'[^']*'|[^,;]+)/gi,
 ];
 
 export function redactDiagnostics(value, limit = 1_000) {
