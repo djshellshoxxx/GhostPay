@@ -77,6 +77,8 @@ test('a keystore written by the independent codec restores on this device, refus
   await expect(metaAddress(page)).toHaveCount(0);
   await chooseFile(page, file, { name: 'ghostpay-keystore.json', mimeType: 'application/json', buffer: Buffer.from(KEYSTORE_V1, 'utf8') });
   await decryptAndLoad(page, `${KEYSTORE_V1_PASSPHRASE} typo`);
+  // Choosing a file keeps the previous alert, so first wait for this attempt to finish: a refusal empties the field.
+  await expect(importPanel(page).getByLabel('Passphrase', { exact: true })).toHaveValue('', { timeout: 60_000 });
   await expect(keysView(page).getByRole('alert')).toContainText(WRONG, { timeout: 60_000 });
   await expect(metaAddress(page)).toHaveCount(0);
 

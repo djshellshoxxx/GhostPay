@@ -49,14 +49,15 @@ export type TrustView = (
 
 /**
  * ADR-0010 wording rule: a valid signature never reads as "verified seller". Only a pinned key may be called pinned.
+ * With `pins`, a valid signature is labelled by those pins instead of the ones the invoice was opened with.
  */
-export function trustView(parsed: ParsedInvoice): TrustView {
+export function trustView(parsed: ParsedInvoice, pins?: readonly string[]): TrustView {
   const key = parsed.invoice.signer;
   if (parsed.trust === 'invalid-signature') {
     const message: MessageDescriptor = { key: 'pay.review.invalidSignature' };
     return { kind: 'invalid-signature', text: displayMessage(message), message };
   }
-  if (parsed.trust === 'trusted-seller') {
+  if (pins === undefined ? parsed.trust === 'trusted-seller' : pins.some((pin) => pin.toLowerCase() === key)) {
     const message: MessageDescriptor = { key: 'pay.review.pinnedSignature', values: { key } };
     return { kind: 'trusted-seller', text: displayMessage(message), message };
   }

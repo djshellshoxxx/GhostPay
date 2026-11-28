@@ -312,6 +312,22 @@ describe('local spent tracking (getSpends)', () => {
     expect(await spendsOf({ source: chain() })).toEqual([]);
   });
 
+  // Recovered-from: 78e50547 (PR #254).
+  it('reports the first spend once across blocks and still validates later duplicate lists', async () => {
+    const first = { txid: tx(101, 0), vout: 0, spentBy: fakeTxid('first-spender') };
+    const later = { ...first, spentBy: fakeTxid('later-spender') };
+    expect(await spendsOf({ source: withSpends({ 102: [first], 103: [first, first] }) })).toEqual([
+      { ...first, height: 102, blockHash: blockHashOf(102) },
+    ]);
+    expect(await spendsOf({ source: withSpends({ 102: [first], 103: [later] }) })).toEqual([
+      { ...first, height: 102, blockHash: blockHashOf(102) },
+    ]);
+    await expect(spendsOf({ source: withSpends({ 102: [first], 103: [first, later] }) }))
+      .rejects.toSatisfy((e) => codeOf(e) === 'INVALID_RESPONSE');
+    await expect(spendsOf({ source: withSpends({ 102: [first], 103: [{ ...first, spentBy: 'invalid' }] }) }))
+      .rejects.toSatisfy((e) => codeOf(e) === 'INVALID_RESPONSE');
+  });
+
   it('rejects spends whose block hash or height disagree with the block (REORG_DETECTED)', async () => {
     await expect(spendsOf({ source: withSpends({}, (h) => (h === 102 ? 'f'.repeat(64) : blockHashOf(h))) })).rejects.toSatisfy(
       (e) => codeOf(e) === 'REORG_DETECTED',

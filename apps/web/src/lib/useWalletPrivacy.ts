@@ -2,6 +2,7 @@ import { useCallback, useLayoutEffect, useRef } from 'react';
 import type { RpcClient } from '@ghostpay/chain-adapters';
 import { subscribeAppLock } from './appLock';
 import { UserFacingError } from './errors';
+import { revokePrivacyReveal } from './privacyMode';
 import { captureActiveSessionVersionGuard, subscribeSession } from './session';
 import { observeConnectedWallet, type WalletSession } from './wallet';
 
@@ -50,6 +51,8 @@ export function useWalletPrivacy(wallet: WalletSession | undefined, onInvalidate
   const invalidate = useCallback((cause: WalletPrivacyInvalidation = 'context'): void => {
     if (!mounted.current) return;
     rotate();
+    // An account, network or provider change also ends a temporary privacy reveal (#286 item 1).
+    if (cause === 'wallet') revokePrivacyReveal();
     latest.current(cause);
   }, [rotate]);
   const capture = useCallback((): WalletPrivacyScope => {

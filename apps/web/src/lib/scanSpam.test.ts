@@ -159,22 +159,41 @@ describe('lane options (spec 05 D4)', () => {
     expect(sanitizeScanLanes('junk')).toEqual(DEFAULT_SCAN_LANES);
     expect(sanitizeScanLanes({ floodPerBlock: 0, spamScoring: 'yes', privacySetTransfers: 1 })).toEqual(DEFAULT_SCAN_LANES);
     expect(sanitizeScanLanes({ floodPerBlock: 10_001 })).toEqual(DEFAULT_SCAN_LANES);
-    expect(sanitizeScanLanes({ floodPerBlock: 7, spamScoring: false, privacySetTransfers: true })).toEqual({ floodPerBlock: 7, spamScoring: false, privacySetTransfers: true });
-    expect(DEFAULT_SCAN_LANES).toEqual({ floodPerBlock: FLOOD_PER_BLOCK, spamScoring: true, privacySetTransfers: false });
+    expect(sanitizeScanLanes({ floodPerBlock: 7, spamScoring: false, privacySetTransfers: true })).toEqual({ floodPerBlock: 7, spamScoring: false, privacySetTransfers: true, matchCover: false });
+    expect(DEFAULT_SCAN_LANES).toEqual({ floodPerBlock: FLOOD_PER_BLOCK, spamScoring: true, privacySetTransfers: false, matchCover: false });
+    // Cover lookups are opt-in: only a literal true turns them on.
+    expect(sanitizeScanLanes({ matchCover: true }).matchCover).toBe(true);
+    for (const v of [1, 'true', 'yes', null, {}]) expect(sanitizeScanLanes({ matchCover: v }).matchCover).toBe(false);
   });
 
   it('round-trips through storage under its own key and tolerates missing or failing storage', () => {
     const m = new Map<string, string>();
     const storage = { getItem: (k: string) => m.get(k) ?? null, setItem: (k: string, v: string) => void m.set(k, v) };
     expect(loadScanLanes(storage)).toEqual(DEFAULT_SCAN_LANES);
-    expect(saveScanLanes(storage, { floodPerBlock: 9, spamScoring: true, privacySetTransfers: true })).toBe(true);
+    expect(saveScanLanes(storage, { floodPerBlock: 9, spamScoring: true, privacySetTransfers: true, matchCover: true })).toBe(true);
     expect([...m.keys()]).toEqual([SCAN_LANES_KEY]);
-    expect(loadScanLanes(storage)).toEqual({ floodPerBlock: 9, spamScoring: true, privacySetTransfers: true });
-    m.set(SCAN_LANES_KEY, '{not json');
-    expect(loadScanLanes(storage)).toEqual(DEFAULT_SCAN_LANES);
+    expect(loadScanLanes(storage)).toEqual({ floodPerBlock: 9, spamScoring: true, privacySetTransfers: true, matchCover: true });
     expect(loadScanLanes(undefined)).toEqual(DEFAULT_SCAN_LANES);
     expect(saveScanLanes(undefined, DEFAULT_SCAN_LANES)).toBe(false);
     expect(saveScanLanes({ getItem: () => null, setItem: () => { throw new Error('quota'); } }, DEFAULT_SCAN_LANES)).toBe(false);
+  });
+
+  it('marks saved lane settings it cannot read exactly, so a cover opt-in is never silently turned off', () => {
+    const m = new Map<string, string>();
+    const storage = { getItem: (k: string) => m.get(k) ?? null, setItem: (k: string, v: string) => void m.set(k, v) };
+    for (const saved of ['{not json', '', 'null', '[]', '"on"', JSON.stringify({ matchCover: 'true' }), JSON.stringify({ matchCover: 1 }), JSON.stringify({ matchCover: true, floodPerBlock: 0 })]) {
+      m.set(SCAN_LANES_KEY, saved);
+      expect(loadScanLanes(storage).unreadable, saved).toBe(true);
+    }
+    // What could be read is kept for review in Settings.
+    expect(loadScanLanes(storage).matchCover).toBe(true);
+    expect(loadScanLanes({ getItem: () => { throw new Error('denied'); }, setItem: () => undefined })).toEqual({ ...DEFAULT_SCAN_LANES, unreadable: true });
+    // Settings saved before a field existed are readable, and the field takes its default.
+    m.set(SCAN_LANES_KEY, JSON.stringify({ floodPerBlock: 9, spamScoring: false, privacySetTransfers: true }));
+    expect(loadScanLanes(storage)).toEqual({ floodPerBlock: 9, spamScoring: false, privacySetTransfers: true, matchCover: false });
+    // Saving never stores the mark, so reviewed settings read normally again.
+    expect(saveScanLanes(storage, { ...DEFAULT_SCAN_LANES, matchCover: true, unreadable: true })).toBe(true);
+    expect(loadScanLanes(storage)).toEqual({ ...DEFAULT_SCAN_LANES, matchCover: true });
   });
 });
 
@@ -253,6 +272,18 @@ describe('same-token transfer estimate (spec 05 D3)', () => {
       client: unfiltered, chain, token: TOKEN, amount: 1_000_000n, head,
     });
     expect(wrongWindow).toEqual({ status: 'unknown', reason: 'error' });
+  });
+
+  it('reports unknown when the provider repeats a log position, so duplicates cannot inflate the estimate', async () => {
+    const head = 50_000n;
+    const ask = (logs: readonly RpcLog[]) => estimateSimilarTransfers({ client: clientWith(logs), chain, token: TOKEN, amount: 1_000_000n, head });
+    const one = transfer(49_990, 1_000_000n, 1);
+    // The same record twice, then two different records claiming one position.
+    expect(await ask([one, one])).toEqual({ status: 'unknown', reason: 'error' });
+    expect(await ask([one, { ...transfer(49_990, 900_000n, 1), blockHash: `0x${'f'.repeat(64)}` }])).toEqual({ status: 'unknown', reason: 'error' });
+    // Distinct positions, in one block or across blocks, still count.
+    expect(await ask([one, transfer(49_990, 1_000_000n, 2), transfer(49_991, 1_000_000n, 1)]))
+      .toEqual({ status: 'estimate', token: TOKEN, count: 3, windowBlocks: PRIVACY_TRANSFER_WINDOW_BLOCKS });
   });
 
   it('is carried by the privacy set unchanged and described as a labelled estimate without changing the level', () => {

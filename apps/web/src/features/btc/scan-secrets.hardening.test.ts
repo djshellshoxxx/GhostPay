@@ -2,7 +2,7 @@ import { parseHeader } from '@ghostpay/btc-silent-payments';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { EsploraClient } from './esplora';
 import { appendBlocks, coinbase, mineHeader, mockChain, spendTx, walletA, withTxid, withWitnessCommitment } from './fixtures.testutil';
-import { scanForPayments, wipeFound } from './scan';
+import { MAX_SCAN_MATCHES, scanForPayments, wipeFound } from './scan';
 
 const observed = vi.hoisted(() => ({ tweaks: [] as Uint8Array[] }));
 
@@ -70,6 +70,27 @@ describe('Bitcoin scan spend-tweak cleanup', () => {
     expect(observed.tweaks).toHaveLength(2);
     expect(observed.tweaks[0]).toBe(observed.tweaks[1]);
     expect(wiped(res.found[0]?.spendTweak)).toBe(false);
+  });
+
+  // Recovered-from: 524215eb (PR #254).
+  it.each([MAX_SCAN_MATCHES, MAX_SCAN_MATCHES + 1])('bounds output identities when %s outputs share one spend tweak', async (count) => {
+    const w = walletA(); const chain = mockChain('regtest', w); const block = chain.blocks[3]!;
+    const payment = block.txs[2]!;
+    const repeated = withTxid({ ...payment, vout: Array.from({ length: count }, () => payment.vout[1]!) });
+    block.txs = withWitnessCommitment([coinbase(3), block.txs[1]!, repeated]);
+    block.header = mineHeader(chain.blocks[2]!.hash, block.txs); block.hash = parseHeader(block.header).hash;
+    let failure: unknown; let returned = 0;
+    try {
+      const result = await scanForPayments({ client: new EsploraClient({ baseUrl: BASE, fetchFn: chain.fetchFn }), wallet: w, fromHeight: 3, toHeight: 3 });
+      returned = result.found.length;
+      wipeFound(result.found);
+    } catch (error) { failure = error; }
+    if (count > MAX_SCAN_MATCHES) { expect(failure).toMatchObject({ code: 'UNSUPPORTED' }); expect(returned).toBe(0); }
+    else { expect(failure).toBeUndefined(); expect(returned).toBe(count); }
+    expect(observed.tweaks).toHaveLength(count);
+    expect(new Set(observed.tweaks).size).toBe(1);
+    expect(observed.tweaks.every(wiped)).toBe(true);
+    expect(chain.requests.some((path) => path.includes('/outspend/'))).toBe(false);
   });
 
   it('wipes the tweak of an output recognised as spent from a later scanned block (default, no server query)', async () => {

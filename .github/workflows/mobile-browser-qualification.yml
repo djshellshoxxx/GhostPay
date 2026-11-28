@@ -10,6 +10,23 @@ on:
       - 'apps/web/e2e/devices*.spec.ts'
       - 'apps/web/e2e/flows.spec.ts'
       - 'apps/web/e2e/qr-camera.spec.ts'
+      # The browser self-check footer and its probes, qualified in each mobile engine.
+      - 'apps/web/e2e/browser-checks.spec.ts'
+      - 'apps/web/src/lib/browserChecks.ts'
+      - 'apps/web/src/components/BrowserChecks.tsx'
+      # What devices-mobile-restore runs through in each engine: its helpers and vector, the restore view and session,
+      # the camera and QR components, the keystore codec, and the lockfile that pins the browser engines.
+      - 'apps/web/e2e/helpers.ts'
+      - 'apps/web/src/views/SellerKeys.tsx'
+      - 'apps/web/src/lib/session.ts'
+      - 'apps/web/src/lib/keystore.ts'
+      - 'apps/web/src/components/CameraImporter.tsx'
+      - 'apps/web/src/components/QrFrame.tsx'
+      - 'packages/ux-vault/src/portable*.ts'
+      - 'packages/ux-vault/src/keystore-portable.ts'
+      - 'packages/ux-vault/src/keystore-portable.vectors.testutil.ts'
+      - 'test-vectors/seller-keystore-v1.json'
+      - 'package-lock.json'
 
 permissions:
   contents: read
@@ -21,7 +38,7 @@ concurrency:
 jobs:
   workflows:
     name: Phone and tablet engines (${{ matrix.profile }})
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 35
     strategy:
       fail-fast: false

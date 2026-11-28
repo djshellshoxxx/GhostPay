@@ -29,7 +29,7 @@ register('./loader.mjs', import.meta.url);
 globalThis.fetch = async (url) => {
   const path = new URL(url).pathname;
   const body = path.endsWith('build-info.json')
-    ? JSON.stringify({ app: 'ghostpay-web', commit: 'a'.repeat(40), manifestsSha256: 'b'.repeat(64) })
+    ? JSON.stringify({ app: 'ghostpay-web', commit: 'a'.repeat(40), pagesOrigin: process.env.GP_SMOKE_TEST_BUILT_ORIGIN, manifestsSha256: 'b'.repeat(64) })
     : path.endsWith('entry.js') ? 'export {}'
     : '<meta http-equiv="Content-Security-Policy" content="script-src \\'self\\'"><p id="gp-pages-mirror">GitHub Pages mirror</p><script type="module" src="./entry.js"></script>';
   return {
@@ -67,7 +67,8 @@ const nav = {
 };
 const page = {
   on: (event, listener) => { listeners.set(event, [...(listeners.get(event) ?? []), listener]); },
-  goto: async (url) => { emit(url.includes('#gpi=') ? 'invoice' : 'initial'); },
+  url: () => page.currentUrl,
+  goto: async (url) => { page.currentUrl = url; emit(url.includes('#gpi=') ? 'invoice' : 'initial'); },
   getByRole: () => nav,
   locator: () => ({ textContent: async () => 'GitHub Pages mirror' }),
   waitForFunction: async () => undefined,
@@ -83,14 +84,15 @@ export const chromium = {
 });
 after(() => { if (fixture !== undefined) rmSync(fixture, { recursive: true, force: true }); });
 
-function runSmoke({ stage = 'walk', event = 'console', level = 'error', text = '' } = {}) {
-  return spawnSync(process.execPath, ['--import', join(fixture, 'bootstrap.mjs'), smoke, site, '--timeout-s', '0'], {
+function runSmoke({ stage = 'walk', event = 'console', level = 'error', text = '', url = site, approved = 'https://pages.example', built = approved, preview = false } = {}) {
+  return spawnSync(process.execPath, ['--import', join(fixture, 'bootstrap.mjs'), smoke, url, '--approved-origin', approved, ...(preview ? ['--loopback-preview'] : []), '--timeout-s', '0'], {
     encoding: 'utf8',
     timeout: 10_000,
     env: {
       ...process.env,
       NODE_OPTIONS: '--max-old-space-size=128',
       GP_SMOKE_TEST_STAGE: stage,
+      GP_SMOKE_TEST_BUILT_ORIGIN: built,
       GP_SMOKE_TEST_EVENT: event,
       GP_SMOKE_TEST_LEVEL: level,
       GP_SMOKE_TEST_TEXT: text,
@@ -136,3 +138,26 @@ for (const event of ['pageerror', 'requestfailed', 'request']) {
     assert.doesNotMatch(result.stdout, /SMOKE PASS/);
   });
 }
+
+for (const url of ['http://pages.example/GhostPay/', 'https://copy.example/GhostPay/', 'https://pages.example:8443/GhostPay/']) {
+  test(`deployment smoke rejects the wrong served origin at ${url}`, () => {
+    const r = runSmoke({ url });
+    assert.equal(r.status, 1, r.stdout + r.stderr);
+    assert.match(r.stderr, /SMOKE FAIL:.*origin/);
+  });
+}
+
+test('deployment smoke also rejects the wrong origin embedded in the served artifact', () => {
+  const r = runSmoke({ built: 'https://other.example' });
+  assert.equal(r.status, 1, r.stdout + r.stderr);
+  assert.match(r.stderr, /SMOKE FAIL:.*origin/);
+});
+
+test('only an explicit local preview permits a release artifact to be inspected on loopback', () => {
+  const url = 'http://127.0.0.1:4194/GhostPay/';
+  assert.equal(runSmoke({ url }).status, 1);
+  assert.equal(runSmoke({ url, approved: 'http://127.0.0.1:4194' }).status, 1);
+  assert.equal(runSmoke({ url, approved: 'http://127.0.0.1:4194', preview: true }).status, 0);
+  assert.equal(runSmoke({ url, preview: true }).status, 0);
+  assert.equal(runSmoke({ url: 'https://copy.example/GhostPay/', preview: true }).status, 1);
+});

@@ -9,6 +9,7 @@ import { DestinationReuseNotice } from '../components/DestinationReuseNotice';
 import { watchDestinationWallet } from '../lib/destinationWalletScope';
 import { checkDestinationReuse, type DestinationNotice } from '../lib/destinationReuse';
 import { CameraImporter } from '../components/CameraImporter';
+import { browserOnline, useBrowserOnline } from '../lib/browserOnline';
 import { PaymentRequestFileInput } from '../components/PaymentRequestFileInput';
 import { WalletAttempts } from '../components/WalletAttempts';
 import { FeeDisclosure, useManifest } from '../components/Disclosure';
@@ -27,6 +28,7 @@ import {
   assertInvoiceStillPayable,
   assertPreparedBufferFresh,
   reviewInvoice,
+  trustView,
   type BufferQuote,
   type SweepSimulation,
   type PayContext,
@@ -145,8 +147,18 @@ function refusedAfterEarlierRequest(error: unknown): MessageDescriptor {
   return { key: 'transaction.walletUnknown', values: { diagnostic: { key: detail } } };
 }
 
+/** The checkout's own offline refusal, thrown before a wallet is asked for anything. */
+function isOfflineRefusal(error: unknown): boolean {
+  return error instanceof UserFacingError && error.translation?.key === 'pay.offlineCheck';
+}
+
 function supportsInvoice(invoice: ParsedInvoice['invoice'], supportedOnly: boolean): boolean {
   return !supportedOnly || (invoice.v === 1 && invoice.amountPolicy.mode === 'fixed_token');
+}
+
+/** A private checkout is erased when its view is revoked or replaced: nothing of that invoice may be kept after it. */
+function privateCheckout(parsed: ParsedInvoice): boolean {
+  return parsed.encrypted || parsed.passphraseProtected;
 }
 
 export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolean } = {}): ReactNode {
@@ -155,6 +167,8 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
   const trParts = i18n?.parts ?? SOURCE_TRANSLATOR.parts;
   const rich = (id: Parameters<Translator['parts']>[0], values: MessageValues, tags: TagMap): ReactNode => renderParts(trParts(id, values), tags);
   const app = useApp();
+  // Checkout reads the chain through the configured RPC. Without a connection nothing is verified or sent (#591).
+  const online = useBrowserOnline();
   // Every wallet request from checkout (connect, network switch, permit, send) is shown and approved first.
   const walletDisclosure = useWalletDisclosure();
   const latestT = useRef(t); latestT.current = t;
@@ -216,6 +230,8 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
   const [receiptConsent, setReceiptConsent] = useState(false);
   const receiptBusyRef = useRef(false);
   const receiptImportRevision = useRef(0);
+  // Remounts the uncontrolled receipt file input, so a file picked for one wallet is not kept for the next.
+  const [receiptFileGeneration, setReceiptFileGeneration] = useState(0);
   const [approval, setApproval] = useState<ApprovalPlan | undefined>(undefined);
   const [approvalHash, setApprovalHash] = useState<string | undefined>(undefined);
   const [paymentMayHaveBeenSent, setPaymentMayHaveBeenSent] = useState(false);
@@ -225,12 +241,35 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
   const [broadcastKind, setBroadcastKind] = useState<'approval' | 'payment'>('payment');
   // A public reconnect reason can outlive a cleared private invoice without retaining its contents or an outcome claim.
   const [showWalletChangeNotice, setShowWalletChangeNotice] = useState(false);
+  // WEB-APP-02: once a payment request may have reached a wallet, revoking the view must not reopen Prepare/Send for the
+  // same open public invoice. Both holders keep only that invoice (never a private one, which revocation erases); its
+  // hash, account and outcome stay behind the journal.
+  const [requestedInvoice, setRequestedInvoice] = useState<ParsedInvoice['invoice'] | undefined>(undefined);
+  const walletRequestedFor = useRef<ParsedInvoice['invoice'] | undefined>(undefined);
+  // The terminal invoice again, set with `requestedInvoice`, so events and retained callbacks see it before a render. It
+  // takes no further chain check, review, delay or wallet connection, across connection losses too.
+  const terminalFor = useRef<ParsedInvoice['invoice'] | undefined>(undefined);
   const [tick, setTick] = useState(0);
   const scheduler = useRef<DelayScheduler | undefined>(undefined);
   const flowRevision = useRef(0);
+  // Counts connection losses: wallet work that has not reached the wallet never continues across one.
+  const connectionLosses = useRef(0);
+  // That count when the current context was verified on the chain.
+  const contextLosses = useRef(0);
 
   const fragment = app.fragment;
-  const pinned = app.settings.pinnedSigners;
+  // A wallet request (approval or payment) was made for this invoice, or one is in flight: expiry or newly saved settings
+  // may stop new preparation, but must not clear what the submitted state, hash, receipt and proof are shown from.
+  const handedOff = result !== undefined || broadcast !== undefined || paymentMayHaveBeenSent || granted !== undefined || approvalHash !== undefined;
+  const keepContext = handedOff || phase === 'busy' || phase === 'done' || phase === 'submitted';
+  // The wallet was asked to approve or pay for the open invoice. Opening it again would offer that anew and drop what
+  // the wallet answered, whatever has been cleared since. Holds no invoice contents.
+  const walletAsked = useRef(false);
+  // New pins (saved here or by another tab) open the invoice again, which resets checkout, so they wait while either
+  // holds.
+  const heldPins = useRef(app.settings.pinnedSigners);
+  if (!keepContext && !walletAsked.current) heldPins.current = app.settings.pinnedSigners;
+  const pinned = heldPins.current;
   const invoiceQrScope = useMemo(() => ({ fragment, pinned, session: app.session, reset: invoiceQrReset, supportedOnly }), [fragment, pinned, app.session, invoiceQrReset, supportedOnly]);
   const currentInvoiceQrScope = useRef(invoiceQrScope); currentInvoiceQrScope.current = invoiceQrScope;
   const invalidateInvoiceQr = useCallback((): void => {
@@ -323,6 +362,7 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
     setReceiptError(undefined);
     setReceiptTrustedKey('');
     setCtx(undefined);
+    setCtxError(undefined);
     setBuilt(undefined);
     setBuiltFor(undefined);
     setBuiltForContext(undefined);
@@ -335,6 +375,11 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
     setGranted(undefined);
     setApprovalHash(undefined);
     setPermitDeclined(false);
+    // A replaced invoice takes its request markers with it.
+    walletAsked.current = false;
+    walletRequestedFor.current = undefined;
+    terminalFor.current = undefined;
+    setRequestedInvoice(undefined);
     // The gas buffer is an opt-in for one invoice; its quote is for that invoice's policy and clock.
     setUseBuffer(false);
     setBufferQuote(undefined);
@@ -397,12 +442,8 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
 
   // Build the payment request (amounts) as soon as the review has no blockers. The review is recomputed from the
   // latest invoice/manifest/clock every time (also when a delay ends), never from a stale closure.
-  // A wallet request (approval or payment) was made for this invoice, or one is in flight: expiry may stop new
-  // preparation, but must not clear the context that the submitted state, hash, receipt and proof are shown from.
-  const handedOff = result !== undefined || broadcast !== undefined || paymentMayHaveBeenSent || granted !== undefined || approvalHash !== undefined;
-  const keepContext = handedOff || phase === 'busy' || phase === 'done' || phase === 'submitted';
-  const latest = useRef({ parsed, manifest, receiptTrustedKey, ctx, built, builtFor, builtForContext, result, resultForContext, fragment, wallet, settings: app.settings, session: app.session, receiptConsent, supportedOnly, keepContext });
-  latest.current = { parsed, manifest, receiptTrustedKey, ctx, built, builtFor, builtForContext, result, resultForContext, fragment, wallet, settings: app.settings, session: app.session, receiptConsent, supportedOnly, keepContext };
+  const latest = useRef({ parsed, manifest, receiptTrustedKey, ctx, built, builtFor, builtForContext, result, resultForContext, fragment, wallet, settings: app.settings, session: app.session, receiptConsent, supportedOnly, keepContext, handedOff });
+  latest.current = { parsed, manifest, receiptTrustedKey, ctx, built, builtFor, builtForContext, result, resultForContext, fragment, wallet, settings: app.settings, session: app.session, receiptConsent, supportedOnly, keepContext, handedOff };
   // A disconnected route cannot observe the wallet. Drop the private reopening capability when leaving checkout.
   useEffect(() => () => {
     const checkout = latest.current;
@@ -412,6 +453,12 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
     app.setFragment(undefined);
   }, [app.setFragment]);
   const walletPrivacy = useWalletPrivacy(wallet, (cause) => {
+    // Only the payment counts. An unverified approval alone leaves the invoice payable (the journal refuses its repeat).
+    if (parsed !== undefined && !privateCheckout(parsed) && (phase === 'done' || (phase === 'submitted' && broadcastKind === 'payment') ||
+        paymentMayHaveBeenSent || walletRequestedFor.current === parsed.invoice)) {
+      terminalFor.current = parsed.invoice;
+      setRequestedInvoice(parsed.invoice);
+    }
     flowRevision.current++;
     scheduler.current?.cancel();
     setWallet(undefined);
@@ -421,7 +468,6 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
     setShowWalletChangeNotice(cause === 'wallet');
     app.announce('');
     setSchedule(undefined);
-    setCtxError(undefined);
     // Outcomes are retained at the wallet/journal boundary even when a hash arrives after this view is revoked.
     setResult(undefined);
     setResultForContext(undefined);
@@ -443,6 +489,8 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
     setReceiptTrustedKey('');
     setBoundReceipt(undefined);
     setReceiptError(undefined);
+    // A newly revealed checkout must not inherit the previous wallet's receipt file (#569, account separation).
+    setReceiptFileGeneration((generation) => generation + 1);
     invalidateInvoiceQr(); // Keep the explicitly preserved QR text area; revoke its parsed preview and work.
     setPaste('');
     if (parsed?.encrypted === true || parsed?.passphraseProtected === true) {
@@ -451,20 +499,42 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
       setInvoicePassphrase('');
       if (window.location.hash === fragment) clearFragment(window.location, window.history);
       app.setFragment(undefined);
+      setCtxError(undefined);
       setPhase('input');
     } else {
-      setPhase(latest.current.parsed === undefined ? 'input' : 'ready');
+      const open = latest.current.parsed;
+      const reopenable = open !== undefined && terminalFor.current !== open.invoice;
+      if (reopenable && latest.current.ctx === undefined) {
+        // Nothing to prepare from (the connection dropped first, for example): back to the review, keeping its error and
+        // explicit chain check. Nothing resumes by itself.
+        setPhase('review');
+      } else if (reopenable && !latest.current.handedOff && (!browserOnline() || connectionLosses.current !== contextLosses.current)) {
+        // The context was kept only for work in flight when the connection dropped. That work ends here, and the context
+        // is not reused.
+        returnToReview();
+      } else {
+        setCtxError(undefined);
+        setPhase(open === undefined ? 'input' : 'ready');
+      }
     }
   });
+  // One proof per completed result: rebuilding it on the periodic re-render changed its bytes, which closed the enlarged QR.
+  const proofReceipt = useMemo(() => result === undefined || ctx === undefined || built === undefined
+    ? undefined : buildReceipt(ctx, built, result, new Date(services.nowMs())), [ctx, built, result]);
   const receiptScope = useMemo(() => ({ ctx, session: app.session }), [ctx, app.session]);
   // #287 item 4: buildReceipt creates fresh display timestamps; proof-preview retention follows the original completed
   // payment and scope instead, so an ordinary rerender cannot restart its age.
   const proofSource = useMemo(() => ({ result, resultForContext, ctx, built, session: app.session, fragment }), [result, resultForContext, ctx, built, app.session, fragment]);
-  const authorityMatches = (scope?: WalletPrivacyScope): boolean => {
+  const viewMatches = (scope?: WalletPrivacyScope): boolean => {
     if (!mounted.current) return false;
     // Completion is also a protected presentation boundary, including expiry before a timer/restoration event runs.
     try { scope?.assertCurrent(); } catch { return false; }
-    return latest.current.wallet === wallet && latest.current.settings === app.settings && latest.current.session === app.session && latest.current.supportedOnly === supportedOnly;
+    return latest.current.wallet === wallet && latest.current.session === app.session && latest.current.supportedOnly === supportedOnly;
+  };
+  // An operation asks the wallet for nothing more once settings were saved while it ran; the outcome of what was asked is
+  // still shown. A later Send of a handed-off checkout reads the contracts back through the saved RPC first.
+  const assertSameSettings = (): void => {
+    if (latest.current.settings !== app.settings) throw new UserFacingError({ key: 'pay.error.reviewChanged' });
   };
   const cancelInvoiceOpening = (expectedFragment: string | undefined, revision: number): void => {
     if (!mounted.current || flowRevision.current !== revision || latest.current.fragment !== expectedFragment) return;
@@ -484,14 +554,25 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
       throw new Error('The invoice changed. Review it again before continuing.');
     }
   };
+  // A newer check or a connection loss supersedes an in-flight chain verification.
+  const reviewRequest = useRef(0);
   const refreshContext = useCallback(async (): Promise<PayContext | undefined> => {
+    const request = ++reviewRequest.current;
     const { parsed: p, manifest: m } = latest.current;
     if (p === undefined || m === undefined || !supportsInvoice(p.invoice, latest.current.supportedOnly)) {
       setCtx(undefined);
       return undefined;
     }
+    // A terminal invoice gets no further checkout check, from an effect or a retained callback.
+    if (terminalFor.current === p.invoice) return undefined;
+    // Fail closed while offline: the invoice stays readable, but no payment context exists without chain evidence.
+    if (!browserOnline()) {
+      if (!latest.current.keepContext) setCtx(undefined);
+      setCtxError({ key: 'pay.offlineCheck' });
+      return undefined;
+    }
     const revision = flowRevision.current;
-    const current = (): boolean => mounted.current && flowRevision.current === revision && latest.current.parsed === p && latest.current.manifest === m && supportsInvoice(p.invoice, latest.current.supportedOnly);
+    const current = (): boolean => mounted.current && reviewRequest.current === request && browserOnline() && flowRevision.current === revision && latest.current.parsed === p && latest.current.manifest === m && supportsInvoice(p.invoice, latest.current.supportedOnly);
     const now = Math.floor(services.nowMs() / 1000);
     const fresh = reviewInvoice(p, now, m);
     if (fresh.blockers.length > 0) {
@@ -513,6 +594,7 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
       }
       const c = await createPayContext(fresh, rpc, { nowSeconds: now });
       if (!current()) return undefined;
+      contextLosses.current = connectionLosses.current;
       setCtx(c);
       setCtxError(undefined);
       return c;
@@ -523,13 +605,76 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
       return undefined;
     }
   }, [app, services]);
+  const captureConnection = (): { readonly lost: () => boolean; readonly assert: () => void } => {
+    const losses = connectionLosses.current;
+    const lost = (): boolean => !browserOnline() || connectionLosses.current !== losses;
+    return { lost, assert: () => { if (lost()) throw new UserFacingError({ key: 'pay.offlineCheck' }); } };
+  };
+  /** Back to the review, so only an explicit chain check restarts a payment nothing was asked of the wallet for. */
+  const returnToReview = (): void => {
+    setBuilt(undefined);
+    setBuiltFor(undefined);
+    setBuiltForContext(undefined);
+    setCtx(undefined);
+    setCtxError({ key: 'pay.offlineCheck' });
+    setPhase('review');
+  };
+  // Losing the connection cancels an open review, a pending delay and a prepared payment that no wallet has seen.
+  // Reconnecting never re-verifies or resumes by itself: the payer retries the chain check explicitly.
+  useEffect(() => {
+    const disconnect = (): void => {
+      connectionLosses.current++;
+      reviewRequest.current++;
+      const open = latest.current.parsed;
+      // Neither a handed-off payment nor a terminal invoice is reopened by a connection change.
+      if (latest.current.keepContext || (open !== undefined && terminalFor.current === open.invoice)) return;
+      scheduler.current?.cancel();
+      setCtxError({ key: 'pay.offlineCheck' });
+      setCtx(undefined);
+      setBuilt(undefined);
+      setBuiltFor(undefined);
+      setBuiltForContext(undefined);
+      if (latest.current.parsed !== undefined) setPhase('review');
+    };
+    window.addEventListener('offline', disconnect);
+    return () => { window.removeEventListener('offline', disconnect); };
+  }, []);
   const refreshRef = useRef(refreshContext);
   refreshRef.current = refreshContext;
   const reviewKey = review === undefined ? '' : review.blockers.join('|');
 
+  // The saved settings this checkout was reviewed under. Another tab can save others while this page is open.
+  const reviewedSettings = useRef(app.settings);
+  const refreshDeferred = useRef(false);
   useEffect(() => {
+    // A running or handed-off payment keeps the context it was reviewed with.
+    if (reviewedSettings.current !== app.settings && latest.current.keepContext && latest.current.ctx !== undefined) {
+      refreshDeferred.current = true;
+      return;
+    }
     void refreshContext();
   }, [refreshContext, parsed, manifest, reviewKey]);
+  // Newly saved settings: nothing prepared under the old ones stays, and checkout goes back to the review, which offers
+  // the chain check again should it fail now. While a wallet request is out, or its outcome is shown, this waits; it runs
+  // once an operation ends without one. A requested invoice that is closed to further payment stays as it is.
+  useEffect(() => {
+    if (reviewedSettings.current === app.settings || keepContext) return;
+    reviewedSettings.current = app.settings;
+    const terminal = parsed !== undefined && terminalFor.current === parsed.invoice;
+    if (!terminal && (phase === 'waiting' || phase === 'ready' || phase === 'prepared')) {
+      if (phase === 'waiting') scheduler.current?.cancel();
+      setBuilt(undefined);
+      setBuiltFor(undefined);
+      setBuiltForContext(undefined);
+      setApproval(undefined);
+      setPhase('review');
+      setError((current) => current ?? { key: 'pay.error.reviewChanged' });
+    }
+    if (refreshDeferred.current) {
+      refreshDeferred.current = false;
+      void refreshRef.current();
+    }
+  }, [app.settings, keepContext]);
   // An operation that was in flight at expiry and ended without any wallet request releases the context afterwards.
   const blocked = review !== undefined && review.blockers.length > 0;
   useEffect(() => {
@@ -767,6 +912,7 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
   const onContinue = (): void => {
     const revision = flowRevision.current;
     const invoice = parsed?.invoice;
+    if (invoice !== undefined && terminalFor.current === invoice) return;
     setError(undefined);
     if (useDelay) startWaiting();
     else {
@@ -791,8 +937,8 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
     });
   };
   useEffect(() => {
-    if (phase === 'ready' && wallets === undefined) onFindWallets();
-  }, [phase, wallets]);
+    if (phase === 'ready' && wallets === undefined && (parsed === undefined || requestedInvoice !== parsed.invoice)) onFindWallets();
+  }, [phase, wallets, parsed, requestedInvoice]);
 
   const runtime = useCallback(async (): Promise<Runtime> => {
     const privacyScope = walletPrivacy.capture();
@@ -802,7 +948,7 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
   }, [app, chainId, services, walletPrivacy.capture]);
 
   const onConnect = (w: WalletInfo): void => {
-    if (chainId === undefined) return;
+    if (chainId === undefined || (parsed !== undefined && terminalFor.current === parsed.invoice)) return;
     const revision = flowRevision.current;
     let privacyScope;
     try { privacyScope = walletPrivacy.begin(); } catch { return; }
@@ -810,14 +956,25 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
     setError(undefined);
     setShowWalletChangeNotice(false);
     setStatus({ key: 'pay.status.walletWaiting' });
+    const connection = captureConnection();
     // A changed invoice, flow or session ends an open review and the connection; the handlers below then stay silent.
-    const connectionCurrent = (): void => {
+    // A connection loss also ends it, before the wallet is asked, and says so.
+    const stillOurs = (): void => {
       privacyScope.assertCurrent();
       if (flowRevision.current !== revision || latest.current.parsed?.invoice !== invoice) throw new UserFacingError({ key: 'wallet.disclosure.cancelled' });
     };
+    const connectionCurrent = (): void => {
+      stillOurs();
+      connection.assert();
+    };
     connectWallet(w, chainId, connectionCurrent, privacyScope.signal, { disclosure: walletDisclosure }).then(
       (s) => {
-        try { connectionCurrent(); } catch { return; }
+        try { stillOurs(); } catch { return; }
+        if (connection.lost()) {
+          setStatus('');
+          setError({ key: 'pay.offlineCheck' });
+          return;
+        }
         // A hard reload does not run React cleanup; remove a connected private invoice's URL capability now.
         if ((parsed?.encrypted === true || parsed?.passphraseProtected === true) && window.location.hash === fragment) {
           clearFragment(window.location, window.history);
@@ -827,7 +984,7 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
         announce({ key: 'pay.announce.connected' });
       },
       (e: unknown) => {
-        try { connectionCurrent(); } catch { return; }
+        try { stillOurs(); } catch { return; }
         setStatus('');
         setError(captureUserMessage(e));
       },
@@ -836,16 +993,20 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
 
   const onPrepare = (): void => {
     if (wallet === undefined || ctx === undefined || parsed === undefined || ctx.review.invoice !== parsed.invoice) return;
+    if (requestedInvoice === parsed.invoice) return;
     const revision = flowRevision.current;
     let privacyScope;
     try { privacyScope = walletPrivacy.capture(); } catch { return; }
     const sessionGuard = privacyScope.assertCurrent;
     const invoice = parsed.invoice;
-    const isCurrent = (): boolean => authorityMatches(privacyScope) && flowRevision.current === revision && latest.current.parsed?.invoice === invoice && latest.current.ctx?.review.invoice === invoice;
+    const isCurrent = (): boolean => viewMatches(privacyScope) && flowRevision.current === revision && latest.current.parsed?.invoice === invoice && latest.current.ctx?.review.invoice === invoice;
+    const connection = captureConnection();
     const guard = (): void => {
+      connection.assert();
       sessionGuard();
       assertCurrentInvoice(revision, invoice);
-      if (!authorityMatches()) throw new Error('The wallet, settings or session changed. Review again before continuing.');
+      assertSameSettings();
+      if (!viewMatches()) throw new Error('The wallet or session changed. Review again before continuing.');
     };
     const scopedStatus = (message: string, outcome?: TransactionOutcome): void => { if (isCurrent()) setStatus(outcome?.message ?? message); };
     setError(undefined);
@@ -904,6 +1065,8 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
       } catch (e) {
         if (!isCurrent()) return;
         setStatus('');
+        // Nothing was sent by preparing: after a connection loss the chain is checked again before another try.
+        if (connection.lost() && !handedOff) { returnToReview(); return; }
         if (e instanceof PermitRejectedError) setPermitDeclined(true);
         if (!(e instanceof Error && e.message === 'buffer')) setError(captureUserMessage(e));
         setPhase('ready');
@@ -918,11 +1081,14 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
     try { privacyScope = walletPrivacy.capture(); } catch { return; }
     const sessionGuard = privacyScope.assertCurrent;
     const invoice = parsed.invoice;
-    const isCurrent = (): boolean => authorityMatches(privacyScope) && flowRevision.current === revision && latest.current.parsed?.invoice === invoice && latest.current.ctx === ctx && latest.current.built === built && latest.current.builtFor === invoice && latest.current.builtForContext === ctx;
+    const isCurrent = (): boolean => viewMatches(privacyScope) && flowRevision.current === revision && latest.current.parsed?.invoice === invoice && latest.current.ctx === ctx && latest.current.built === built && latest.current.builtFor === invoice && latest.current.builtForContext === ctx;
+    const connection = captureConnection();
     const guard = (): void => {
+      connection.assert();
       sessionGuard();
       assertCurrentInvoice(revision, invoice);
-      if (!authorityMatches()) throw new Error('The wallet, settings or session changed. Review again before continuing.');
+      assertSameSettings();
+      if (!viewMatches()) throw new Error('The wallet or session changed. Review again before continuing.');
       if (latest.current.built !== built || latest.current.builtFor !== invoice || latest.current.builtForContext !== ctx) throw new Error('The prepared payment changed. Review it again before continuing.');
     };
     const scopedStatus = (message: string, outcome?: TransactionOutcome): void => { if (isCurrent()) setStatus(outcome?.message ?? message); };
@@ -933,6 +1099,8 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
     let paymentWalletRequested = paymentMayHaveBeenSent;
     // Set only by this attempt's own wallet hand-off: its errors already describe their (unknown) outcome.
     let requestedThisAttempt = false;
+    // The same for this attempt's approval request, which may end without a hash.
+    let approvalRequested = false;
     void (async () => {
       let stage: 'approval' | 'payment' = approval?.required === true && granted === undefined ? 'approval' : 'payment';
       try {
@@ -946,12 +1114,22 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
           assertPreparedBufferFresh(built, rt.nowSeconds());
         };
         preSignGuard();
+        // A handed-off checkout keeps its context when other settings are saved. Before the wallet is asked again, the
+        // contracts are read back through the RPC saved now; without one, or on a failed check, nothing is asked.
+        if (reviewedSettings.current !== app.settings) {
+          const checked = manifest === undefined ? undefined : await verifyManifestForFlow(manifest, rt.rpc);
+          if (checked?.status !== 'loaded') throw new UserFacingError(checked?.status === 'invalid' ? checked.reason : { key: 'pay.error.noManifest' });
+          preSignGuard();
+        }
         if (approval?.required === true && actualAllowance === undefined) {
           await assertNoPaymentAttempt(invoice);
           preSignGuard();
           actualAllowance = await grantApproval(wallet, ctx, approval, rt, scopedStatus, preSignGuard, (hash) => {
             approvalBroadcastHash = hash;
             if (isCurrent()) setApprovalHash(hash);
+          }, () => {
+            approvalRequested = true;
+            walletAsked.current = true;
           });
           // Preserve the confirmed allowance before checking whether this flow is still current.
           if (isCurrent()) setGranted(actualAllowance);
@@ -961,6 +1139,9 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
         const res = await sendPayment(wallet, ctx, built, rt, scopedStatus, guard, () => {
           paymentWalletRequested = true;
           requestedThisAttempt = true;
+          walletAsked.current = true;
+          // Synchronous: a wallet event in the same tick must still see that this public invoice reached the wallet.
+          if (!privateCheckout(parsed)) walletRequestedFor.current = invoice;
           if (isCurrent()) setPaymentMayHaveBeenSent(true);
         });
         if (!isCurrent()) return;
@@ -986,6 +1167,12 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
         }
         let earlierRequest = paymentWalletRequested;
         try { earlierRequest ||= paymentAttemptRecorded(invoice); } catch { /* The original storage error is shown below. */ }
+        // Refused, or failed across a connection loss, before this payer's wallet was asked for anything: the chain is
+        // checked again before another try.
+        if ((isOfflineRefusal(e) || connection.lost()) && !approvalRequested && !earlierRequest && actualAllowance === undefined && approvalBroadcastHash === undefined) {
+          returnToReview();
+          return;
+        }
         if (actualAllowance !== undefined) {
           const outcome = approvedPaymentOutcome(e, earlierRequest, approvalBroadcastHash as Hex | undefined);
           setError(outcome.message);
@@ -1007,16 +1194,20 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
     try { privacyScope = walletPrivacy.capture(); } catch { return; }
     const sessionGuard = privacyScope.assertCurrent;
     const invoice = parsed.invoice;
-    const isCurrent = (): boolean => authorityMatches(privacyScope) && flowRevision.current === revision && latest.current.parsed?.invoice === invoice && latest.current.ctx?.review.invoice === invoice;
+    const isCurrent = (): boolean => viewMatches(privacyScope) && flowRevision.current === revision && latest.current.parsed?.invoice === invoice && latest.current.ctx?.review.invoice === invoice;
     const scopedStatus = (message: string, outcome?: TransactionOutcome): void => { if (isCurrent()) setStatus(outcome?.message ?? message); };
+    const connection = captureConnection();
     setError(undefined);
     setPhase('busy');
     void (async () => {
       try {
         const rt = await runtime();
         if (!isCurrent()) return;
+        // Runs before the wallet is asked, so a connection loss during the review refuses the revocation.
         await revokeApproval(wallet, ctx, approval, rt, scopedStatus, () => {
+          connection.assert();
           sessionGuard();
+          assertSameSettings();
           if (!isCurrent()) throw new Error('The invoice changed. Review it again before continuing.');
         });
         if (!isCurrent()) return;
@@ -1039,6 +1230,9 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
   const forget = (): void => {
     resetInvoiceQr();
     setShowWalletChangeNotice(false);
+    setRequestedInvoice(undefined);
+    walletRequestedFor.current = undefined;
+    terminalFor.current = undefined;
     flowRevision.current += 1;
     receiptImportRevision.current += 1;
     scheduler.current?.cancel();
@@ -1121,8 +1315,14 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
   }
 
   const inv = parsed.invoice;
+  // Pins only label the signer, never block. An invoice held open (see heldPins) is not opened again for newer pins, so
+  // its label follows the pins saved now.
+  const signer = trustView(parsed, app.settings.pinnedSigners);
+  // A blocked invoice (expired, say) gets no chain check that would replace the offline notice once the browser is back.
+  const staleOffline = online && review.blockers.length > 0 && typeof ctxError === 'object' && ctxError.key === 'pay.offlineCheck';
   const warnings = walletWarnings(wallets ?? [], t);
   const ready = phase === 'ready' || phase === 'prepared' || phase === 'busy' || phase === 'submitted' || phase === 'done';
+  const alreadyRequested = requestedInvoice === parsed.invoice;
   const decimals = token?.decimals ?? 18;
   const symbol = token?.symbol ?? '';
   // L2-F4: a fixed token amount is what the payer pays; the fiat total is then only the seller's unchecked statement.
@@ -1139,8 +1339,8 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
       <WalletAttempts wallet={wallet} getRpc={app.getRpc} />
       {walletChangeNotice}
 
-      <Notice kind={review.trust.kind === 'invalid-signature' ? 'error' : review.trust.kind === 'trusted-seller' ? 'ok' : 'warn'} title={t('pay.signature')}>
-        {displayMessage(review.trust.message, t)}
+      <Notice kind={signer.kind === 'invalid-signature' ? 'error' : signer.kind === 'trusted-seller' ? 'ok' : 'warn'} title={t('pay.signature')}>
+        {displayMessage(signer.message, t)}
       </Notice>
       {review.blockers.filter((b) => b !== review.trust.text).length > 0 && (
         <Notice kind="error" title={t('pay.cannotProceed')}>
@@ -1151,7 +1351,13 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
           </ul>
         </Notice>
       )}
-      {ctxError !== undefined && <Notice kind="error">{displayMessage(ctxError, t)}</Notice>}
+      {ctxError !== undefined && !staleOffline && (
+        <Notice kind="error">
+          {displayMessage(ctxError, t)}{' '}
+          {online && phase === 'review' && review.blockers.length === 0 &&
+            <button type="button" className="btn" onClick={() => { void refreshContext(); }}>{t('pay.retryCheck')}</button>}
+        </Notice>
+      )}
       {review.warnings.length > 0 && (
         <Notice kind="warn" title={t('pay.checkAmount')}>
           {review.warningMessages.map((w) => <p key={w.key}>{displayMessage(w, t)}</p>)}
@@ -1259,7 +1465,7 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
           }} /> {t('pay.receipt.consent')}</label>
           <form className="stack" onSubmit={onImportReceipt}>
             <Field label={t('pay.receipt.fileLabel')} help={{ label: t('help.about', { control: t('pay.receipt.fileLabel') }), text: t('help.receiptFile') }}>
-              {(id, describedBy) => <input aria-describedby={describedBy} id={id} type="file" accept="application/json,.json" />}
+              {(id, describedBy) => <input key={receiptFileGeneration} aria-describedby={describedBy} id={id} type="file" accept="application/json,.json" />}
             </Field>
             <Field label={t('pay.receipt.keyLabel')} hint={t('pay.receipt.keyHint')}>
               {(id, describedBy) => <input aria-describedby={describedBy} id={id} className="mono" type="text" autoComplete="off" spellCheck={false} value={receiptTrustedKey} onChange={(event) => { setReceiptTrustedKey(event.target.value); setBoundReceipt(undefined); setReceiptError(undefined); }} placeholder="02… or 03…" />}
@@ -1345,7 +1551,9 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
         </div>
       )}
 
-      {ready && phase !== 'done' && phase !== 'submitted' && (
+      {alreadyRequested && <Notice kind="warn" title={t('pay.alreadyRequested.title')}>{t('pay.alreadyRequested.body')}</Notice>}
+
+      {ready && phase !== 'done' && phase !== 'submitted' && !alreadyRequested && (
         <div className="panel">
           <h3>{t('pay.wallet')}</h3>
           {wallet === undefined ? (
@@ -1355,7 +1563,7 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
               <ul className="plain-list">
                 {wallets?.map((w) => (
                   <li key={w.id}>
-                    <button type="button" className="btn" onClick={() => { onConnect(w); }}>
+                    <button type="button" className="btn" disabled={!online} onClick={() => { onConnect(w); }}>
                       {w.icon !== undefined && <img src={w.icon} alt="" width={20} height={20} />} {t('pay.connect', { name: w.name })}
                       {w.rdns !== undefined && <span className="hint"> ({w.rdns})</span>}
                     </button>
@@ -1372,7 +1580,7 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
             </p>
           )}
           {wallet !== undefined && built === undefined && (
-            <button type="button" className="btn btn-primary" onClick={onPrepare} disabled={phase === 'busy' || ctx === undefined}>
+            <button type="button" className="btn btn-primary" onClick={onPrepare} disabled={!online || phase === 'busy' || ctx === undefined}>
               {t('pay.prepare')}
             </button>
           )}
@@ -1380,7 +1588,7 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
       )}
 
       {built !== undefined && builtFor === parsed.invoice && builtForContext === ctx && phase !== 'done' && phase !== 'submitted' && ctx !== undefined && (
-        <FinalPreview notice={walletChanged ? 'wallet-changed' : destinationReview?.session === app.session ? destinationReview?.notice : undefined} built={built} ctx={ctx} onSend={onSend} busy={phase === 'busy'} approval={approval} granted={granted} approvalHash={approvalHash} onRevoke={onRevoke} />
+        <FinalPreview notice={walletChanged ? 'wallet-changed' : destinationReview?.session === app.session ? destinationReview?.notice : undefined} built={built} ctx={ctx} onSend={onSend} busy={!online || phase === 'busy'} approval={approval} granted={granted} approvalHash={approvalHash} onRevoke={onRevoke} />
       )}
 
       {status !== '' && <TransactionStatusLine status={status} />}
@@ -1422,20 +1630,20 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
               className="btn"
               onClick={() => {
                 if (window.confirm(t('pay.receipt.download.confirm'))) {
-                  downloadText('ghostpay-receipt.json', JSON.stringify(buildReceipt(ctx, built, result, new Date(services.nowMs())), null, 2), 'application/json');
+                  downloadText('ghostpay-receipt.json', JSON.stringify(proofReceipt, null, 2), 'application/json');
                 }
               }}
             >
               {t('pay.receipt.download')}
             </button>
           </div>
-          <PaymentProofQr receipt={buildReceipt(ctx, built, result, new Date(services.nowMs()))} sourceIdentity={proofSource} />
+          {proofReceipt !== undefined && <PaymentProofQr receipt={proofReceipt} sourceIdentity={proofSource} />}
         </div>
       )}
 
       <div className="actions">
         {phase === 'review' && (
-          <button type="button" className="btn btn-primary" onClick={onContinue} disabled={review.blockers.length > 0 || ctx === undefined}>
+          <button type="button" className="btn btn-primary" onClick={onContinue} disabled={!online || review.blockers.length > 0 || ctx === undefined}>
             {useDelay ? t('pay.startDelay') : t('pay.continue')}
           </button>
         )}

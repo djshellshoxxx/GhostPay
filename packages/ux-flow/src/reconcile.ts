@@ -67,8 +67,8 @@ export function toleranceAmount(expected: bigint, t: Tolerance): bigint {
 export function classifyAmount(expected: bigint, paid: bigint, tol: Tolerance = NO_TOLERANCE): AmountClass {
   if (typeof expected !== 'bigint' || expected <= 0n) throw new FlowError('BAD_AMOUNT');
   if (typeof paid !== 'bigint' || paid < 0n) throw new FlowError('BAD_AMOUNT');
-  if (paid === expected) return 'exact';
   const tl = toleranceAmount(expected, tol);
+  if (paid === expected) return 'exact';
   const diff = paid > expected ? paid - expected : expected - paid;
   if (diff <= tl) return 'tolerated';
   return paid < expected ? 'partial' : 'over';
@@ -318,6 +318,12 @@ export type ConfirmResult =
  * adds the TX_BEFORE_ISSUE warning (PAYRE-7).
  *
  * @security `proof` may be an untrusted string; decode failures return BAD_PROOF, never throw.
+ * @security OPEN (audit D-1, 2026-11-18): the proof is unauthenticated and a tx hash is public, so any party can claim
+ * another payer's observed transfer for an invoice of theirs on the same chain and token (and lock out the real payer
+ * with DUPLICATE_TX). Do not expose this path to untrusted proofs or treat its `confirmed` status as payment evidence
+ * until the proof is bound to the payer (sender signature, or the invoice nonce carried in calldata/metadata). An
+ * ambiguity-only check was tried and rejected: it is bypassable with partial or over amounts and lets a second
+ * same-amount invoice block every honest confirmation.
  */
 export function confirm(
   invoices: readonly Invoice[],

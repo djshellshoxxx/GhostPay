@@ -36,8 +36,8 @@ function realm(dom: JSDOM, v: unknown): unknown {
   return (dom.window as unknown as { JSON: JSON }).JSON.parse(JSON.stringify(v));
 }
 
-async function page(attrs: string): Promise<Harness> {
-  const dom = new JSDOM(`<!doctype html><body><div><button id="b" data-ghostpay ${attrs}></button></div><script src="${APP}/ghostpay-embed-v2.js"></script></body>`, {
+async function page(attrs: string, extra = ''): Promise<Harness> {
+  const dom = new JSDOM(`<!doctype html><body><div><button id="b" data-ghostpay ${attrs}></button></div>${extra}<script src="${APP}/ghostpay-embed-v2.js"></script></body>`, {
     url: 'https://merchant.test/',
     runScripts: 'dangerously',
     resources: loader,
@@ -261,6 +261,19 @@ describe('ghostpay-embed-v2.js iframe mode', () => {
     expect(h.btn.hasAttribute('title')).toBe(false);
   });
 
+  it('lets a dialog the shop page removed stay gone: its late timeout opens no popup and moves no focus', async () => {
+    const h = await page(`data-invoice="${GOOD}" data-mode="iframe"`);
+    const doc = h.dom.window.document;
+    h.btn.click();
+    doc.querySelector('[role="dialog"]')!.remove(); // the shop page withdraws the checkout before it answers
+    h.btn.click();
+    const close = doc.querySelector('[role="dialog"] button') as HTMLButtonElement;
+    h.timers[0]!(); // the first checkout's handshake timeout fires late
+    expect(h.opened).toEqual([]);
+    expect(doc.querySelectorAll('[role="dialog"]')).toHaveLength(1);
+    expect(doc.activeElement).toBe(close);
+  });
+
   it('repeats the same hello until the checkout answers (its listener can register after the frame load event), then stops', async () => {
     const a = await armed();
     expect(a.h.posted).toHaveLength(1);
@@ -327,6 +340,16 @@ describe('ghostpay-embed-v2.js iframe mode', () => {
     expect([...a.live]).toEqual([]);
   });
 
+  it('completion disarms the popup fallback even when no gp:init was seen', async () => {
+    const { h, nonce } = await framed();
+    expect(h.timers).toHaveLength(1);
+    const cleared: number[] = [];
+    (h.dom.window as unknown as { clearTimeout: (id: number) => void }).clearTimeout = (id) => { cleared.push(id); };
+    h.send(done(nonce));
+    expect(h.events).toHaveLength(1);
+    expect(cleared).toEqual([1]); // the harness numbers the one fallback timer 1
+  });
+
   it('a frame that loses its window stops the retries instead of leaving the interval running', async () => {
     const a = await armed();
     expect([...a.live]).toHaveLength(1);
@@ -343,6 +366,113 @@ describe('ghostpay-embed-v2.js iframe mode', () => {
     expect(h.opened).toEqual([]);
     h.send(done(nonce));
     expect(h.events).toHaveLength(0);
+  });
+
+  it('moves focus into the dialog, never stacks a second checkout, and returns focus on close', async () => {
+    const h = await page(`data-invoice="${GOOD}" data-mode="iframe"`);
+    const doc = h.dom.window.document;
+    h.btn.focus();
+    h.btn.click();
+    const close = doc.querySelector('[role="dialog"] button') as HTMLButtonElement;
+    expect(doc.activeElement).toBe(close);
+    h.btn.click(); // a script or assistive technology can still activate the button behind the dialog
+    expect(doc.querySelectorAll('[role="dialog"]')).toHaveLength(1);
+    close.click();
+    expect(doc.querySelector('[role="dialog"]')).toBeNull();
+    expect(doc.activeElement).toBe(h.btn);
+    h.btn.click(); // closing frees the button for a new checkout
+    expect(doc.querySelectorAll('[role="dialog"]')).toHaveLength(1);
+  });
+
+  it.each([
+    ['popup-mode', ''],
+    ['remote-profile', 'data-profile-url="https://merchant.test/profile.json" data-mode="iframe"'],
+  ])('opens no popup from a %s button while a dialog is open', async (_name, attrs) => {
+    const h = await page(`data-invoice="${GOOD}" data-mode="iframe"`, `<button id="p" data-ghostpay data-invoice="${GOOD}" ${attrs}></button>`);
+    const doc = h.dom.window.document;
+    const other = doc.getElementById('p')!;
+    h.btn.click();
+    other.click(); // the page behind the dialog can still be reached with the keyboard
+    expect(h.opened).toEqual([]);
+    expect(doc.querySelectorAll('[role="dialog"]')).toHaveLength(1);
+    (doc.querySelector('[role="dialog"] button') as HTMLButtonElement).click();
+    other.click();
+    expect(h.opened).toHaveLength(1);
+  });
+
+  // jsdom does not enforce `inert`; these pin which elements carry it. Browsers keep focus out of such elements.
+  const BEHIND = '<main id="m"><a href="#x">shop link</a></main><aside id="a" inert></aside>';
+  const settled = (): Promise<void> => new Promise<void>((resolve) => { setTimeout(resolve, 0); });
+  const inert = (doc: Document): string[] => Array.from(doc.body.children).filter((c) => c.hasAttribute('inert')).map((c) => (c.id === '' ? c.tagName : c.id));
+  const closeButton = (doc: Document): HTMLButtonElement => doc.querySelector<HTMLButtonElement>('[role="dialog"] button')!;
+
+  it('makes the rest of the page inert while the dialog is open, and on close releases only what it made inert', async () => {
+    const h = await page(`data-invoice="${GOOD}" data-mode="iframe"`, BEHIND);
+    const doc = h.dom.window.document;
+    h.btn.click();
+    expect(inert(doc)).toEqual(['DIV', 'm', 'a', 'SCRIPT']);
+    expect(doc.querySelector('[role="dialog"]')!.hasAttribute('inert')).toBe(false);
+    closeButton(doc).click();
+    expect(inert(doc)).toEqual(['a']);
+    expect(doc.activeElement).toBe(h.btn);
+  });
+
+  it('releases the page before the popup fallback', async () => {
+    const h = await page(`data-invoice="${GOOD}" data-mode="iframe"`, BEHIND);
+    h.btn.click();
+    h.timers[0]!();
+    expect(inert(h.dom.window.document)).toEqual(['a']);
+    expect(h.opened).toHaveLength(1);
+  });
+
+  it.each([
+    ['removes the dialog', (doc: Document): void => { doc.querySelector('[role="dialog"]')!.remove(); }],
+    // The old body keeps its children, so only the change to the root element shows the dialog is gone.
+    ['replaces the body', (doc: Document): void => { doc.documentElement.replaceChild(doc.createElement('body'), doc.body); }],
+  ])('releases the page when the shop page %s', async (_name, withdraw) => {
+    const h = await page(`data-invoice="${GOOD}" data-mode="iframe"`, BEHIND);
+    const doc = h.dom.window.document;
+    const behind = doc.getElementById('m')!;
+    h.btn.click();
+    expect(behind.hasAttribute('inert')).toBe(true);
+    withdraw(doc);
+    await settled();
+    expect(behind.hasAttribute('inert')).toBe(false);
+  });
+
+  it('keeps the page inert for a dialog opened right after the shop page removed the last one', async () => {
+    const h = await page(`data-invoice="${GOOD}" data-mode="iframe"`, BEHIND);
+    const doc = h.dom.window.document;
+    h.btn.click();
+    doc.querySelector('[role="dialog"]')!.remove();
+    h.btn.click(); // before the removal has been observed
+    await settled();
+    h.timers[0]!(); // the withdrawn checkout's late timeout releases nothing of the new one
+    expect(inert(doc)).toEqual(['DIV', 'm', 'a', 'SCRIPT']);
+    closeButton(doc).click();
+    expect(inert(doc)).toEqual(['a']);
+  });
+
+  it('writes the completion again on close, since an inert page announces nothing', async () => {
+    const { h, nonce } = await framed();
+    h.send({ t: 'gp:init', n: nonce, v: 1, data: {} });
+    h.send(done(nonce));
+    const status = h.dom.window.document.querySelector('[data-ghostpay-status]')!;
+    const writes: unknown[] = [];
+    new h.dom.window.MutationObserver((records) => writes.push(...records)).observe(status, { childList: true });
+    closeButton(h.dom.window.document).click();
+    await settled();
+    expect(writes.length).toBeGreaterThan(0);
+    expect(status.textContent).toBe(`Payment submitted. Transaction ${TX}`);
+  });
+
+  it('keeps popup buttons usable after the shop page removed the dialog', async () => {
+    const h = await page(`data-invoice="${GOOD}" data-mode="iframe"`, `<button id="p" data-ghostpay data-invoice="${GOOD}"></button>`);
+    const doc = h.dom.window.document;
+    h.btn.click();
+    doc.querySelector('[role="dialog"]')!.remove();
+    doc.getElementById('p')!.click();
+    expect(h.opened).toHaveLength(1);
   });
 });
 

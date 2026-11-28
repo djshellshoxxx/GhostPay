@@ -12,10 +12,10 @@ export interface MadeLog {
 }
 
 /** An on-chain `Announcement` log for a payment to `metaAddress`, as the RPC would return it. */
-export function makeLog(opts: { announcer: Address; metaAddress: string; block: number; index: number; caller: Address; amount?: bigint; wrongTag?: boolean }): MadeLog {
+export function makeLog(opts: { announcer: Address; metaAddress: string; block: number; index: number; caller: Address; amount?: bigint; wrongTag?: boolean; token?: Address }): MadeLog {
   const p = deriveStealthPayment(opts.metaAddress);
   const tag = opts.wrongTag === true ? (p.viewTag[0]! ^ 0x5a) : p.viewTag;
-  const metadata = `0x${hex(buildErc20Metadata(tag, TOKEN_84532, opts.amount ?? 1_000_000n))}` as const;
+  const metadata = `0x${hex(buildErc20Metadata(tag, opts.token ?? TOKEN_84532, opts.amount ?? 1_000_000n))}` as const;
   const eph = `0x${hex(p.ephemeralPublicKey)}` as const;
   const word = (a: string): string => `0x${a.slice(2).toLowerCase().padStart(64, '0')}`;
   return {

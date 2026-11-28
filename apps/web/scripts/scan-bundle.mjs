@@ -63,6 +63,16 @@ const PRESERVED_CODE_MARKERS = [
   ]),
 ];
 
+/**
+ * Legacy text-manifest scheme (SEC-14 / D-09): sha256/ed25519 text signatures under this domain, and unsigned-dev
+ * acceptance on testnets. The app trusts only bundled, release-signed manifests; neither string may reach any build.
+ */
+const LEGACY_MANIFEST_MARKERS = [
+  // The acceptance-path warning itself; the views' generic "UNSIGNED DEV MANIFEST: testnet only." label is display text.
+  { marker: 'no release key is pinned, so this deployment manifest is not authenticated', reason: 'unsigned-dev manifest acceptance (chain-adapters UNSIGNED_DEV_WARNING)' },
+  { marker: 'GhostPay-deployment-manifest-v1', reason: 'legacy text-manifest signing domain (chain-adapters MANIFEST_SIGNING_DOMAIN)' },
+];
+
 function walk(dir) {
   const out = [];
   for (const name of readdirSync(dir)) {
@@ -84,10 +94,36 @@ function scanInnerHtml(text, label, problems) {
   if (all > allowed) problems.push(`${label}: ${String(all - allowed)} innerHTML assignment(s) outside the known React DOM fingerprints`);
 }
 
-function scanHosts(text, label, problems) {
+// The configured Pages origin is data for a same-origin comparison, never an egress destination.
+// Check the compiled syntax at each occurrence; another use of the identical URL must still fail.
+function approvedComparisons(text, origin) {
+  const file = ts.createSourceFile('bundle.js', text, ts.ScriptTarget.ESNext, true, ts.ScriptKind.JS);
+  const positions = new Set();
+  const check = (property, literal) => {
+    if (ts.isPropertyAccessExpression(property) && ts.isIdentifier(property.expression) &&
+        property.expression.text === 'globalThis' && property.name.text === 'origin' &&
+        ts.isStringLiteralLike(literal) && literal.text === origin) positions.add(literal.getStart(file) + 1);
+  };
+  const visit = (node) => {
+    if (ts.isBinaryExpression(node) && node.operatorToken.kind === ts.SyntaxKind.EqualsEqualsEqualsToken) {
+      check(node.left, node.right);
+      check(node.right, node.left);
+    }
+    ts.forEachChild(node, visit);
+  };
+  if (file.parseDiagnostics.length === 0) visit(file);
+  return positions;
+}
+
+function scanHosts(text, label, problems, approvedOrigin) {
+  let comparisons;
   for (const m of text.matchAll(/\b(?:https?|wss?):\/\/([A-Za-z0-9][A-Za-z0-9.-]*)?[^\s"'`<>)\\]*/g)) {
     const full = m[0];
     if (m[1] === undefined) continue; // a bare "https://" scheme literal used for prefix checks
+    if (full === approvedOrigin && /\.m?js$/.test(label)) {
+      comparisons ??= approvedComparisons(text, approvedOrigin);
+      if (comparisons.has(m.index)) continue;
+    }
     if (!ALLOWED_URLS.some((a) => full.startsWith(a.prefix))) problems.push(`${label}: unexpected origin or hostname "${full.slice(0, 80)}"`);
   }
 }
@@ -124,7 +160,7 @@ export function scanSourceSinks(text, fileName) {
 }
 
 /** Scans a built `dist` directory (and optionally the app source tree) and returns a list of problems. */
-export function scanBundle(distDir, srcDir, viteConfigPath) {
+export function scanBundle(distDir, srcDir, viteConfigPath, approvedOrigin) {
   const problems = [];
   if (!existsSync(distDir)) return [`dist directory not found: ${distDir}`];
   const files = walk(distDir);
@@ -136,7 +172,7 @@ export function scanBundle(distDir, srcDir, viteConfigPath) {
     if (/\.(js|mjs|css)$/.test(r)) {
       const text = readFileSync(f, 'utf8');
       if (/sourceMappingURL/.test(text)) problems.push(`${r}: sourceMappingURL reference`);
-      scanHosts(text, r, problems);
+      scanHosts(text, r, problems, approvedOrigin);
       if (r.endsWith('.css')) {
         if (/@import/.test(text)) problems.push(`${r}: @import in CSS`);
         if (/url\(\s*["']?(?:https?:)?\/\//.test(text)) problems.push(`${r}: remote url() in CSS`);
@@ -149,6 +185,9 @@ export function scanBundle(distDir, srcDir, viteConfigPath) {
         scanInnerHtml(text, r, problems);
         for (const { marker, reason } of PRESERVED_CODE_MARKERS) {
           if (text.includes(marker)) problems.push(`${r}: preserved-code marker "${marker}" (${reason}) is not part of the lean beta`);
+        }
+        for (const { marker, reason } of LEGACY_MANIFEST_MARKERS) {
+          if (text.includes(marker)) problems.push(`${r}: legacy text-manifest marker "${marker}" (${reason}) must not ship`);
         }
         if (/worker/i.test(r)) {
           for (const w of WORKER_FORBIDDEN) if (text.includes(w)) problems.push(`${r}: scanner worker contains network API "${w}"`);
@@ -232,7 +271,7 @@ if (isMain) {
     for (const p of deploymentProblems) console.error(` - ${p}`);
     process.exit(1);
   }
-  const problems = scanBundle(join(root, 'dist'), join(root, 'src'), join(root, 'vite.config.ts'));
+  const problems = scanBundle(join(root, 'dist'), join(root, 'src'), join(root, 'vite.config.ts'), process.env['VITE_GHOSTPAY_PAGES_ORIGIN']);
   if (problems.length > 0) {
     console.error('Bundle scan FAILED:');
     for (const p of problems) console.error(` - ${p}`);

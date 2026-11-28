@@ -12,7 +12,7 @@ are defined locally; no other method package's internals are imported. `pir2` us
 | `range` (default) | `createRangeSource` | unverified | Grid-aligned full ranges (`windowBlocks`/`align`/`minSpan` default 1000), local matching, budgets (50 calls, 10 000 logs) |
 | `indexer-tor` | `createIndexerSource` | unverified | `GET /v1/logs`; checks complete contiguous parent-hash chain; cross-checks window ends and every announcement block against a second source |
 | `pir2` | `createPir2Source` | unverified | Two-server XOR PIR via pir-two-server; dummy-padded fixed W pages per epoch; manifest must match on both servers and third source |
-| `light-client` | `createLightSource` | unverified, `proof` only if the client proves logs | Wraps another source; every returned block hash must be confirmed by the light client |
+| `light-client` | `createLightSource` | unverified; capability flags are not proof evidence | Wraps another source; every returned block hash must be confirmed by the light client; no log-inclusion or interval-completeness proof is checked |
 | (composition) | `createQuorumSource(sources, k)` | quorum | Fails closed on any disagreement (`SOURCE_DISAGREE`) |
 
 `createScanSource({ mode, ... })` builds one; it never falls back to another mode. `describeScanMode(mode)` returns the honest UI text
