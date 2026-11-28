@@ -1,3 +1,11 @@
+# Unified seller recovery file entry — 2026-11-28 UTC
+
+Worker: Codex recovery on `ux/nov28-recovery` from `70458ebe` for the UX audit recommendations.
+Owned paths: seller key recovery view and component, recovery-file recognition and tests, its localized strings, and the recovery acceptance spec.
+Acceptance: identify the supported seller backup before requesting a passphrase, preserve each importer's validation and key ownership safeguards, require explicit action, and reject unknown or ambiguous files.
+
+---
+
 # Recorded low residuals (web) — 2026-11-27 UTC
 
 Worker: local Claude Code worker W7 on the existing merged branch `claude/consolidation-stack-20261126`, fast-forwarded
