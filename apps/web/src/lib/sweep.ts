@@ -9,6 +9,7 @@ import {
   signDigest,
   signPermit,
   signSweep,
+  tokensForChain,
   type Address,
   type DeploymentManifest,
   type Hex,
@@ -60,7 +61,8 @@ export function deriveVerifiedSweepKey(target: SweepTarget): SecretScalar {
  *
  * @remarks Parsing is strict: `0x` + 40 hex, all-lowercase or a valid EIP-55 checksum. A destination that shares its
  * first and last four nibbles with the stealth address, a GhostPay contract or any address in `known` (saved
- * destinations) without being equal is refused as a probable lookalike.
+ * destinations) without being equal is refused as a probable lookalike. GhostPay's contracts, its fee recipient and the
+ * chain's allowlisted token contracts are refused outright: swept funds could not come back from them.
  *
  * @param known Addresses the user already trusts (saved destinations).
  */
@@ -71,6 +73,9 @@ export function checkDestination(destination: string, owner: Address, manifest: 
   if (d === owner) throw new UserFacingError({ key: 'error.sweep.theDestinationMustDifferFromTheStealthAddress' });
   if (d === manifest.router || d === manifest.sweepRelayer || d === manifest.announcer || d === manifest.feeRecipient) {
     throw new UserFacingError({ key: 'error.sweep.theDestinationMustNotBeAGhostPayContractOrThe' });
+  }
+  if (tokensForChain(manifest.chainId).some((token) => token.address.toLowerCase() === d.toLowerCase())) {
+    throw new UserFacingError({ key: 'error.sweep.theDestinationMustNotBeATokenContract' });
   }
   const trusted = [owner, manifest.router, manifest.sweepRelayer, manifest.announcer, manifest.feeRecipient, ...known];
   if (findLookalikes(d, trusted).length > 0) {
@@ -759,4 +764,4 @@ export function sweepPermitSuggestsDirect(key: MessageKey): boolean {
   return key === 'sweep.permit.failed' || key === 'sweep.permit.simulationFailed' || key === 'sweep.permit.unsupported' || key === 'sweep.permit.noAllowance';
 }
 
-// i18n-use: error.sweep.aTransactionWithThisNonceIsAlreadyOnChainSo error.sweep.blockedADryRunOfThisTransferFailsItWould error.sweep.blockedTheDerivedKeyDoesNotControlThatAddress error.sweep.blockedThisAddressLooksAlmostIdenticalToAnAddressYou error.sweep.couldNotCheckEveryTransactionReceiptTheOutcomeIsStill error.sweep.couldNotCheckTheOrderOnChainTheRPCFailed error.sweep.couldNotReadTheL1DataFeeFromThisChain error.sweep.enterAValidDestinationAddress0xMixedCaseAddressesMust error.sweep.excessiveFee error.sweep.invalidNonceForAReplacementTransaction error.sweep.setARelayerURLInSettingsOrSweepDirectly error.sweep.theBalanceDoesNotCoverTheNetworkFee error.sweep.theBalanceDoesNotCoverTheNetworkFeeIncludingThe error.sweep.theDestinationMustDifferFromTheStealthAddress error.sweep.theDestinationMustNotBeAGhostPayContractOrThe error.sweep.theLocalClockIsInvalidRefusingToSignASweep error.sweep.theRelayerAskedForAFeeAboveThePublishedCap error.sweep.theRelayerFeeAddressDoesNotMatchTheDeploymentFee error.sweep.theRelayerFeeAddressIsUnacceptable error.sweep.theRelayerFeeIsAboveThePublishedCapForThis error.sweep.theRelayerQuoteHasAlreadyExpired error.sweep.theRelayerQuoteHasExpiredOrIsAboutToRequest error.sweep.theStealthAddressDoesNotHoldEnoughNativeCoinFor error.sweep.theStealthAddressHasNoNativeCoinForGasUse error.sweep.yourRPCReturnedAnUnexpectedBalance sweep.permit.alreadyAllowed sweep.permit.expired sweep.permit.failed sweep.permit.noAllowance sweep.permit.nonceConsumed sweep.permit.ok sweep.permit.ownerFailureLimit sweep.permit.simulationFailed sweep.permit.unsupported sweep.permit.valueTooLow transaction.sweep.hashMismatch transaction.sweep.legacy transaction.sweep.unknown
+// i18n-use: error.sweep.aTransactionWithThisNonceIsAlreadyOnChainSo error.sweep.blockedADryRunOfThisTransferFailsItWould error.sweep.blockedTheDerivedKeyDoesNotControlThatAddress error.sweep.blockedThisAddressLooksAlmostIdenticalToAnAddressYou error.sweep.couldNotCheckEveryTransactionReceiptTheOutcomeIsStill error.sweep.couldNotCheckTheOrderOnChainTheRPCFailed error.sweep.couldNotReadTheL1DataFeeFromThisChain error.sweep.enterAValidDestinationAddress0xMixedCaseAddressesMust error.sweep.excessiveFee error.sweep.invalidNonceForAReplacementTransaction error.sweep.setARelayerURLInSettingsOrSweepDirectly error.sweep.theBalanceDoesNotCoverTheNetworkFee error.sweep.theBalanceDoesNotCoverTheNetworkFeeIncludingThe error.sweep.theDestinationMustDifferFromTheStealthAddress error.sweep.theDestinationMustNotBeAGhostPayContractOrThe error.sweep.theDestinationMustNotBeATokenContract error.sweep.theLocalClockIsInvalidRefusingToSignASweep error.sweep.theRelayerAskedForAFeeAboveThePublishedCap error.sweep.theRelayerFeeAddressDoesNotMatchTheDeploymentFee error.sweep.theRelayerFeeAddressIsUnacceptable error.sweep.theRelayerFeeIsAboveThePublishedCapForThis error.sweep.theRelayerQuoteHasAlreadyExpired error.sweep.theRelayerQuoteHasExpiredOrIsAboutToRequest error.sweep.theStealthAddressDoesNotHoldEnoughNativeCoinFor error.sweep.theStealthAddressHasNoNativeCoinForGasUse error.sweep.yourRPCReturnedAnUnexpectedBalance sweep.permit.alreadyAllowed sweep.permit.expired sweep.permit.failed sweep.permit.noAllowance sweep.permit.nonceConsumed sweep.permit.ok sweep.permit.ownerFailureLimit sweep.permit.simulationFailed sweep.permit.unsupported sweep.permit.valueTooLow transaction.sweep.hashMismatch transaction.sweep.legacy transaction.sweep.unknown

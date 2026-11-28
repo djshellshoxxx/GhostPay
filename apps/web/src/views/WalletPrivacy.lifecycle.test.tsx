@@ -1,5 +1,5 @@
 // @vitest-environment jsdom
-import { act, screen, within } from '@testing-library/react';
+import { act, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { approveWalletDisclosure } from '../test/walletDisclosure';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
@@ -587,6 +587,47 @@ describe('required wallet lifecycle privacy in real EVM views', () => {
     await screen.findByText(WALLET_CHANGE_REASON, { exact: true });
     expect(input().files).toHaveLength(0);
     expect(input().value).toBe('');
+    expect(wallet.calls.filter(({ method }) => /^(?:eth_send|eth_sign|personal_sign)/.test(method))).toEqual([]);
+  }, 180_000);
+
+  // 742-2 (qualification review): the cause matrix of that reset. Connecting keeps a file chosen before the first
+  // connection; an app lock or a seller-session change drops it, like a wallet change, with the rest of the receipt state.
+  it('keeps a receipt file chosen before connecting a wallet', async () => {
+    const wallet = new EventWallet();
+    const { fragment } = await makeParsed({ ...BASE_FORM, token: 'native', tokenAmount: '0.1' });
+    setHash(fragment);
+    window.localStorage.setItem(SETTINGS_KEY, JSON.stringify({ rpcUrls: { '84532': 'https://rpc.test' } }));
+    renderApp(makeServices({
+      loadManifest: () => Promise.resolve({ status: 'loaded', manifest: backedManifest(84532) }),
+      createRpc: () => Promise.resolve(withManifestChain(mockRpc(84532, () => '0x'))),
+      discoverWallets: () => Promise.resolve([info(wallet)]),
+    }));
+    const user = userEvent.setup();
+    await user.click(await screen.findByRole('button', { name: 'Continue' }, { timeout: 120_000 }));
+    const input = (): HTMLInputElement => screen.getByLabelText<HTMLInputElement>('Signed seller receipt JSON');
+    const file = new File(['{}'], 'private-receipt-before-connect.json', { type: 'application/json' });
+    await user.upload(input(), file);
+    await user.click(await screen.findByRole('button', { name: /Connect Lifecycle Wallet/ }));
+    await approveWalletDisclosure(user, 'eth_requestAccounts');
+    await screen.findByRole('button', { name: 'Prepare payment' });
+    expect(input().files?.[0]).toBe(file);
+  }, 180_000);
+
+  it.each(['lock', 'session'] as const)('drops a selected receipt file on a %s change', async (change) => {
+    generateWaivedSession();
+    const wallet = new EventWallet();
+    const user = await open('Pay', wallet);
+    await screen.findByRole('button', { name: 'Prepare payment' });
+    const input = (): HTMLInputElement => screen.getByLabelText<HTMLInputElement>('Signed seller receipt JSON');
+    const file = new File(['{}'], 'private-receipt-account-286.json', { type: 'application/json' });
+    await user.upload(input(), file);
+    expect(input().files?.[0]).toBe(file);
+    if (change === 'lock') act(() => { notifyAppLock('manual'); });
+    else act(() => { clearSession(); });
+    // The checkout leaves review here, so the input leaves the document with it; none that remains keeps the file.
+    const keeps = (): boolean => [...document.querySelectorAll<HTMLInputElement>('input[type=file]')].some((field) => (field.files?.length ?? 0) > 0);
+    await waitFor(() => { expect(keeps()).toBe(false); });
+    expect(document.body.innerHTML).not.toContain('private-receipt-account-286.json');
     expect(wallet.calls.filter(({ method }) => /^(?:eth_send|eth_sign|personal_sign)/.test(method))).toEqual([]);
   }, 180_000);
 

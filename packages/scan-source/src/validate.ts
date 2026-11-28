@@ -4,9 +4,11 @@ import type { Hex, ScanAnnouncement } from './types.js';
 
 const MAX_METADATA_BYTES = 4096;
 const U64_MAX = (1n << 64n) - 1n;
+const U256_MAX = (1n << 256n) - 1n;
+const HEX_BYTES = /^0x(?:[0-9a-fA-F]{2})*$/;
 
 function hexField(v: unknown, bytes: number | undefined): Hex | undefined {
-  if (typeof v !== 'string' || !/^0x(?:[0-9a-fA-F]{2})*$/.test(v)) return undefined;
+  if (typeof v !== 'string' || !HEX_BYTES.test(v)) return undefined;
   const len = (v.length - 2) / 2;
   if (bytes !== undefined ? len !== bytes : len < 1 || len > MAX_METADATA_BYTES) return undefined;
   return v.toLowerCase() as Hex;
@@ -61,6 +63,43 @@ export function parseAnnouncement(raw: unknown, schemeId = 1n): ScanAnnouncement
       logIndex,
       id: `${blockHash}:${String(logIndex)}`,
     };
+  } catch {
+    return undefined;
+  }
+}
+
+/** A scheme id as the announcer can emit it (any uint256): wider than the 64 bits a usable record may hold. */
+function schemeClaim(v: unknown): bigint | undefined {
+  const b = typeof v === 'bigint' ? v
+    : (typeof v === 'number' && Number.isInteger(v)) || (typeof v === 'string' && /^(?:0|[1-9][0-9]{0,77})$/.test(v)) ? BigInt(v)
+      : undefined;
+  return b !== undefined && b >= 0n && b <= U256_MAX ? b : undefined;
+}
+
+/** The block and scheme an untrusted record claims, each only as far as it can be read. Never throws. */
+export function claimedPlace(raw: unknown): { readonly blockNumber: bigint | undefined; readonly schemeId: bigint | undefined } {
+  try {
+    const r = raw as Record<string, unknown>;
+    return { blockNumber: bigField(r['blockNumber']), schemeId: schemeClaim(r['schemeId']) };
+  } catch {
+    return { blockNumber: undefined, schemeId: undefined };
+  }
+}
+
+/**
+ * The record, with its own bytes, when its only fault is the length of its ephemeral key or metadata: any caller of the
+ * announcer can post such bytes, so it is not a usable announcement. `undefined` for every other record, including one
+ * whose bytes are not well-formed hex. Never throws.
+ */
+export function postedRecord(raw: unknown, schemeId: bigint): ScanAnnouncement | undefined {
+  try {
+    const r = raw as Record<string, unknown>;
+    const key = r['ephemeralPublicKey'];
+    const metadata = r['metadata'];
+    if (typeof key !== 'string' || typeof metadata !== 'string' || !HEX_BYTES.test(key) || !HEX_BYTES.test(metadata)) return undefined;
+    // With acceptable bytes in their place, every other field must pass.
+    const rest = parseAnnouncement({ ...r, ephemeralPublicKey: `0x${'00'.repeat(33)}`, metadata: '0x00' }, schemeId);
+    return rest === undefined ? undefined : { ...rest, ephemeralPublicKey: key.toLowerCase() as Hex, metadata: metadata.toLowerCase() as Hex };
   } catch {
     return undefined;
   }

@@ -49,11 +49,15 @@ const scope = { sellerKeyId: 'a'.repeat(64), chainId: 84532 };
 const DEPTH = 5;
 const MATCHING_NET = routerNet(1_000_000n).toString();
 
+const canonicalAt = (height: number): string => `0x${(height + 0xa000).toString(16).padStart(64, '0')}`;
+const REPLACED = `0x${'f'.repeat(64)}`;
+
 function payment(n: number, height: number, matching: boolean, late: boolean, invoiceExpiresAt: number): ReconciliationRecord {
   const tx = `0x${n.toString(16).padStart(64, '0')}`;
   const base = {
     version: 1 as const, sellerKeyId: scope.sellerKeyId, chainId: scope.chainId, transactionHash: tx,
-    blockHash: `0x${(n + 0xa000).toString(16).padStart(64, '0')}`, blockNumber: String(height),
+    // One canonical hash per block: payments in the same block share it (review 7221525657).
+    blockHash: canonicalAt(height), blockNumber: String(height),
     blockTimestamp: String(late ? invoiceExpiresAt + 5 : NOW + 60), stealthAddress: `0x${'d'.repeat(40)}`, logIndex: 0,
     asset: 'native', amountMinorUnits: matching ? MATCHING_NET : String(1 + n), viewTagMatched: true, recordedAt: (NOW + 60) * 1000,
     evidenceStatus: 'verified-at-scan' as const, evidenceSource: 'verified-router-scan' as const,
@@ -70,7 +74,8 @@ interface Sim { readonly matching: boolean; readonly rec: ReconciliationRecord; 
 const decisionTime = (NOW + 7200) * 1000;
 const key = new Uint8Array(32).fill(7);
 
-interface Outcome { readonly log: string[]; readonly checkpoints: number[]; readonly pinned: boolean; readonly releasedAll: boolean }
+interface Outcome { readonly log: string[]; readonly checkpoints: number[]; readonly pinned: boolean; readonly releasedAll: boolean;
+  readonly exactPins: number; readonly passedAlone: number; readonly passedBelowPin: number; readonly sharedBlocks: number }
 
 async function scenario(seed: number): Promise<Outcome> {
   const log: string[] = [];
@@ -100,10 +105,12 @@ async function scenarioBody(seed: number, log: string[]): Promise<Outcome> {
   let head = 200;
   let checkpoint = 0;
   const checkpoints: number[] = [];
-  const hashAt = (height: number): string => {
-    const s = sims.find((x) => x.height === height);
-    return s !== undefined && s.reorged ? `0x${'f'.repeat(64)}` : (s?.rec.blockHash ?? `0x${height.toString(16).padStart(64, '0')}`);
-  };
+  // Which final checks ran, so the seeded runs can be shown to reach them (review 7221525657).
+  let exactPins = 0;
+  let passedAlone = 0;
+  let passedBelowPin = 0;
+  // A reorg replaces the whole block: every payment at that height is reorged together.
+  const hashAt = (height: number): string => sims.some((x) => x.height === height && x.reorged) ? REPLACED : canonicalAt(height);
 
   /** What a scan of `s` delivers now, advancing its behaviour. `undefined` = not in the page. */
   const observe = (s: Sim, finalizedThrough: number): ReconciliationRecord | undefined => {
@@ -204,10 +211,12 @@ async function scenarioBody(seed: number, log: string[]): Promise<Outcome> {
     } else if (roll < 0.74) {
       const s = pick(r, sims);
       if (!s.reorged) {
-        s.reorged = true;
-        s.verifiedNow = false;
+        for (const x of sims.filter((y) => y.height === s.height)) {
+          x.reorged = true;
+          x.verifiedNow = false;
+          tombstoned.add(x.rec.id);
+        }
         await vault.invalidateFrom(BigInt(s.height), [], (h) => Promise.resolve(hashAt(Number(h))));
-        tombstoned.add(s.rec.id);
         log.push(`reorg ${String(s.height)}`);
       }
     } else if (roll < 0.8 && invoiceRegistered) {
@@ -242,25 +251,35 @@ async function scenarioBody(seed: number, log: string[]): Promise<Outcome> {
   const stillPinning = sims.filter((s) => (s.behaviour === 'never' || s.behaviour === 'neverVerified') && !s.reorged && invoiceRegistered &&
     finalRecords.some((x) => x.id === s.rec.id && x.evidenceStatus === 'unverified-at-scan' && x.evidenceSource === 'verified-router-scan'));
   const lowest = stillPinning.length === 0 ? undefined : Math.min(...stillPinning.map((s) => s.height));
+  const finalizedThrough = head - DEPTH + 1;
   if (lowest === undefined) {
     // Nothing can legitimately pin: the checkpoint must have passed the settled part of the chain.
     expect(checkpoint, `seed ${String(seed)} checkpoint after releasing runs`).toBeGreaterThanOrEqual(head - DEPTH);
+  } else if (lowest <= finalizedThrough) {
+    // Settled: the earliest legitimate pin is exactly where the run stops (lacking-depth asks are all above it).
+    expect(checkpoint, `seed ${String(seed)} checkpoint at the earliest legitimate pin`).toBe(lowest);
+    exactPins++;
   } else {
     expect(checkpoint).toBeLessThanOrEqual(lowest);
   }
-  // A candidate that was never verified and has no link never pins anything: it is not in `stillPinning`, so the
-  // checkpoint check above already requires it to be passed.
+  // A settled candidate that was never verified never pins: the checkpoint passes it unless a legitimate pin is at or
+  // below it (review 7221525657: the earlier form of this check compared the checkpoint with itself).
   for (const s of sims.filter((x) => x.behaviour === 'neverVerified')) {
     const rec = finalRecords.find((x) => x.id === s.rec.id);
-    if (rec?.evidenceSource === 'router-scan-candidate') expect(checkpoint).toBeGreaterThanOrEqual(lowest === undefined ? head - DEPTH : checkpoint);
+    if (rec?.evidenceSource !== 'router-scan-candidate' || s.height > finalizedThrough) continue;
+    if (lowest !== undefined && lowest <= s.height) continue;
+    expect(checkpoint, `seed ${String(seed)} passes never-verified ${String(s.height)}`).toBeGreaterThan(s.height);
+    if (lowest === undefined) passedAlone++; else passedBelowPin++;
   }
-  return { log, checkpoints, pinned: lowest !== undefined, releasedAll: lowest === undefined };
+  const sharedBlocks = new Set(sims.filter((s) => sims.some((x) => x !== s && x.height === s.height)).map((s) => s.height)).size;
+  return { log, checkpoints, pinned: lowest !== undefined, releasedAll: lowest === undefined, exactPins, passedAlone, passedBelowPin, sharedBlocks };
 }
 
 const SEEDS = [742, 20261127, 5150];
 const PER_SEED = 18;
 
 let pinnedScenarios = 0;
+const reached = { exactPins: 0, passedAlone: 0, passedBelowPin: 0, sharedBlocks: 0 };
 describe('reconciliation vault replay rule, seeded model-based stress (LATE-L1)', () => {
   for (const base of SEEDS) {
     it(`seed ${String(base)}: ${String(PER_SEED)} scenarios never overstate payment state and keep replay bounded`, async () => {
@@ -270,6 +289,10 @@ describe('reconciliation vault replay rule, seeded model-based stress (LATE-L1)'
         const outcome = await scenario(base * 1000 + i);
         if (outcome.pinned) { pinned++; pinnedScenarios++; }
         if (outcome.releasedAll) released++;
+        reached.exactPins += outcome.exactPins;
+        reached.passedAlone += outcome.passedAlone;
+        reached.passedBelowPin += outcome.passedBelowPin;
+        reached.sharedBlocks += outcome.sharedBlocks;
       }
       expect(released).toBeGreaterThan(PER_SEED / 4);
       // Informational: how many scenarios kept an un-reverifiable verified record pinning the checkpoint.
@@ -279,6 +302,13 @@ describe('reconciliation vault replay rule, seeded model-based stress (LATE-L1)'
 
   it('the stress exercised both outcomes: scenarios that released everything and scenarios that stayed pinned', () => {
     expect(pinnedScenarios).toBeGreaterThan(0);
+    // Each final check ran at least once: an exact settled pin, a never-verified candidate passed with no pin and below a
+    // higher legitimate pin, and payments that share a block (on 2026-11-27 the 54 scenarios gave 4 exact pins, 3 and 1
+    // passed candidates, and 2 shared blocks).
+    expect(reached.exactPins).toBeGreaterThan(0);
+    expect(reached.passedAlone).toBeGreaterThan(0);
+    expect(reached.passedBelowPin).toBeGreaterThan(0);
+    expect(reached.sharedBlocks).toBeGreaterThan(0);
   });
 
   it('is deterministic: the same seed gives the identical run', async () => {
@@ -308,6 +338,32 @@ describe('reconciliation vault replay rule, seeded model-based stress (LATE-L1)'
     // And it cannot be revived afterwards.
     await vault.observeInvoicePayments([p]);
     expect(await vault.read()).toMatchObject([{ id: p.id, evidenceStatus: 'invalidated-after-reorg' }]);
+  }, 60_000);
+
+  // Review 7221525657: an isolated never-verified candidate, and one below a legitimate pin, never ask for a replay; the
+  // earliest legitimate retry height is exactly the pinning record's block.
+  it.each([
+    ['on its own', false],
+    ['below a legitimate pin', true],
+  ] as const)('never replays a never-verified candidate %s, and asks exactly for the earliest legitimate pin', async (_label, mixed) => {
+    const store = new Store();
+    const vault = new ReconciliationVault(store, scope, () => undefined, () => decisionTime);
+    await vault.unlock(key);
+    const invoice = registrationFromInvoice(testInvoice(), 1);
+    await vault.registerInvoice(invoice);
+    const neverVerified = claimed(payment(1, 300, true, true, invoice.expiresAt));
+    const pin = payment(2, 320, true, true, invoice.expiresAt);
+    await vault.observeInvoicePayments(mixed ? [neverVerified, pin] : [neverVerified]);
+    if (mixed) await vault.quarantineInvoicePayments(320n);
+    expect((await vault.read()).find((x) => x.id === neverVerified.id)).toMatchObject({ evidenceStatus: 'unverified-at-scan', evidenceSource: 'router-scan-candidate' });
+    const asks: number[] = [];
+    for (let run = 0; run < 6; run++) {
+      await vault.observeInvoicePayments(mixed ? [neverVerified, claimed(pin)] : [neverVerified], undefined, {
+        from: 300n, through: 350n, finalizedThrough: 345n, resumed: true,
+        canonicalHash: (h) => Promise.resolve(canonicalAt(Number(h))), retryFrom: (h) => { asks.push(Number(h)); },
+      });
+    }
+    expect(asks).toEqual(mixed ? [320, 320, 320, 320, 320, 320] : []);
   }, 60_000);
 
   // Reviewer note (unverified): an unlinked `verified-router-scan` candidate that never re-verifies may pin retryFrom

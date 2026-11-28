@@ -26,6 +26,8 @@
  *    iframe.contentWindow, a closed v1 schema, <= 2 KB and the per-instance 128-bit nonce. Completion is delivered once, as a
  *    "ghostpay:done" CustomEvent on the button with {status, chainId, txHash} only, and shown with textContent.
  *  - Only DOM APIs, setAttribute and textContent. No innerHTML, no eval, no network requests, no globals.
+ *  - While the iframe dialog is open, the page's other body children are inert (restored on close or removal of the
+ *    dialog). Elements the page adds afterwards are not covered.
  */
 (function () {
   'use strict';
@@ -43,6 +45,7 @@
   var script = document.currentScript;
   var appOrigin = '';
   var openOverlay = null;
+  var releaseHeld = null;
   try {
     appOrigin = script && script.src ? new URL(script.src).origin : '';
   } catch (e) {
@@ -153,11 +156,39 @@
     s.textContent = text;
   }
 
+  // The dialog is modal: the rest of the page is made inert, so neither the keyboard nor assistive technology reaches it.
+  // Returns the release, which lifts only what was made inert here and also runs if the shop page withdraws the dialog.
+  function holdPage(overlay) {
+    var held = [];
+    var watch = null;
+    function release() {
+      if (watch !== null) watch.disconnect();
+      watch = null;
+      while (held.length > 0) held.pop().removeAttribute('inert');
+    }
+    var kids = document.body.children;
+    for (var i = 0; i < kids.length; i++) {
+      if (kids[i] === overlay || kids[i].hasAttribute('inert')) continue;
+      kids[i].setAttribute('inert', '');
+      held.push(kids[i]);
+    }
+    if (window.MutationObserver) {
+      watch = new window.MutationObserver(function () {
+        if (!overlay.isConnected) release();
+      });
+      // The body's children, and the body itself being replaced.
+      watch.observe(document.body, { childList: true });
+      watch.observe(document.documentElement, { childList: true });
+    }
+    return release;
+  }
+
   function openFrame(el, url) {
-    // One dialog at a time: it is modal, and a second one could be paid beside the first.
-    // Asking the element itself keeps the button usable if the merchant page removed the dialog.
-    if (openOverlay !== null && openOverlay.isConnected) return;
+    // A withdrawn dialog may not have been observed yet: release it first, so this one takes the whole page.
+    if (releaseHeld !== null) releaseHeld();
     var n = nonce();
+    var release = null;
+    var outcome = '';
     var overlay = document.createElement('div');
     var frame = document.createElement('iframe');
     var close = document.createElement('button');
@@ -198,7 +229,12 @@
       // Return focus only from a dialog that was still on the page: a removed one must not pull focus from a newer one.
       var shown = overlay.isConnected;
       if (overlay.parentNode) overlay.parentNode.removeChild(overlay);
-      if (shown) el.focus();
+      release(); // before focus: an inert button cannot take it
+      if (!shown) return;
+      el.focus();
+      // An inert page announces nothing, so a completion is written again now, into its status element if still there.
+      var status = el.nextElementSibling;
+      if (outcome !== '' && status && status.getAttribute('data-ghostpay-status') === '1') say(el, outcome);
     }
     function onKey(e) {
       if (e.key === 'Escape') teardown();
@@ -222,10 +258,13 @@
         window.removeEventListener('message', onMessage);
         settled = true;
         window.clearInterval(hello);
+        // Also without an earlier gp:init: a finished checkout must never be opened again by the popup fallback.
+        window.clearTimeout(timer);
         var detail = { status: m.data.status, chainId: m.data.chainId };
         if (m.data.txHash) detail.txHash = m.data.txHash;
         el.setAttribute('data-ghostpay-phase', m.data.status);
-        say(el, m.data.status === 'submitted' ? 'Payment submitted. Transaction ' + m.data.txHash : 'Payment ' + m.data.status + '.');
+        outcome = m.data.status === 'submitted' ? 'Payment submitted. Transaction ' + m.data.txHash : 'Payment ' + m.data.status + '.';
+        say(el, outcome);
         el.dispatchEvent(new CustomEvent('ghostpay:done', { bubbles: true, detail: detail }));
       }
     }
@@ -269,6 +308,8 @@
     overlay.appendChild(frame);
     document.body.appendChild(overlay);
     openOverlay = overlay;
+    release = holdPage(overlay);
+    releaseHeld = release;
     close.focus();
   }
 
@@ -288,6 +329,9 @@
     var framed = mode === 'iframe' && !new URL(url).searchParams.has('gpmu') && !!window.crypto && typeof window.crypto.getRandomValues === 'function';
     el.addEventListener('click', function (event) {
       event.preventDefault();
+      // No second checkout of either kind while a dialog is open: it is modal, and the second could be paid beside it.
+      // Asking the element itself keeps the buttons usable if the merchant page removed the dialog.
+      if (openOverlay !== null && openOverlay.isConnected) return;
       if (framed) openFrame(el, url);
       else popup(el, url);
     });

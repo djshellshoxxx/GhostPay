@@ -33,6 +33,7 @@ export const SECURITY_KEY_GROUPS = {
   ],
   // External wallet disclosure: what leaves the page and what the wallet learns stays reviewed-only.
   walletDisclosure: [
+    'app.pagesOriginMismatch',
     'wallet.disclosure.title',
     'wallet.disclosure.intro',
     'wallet.disclosure.accountAccess',
@@ -588,6 +589,7 @@ export const SECURITY_KEY_GROUPS = {
     'error.sweep.enterAValidDestinationAddress0xMixedCaseAddressesMust',
     'error.sweep.theDestinationMustDifferFromTheStealthAddress',
     'error.sweep.theDestinationMustNotBeAGhostPayContractOrThe',
+    'error.sweep.theDestinationMustNotBeATokenContract',
     'error.sweep.blockedThisAddressLooksAlmostIdenticalToAnAddressYou',
     'error.sweep.yourRPCReturnedAnUnexpectedBalance',
     'error.sweep.theLocalClockIsInvalidRefusingToSignASweep',
@@ -636,6 +638,8 @@ export const SECURITY_KEY_GROUPS = {
     'error.relayerClient.theRelayerReturnedAnInvalidExpiry',
     'error.relayerClient.theRelayerReturnedAnInvalidQuoteToken',
     'error.relayerClient.theRelayerReturnedAnInvalidTransactionHash',
+    'error.relayerClient.theRelayerRefusedTheRequest',
+    'error.relayerClient.theRelayerRefusedTheRequestWithCode',
     'error.qrPayload.thisQRDoesNotContainASupportedPublicMetaAddress',
     'error.pay.noRPCIsConfiguredForThisChain',
     'error.pay.thisPaymentIsBlockedResolveTheItemsInTheReview',
@@ -1180,6 +1184,7 @@ export const SECURITY_KEY_GROUPS = {
     'settings.lock.keysHint',
     'settings.pins.hint',
     'settings.storageUnavailable',
+    'settings.changedElsewhere',
     'settings.error.pins',
     'settings.exchange.description',
     // My-devices transfer: what leaves the device, what is applied, and every trust-changing consent.
@@ -1292,6 +1297,7 @@ export const SECURITY_KEY_GROUPS = {
     'sweep.balanceRead.settingsChanged',
     'sweep.balanceNotRead',
     'sweep.reviewChanged',
+    'sweep.routeChanged',
   ],
   sellerKeyLossAndRecovery: [
     'sellerKeys.wipeUnverified.title',
@@ -2139,6 +2145,7 @@ export const SECURITY_KEY_GROUPS = {
     'stealthExport.archive.heading',
     'stealthExport.archive.hint',
     'stealthExport.archive.open',
+    'stealthExport.archive.rpcPrivacy',
     'stealthExport.archive.summary',
     'stealthExport.master.body',
     'stealthExport.master.done',

@@ -129,6 +129,8 @@ export interface ScanParams {
   readonly onPageMatches?: (matches: readonly ScanMatch[], page: {
     readonly finalizedThrough: bigint;
     readonly resumed: boolean;
+    /** This page also checked wrong view tags (the opt-in deep scan). */
+    readonly deep: boolean;
     readonly from: bigint;
     readonly through: bigint;
     readonly canonicalHash: (height: bigint) => Promise<Hex>;
@@ -206,6 +208,15 @@ export async function runScan(p: ScanParams): Promise<{ readonly matches: readon
   let progressed: ((scanned: number) => void) | undefined;
   const timeoutMs = p.replyTimeoutMs ?? 60_000;
   const ABORTED = new Error('scan cancelled');
+  // A fetch reads one block per announcement block, one at a time: a stopped run sends none of the remaining ones.
+  const assertRunning = (): void => { if (p.signal.aborted) throw ABORTED; };
+  const fetchClient: RpcClient = {
+    chainId: p.client.chainId,
+    request: async (method, params) => { assertRunning(); return p.client.request(method, params); },
+    blockNumber: async () => { assertRunning(); return p.client.blockNumber(); },
+    getBlock: async (n) => { assertRunning(); return p.client.getBlock(n); },
+    getLogs: async (f) => { assertRunning(); return p.client.getLogs(f); },
+  };
   // Settles on a reply, a worker error, the reply timeout, or Cancel: a hung worker can never block the caller.
   const wait = (register: (resolve: (m: FromWorker) => void) => void): Promise<FromWorker> =>
     new Promise<FromWorker>((resolve, reject) => {
@@ -280,6 +291,12 @@ export async function runScan(p: ScanParams): Promise<{ readonly matches: readon
     const first = finalizedAt(head) + 1n;
     return first < 0n ? 0n : first < from ? first : from;
   };
+  // PRIV-06 F1: a rewind removes only the checkpoint this run still owns; another scan's write or clear stands.
+  const clearOwnedCheckpoint = (): void => {
+    if (p.checkpoints === undefined || checkpointYielded) return;
+    if (sameCursor(loadCheckpoint(p.checkpoints, p.chain.chainId, p.keyId), ownedCheckpoint)) p.checkpoints.clear(p.chain.chainId, p.keyId);
+    else checkpointYielded = true;
+  };
   try {
     if (p.signal.aborted) throw ABORTED;
     // Created inside the try so a throwing factory still reaches the key wipe below (S3-15).
@@ -325,10 +342,12 @@ export async function runScan(p: ScanParams): Promise<{ readonly matches: readon
         if (p.signal.aborted) break;
       }
       const res = await fetchAnnouncements({
-        chain: p.chain, client: p.client, announcer: p.manifest.announcer, router: p.manifest.router, cursor,
+        chain: p.chain, client: fetchClient, announcer: p.manifest.announcer, router: p.manifest.router, cursor,
         ...(secondaryHead === undefined ? {} : { toBlock: secondaryHead }),
       }).catch(async (cause: unknown) => {
-        if (!p.signal.aborted && p.onUnresolvedEvidence !== undefined) {
+        // A read refused or dropped because the run was stopped is the cancellation itself, not a provider failure.
+        if (p.signal.aborted) throw ABORTED;
+        if (p.onUnresolvedEvidence !== undefined) {
           let from = cursor.nextBlock;
           if (cursor.last !== undefined) {
             // A missing checkpoint header is inconclusive. A reachable lower tip can still revoke depth.
@@ -405,7 +424,7 @@ export async function runScan(p: ScanParams): Promise<{ readonly matches: readon
         limitReached = true;
         if (res.reorg !== undefined) {
           cursor = { nextBlock: pageFrom };
-          p.checkpoints?.clear(p.chain.chainId, p.keyId);
+          clearOwnedCheckpoint();
         }
         p.onProgress?.({ nextBlock: cursor.nextBlock, scanned, matches: all.length, skipped, caughtUp: false, discrepancies: discrepancies.length, limitReached });
         break;
@@ -454,7 +473,7 @@ export async function runScan(p: ScanParams): Promise<{ readonly matches: readon
         limitReached = true;
         if (res.reorg !== undefined) {
           cursor = { nextBlock: pageFrom };
-          p.checkpoints?.clear(p.chain.chainId, p.keyId);
+          clearOwnedCheckpoint();
         }
         p.onProgress?.({ nextBlock: cursor.nextBlock, scanned, matches: all.length, skipped, caughtUp: false, discrepancies: discrepancies.length, limitReached });
         break;
@@ -584,7 +603,7 @@ export async function runScan(p: ScanParams): Promise<{ readonly matches: readon
         await p.onUnresolvedEvidence?.(uncertainFrom(pageFrom, pageHead));
         if (res.reorg !== undefined) {
           cursor = { nextBlock: pageFrom };
-          p.checkpoints?.clear(p.chain.chainId, p.keyId);
+          clearOwnedCheckpoint();
         }
         p.onProgress?.({ nextBlock: cursor.nextBlock, scanned, matches: all.length, skipped, caughtUp: false, discrepancies: discrepancies.length });
         break;
@@ -593,7 +612,7 @@ export async function runScan(p: ScanParams): Promise<{ readonly matches: readon
       const finalizedThrough = finalizedAt(pageHead);
       const resumed = p.cursor.last !== undefined;
       if (canSaveCheckpoint && await p.onPageMatches?.(pageMatches, {
-        from: pageFrom, through: res.cursor.last?.number ?? pageFrom - 1n, finalizedThrough, resumed,
+        from: pageFrom, through: res.cursor.last?.number ?? pageFrom - 1n, finalizedThrough, resumed, deep: p.deep === true,
         canonicalHash: (height) => canonicalHashAt(p, height),
         retryFrom: (height) => {
           const retry = height > pageHead ? pageHead + 1n : height;
@@ -607,7 +626,7 @@ export async function runScan(p: ScanParams): Promise<{ readonly matches: readon
         backlog = deferred;
         if (res.reorg !== undefined) {
           cursor = { nextBlock: pageFrom };
-          p.checkpoints?.clear(p.chain.chainId, p.keyId);
+          clearOwnedCheckpoint();
         }
         p.onProgress?.({ nextBlock: cursor.nextBlock, scanned, matches: all.length, skipped, caughtUp: false, discrepancies: discrepancies.length, backlog });
         break;
@@ -630,7 +649,7 @@ export async function runScan(p: ScanParams): Promise<{ readonly matches: readon
           const conflicts = saved as readonly ProviderDiscrepancy[];
           discrepancies.push(...conflicts);
           p.onDiscrepancy?.(conflicts);
-          if (res.reorg !== undefined) p.checkpoints.clear(p.chain.chainId, p.keyId);
+          if (res.reorg !== undefined) clearOwnedCheckpoint();
           p.onProgress?.({ nextBlock: cursor.nextBlock, scanned, matches: all.length, skipped, caughtUp: false, discrepancies: discrepancies.length });
           break;
         }

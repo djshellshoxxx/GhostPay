@@ -56,6 +56,9 @@ describe('Export all payment keys (spec 18 flow 2)', () => {
     const disclosure = screen.getByText(/Master keys are not included/);
     expect(disclosure.textContent).toContain('The authenticated public header stays readable without the passphrase');
     expect(disclosure.textContent).toContain('linking all archive entries');
+    // The RPC sees every exported address in one go: said before any credential is submitted or request made.
+    expect(screen.getByText(/That provider can link all of these addresses to each other/)).toBeTruthy();
+    expect(rpc.calls).toHaveLength(0);
     expect(downloads.files).toEqual([]);
     await user.type(screen.getByLabelText('Passphrase of your encrypted vault'), VAULT_PASS);
     await user.type(screen.getByLabelText('New passphrase for the export file (at least 14 characters)'), FILE_PASS);

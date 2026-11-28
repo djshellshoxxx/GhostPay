@@ -9,6 +9,74 @@ repairs on top of #717), the draft hint and cover label keys in the four locale 
 #747, now on main). Does not claim any of those PRs' own files. Acceptance: see the handoff; hosted CI on the exact head.
 
 ---
+# Static guide footer keyboard navigation
+
+Codex owns the page heading and footer link in `apps/web/{help,privacy}.html` and the matching
+regression in `apps/web/e2e/static-help.spec.ts` on `fix/static-guides-back-to-top`.
+Base: `70458ebe3ae4a5502d7c39ae25d37342dbde971b`. With JavaScript disabled, Enter on
+“Back to top” must focus the page heading and the next Tab must focus “Open app” on both guides.
+
+The follow-up on PR #768 starts at `0d7d069da7e0145b8a373e45de150e82744713ca` and adds
+the `<noscript>` navigation in `apps/web/index.html` to this claim. With JavaScript disabled,
+the first Tab must reveal the skip link, Enter must focus main, and the next Tab must reach the inline help guide.
+
+# Recorded low residuals (web) — 2026-11-27 UTC
+
+Worker: local Claude Code worker W7 on the existing merged branch `claude/consolidation-stack-20261126`, fast-forwarded
+to main `3f79c301` (#757); no new branch. Draft PR only: no merge, no integration lock.
+
+Owned paths: `apps/web/public/ghostpay-embed-v2.js` (dialog containment) and `embedV2.test.ts`;
+`apps/web/src/lib/{relayerClient,displayText,pay,scanPrivacy}.ts` (`trustView` and the indexer cross-check bound only);
+`views/Pay.tsx` (signer notice and offline notice only); `lib/scanClient.ts` (fetch cancellation only) and
+`views/Scan.tsx` (passing the run's signal only); their tests; two keys in `locales/*.json` and
+`i18n/securityKeys.ts`; this entry. Overlap: `Pay.tsx` with open #742, separate hunks.
+Acceptance: each fix has a regression test; no payment, journal, privacy or verification guard loosened; no dependency,
+contract, workflow or activation change.
+
+# Defensive fixes W2-1 to W2-3, sweep destination, embed popup, F8 — 2026-11-27 UTC
+
+Worker: local Claude Code worker W2 on the existing merged branch `claude/journal-fuzz-20261126`, fast-forwarded to
+`8a519272` (repair train #724, which holds main `a7f9abf8`), then merged with main `3dba277e` (#728) and `1894b4bb` (#754, tests and docs); no new branch.
+Draft PR only: no merge, no integration lock.
+
+Owned paths: `apps/web/src/{AppShell.tsx,state.tsx}`, `lib/{settings,sweep}.ts`, `lib/scanClient.ts` (reorg clears
+only), `lib/scanPrivacy.ts` (indexer adapter only), `views/{Pay,Settings,Sweep}.tsx`,
+`features/registry/RegistryView.tsx` (settings changes only), their new or extended tests,
+`i18n/securityKeys.ts`; three new keys in `apps/web/locales/*.json`; `apps/web/public/ghostpay-embed-v2.js` (click
+guard) and `embedV2.test.ts`; `packages/scan-source/src/{indexer,types,validate}.ts`;
+`packages/tx-review/src/{review,types}.ts`, `review.test.ts`, `DEVIATIONS.md` item 4;
+`packages/ux-vault/src/tag-archive-portable.ts` (`derive` only) and its new memory test; this entry.
+
+Overlap: #728 (`AppShell.tsx`, `Pay.tsx`, `Settings.tsx`, `scanClient.ts`, `securityKeys.ts`, locale catalogs, this
+file) is merged into this branch with both behaviours kept. The settings-sync shape comes from draft #251, which is left
+untouched; its network-authorization feature is not taken. Not claimed: F5, the
+embed focus trap. Acceptance: each regression fails without its fix and passes with it; hosted CI green on the exact
+head; independent review before any merge.
+
+---
+
+# LATE-L1 reconciliation retry, then #569 masking-test dispositions — 2026-11-27 UTC
+
+Worker: Claude session 01Tj2YczQ3YKPiCBh2nFurEc; branch `claude/loving-brown-v8dlp6` (base main `6bc97fde`, #738).
+Owned paths, LATE-L1: the replay condition in `observeInvoicePayments` of `packages/ux-vault/src/reconciliation-portable.ts`
+(no change to quarantine, matching, records or the vault format), new cases in
+`apps/web/src/lib/reconciliationVault.invoices.test.ts`, the LATE-L1 row of `docs/engineering/SECURITY_FINDINGS.md`,
+and `apps/web/src/lib/reconciliationVault.replay.fuzz.test.ts` (ported from #751 `a27d7b80`; test model repaired per
+review 7221525657).
+Owned paths, #569 follow-up (PR comment 7202318339): new masking regressions under `apps/web/src` and `apps/web/e2e`
+ported from #569 `c30283d2` where main's #708 design applies, a disposition record for each of the six cases, and a
+narrow repair only if a ported case shows a real gap. Also the #355 follow-up (PR comments 7202320570, 7204906392):
+the quick-hide focus regressions ported to `apps/web/src/components/WalletDisclosure.quickHide.test.tsx` and the
+masked focus fallback in `DisclosureDialog` of `apps/web/src/components/WalletDisclosure.tsx`. Not claimed: #569's branch (kept), `privacyMode.tsx` design changes,
+REV-I6, QA-I1, IDLE-M1. LATE-M1 stays claimed by this worker: the owner approved a presence marker (2026-11-27); the first
+fix (`a530f96a`) was held by review 7215494772 for cross-tab serialization and reverted from #742 (`98d99a4f`); a
+redo with per-scope coordination follows in its own PR. Acceptance: LATE-L1 regression red on main and green with the fix; an unlinked candidate
+that was never verified (indirect router call, always `claimed`) is never replayed, so it cannot pin every later
+checkpoint; affected typecheck, lint and tests; hosted CI on the exact head; independent review; merge only under the
+integration lock.
+
+---
+
 # Consolidation stack 2 (#728): repair-train merge, replacement status, qualification port (2026-11-27 UTC)
 
 Worker: newghostpay-e3 worker W1; existing branch `claude/consolidation-stack-20261126`, previous head `298257fd`.
@@ -5339,3 +5407,63 @@ Observed: existing duplicate map overwrites an unverified-checksum diagnostic wh
 
 - Branch: carrier `finish/privacy-preview-resume-20261126-9d8f` (#724), successor to the newghostpay-67 W2 claim (no longer running). Merged main `a7f9abf80f2c9aee9b7d130a9bbc3af1b8131053`; only conflict was this file, both sides kept.
 - Owns only the composition, this entry and any repair needed by hosted CI on the exact head. Acceptance: all PR checks green on the exact head, merge under the integration lock, resulting-main checks green.
+
+## Port of ERC-20 anvil and remaining fuzz suites from #751 — 2026-11-27 UTC (newghostpay-e3, coordinator)
+
+- Branch: existing merged `claude/idle-sweep-freeze-tests-20261126` fast-forwarded to main `3dba277e`; no new branch. Asked for by the #751 owner (comment on #751).
+- Owns only the 12 added test, test-utility and handoff files from `5ba3a468` and this entry. No product, dependency, workflow or config change.
+- Not ported: `reconciliationVault.replay.fuzz.test.ts` (needs #742). Acceptance: hosted CI green on the exact head, including the anvil and recovery jobs.
+
+## Defensive fixes from the second source audit (W4-1..W4-5) — 2026-11-27 UTC (newghostpay-e3 worker W4)
+
+- Branch: existing merged `claude/multipart-note-copy-20261126` (#712) fast-forwarded to main `1894b4bb`; no new branch.
+- Owns only: the payer proof receipt in `apps/web/src/views/Pay.tsx`; non-deep handling of wrong-view-tag records in `packages/ux-vault/src/reconciliation-portable.ts` and the `deep` page flag in `apps/web/src/lib/scanClient.ts`; `apps/web/src/lib/displayText.ts`; observer row 4 (`components/Disclosure.tsx`, four locales, `docs/threat-model/THREAT_MODEL.md`); `key()` in `packages/chain-adapters/src/scanVerify.ts`; their tests; this entry.
+- Shared files, separate hunks: `Pay.tsx`, `scanClient.ts` and locales with `claude/journal-fuzz-20261126` (W2); `Pay.tsx` and `reconciliation-portable.ts` with open #742.
+- Acceptance: each fix has a regression test that fails without it; no tombstone, reorg or depth rule weakened; no dependency, contract, workflow or activation change; draft PR, no merge.
+
+- Coordinator (newghostpay-e3) finished W4 stopped run and added W6-1/W6-2: also owns `StealthExportArchive.tsx` and its test, `securityKeys.ts` (one key), `chain-adapters/src/registryEns.ts` and its test.
+
+
+## BUG-ONLY: deep-link redirect validation order — 2026-11-27
+
+Worker: sequential GhostPay bug-repair coordinator; branch `automation/20261127T1524Z/bug/deeplink-redirect-order`, base `1894b4bbd31f4765e56bd5fb05d51342fc5bd8b7`. Own only `packages/ux-intake/src/deeplink.ts`, new `packages/ux-intake/src/deeplink.redirect-order.test.ts`, this additive entry and `docs/handoffs/DEEPLINK_REDIRECT_ORDER_20261127.md`.
+Ownership: all 146 open PR changed-file inventories in the partitioned snapshot through #755 checked, no matching parser or dedicated test path. Earlier #748/#752 repairs are already merged; preserve them. Rechecked main unchanged and recent open list unchanged. Generation 72 integration lease released, not acquired.
+Observed: R5 requires unsafe redirect parameters to reject the whole HTTPS deep link. The existing invoice-fragment and share-target returns precede validation. Exact local Git blob 30cd209628805ea78436beb2fca1d5e49297bcc8 transpiled with TypeScript 5.8.3, Node 22.16.0, synthetic mocked payload import boundary: 12/18 baseline, 18/18 proposed correction. This is not native full-package Vitest. Acceptance: commit regression first, move existing validation loop before both early returns, retain safe navigation, payload warnings and normal behavior; no dependencies, new functionality, release or deployment. All hosted exact-head checks, independent review, fresh ownership and legitimate lock acquisition required before any merge. All ten stopped workstreams untouched.
+
+
+---
+
+# Bug-only receipt input snapshot — 2026-11-27
+
+Worker: sequential GhostPay bug-repair worker; isolated branch `automation/20261127/bug/receipt-input-snapshot`, base `fd5e591151765b2dafe6345501ca40393e0f176a`. Own only `packages/ux-receipts/src/verify.ts`, new `packages/ux-receipts/src/verify.receipt-snapshot.test.ts`, this additive claim and `docs/handoffs/RECEIPT_INPUT_SNAPSHOT_20261127.md`. All 145 open PR file lists in the refreshed census were checked; no proposed source or new regression path overlaps. Historical source owners #449/#663/#690 merged; #450/#664 closed. Other receipt tests and manifests remain untouched. Original verifier blob `88b696d05bca3f2692e29256285f849458b53bfe` remains unchanged from prior isolated reproduction. Acceptance: regression-first, consistent digest/query/comparison snapshot despite caller mutation during await; preserve valid and invalid receipt semantics, no activation of unmounted utility, no new dependencies or network/fund/contract/deployment work. Prior isolated exact-blob red/green 5/9 to 9/9; no native checkout available. Exact-head hosted CI and genuine independent review required. Generation 76 released, not acquired. Draft only until qualification.
+
+## November 27 audit — Pages deployment archive
+
+Worker `pages` on `audit/nov27-pages-87060`, base `b890a76603b924829fdbe2b4fb2c5626f0cf4e36`. Own the packaging, independent archive verification and deployment dependency in `.github/workflows/pages.yml` and the matching archive regression. Preserve other workers' smoke and origin changes. Acceptance requires a non-publishing build to verify the exact uploaded deployment tar against separately retained build checksums and the full triggering SHA. A tar missing `.nojekyll` must fail. Only the coordinator integrates.
+## November 27 audit · LATE-L1 integration qualification
+
+Worker: Codex, branch `audit/nov27-late-87060`, base `b890a76603b924829fdbe2b4fb2c5626f0cf4e36`.
+Qualify existing PR #742 head `2b4826e01d5238a7f581ddd11f6910df827d465e` against this main.
+Own only this additive claim, resolving integration conflicts and any missing audit regression in the
+reconciliation tests. Preserve the PR's reconciliation and masking changes and all main-side changes.
+Acceptance: ordinary resume rechecks formerly verified unlinked candidates, withholds credit until verification
+and explicit seller acceptance, and permits checkpoints past never-verified candidates. Exercise repeated
+resume, reorg and the merged masking behavior. The audit coordinator handles remote integration.
+## November 27 audit — inventory
+
+Worker: audit coordinator's inventory reviewer, branch `audit/nov27-inventory-87060`, base `b890a76603b924829fdbe2b4fb2c5626f0cf4e36`. Trace individual and archive recovery-export lookups. Own the recovery-export record in docs/privacy/network-egress-inventory.json, its corresponding exposure matrix in docs/privacy/browser-network-isolation.md, and the inventory or export regression needed to establish request counts. Preserve user warnings and authorization.
+## November 27 audit — idle
+
+Worker: audit coordinator's idle reviewer, branch `audit/nov27-idle-87060`, base `b890a76603b924829fdbe2b4fb2c5626f0cf4e36`. Confirm the current IDLE-M1 owner decision and reproduce idle expiry, credential boundaries, encrypted backup and fresh-profile recovery. Own only this claim and focused sole-copy browser acceptance. Preserve custody policy until an explicit owner decision.
+The owner accepted the walk-up encrypted-export risk on November 27. Scope now includes the existing suspended-session warning in all four catalogs, session-security guide, finding and readiness registers, and the independent-keystore browser journey. No custody implementation changes.
+## 2026-11-27 — audit qualification of existing verification harnesses
+
+Codex audit qualification worker, branch `audit/nov27-qualification-87060`, base
+`b890a76603b924829fdbe2b4fb2c5626f0cf4e36`. Own only this additive claim and
+`docs/audits/nov27-qualification.md`. Verify the ERC-20 artifacts from #753,
+exercise the #665 independent verifier on the selected local candidate, and
+trace the elliptic advisory. The original verifier branches remain with their
+respective owners. Use disposable fixtures and record only sanitized results.
+## November 27 audit — approved Pages payment origin
+
+Worker Codex origin, branch `audit/nov27-origin-87060`, base `b890a76603b924829fdbe2b4fb2c5626f0cf4e36`. Own the Pages build origin, lean manifest and wallet gates, smoke origin checks, corresponding workflow arguments, docs and regressions. Preserve the signed manifest, on-chain read-back, shared-testnet decision and explicit local fixture. Acceptance requires zero wallet requests on origin mismatch, working approved-origin payment and manifest-free demo, and an independent post-deployment origin check. Coordinate workflow hunks with the deployment archive worker.

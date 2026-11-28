@@ -59,6 +59,11 @@ function SweepPanel(): ReactNode {
   // opened with: when another tab has changed them, nothing is sent until Sweep is reopened with the current ones.
   const [routeAtOpen] = useState(savedRoute);
   const routeCurrent = (): boolean => savedRoute() === routeAtOpen;
+  // Quotes and signatures go only where this page was opened to send them, also before this tab hears of a change.
+  const [relayerAtOpen] = useState(() => loadSettings().relayerUrl);
+  const assertRouteCurrent = (): void => {
+    if (!routeCurrent() || loadSettings().relayerUrl !== relayerAtOpen) throw new UserFacingError({ key: 'sweep.routeChanged' });
+  };
   const balanceOperation = useRef(0);
   // `asked`: this review context has had a read request (so an empty balance means "unknown", not "not read yet");
   // `noRpc`: the last request found no RPC for the chain and sent nothing.
@@ -257,6 +262,7 @@ function SweepPanel(): ReactNode {
       && balanceOperation.current === balanceId && currentQuoteScope.current === quoteScope;
     void guard(async (assertCurrent) => {
       try {
+        assertRouteCurrent();
         const rpc = await app.getRpc(chainId);
         assertCurrent();
         if (!current()) return;
@@ -265,6 +271,7 @@ function SweepPanel(): ReactNode {
         if (!current()) return;
         if (loaded === undefined || balance === undefined || tokenAddr === 'native') throw new Error('state');
         const dest = checkDestination(destination, target.owner, loaded);
+        assertRouteCurrent();
         const nextQuote = await getSweepQuote(app.settings.relayerUrl, { ...target, token: tokenAddr }, dest, balance, nowSec(), loaded.feeRecipient, services.fetchFn);
         assertCurrent();
         if (current()) setQuote(nextQuote);
@@ -282,6 +289,7 @@ function SweepPanel(): ReactNode {
     void guard(async (assertCurrent) => {
       const assertReviewCurrent = (): void => {
         assertCurrent();
+        assertRouteCurrent();
         if (balanceOperation.current !== balanceId || quoteOperation.current !== quoteId || currentQuoteScope.current !== quoteScope) {
           throw new UserFacingError({ key: 'sweep.reviewChanged' });
         }
@@ -345,6 +353,7 @@ function SweepPanel(): ReactNode {
     void guard(async (assertCurrent) => {
       const assertReviewCurrent = (): void => {
         assertCurrent();
+        assertRouteCurrent();
         if (balanceOperation.current !== balanceId || quoteOperation.current !== quoteId || currentQuoteScope.current !== quoteScope) {
           throw new UserFacingError({ key: 'sweep.reviewChanged' });
         }
@@ -572,4 +581,4 @@ function SweepPanel(): ReactNode {
   );
 }
 
-// i18n-use: sweep.announceBroadcast sweep.announceRelayer sweep.asset sweep.attempt.executed sweep.attempt.expired sweep.attempt.expiredBody sweep.attempt.included sweep.attempt.refused sweep.attempt.refusedBody sweep.attempt.relayerHashUnverified sweep.attempt.replaced sweep.attempt.replacedBody sweep.attempt.reverted sweep.attempt.unknown sweep.attempt.unknownDirect sweep.attempt.unknownRelayed sweep.balanceOnChain sweep.balanceRead.button sweep.balanceNotRead sweep.balanceRead.noRpc sweep.balanceRead.note sweep.balanceRead.warning sweep.balanceUnknown sweep.cancelVault sweep.chain sweep.checkExplorer sweep.checkStatus sweep.choosePayment sweep.copyHash sweep.destination.label sweep.dryRunUnavailable sweep.feeLegend sweep.getQuote sweep.goToScan sweep.importQr sweep.journalBroken.body sweep.journalBroken.title sweep.keysGone sweep.modeDirect sweep.modeRelayer sweep.noManifest sweep.note.checkFailed sweep.note.lockChanged sweep.note.noRpc sweep.note.pendingDirect sweep.note.pendingRelayed sweep.note.rpcForgot sweep.oneTimeAddress sweep.payerFollow.body sweep.payerFollow.title sweep.paymentsDisabledChain sweep.pendingBlocksSigning sweep.permit.directFallback sweep.permit.withFallback sweep.relayerFee sweep.relayerNeeds sweep.reviewChanged sweep.resign.button sweep.resign.hint sweep.resign.limit sweep.resign.nothingPending sweep.signDirect sweep.signRelayer sweep.submitted sweep.title sweep.tokenFallback sweep.tokenNotAllowed sweep.txHash sweep.vaultCancelled sweep.vaultCancelledKeys sweep.vaultChecking sweep.vaultError sweep.vaultPass.hint sweep.vaultPass.label sweep.working sweep.youReceive
+// i18n-use: sweep.announceBroadcast sweep.announceRelayer sweep.asset sweep.attempt.executed sweep.attempt.expired sweep.attempt.expiredBody sweep.attempt.included sweep.attempt.refused sweep.attempt.refusedBody sweep.attempt.relayerHashUnverified sweep.attempt.replaced sweep.attempt.replacedBody sweep.attempt.reverted sweep.attempt.unknown sweep.attempt.unknownDirect sweep.attempt.unknownRelayed sweep.balanceOnChain sweep.balanceRead.button sweep.balanceNotRead sweep.balanceRead.noRpc sweep.balanceRead.note sweep.balanceRead.warning sweep.balanceUnknown sweep.cancelVault sweep.chain sweep.checkExplorer sweep.checkStatus sweep.choosePayment sweep.copyHash sweep.destination.label sweep.dryRunUnavailable sweep.feeLegend sweep.getQuote sweep.goToScan sweep.importQr sweep.journalBroken.body sweep.journalBroken.title sweep.keysGone sweep.modeDirect sweep.modeRelayer sweep.noManifest sweep.note.checkFailed sweep.note.lockChanged sweep.note.noRpc sweep.note.pendingDirect sweep.note.pendingRelayed sweep.note.rpcForgot sweep.oneTimeAddress sweep.payerFollow.body sweep.payerFollow.title sweep.paymentsDisabledChain sweep.pendingBlocksSigning sweep.permit.directFallback sweep.permit.withFallback sweep.relayerFee sweep.relayerNeeds sweep.reviewChanged sweep.routeChanged sweep.resign.button sweep.resign.hint sweep.resign.limit sweep.resign.nothingPending sweep.signDirect sweep.signRelayer sweep.submitted sweep.title sweep.tokenFallback sweep.tokenNotAllowed sweep.txHash sweep.vaultCancelled sweep.vaultCancelledKeys sweep.vaultChecking sweep.vaultError sweep.vaultPass.hint sweep.vaultPass.label sweep.working sweep.youReceive

@@ -144,6 +144,29 @@ export function loadSettings(storage: Pick<Storage, 'getItem'> | undefined = saf
   }
 }
 
+/** The stored preference text as it is now: `null` when nothing is saved, `undefined` when storage cannot be read. */
+export function storedSettingsText(storage: Pick<Storage, 'getItem'> | undefined = safeLocalStorage()): string | null | undefined {
+  try {
+    return storage?.getItem(SETTINGS_KEY);
+  } catch {
+    return undefined;
+  }
+}
+
+/**
+ * `next`, keeping the identity of every value that `current` already holds, so that only what changed invalidates work
+ * bound to it (an RPC client, a reviewed invoice). Returns `current` itself when nothing differs.
+ */
+export function mergeSettings(current: Settings, next: Settings): Settings {
+  const out: Record<string, unknown> = { ...next };
+  let changed = false;
+  for (const key of Object.keys(next) as (keyof Settings)[]) {
+    if (JSON.stringify(current[key]) === JSON.stringify(next[key])) out[key] = current[key];
+    else changed = true;
+  }
+  return changed ? (out as unknown as Settings) : current;
+}
+
 /** Saves only validated non-secret preferences. Returns false when storage is unavailable. */
 export function saveSettings(s: Settings, storage: Pick<Storage, 'setItem'> | undefined = safeLocalStorage()): boolean {
   try {

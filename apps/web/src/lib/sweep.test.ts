@@ -8,7 +8,7 @@ import { FAKE_ANNOUNCER, FAKE_FEE_RECIPIENT, FAKE_ROUTER, FAKE_SWEEP_RELAYER, fa
 import { mockRpc } from '../test/mockRpc';
 import { clearSession, generateSession } from './session';
 import { checkDestination, describeDestination, deriveVerifiedSweepKey, directSweep, DirectSweepOutcomeUnknownError, getSweepQuote, OP_STACK_GAS_PRICE_ORACLE, readBalance, reconcileRelayedOrder, reconcileSweepLock, RELAYED_EXPIRY_MARGIN_SECONDS, relayedSweep, type RelayedOrderRef, type SweepLock, type SweepTarget } from './sweep';
-import { ChainAdapterError, createClient, findChain, erc20Abi, ghostPaySweepRelayerAbi } from '@ghostpay/chain-adapters';
+import { ChainAdapterError, createClient, findChain, erc20Abi, ghostPaySweepRelayerAbi, tokensForChain } from '@ghostpay/chain-adapters';
 import { quoteBuffer } from './pay';
 import { userMessage } from './errors';
 import * as sweepModule from './sweep';
@@ -72,6 +72,15 @@ describe('key derivation and destination checks', () => {
     expect(() => checkDestination(owner.toLowerCase(), owner, manifest)).toThrow(/must differ/);
     for (const bad of [FAKE_ROUTER, FAKE_SWEEP_RELAYER, FAKE_ANNOUNCER, FAKE_FEE_RECIPIENT]) {
       expect(() => checkDestination(bad, owner, manifest)).toThrow(/GhostPay contract or the fee recipient/);
+    }
+  });
+  it('refuses every allowlisted token contract on entry, where swept funds would be stuck (WALLET-SAFETY-07)', () => {
+    const owner = '0x52908400098527886E0F7030069857D2E4169EE7'.toLowerCase() as Address;
+    const tokens = tokensForChain(84532);
+    expect(tokens.map((t) => t.address)).toContain(TOKEN);
+    for (const { address } of tokens) {
+      expect(() => checkDestination(address, owner, manifest)).toThrow(/token contract/);
+      expect(() => checkDestination(address.toLowerCase(), owner, manifest)).toThrow(/token contract/);
     }
   });
 });

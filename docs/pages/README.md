@@ -92,7 +92,7 @@ The output directory must not exist and must be outside `apps/web`. Without `GHO
 
 | Variable | Meaning |
 |---|---|
-| `GHOSTPAY_PAGES_ORIGIN` | The serving origin, `https://host[:port]` with no path. Recorded in the evidence and the banner. Required when manifests are bundled. A `*.github.io` origin is treated as shared. |
+| `GHOSTPAY_PAGES_ORIGIN` | The serving origin, `https://host[:port]` with no path. Compiled into the wallet gate and recorded in build-info.json and the evidence. A copied Pages build refuses wallet requests on a different scheme, host or port. Required when manifests are bundled. A `*.github.io` origin is treated as shared. |
 | `GHOSTPAY_PAGES_ALLOW_SHARED_ORIGIN=testnet` | Accept a shared `*.github.io` origin for a build with testnet manifests. Without it such a build is refused (GP-PAGES-01). |
 | `GHOSTPAY_PAGES_DEPLOYMENTS_DIR`, `GHOSTPAY_RELEASE_PUBKEYS` | Release-signed testnet manifests and their public keys. |
 | `GHOSTPAY_PAGES_DEV=1` | Test build: a modified tree and a plain-http loopback origin are accepted; the banner and evidence say it is not a release. |
@@ -123,8 +123,10 @@ node scripts/pages/serve-pages.mjs "$PWD/../ghostpay-pages/site" --port 4180 --b
 ```
 
 ```bash
-node scripts/pages/smoke.mjs http://127.0.0.1:4180/GhostPay/ --commit "$(git rev-parse HEAD)" --timeout-s 0
+node scripts/pages/smoke.mjs http://127.0.0.1:4180/GhostPay/ --loopback-preview --commit "$(git rev-parse HEAD)" --timeout-s 0
 ```
+
+For a build with a configured origin, add `--approved-origin https://your-approved-host` to the local preview command. After publication use `--approved-origin` with the independently approved origin and omit `--loopback-preview`. Smoke then requires both the served URL and the artifact metadata to match the approval. Project paths such as `/GhostPay/` share the hosting origin.
 
 ### Real-chain browser acceptance of the Pages artifact
 

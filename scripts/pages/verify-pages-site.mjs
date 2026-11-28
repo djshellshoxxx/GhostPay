@@ -247,6 +247,7 @@ export function verifySite(siteDir, leanReport, o = {}) {
       const info = JSON.parse(readFileSync(join(root, 'build-info.json'), 'utf8'));
       if (info.app !== 'ghostpay-web') problems.push('build-info.json: unexpected app');
       if (o.expectCommit !== undefined && info.commit !== o.expectCommit) problems.push(`build-info.json: commit ${String(info.commit)} != ${o.expectCommit}`);
+      if (o.expectPagesOrigin !== undefined && info.pagesOrigin !== o.expectPagesOrigin) problems.push('build-info.json: hosting origin does not match the approved origin');
       if (o.expectManifestsSha256 !== undefined && info.manifestsSha256 !== o.expectManifestsSha256) problems.push('build-info.json: manifest digest does not match the approved deployments directory');
     } catch {
       problems.push('build-info.json: not valid JSON');
