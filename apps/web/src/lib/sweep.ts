@@ -280,8 +280,8 @@ export interface DirectSweepInput {
   readonly target: SweepTarget;
   /** Authenticated manifest: the review policy (allowlist, protocol contracts) is built from it. */
   readonly manifest: DeploymentManifest;
-  /** Unix seconds (default: now). */
-  readonly nowSeconds?: number;
+  /** Unix seconds. A live clock is read again across asynchronous signing steps. */
+  readonly nowSeconds?: number | (() => number);
   readonly destination: Address;
   /**
    * For ERC-20 the amount to move; for native the whole balance minus every fee (gas, and on OP Stack the L1 data fee)
@@ -616,8 +616,8 @@ export interface DirectSweepReview {
 /** What signing a reviewed direct sweep needs besides the review itself. */
 export type SignReviewedDirectSweepInput = Pick<DirectSweepInput, 'target' | 'manifest' | 'rpc' | 'nowSeconds' | 'assertReviewCurrent' | 'onBeforeHandoff'>;
 
-function sweepNow(nowSeconds: number | undefined): number {
-  const now = nowSeconds ?? Math.floor(Date.now() / 1000);
+function sweepNow(nowSeconds: DirectSweepInput['nowSeconds']): number {
+  const now = typeof nowSeconds === 'function' ? nowSeconds() : nowSeconds ?? Math.floor(Date.now() / 1000);
   if (!Number.isSafeInteger(now) || now < 0) throw new UserFacingError({ key: 'error.sweep.theLocalClockIsInvalidRefusingToSignASweep' });
   return now;
 }
@@ -752,12 +752,16 @@ export async function reviewDirectSweep(i: Omit<DirectSweepInput, 'onBeforeHando
  */
 export async function signReviewedDirectSweep(review: DirectSweepReview, i: SignReviewedDirectSweepInput): Promise<DirectSweepResult> {
   const assertSessionUnchanged = captureSessionGuard();
-  const assertCurrent = (): void => { assertSessionUnchanged(); i.assertReviewCurrent?.(); };
-  assertCurrent();
-  const now = sweepNow(i.nowSeconds);
-  if (now < review.reviewedAt || now - review.reviewedAt > DIRECT_SWEEP_REVIEW_TTL_SECONDS) {
-    throw new UserFacingError({ key: 'error.sweep.directReviewExpired' });
-  }
+  const assertCurrent = (): number => {
+    assertSessionUnchanged();
+    i.assertReviewCurrent?.();
+    const now = sweepNow(i.nowSeconds);
+    if (now < review.reviewedAt || now - review.reviewedAt > DIRECT_SWEEP_REVIEW_TTL_SECONDS) {
+      throw new UserFacingError({ key: 'error.sweep.directReviewExpired' });
+    }
+    return now;
+  };
+  const now = assertCurrent();
   const { owner, chainId, token } = i.target;
   const { unsigned } = review;
   const expectedTo = token === 'native' ? review.destination : token;

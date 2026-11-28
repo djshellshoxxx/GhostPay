@@ -1,3 +1,7 @@
+# Direct sweep review clock qualification — 2026-11-28
+
+Codex owns the live review-clock regression and its signing-path fix on `qa/direct-sweep-live-clock-20261128`, based on `primary/sweep-review-20261128` at `e0b8dafd`. The branch uses synthetic RPC responses for verification.
+
 # Recorded low residuals (web) — 2026-11-27 UTC
 
 Worker: local Claude Code worker W7 on the existing merged branch `claude/consolidation-stack-20261126`, fast-forwarded

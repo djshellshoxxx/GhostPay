@@ -425,7 +425,7 @@ function SweepPanel(): ReactNode {
         let res: DirectSweepResult;
         try {
           res = await signReviewedDirectSweep(review, {
-            target, manifest: loaded, rpc, nowSeconds: nowSec(), assertReviewCurrent,
+            target, manifest: loaded, rpc, nowSeconds: nowSec, assertReviewCurrent,
             onBeforeHandoff: (a) => {
               assertReviewCurrent();
               handoff.lock = beginSweepAttempt(a, replaces);
