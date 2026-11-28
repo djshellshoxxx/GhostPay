@@ -1,11 +1,11 @@
 // @vitest-environment jsdom
-import { screen, waitFor, within } from '@testing-library/react';
+import { act, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { MemoryKeyVaultStore, saveEncryptedVault, setKeyVaultStoreForTests } from '../lib/keyVault';
 import * as exportModule from '../lib/paymentKeyExport';
 import { TEST_N, VECTORS, VECTOR_PASS, captureDownloads } from '../lib/paymentKeyExport.testutil';
-import { captureSessionGuard, clearSession, generateSession, getSessionBackup, getSessionPublic, markKeystoreDownloaded } from '../lib/session';
+import { captureSessionGuard, clearSession, exportKeystore, generateSession, getSessionBackup, getSessionPublic, markKeystoreDownloaded } from '../lib/session';
 import { decryptMasterBackup } from '../lib/stealthExport';
 import { makeServices, renderApp } from '../test/render';
 
@@ -39,13 +39,51 @@ async function open(): Promise<ReturnType<typeof userEvent.setup>> {
 }
 
 describe('Seller keys: spec 18 master backup and recovery', () => {
+  it('identifies a renamed seller keystore and restores all three keys only after explicit submission', async () => {
+    const before = generateSession();
+    const text = await exportKeystore(FILE_PASS, { N: TEST_N });
+    clearSession();
+    const user = await open();
+    const panel = within(screen.getByTestId('stealth-export-open'));
+    expect(panel.queryByLabelText('Passphrase')).toBeNull();
+    await user.upload(panel.getByLabelText('Recovery file'), new File([text], 'unrelated.json', { type: 'application/json' }));
+    expect(await panel.findByText('Seller keystore (spending, viewing and invoice-signing keys)')).toBeTruthy();
+    expect(getSessionPublic()).toBeUndefined();
+    expect(panel.queryByRole('button', { name: 'Check export without importing' })).toBeNull();
+    await user.type(panel.getByLabelText('Passphrase'), FILE_PASS);
+    expect(getSessionPublic()).toBeUndefined();
+    await user.click(panel.getByRole('button', { name: 'Decrypt and load' }));
+    await waitFor(() => { expect(getSessionPublic()?.signerPublicKey).toBe(before.signerPublicKey); }, { timeout: 30_000 });
+    expect(getSessionPublic()?.metaAddress).toBe(before.metaAddress);
+    await user.upload(panel.getByLabelText('Recovery file'), new File([text], 'again.json', { type: 'application/json' }));
+    expect(await panel.findByText(/Seller keys are already loaded/)).toBeTruthy();
+    expect(panel.queryByLabelText('Passphrase')).toBeNull();
+    expect(panel.queryByRole('button', { name: 'Decrypt and load' })).toBeNull();
+  });
+
+  it('ignores a stale file read when a public record supersedes it', async () => {
+    const user = await open();
+    const panel = within(screen.getByTestId('stealth-export-open'));
+    const first = new File([VECTORS.files.master.text], 'first.json', { type: 'application/json' });
+    let finish!: (text: string) => void;
+    Object.defineProperty(first, 'text', { value: () => new Promise<string>((resolve) => { finish = resolve; }) });
+    await user.upload(panel.getByLabelText('Recovery file'), first);
+    expect(panel.queryByLabelText('Export file passphrase')).toBeNull();
+    await user.upload(panel.getByLabelText('Recovery file'), new File([VECTORS.files.public.text], 'second.json', { type: 'application/json' }));
+    expect(await panel.findByText('Public payment record')).toBeTruthy();
+    await act(async () => { finish(VECTORS.files.master.text); await Promise.resolve(); });
+    expect(panel.queryByLabelText('Export file passphrase')).toBeNull();
+    expect(panel.getByText('Public payment record')).toBeTruthy();
+    expect(getSessionPublic()).toBeUndefined();
+  });
+
   it('offers recovery in a fresh session with no keys, and the master backup only once keys are loaded', async () => {
     const user = await open();
-    expect(screen.getByRole('heading', { name: 'Open a stealth key export' })).toBeTruthy();
+    expect(screen.getByRole('heading', { name: 'Recover from a file' })).toBeTruthy();
     expect(screen.queryByRole('heading', { name: 'Master stealth key backup (encrypted)' })).toBeNull();
     const panel = screen.getByTestId('stealth-export-open');
-    await user.upload(within(panel).getByLabelText('Stealth key export file'), new File([VECTORS.files.single.text], 'k.json', { type: 'application/json' }));
-    await user.type(within(panel).getByLabelText('Export file passphrase'), VECTOR_PASS);
+    await user.upload(within(panel).getByLabelText('Recovery file'), new File([VECTORS.files.single.text], 'k.json', { type: 'application/json' }));
+    await user.type(await within(panel).findByLabelText('Export file passphrase'), VECTOR_PASS);
     await user.click(within(panel).getByRole('button', { name: 'Open export' }));
     expect(await within(panel).findByText(/1 payment key on Ethereum Sepolia/, {}, { timeout: 30_000 })).toBeTruthy();
     expect(getSessionPublic()).toBeUndefined();
@@ -92,8 +130,8 @@ describe('Seller keys: spec 18 master backup and recovery', () => {
     const before = generateSession();
     const user = await open();
     const panel = screen.getByTestId('stealth-export-open');
-    await user.upload(within(panel).getByLabelText('Stealth key export file'), new File([VECTORS.files.master.text], 'm.json', { type: 'application/json' }));
-    await user.type(within(panel).getByLabelText('Export file passphrase'), VECTOR_PASS);
+    await user.upload(within(panel).getByLabelText('Recovery file'), new File([VECTORS.files.master.text], 'm.json', { type: 'application/json' }));
+    await user.type(await within(panel).findByLabelText('Export file passphrase'), VECTOR_PASS);
     await user.click(within(panel).getByRole('button', { name: 'Open export' }));
     await user.click(await within(panel).findByRole('button', { name: 'Load these spending and viewing keys' }, { timeout: 30_000 }));
     expect(await within(panel).findByText('The keys loaded now have no verified backup')).toBeTruthy();
@@ -108,8 +146,8 @@ describe('Seller keys: spec 18 master backup and recovery', () => {
     await saveEncryptedVault(VAULT_PASS, { N: TEST_N });
     const user = await open();
     const panel = screen.getByTestId('stealth-export-open');
-    await user.upload(within(panel).getByLabelText('Stealth key export file'), new File([VECTORS.files.master.text], 'm.json', { type: 'application/json' }));
-    await user.type(within(panel).getByLabelText('Export file passphrase'), VECTOR_PASS);
+    await user.upload(within(panel).getByLabelText('Recovery file'), new File([VECTORS.files.master.text], 'm.json', { type: 'application/json' }));
+    await user.type(await within(panel).findByLabelText('Export file passphrase'), VECTOR_PASS);
     await user.click(within(panel).getByRole('button', { name: 'Open export' }));
     await user.click(await within(panel).findByRole('button', { name: 'Load these spending and viewing keys' }, { timeout: 30_000 }));
     const confirmation = await within(panel).findByRole('group', { name: 'Replace the currently loaded keys?' });

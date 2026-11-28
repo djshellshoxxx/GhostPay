@@ -1,9 +1,10 @@
 import { useEffect, useRef, useState, type FormEvent, type ReactNode } from 'react';
 import { UserFacingError, captureUserMessage, displayMessage, type DisplayMessage } from '../lib/errors';
+import { recognizeRecoveryFile, type RecoveryFile } from '../lib/recoveryFile';
 import { loadedKeysRecoverable } from '../lib/keyVault';
 import { RecoveredMasterKeys, RecoveredPaymentKeys, openStealthExport, verifyStealthExport, type VerifiedStealthExport } from '../lib/paymentKeyExport';
 import { captureSessionVersionGuard, getSessionBackup, sessionHasExternalCopy } from '../lib/session';
-import { STEALTH_EXPORT_LIMITS, type StealthKeypairHeader, type StealthMasterHeader, type StealthPublicRecord } from '../lib/stealthExport';
+import type { StealthKeypairHeader, StealthMasterHeader, StealthPublicRecord } from '../lib/stealthExport';
 import type { MessageKey } from '../i18n/catalog';
 import { Field, Mono, Notice } from './Common';
 import { useExportOperation, useExportT, useLatestExportT, type ExportMessage } from './StealthExportCommon';
@@ -14,6 +15,13 @@ type Shown =
   | { readonly kind: 'public'; readonly record: StealthPublicRecord }
   | { readonly kind: 'keypair'; readonly header: StealthKeypairHeader }
   | { readonly kind: 'master'; readonly header: StealthMasterHeader; readonly loaded: boolean };
+
+const RECOVERY_LABELS: Readonly<Record<RecoveryFile['kind'], MessageKey>> = {
+  keystore: 'recoveryFile.keystore',
+  public: 'stealthExport.open.public.title',
+  keypair: 'recoveryFile.keypair',
+  master: 'recoveryFile.master',
+};
 
 const SCOPE_KEYS: Readonly<Record<StealthKeypairHeader['scope'], MessageKey>> = {
   single: 'stealthExport.open.scope.single',
@@ -27,11 +35,17 @@ const SCOPE_KEYS: Readonly<Record<StealthKeypairHeader['scope'], MessageKey>> = 
  * one can be downloaded as raw text after a second confirmation; master keys can be loaded through the hex-import path.
  * The idle lock, any key change, closing the export and leaving the page wipe the decrypted keys.
  */
-export function StealthExportRecovery(props: { readonly announce: (message: string) => void }): ReactNode {
+export function StealthExportRecovery(props: {
+  readonly announce: (message: string) => void;
+  readonly recovery?: {
+    readonly loadKeystore?: (text: string, passphrase: string) => void;
+    readonly importing: boolean;
+    readonly cancelImport: () => void;
+  };
+}): ReactNode {
   const t = useExportT();
   const latestT = useLatestExportT(t);
-  const fileInput = useRef<HTMLInputElement | null>(null);
-  const [file, setFile] = useState<File | undefined>(undefined);
+  const [recognized, setRecognized] = useState<RecoveryFile>();
   const [passphrase, setPassphrase] = useState('');
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState<ExportMessage | undefined>(undefined);
@@ -50,6 +64,7 @@ export function StealthExportRecovery(props: { readonly announce: (message: stri
   };
   const reset = (): void => {
     wipeHeld();
+    setRecognized(undefined);
     replacement.current = undefined;
     setShown(undefined); setVerified(undefined); setRawIndex(undefined); setConfirmReplace(undefined); setPassphrase(''); setBusy(false); setMessage(undefined);
   };
@@ -70,21 +85,15 @@ export function StealthExportRecovery(props: { readonly announce: (message: stri
   };
 
   const openSelected = (mode: 'open' | 'verify'): void => {
-    if (file === undefined) { fail({ key: 'stealthExport.open.chooseFile' }); return; }
-    if (file.size > STEALTH_EXPORT_LIMITS.keypairFileBytes) { setPassphrase(''); fail({ key: 'error.stealthExport.tooLarge' }); return; }
+    if (recognized === undefined || recognized.kind === 'keystore') { fail({ key: 'stealthExport.open.chooseFile' }); return; }
     const controller = op.start();
     wipeHeld(); replacement.current = undefined;
     setShown(undefined); setVerified(undefined); setRawIndex(undefined); setConfirmReplace(undefined);
-    const selected = file; const pass = passphrase;
+    const text = recognized.text; const pass = passphrase;
     setBusy(true);
     setMessage({ kind: 'ok', text: { key: 'stealthExport.open.working' } });
     void (async () => {
       try {
-        const text = await selected.text();
-        if (!op.current(controller)) return;
-        // File.text() can strip a UTF-8 BOM. Portable exports are ASCII bytes; never certify a normalized file that the
-        // independent decoder would reject. The codec separately rejects every remaining non-ASCII character.
-        if (selected.size !== text.length) throw new UserFacingError({ key: 'error.stealthExport.invalidFile' });
         if (mode === 'verify') {
           const result = await verifyStealthExport(text, pass, { signal: controller.signal });
           if (!op.current(controller)) return;
@@ -115,7 +124,32 @@ export function StealthExportRecovery(props: { readonly announce: (message: stri
     })();
   };
 
-  const onOpen = (e: FormEvent): void => { e.preventDefault(); openSelected('open'); };
+  const selectFile = (chosen: File): void => {
+    closeExport();
+    props.recovery?.cancelImport();
+    const controller = op.start();
+    setBusy(true);
+    void recognizeRecoveryFile(chosen, controller.signal).then((result) => {
+      if (!op.current(controller)) return;
+      setRecognized(result); setBusy(false);
+    }).catch((error: unknown) => {
+      if (!op.current(controller)) return;
+      setBusy(false); fail(captureUserMessage(error));
+    });
+  };
+
+  const onOpen = (e: FormEvent): void => {
+    e.preventDefault();
+    if (recognized?.kind === 'keystore') {
+      props.recovery?.loadKeystore?.(recognized.text, passphrase);
+      setPassphrase('');
+    } else if (recognized !== undefined) openSelected('open');
+  };
+  const keystore = recognized?.kind === 'keystore';
+  const canLoad = !keystore || props.recovery?.loadKeystore !== undefined;
+  const needsPassphrase = recognized !== undefined && recognized.kind !== 'public' && canLoad;
+  const working = busy || props.recovery?.importing === true;
+
 
   const onDownloadRaw = (index: number): void => {
     const keys = held.current;
@@ -194,20 +228,23 @@ export function StealthExportRecovery(props: { readonly announce: (message: stri
       {message !== undefined && <Notice kind={message.kind}>{displayMessage(message.text, t)}</Notice>}
       <form onSubmit={onOpen} className="stack" autoComplete="off">
         <Field label={t('stealthExport.open.file')}>{(id) => <>
-          <input id={id} aria-describedby={file === undefined ? undefined : `${id}-file`} ref={fileInput} type="file" accept="application/json,.json" onChange={(e) => {
+          <input id={id} aria-describedby={recognized === undefined ? undefined : `${id}-file`} type="file" accept="application/json,.json" onChange={(e) => {
             const chosen = e.currentTarget.files?.[0]; e.currentTarget.value = '';
             if (chosen === undefined) return;
-            closeExport(); setFile(chosen);
+            selectFile(chosen);
           }} />
           {/* Main convention (07722292): the chosen file's name is not echoed back. */}
-          {file !== undefined && <p className="hint" id={`${id}-file`}>{t('upload.selectedFile')}</p>}
+          {recognized !== undefined && <p className="hint" id={`${id}-file`}>{t('upload.selectedFile')}</p>}
         </>}</Field>
-        <Field label={t('stealthExport.open.passphrase')} hint={t('stealthExport.open.passphraseHint')}>
-          {(id, d) => <input id={id} aria-describedby={d} type="password" autoComplete="off" name="ghostpay-stealth-export-open" disabled={busy} value={passphrase} onChange={(e) => { setPassphrase(e.target.value); setVerified(undefined); setMessage(undefined); }} />}
-        </Field>
-        <button type="submit" className="btn" data-testid="stealth-export-open-submit" disabled={busy || file === undefined}>{t('stealthExport.open.submit')}</button>
-        <button type="button" className="btn" data-testid="stealth-export-verify-submit" disabled={busy || file === undefined} onClick={() => { openSelected('verify'); }}>{t('stealthExport.open.verify')}</button>
-        {busy && <button type="button" className="btn" onClick={closeExport}>{t('stealthExport.cancel')}</button>}
+        {busy && recognized === undefined && <p role="status">{t('sellerKeys.verify.reading')}</p>}
+        {recognized !== undefined && <p role="status">{t(RECOVERY_LABELS[recognized.kind])}</p>}
+        {!canLoad && <Notice kind="info">{t('recoveryFile.loaded')}</Notice>}
+        {needsPassphrase && <Field label={t(keystore ? 'sellerKeys.passphrase' : 'stealthExport.open.passphrase')} hint={t('stealthExport.open.passphraseHint')}>
+          {(id, d) => <input id={id} aria-describedby={d} type="password" autoComplete="off" name="ghostpay-stealth-export-open" disabled={working} value={passphrase} onChange={(e) => { setPassphrase(e.target.value); setVerified(undefined); setMessage(undefined); }} />}
+        </Field>}
+        {canLoad && <button type="submit" className="btn" data-testid="stealth-export-open-submit" disabled={working || recognized === undefined || (keystore && passphrase === '')}>{t(keystore ? 'sellerKeys.decryptLoad' : 'stealthExport.open.submit')}</button>}
+        {!keystore && recognized?.kind !== 'public' && <button type="button" className="btn" data-testid="stealth-export-verify-submit" disabled={working || recognized === undefined} onClick={() => { openSelected('verify'); }}>{t('stealthExport.open.verify')}</button>}
+        {working && <button type="button" className="btn" onClick={() => { props.recovery?.cancelImport(); closeExport(); }}>{t('stealthExport.cancel')}</button>}
       </form>
 
       {verified !== undefined && (
@@ -288,3 +325,5 @@ export function StealthExportRecovery(props: { readonly announce: (message: stri
 }
 
 // i18n-use: stealthExport.open.scope.single stealthExport.open.scope.selected stealthExport.open.scope.allDiscovered stealthExport.open.chooseFile stealthExport.open.master.done stealthExport.open.working stealthExport.raw.done stealthExport.verify.success stealthExport.open.replace.savedTitle stealthExport.open.replace.savedBody stealthExport.open.replace.title stealthExport.open.replace.body
+
+// i18n-use: recoveryFile.keystore recoveryFile.keypair recoveryFile.master

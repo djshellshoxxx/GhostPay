@@ -292,14 +292,13 @@ export function SellerKeys(props: { readonly archive?: ReactNode } = {}): ReactN
     ).finally(() => { finishOperation(controller); });
   };
 
-  const onImportKeystore = (e: FormEvent): void => {
-    e.preventDefault();
-    if (file === undefined && importText === undefined) { setMessage({ kind: 'error', text: { key: 'sellerKeys.chooseFile' } }); return; }
-    if (file !== undefined && file.size > MAX_KEYSTORE_BYTES) { setMessage({ kind: 'error', text: { key: 'sellerKeys.notKeystore' } }); return; }
+  const loadKeystore = (selected: File | undefined, pasted: string | undefined, passphrase: string): void => {
+    if (getSessionPublic() !== undefined) return;
+    if (selected === undefined && pasted === undefined) { setMessage({ kind: 'error', text: { key: 'sellerKeys.chooseFile' } }); return; }
+    if (selected !== undefined && selected.size > MAX_KEYSTORE_BYTES) { setMessage({ kind: 'error', text: { key: 'sellerKeys.notKeystore' } }); return; }
     const controller = startOperation('import');
     const id = generation.current;
     const unchanged = captureSessionVersionGuard();
-    const selected = file; const pasted = importText; const passphrase = importPass;
     setMessage({ kind: 'ok', text: { key: 'sellerKeys.decrypting' } });
     void (async () => {
       try {
@@ -510,6 +509,11 @@ export function SellerKeys(props: { readonly archive?: ReactNode } = {}): ReactN
         {t('sellerKeys.memory.body')}
       </Notice>
       {message !== undefined && <Notice kind={message.kind}>{displayMessage(message.text, t)}</Notice>}
+      <StealthExportRecovery announce={app.announce} recovery={{
+        ...(s === undefined ? { loadKeystore: (text, phrase) => { loadKeystore(undefined, text, phrase); } } : {}),
+        importing: pendingOperation?.kind === 'import',
+        cancelImport: () => { if (operation.current?.kind === 'import') { cancelImport(); setMessage(undefined); } },
+      }} />
       {vaultState === 'checking' && <p role="status">{t('sellerKeys.checkingVault')}</p>}
       {vaultState === 'unavailable' && (
         <Notice kind="warn" title={t('sellerKeys.storageUnavailable.title')}>
@@ -576,7 +580,7 @@ export function SellerKeys(props: { readonly archive?: ReactNode } = {}): ReactN
           </details>
           <details onToggle={(event) => { if (!event.currentTarget.open) cancelImport(); }}>
             <summary>{t('sellerKeys.importKeystore')}</summary>
-            <form onSubmit={onImportKeystore} className="stack">
+            <form onSubmit={(event) => { event.preventDefault(); loadKeystore(file, importText, importPass); }} className="stack">
               <Field label={t('sellerKeys.keystoreFile')} help={{ label: t('help.about', { control: t('sellerKeys.keystoreFile') }), text: t('help.keystoreFile') }}>{(id, describedBy) => <>
                 <input id={id} aria-describedby={[describedBy, file === undefined ? undefined : `${id}-file`].filter(Boolean).join(' ') || undefined} ref={fileInput} type="file" accept="application/json,.json" onChange={(e) => {
                   const chosen = e.currentTarget.files?.[0]; e.currentTarget.value = '';
@@ -705,7 +709,6 @@ export function SellerKeys(props: { readonly archive?: ReactNode } = {}): ReactN
         </>
       )}
 
-      <StealthExportRecovery announce={app.announce} />
 
       {!suspended && props.archive}
 

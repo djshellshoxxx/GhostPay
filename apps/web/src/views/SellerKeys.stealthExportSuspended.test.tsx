@@ -24,13 +24,13 @@ describe('stealth key exports while idle-suspended', () => {
     renderApp(makeServices());
     await user.click(within(screen.getByRole('navigation', { name: 'Main' })).getByRole('button', { name: 'Seller keys' }));
     expect(screen.getByRole('heading', { name: 'Master stealth key backup (encrypted)' })).toBeTruthy();
-    expect(screen.getByRole('heading', { name: 'Open a stealth key export' })).toBeTruthy();
+    expect(screen.getByRole('heading', { name: 'Recover from a file' })).toBeTruthy();
 
     act(() => { suspendSession(); });
     expect(isSessionSuspended()).toBe(true);
     expect(screen.queryByRole('heading', { name: 'Master stealth key backup (encrypted)' })).toBeNull();
     expect(screen.queryByRole('button', { name: 'Download master backup' })).toBeNull();
-    expect(screen.getByRole('heading', { name: 'Open a stealth key export' })).toBeTruthy();
+    expect(screen.getByRole('heading', { name: 'Recover from a file' })).toBeTruthy();
     expect(screen.getByRole('button', { name: 'Download encrypted keystore' })).toBeTruthy();
   });
 });

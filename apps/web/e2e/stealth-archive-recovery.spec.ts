@@ -15,12 +15,12 @@ test.setTimeout(300_000);
 const codec = createStealthExportApi();
 const ADDRESS = A1.expected.stealthAddress;
 
-/** Opens `text` in Seller keys > "Open a stealth key export" and returns that panel. */
+/** Opens `text` in Seller keys > "Recover from a file" and returns that panel. */
 async function openExportFile(page: Page, name: string, text: string, passphrase: string): Promise<Locator> {
   await nav(page).getByRole('button', { name: 'Seller keys', exact: true }).click();
   const open = page.getByTestId('stealth-export-open');
-  await expect(open.getByRole('heading', { name: 'Open a stealth key export' })).toBeVisible();
-  await open.getByLabel('Stealth key export file').setInputFiles({ name, mimeType: 'application/json', buffer: Buffer.from(text, 'utf8') });
+  await expect(open.getByRole('heading', { name: 'Recover from a file' })).toBeVisible();
+  await open.getByLabel('Recovery file').setInputFiles({ name, mimeType: 'application/json', buffer: Buffer.from(text, 'utf8') });
   await open.getByLabel('Export file passphrase').fill(passphrase);
   await open.getByTestId('stealth-export-open-submit').click();
   return open;

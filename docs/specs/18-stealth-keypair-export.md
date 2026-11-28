@@ -44,6 +44,8 @@ The owner-approved next-phase portability scope (consolidation gameplan; recorde
 Create a narrowly scoped typed export/import module reusing existing approved key wrappers, KDF and AEAD primitives; keep crypto boundary separate from UI. Introduce seller-only export controls on payment details, separate bulk-export and master-backup entry points, stable documentation and reference vectors. Do not weaken `deriveStealthSecret` verification, change GhostPayRouter, modify deployment defaults, enable new networks, or add server processing.
 
 ## Acceptance tests (required)
+- Seller keys exposes **Recover from a file** in a fresh session. A single local file picker recognizes an existing three-key seller keystore, a master stealth backup, a payment-key export, or a public payment record by its validated envelope. Show its scope before a passphrase is requested. Public records expose no passphrase or backup-verification action.
+- A file selection alone never derives, installs, replaces or downloads keys. Loading a three-key keystore requires an explicit action in an empty session and recovers the invoice-signing identity. Master backups retain their distinct signing-key behavior and replacement confirmations. File changes, locks and stale reads must retire prior inputs. Reject unsupported, mixed-format, duplicate-field and oversized envelopes.
 - Known EIP-5564 vector: derived private key produces exactly the advertised public key and checksummed address.
 - Single encrypted keypair export/import across new browser sessions; wrong passphrase, tampering, wrong chain/scheme and malformed files fail closed.
 - Raw 32-byte EVM key interoperates with at least one independently implemented EVM wallet tool under a local test chain without real funds.
