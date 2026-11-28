@@ -296,6 +296,21 @@ was refused before the wallet was asked (I2). The control C paid once.
 |---|---|---|---|---|
 | F3 | product, low–medium (misleading status under an inconsistent provider answer) | W2/W3 (attempt status) | With a linked replacement that the provider reports included but whose receipt it withholds, the status says the transaction is not visible and that another, unidentified transaction used the nonce, and asks the payer to find and link it, although it is already linked and visible. R14 says verification stops on an inconsistent answer; the shown text points the payer at a hunt for a different transaction (a cancel, say), which a payer may answer by clearing the record. A link saved in this state gives no visible confirmation (N15). | treat an included linked replacement without a receipt as an unusable RPC answer (verification incomplete) and keep the linked hash listed; regression per the comment's suggested `attemptStatus.test.ts` case, then re-verify with N14/N15 |
 
+## Smoke on main `0934ea09` (2026-11-28, before merging #665)
+
+Unmodified lean bundle `e58aa564a4866e9b9c8530c8f90682c1d9be7f162b7cd43623f31bdd8990501c` (18 files, built by `build.mjs`
+from `6f03b7c8`, production paths equal to `0934ea09`). Named scenarios of both runners, `--candidate origin/main`:
+
+| Record | Scenarios | Payments / handoffs | Violations | Harness errors | Ambiguities |
+|---|---|---|---|---|---|
+| `results/smoke-payer-6f03b7c8/` | 16 (P1, N1–N15) | 35 handoffs | **0** (P1 detected I2, I3, I4) | 0 | A1 (N2, N8) |
+| `results/smoke-seller-6f03b7c8/` | 16 (P2, M1–M15) | 18 payments | **0** (P2 detected SI4) | 0 | SA6 ×9, SA7 ×2, SA8 ×1 |
+
+Changes since the `9d92472a`/`601f2095` records: **F3 no longer reproduces** — with the linked replacement included and
+its receipt withheld, the row now says "Outcome unknown. Keep tracking this attempt and check your wallet before
+retrying." (N14 step 9), i.e. verification incomplete, as R14 asks. F1 still reproduces (35 of 36 refused clicks);
+F2/SA8 still reproduces (M15).
+
 ## Not covered yet (next milestones)
 
 1. Seller-side gaps after M3: vault saturation (S24) and replacement-observation linking.
