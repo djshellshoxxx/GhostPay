@@ -22,7 +22,7 @@ it('gives each credential radio its own instructions and keeps the selected meth
   fireEvent.click(file!);
   const passphrase = screen.getByLabelText<HTMLInputElement>(/passphrase/i, { selector: 'input[type=password]' });
   fireEvent.change(passphrase, { target: { value: 'synthetic-private-text' } });
-  fireEvent.click(screen.getByRole('checkbox', { name: 'Show control tips' }));
+  fireEvent.click(screen.getByRole('switch', { name: 'Show control tips' }));
   expect(file!.checked).toBe(true);
   expect(vault!.checked).toBe(false);
   expect(screen.getByLabelText(/passphrase/i, { selector: 'input[type=password]' })).toBe(passphrase);
@@ -33,7 +33,7 @@ it('gives each credential radio its own instructions and keeps the selected meth
 
 it('shows explanations for both disabled radio choices without enabling or selecting them', () => {
   render(<Credentials disabled />);
-  fireEvent.click(screen.getByRole('checkbox', { name: 'Show control tips' }));
+  fireEvent.click(screen.getByRole('switch', { name: 'Show control tips' }));
   for (const radio of screen.getAllByRole('radio')) {
     expect(radio.matches(':disabled')).toBe(true);
     expect(radio.nextElementSibling?.textContent).toBe(radio.getAttribute('aria-description'));

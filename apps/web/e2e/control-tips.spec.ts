@@ -60,13 +60,13 @@ test.describe('inline help on touchscreens', () => {
     const input = details.locator('input[type="password"]');
     const privateText = 'synthetic-passphrase-value-for-help-test';
     await input.fill(privateText);
-    const toggle = page.getByRole('checkbox', { name: 'Show control tips', exact: true });
+    const toggle = page.getByRole('switch', { name: 'Show control tips', exact: true });
     await toggle.tap();
     await expect(input).toHaveValue(privateText);
     await expect(importButton.locator('+ .control-tip-inline')).toHaveText(/Read and check the pasted text/);
     await expect(page.locator('.control-tip-inline').filter({ hasText: privateText })).toHaveCount(0);
     await expect(importButton).toBeDisabled();
-    const privacy = page.getByRole('switch');
+    const privacy = page.getByRole('switch', { name: 'Privacy mode', exact: true });
     await privacy.locator('+ .control-tip-inline').tap();
     await expect(privacy).not.toBeChecked();
     expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(320);
@@ -95,7 +95,7 @@ test('explains both sweep radio choices before the seller selects a route or sig
   const selected = await direct.isChecked();
   await expect(direct).toHaveAccessibleDescription(/native coin to pay the network fee/);
   await expect(relay).toHaveAccessibleDescription(/quoted fee before signing/);
-  await page.getByRole('checkbox', { name: 'Show control tips' }).check();
+  await page.getByRole('switch', { name: 'Show control tips' }).check();
   await expect(direct.locator('+ .control-tip-inline')).toBeVisible();
   await expect(relay.locator('+ .control-tip-inline')).toBeVisible();
   expect(await direct.isChecked()).toBe(selected);

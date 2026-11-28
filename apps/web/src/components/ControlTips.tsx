@@ -160,7 +160,7 @@ export function ControlTipsSwitch(): ReactNode {
   const toggle = useContext(ToggleTips);
   const id = useId();
   return <div className="control-tips-switch">
-    <ControlTip message="tips.toggleHint"><input type="checkbox" id={id} checked={inline} onChange={toggle} /></ControlTip>
+    <ControlTip message="tips.toggleHint"><input type="checkbox" role="switch" id={id} checked={inline} onChange={toggle} /></ControlTip>
     <label htmlFor={id}>{t('tips.toggle')}</label>
   </div>;
 }
