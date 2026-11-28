@@ -1,0 +1,366 @@
+{
+  "schema": "ghostpay-r12-ci-snapshot/1",
+  "note": "Point-in-time SHA-bound GitHub workflow run read; queued/running are NOT passing. Additional checks and reviews may exist.",
+  "rows": [
+    {
+      "pr": 386,
+      "sha": "51c019d0cd3b010b7399bb0a3e85af543bc6a1ce",
+      "workflows": [
+        {
+          "name": "CI",
+          "id": 44897636203,
+          "status": "queued",
+          "conclusion": null
+        },
+        {
+          "name": "Hosting kit",
+          "id": 44897636102,
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Beta acceptance",
+          "id": 44897636153,
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Native browser qualification",
+          "id": 44897636269,
+          "status": "completed",
+          "conclusion": "failure"
+        },
+        {
+          "name": "Tor static hosting",
+          "id": 44897636223,
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Pages",
+          "id": 44897636147,
+          "status": "completed",
+          "conclusion": "success"
+        }
+      ]
+    },
+    {
+      "pr": 381,
+      "sha": "df0e715686bc42d270617692a7e310a8b362e840",
+      "workflows": [
+        {
+          "name": "Pages",
+          "id": 44892601930,
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Tor static hosting",
+          "id": 44892601847,
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Beta acceptance",
+          "id": 44892601845,
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Native browser qualification",
+          "id": 44892601839,
+          "status": "completed",
+          "conclusion": "failure"
+        },
+        {
+          "name": "CI",
+          "id": 44892601797,
+          "status": "completed",
+          "conclusion": "failure"
+        }
+      ]
+    },
+    {
+      "pr": 384,
+      "sha": "f3e5540777491559e79565cafe0978f5e8e30003",
+      "workflows": [
+        {
+          "name": "Hosting kit",
+          "id": 44895436148,
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Beta acceptance",
+          "id": 44895436015,
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Pages",
+          "id": 44895436061,
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "CLI operator qualification",
+          "id": 44895436128,
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "CI",
+          "id": 44895436050,
+          "status": "completed",
+          "conclusion": "success"
+        }
+      ]
+    },
+    {
+      "pr": 368,
+      "sha": "18d0442a156106abe2309f8a6e82358aab37961a",
+      "workflows": [
+        {
+          "name": "Beta acceptance",
+          "id": 44873724704,
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Hosting kit",
+          "id": 44873724602,
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Pages",
+          "id": 44873724629,
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "CI",
+          "id": 44873724606,
+          "status": "completed",
+          "conclusion": "success"
+        }
+      ]
+    },
+    {
+      "pr": 399,
+      "sha": "b2c7e800516030b2910071c93b9afc652550ab8e",
+      "workflows": [
+        {
+          "name": "CLI operator qualification",
+          "id": 44899456456,
+          "status": "queued",
+          "conclusion": null
+        },
+        {
+          "name": "Pages",
+          "id": 44899456449,
+          "status": "queued",
+          "conclusion": null
+        },
+        {
+          "name": "Beta acceptance",
+          "id": 44899456432,
+          "status": "pending",
+          "conclusion": null
+        },
+        {
+          "name": "Hosting kit",
+          "id": 44899456468,
+          "status": "queued",
+          "conclusion": null
+        },
+        {
+          "name": "CI",
+          "id": 44899456471,
+          "status": "pending",
+          "conclusion": null
+        }
+      ]
+    },
+    {
+      "pr": 393,
+      "sha": "d283116dfcf3baa2e0ffc6dbf2d5657830849315",
+      "workflows": [
+        {
+          "name": "Hosting kit",
+          "id": 44899142110,
+          "status": "queued",
+          "conclusion": null
+        },
+        {
+          "name": "Pages",
+          "id": 44899142179,
+          "status": "queued",
+          "conclusion": null
+        },
+        {
+          "name": "CI",
+          "id": 44899142144,
+          "status": "queued",
+          "conclusion": null
+        },
+        {
+          "name": "Beta acceptance",
+          "id": 44899142176,
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "CLI operator qualification",
+          "id": 44899142223,
+          "status": "completed",
+          "conclusion": "success"
+        }
+      ]
+    },
+    {
+      "pr": 392,
+      "sha": "cd1ddb7d6efd7d4ab0004e324c6e902a67704eed",
+      "workflows": [
+        {
+          "name": "CI",
+          "id": 44899112133,
+          "status": "queued",
+          "conclusion": null
+        },
+        {
+          "name": "Pages",
+          "id": 44899112174,
+          "status": "queued",
+          "conclusion": null
+        },
+        {
+          "name": "Beta acceptance",
+          "id": 44899112168,
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "CLI operator qualification",
+          "id": 44899112158,
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Hosting kit",
+          "id": 44899112137,
+          "status": "completed",
+          "conclusion": "success"
+        }
+      ]
+    },
+    {
+      "pr": 388,
+      "sha": "0d1193014e3a28f529afcba7787fcaea9bdac280",
+      "workflows": [
+        {
+          "name": "Hosting kit",
+          "id": 44898380399,
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "CI",
+          "id": 44898380352,
+          "status": "queued",
+          "conclusion": null
+        },
+        {
+          "name": "Pages",
+          "id": 44898380345,
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Beta acceptance",
+          "id": 44898380356,
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "CLI operator qualification",
+          "id": 44898380339,
+          "status": "completed",
+          "conclusion": "success"
+        }
+      ]
+    },
+    {
+      "pr": 389,
+      "sha": "b5045aec476833a5c87f1d733521dcd76e1843d1",
+      "workflows": [
+        {
+          "name": "Hosting kit",
+          "id": 44899364066,
+          "status": "pending",
+          "conclusion": null
+        },
+        {
+          "name": "CI",
+          "id": 44899364043,
+          "status": "pending",
+          "conclusion": null
+        },
+        {
+          "name": "Pages",
+          "id": 44899364056,
+          "status": "pending",
+          "conclusion": null
+        },
+        {
+          "name": "Beta acceptance",
+          "id": 44899364018,
+          "status": "queued",
+          "conclusion": null
+        },
+        {
+          "name": "CLI operator qualification",
+          "id": 44899364070,
+          "status": "queued",
+          "conclusion": null
+        }
+      ]
+    },
+    {
+      "pr": 398,
+      "sha": "7b1d10fdd9558ce92a0a7ac9d8d86c73727c5eef",
+      "workflows": [
+        {
+          "name": "CLI operator qualification",
+          "id": 44899270985,
+          "status": "queued",
+          "conclusion": null
+        },
+        {
+          "name": "Beta acceptance",
+          "id": 44899270963,
+          "status": "queued",
+          "conclusion": null
+        },
+        {
+          "name": "Pages",
+          "id": 44899270980,
+          "status": "queued",
+          "conclusion": null
+        },
+        {
+          "name": "CI",
+          "id": 44899271083,
+          "status": "queued",
+          "conclusion": null
+        },
+        {
+          "name": "Hosting kit",
+          "id": 44899271018,
+          "status": "queued",
+          "conclusion": null
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,3822 @@
+{
+  "schema": "ghostpay-r12-delta-comparisons/1",
+  "main": "eb59d93cffed7848c4aac37d0e9650b87239c6da",
+  "part": 1,
+  "total_parts": 2,
+  "index_start": 0,
+  "index_end": 10,
+  "entries": [
+    {
+      "name": "audit/ghostpay-main-447-census-20261121-r9",
+      "sha": "c493df9e210f6227471864a623ee536cc9483a3a",
+      "status": "ahead",
+      "ahead": 33,
+      "behind": 0,
+      "merge_base": "eb59d93cffed7848c4aac37d0e9650b87239c6da",
+      "returned_files": 33,
+      "capped": false,
+      "files": [
+        {
+          "filename": "docs/ai/ACTIVE_WORK.md",
+          "status": "modified",
+          "additions": 8,
+          "deletions": 0,
+          "changes": 8,
+          "previous_filename": null
+        },
+        {
+          "filename": "docs/consolidation/20261121-r9/BRANCH_HEADS.json",
+          "status": "added",
+          "additions": 1830,
+          "deletions": 0,
+          "changes": 1830,
+          "previous_filename": null
+        },
+        {
+          "filename": "docs/consolidation/20261121-r9/COMPARE_000_015.json",
+          "status": "added",
+          "additions": 2600,
+          "deletions": 0,
+          "changes": 2600,
+          "previous_filename": null
+        },
+        {
+          "filename": "docs/consolidation/20261121-r9/COMPARE_016_031.json",
+          "status": "added",
+          "additions": 10581,
+          "deletions": 0,
+          "changes": 10581,
+          "previous_filename": null
+        },
+        {
+          "filename": "docs/consolidation/20261121-r9/COMPARE_032_049.json",
+          "status": "added",
+          "additions": 4904,
+          "deletions": 0,
+          "changes": 4904,
+          "previous_filename": null
+        },
+        {
+          "filename": "docs/consolidation/20261121-r9/COMPARE_050_067.json",
+          "status": "added",
+          "additions": 3420,
+          "deletions": 0,
+          "changes": 3420,
+          "previous_filename": null
+        },
+        {
+          "filename": "docs/consolidation/20261121-r9/COMPARE_068_085.json",
+          "status": "added",
+          "additions": 5899,
+          "deletions": 0,
+          "changes": 5899,
+          "previous_filename": null
+        },
+        {
+          "filename": "docs/consolidation/20261121-r9/COMPARE_086_103.json",
+          "status": "added",
+          "additions": 7409,
+          "deletions": 0,
+          "changes": 7409,
+          "previous_filename": null
+        },
+        {
+          "filename": "docs/consolidation/20261121-r9/COMPARE_104_121.json",
+          "status": "added",
+          "additions": 2153,
+          "deletions": 0,
+          "changes": 2153,
+          "previous_filename": null
+        },
+        {
+          "filename": "docs/consolidation/20261121-r9/COMPARE_122_139.json",
+          "status": "added",
+          "additions": 302,
+          "deletions": 0,
+          "changes": 302,
+          "previous_filename": null
+        },
+        {
+          "filename": "docs/consolidation/20261121-r9/COMPARE_140_157.json",
+          "status": "added",
+          "additions": 272,
+          "deletions": 0,
+          "changes": 272,
+          "previous_filename": null
+        },
+        {
+          "filename": "docs/consolidation/20261121-r9/COMPARE_158_175.json",
+          "status": "added",
+          "additions": 233,
+          "deletions": 0,
+          "changes": 233,
+          "previous_filename": null
+        },
+        {
+          "filename": "docs/consolidation/20261121-r9/COMPARE_176_193.json",
+          "status": "added",
+          "additions": 569,
+          "deletions": 0,
+          "changes": 569,
+          "previous_filename": null
+        },
+        {
+          "filename": "docs/consolidation/20261121-r9/COMPARE_194_211.json",
+          "status": "added",
+          "additions": 1075,
+          "deletions": 0,
+          "changes": 1075,
+          "previous_filename": null
+        },
+        {
+          "filename": "docs/consolidation/20261121-r9/COMPARE_212_229.json",
+          "status": "added",
+          "additions": 566,
+          "deletions": 0,
+          "changes": 566,
+          "previous_filename": null
+        },
+        {
+          "filename": "docs/consolidation/20261121-r9/COMPARE_230_247.json",
+          "status": "added",
+          "additions": 7678,
+          "deletions": 0,
+          "changes": 7678,
+          "previous_filename": null
+        },
+        {
+          "filename": "docs/consolidation/20261121-r9/COMPARE_248_265.json",
+          "status": "added",
+          "additions": 5055,
+          "deletions": 0,
+          "changes": 5055,
+          "previous_filename": null
+        },
+        {
+          "filename": "docs/consolidation/20261121-r9/COMPARE_266_283.json",
+          "status": "added",
+          "additions": 4408,
+          "deletions": 0,
+          "changes": 4408,
+          "previous_filename": null
+        },
+        {
+          "filename": "docs/consolidation/20261121-r9/COMPARE_284_301.json",
+          "status": "added",
+          "additions": 16009,
+          "deletions": 0,
+          "changes": 16009,
+          "previous_filename": null
+        },
+        {
+          "filename": "docs/consolidation/20261121-r9/COMPARE_302_319.json",
+          "status": "added",
+          "additions": 16983,
+          "deletions": 0,
+          "changes": 16983,
+          "previous_filename": null
+        },
+        {
+          "filename": "docs/consolidation/20261121-r9/COMPARE_320_337.json",
+          "status": "added",
+          "additions": 1900,
+          "deletions": 0,
+          "changes": 1900,
+          "previous_filename": null
+        },
+        {
+          "filename": "docs/consolidation/20261121-r9/COMPARE_338_355.json",
+          "status": "added",
+          "additions": 892,
+          "deletions": 0,
+          "changes": 892,
+          "previous_filename": null
+        },
+        {
+          "filename": "docs/consolidation/20261121-r9/COMPARE_356_373.json",
+          "status": "added",
+          "additions": 4902,
+          "deletions": 0,
+          "changes": 4902,
+          "previous_filename": null
+        },
+        {
+          "filename": "docs/consolidation/20261121-r9/COMPARE_374_391.json",
+          "status": "added",
+          "additions": 10927,
+          "deletions": 0,
+          "changes": 10927,
+          "previous_filename": null
+        },
+        {
+          "filename": "docs/consolidation/20261121-r9/COMPARE_392_409.json",
+          "status": "added",
+          "additions": 10277,
+          "deletions": 0,
+          "changes": 10277,
+          "previous_filename": null
+        },
+        {
+          "filename": "docs/consolidation/20261121-r9/COMPARE_410_427.json",
+          "status": "added",
+          "additions": 13124,
+          "deletions": 0,
+          "changes": 13124,
+          "previous_filename": null
+        },
+        {
+          "filename": "docs/consolidation/20261121-r9/COMPARE_428_445.json",
+          "status": "added",
+          "additions": 16945,
+          "deletions": 0,
+          "changes": 16945,
+          "previous_filename": null
+        },
+        {
+          "filename": "docs/consolidation/20261121-r9/COMPARE_446_446.json",
+          "status": "added",
+          "additions": 22,
+          "deletions": 0,
+          "changes": 22,
+          "previous_filename": null
+        },
+        {
+          "filename": "docs/consolidation/20261121-r9/OPEN_PR_OVERLAP.json",
+          "status": "added",
+          "additions": 1682,
+          "deletions": 0,
+          "changes": 1682,
+          "previous_filename": null
+        },
+        {
+          "filename": "docs/consolidation/20261121-r9/README.md",
+          "status": "added",
+          "additions": 62,
+          "deletions": 0,
+          "changes": 62,
+          "previous_filename": null
+        },
+        {
+          "filename": "docs/consolidation/20261121-r9/ROLLUP_PART_A.json",
+          "status": "added",
+          "additions": 502,
+          "deletions": 0,
+          "changes": 502,
+          "previous_filename": null
+        },
+        {
+          "filename": "docs/consolidation/20261121-r9/ROLLUP_PART_B.json",
+          "status": "added",
+          "additions": 601,
+          "deletions": 0,
+          "changes": 601,
+          "previous_filename": null
+        },
+        {
+          "filename": "docs/consolidation/20261121-r9/SEMANTIC_TRIAGE.json",
+          "status": "added",
+          "additions": 132,
+          "deletions": 0,
+          "changes": 132,
+          "previous_filename": null
+        }
+      ]
+    },
+    {
+      "name": "automation/20261121/bug/display-text-expansion-bound-r1",
+      "sha": "b655bc273a6704c9c140287b8adcdf4085b91882",
+      "status": "ahead",
+      "ahead": 5,
+      "behind": 0,
+      "merge_base": "eb59d93cffed7848c4aac37d0e9650b87239c6da",
+      "returned_files": 4,
+      "capped": false,
+      "files": [
+        {
+          "filename": "apps/web/src/lib/displayText.boundary.test.ts",
+          "status": "added",
+          "additions": 32,
+          "deletions": 0,
+          "changes": 32,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/lib/displayText.ts",
+          "status": "modified",
+          "additions": 22,
+          "deletions": 3,
+          "changes": 25,
+          "previous_filename": null
+        },
+        {
+          "filename": "docs/ai/ACTIVE_WORK.md",
+          "status": "modified",
+          "additions": 11,
+          "deletions": 0,
+          "changes": 11,
+          "previous_filename": null
+        },
+        {
+          "filename": "docs/handoffs/DISPLAY_TEXT_EXPANSION_20261121.md",
+          "status": "added",
+          "additions": 43,
+          "deletions": 0,
+          "changes": 43,
+          "previous_filename": null
+        }
+      ]
+    },
+    {
+      "name": "automation/20261121/bug/ux-links-max-lifetime-guard",
+      "sha": "b2c7e800516030b2910071c93b9afc652550ab8e",
+      "status": "ahead",
+      "ahead": 4,
+      "behind": 0,
+      "merge_base": "eb59d93cffed7848c4aac37d0e9650b87239c6da",
+      "returned_files": 4,
+      "capped": false,
+      "files": [
+        {
+          "filename": "docs/ai/ACTIVE_WORK.md",
+          "status": "modified",
+          "additions": 10,
+          "deletions": 0,
+          "changes": 10,
+          "previous_filename": null
+        },
+        {
+          "filename": "docs/handoffs/UX_LINKS_MAX_LIFETIME_20261121.md",
+          "status": "added",
+          "additions": 29,
+          "deletions": 0,
+          "changes": 29,
+          "previous_filename": null
+        },
+        {
+          "filename": "packages/ux-links/src/request.max-lifetime.test.ts",
+          "status": "added",
+          "additions": 40,
+          "deletions": 0,
+          "changes": 40,
+          "previous_filename": null
+        },
+        {
+          "filename": "packages/ux-links/src/request.ts",
+          "status": "modified",
+          "additions": 3,
+          "deletions": 1,
+          "changes": 4,
+          "previous_filename": null
+        }
+      ]
+    },
+    {
+      "name": "automation/20261121T0842Z/bug/payment-uri-query-boundaries",
+      "sha": "31b943bbc5bc3c3fdd3d1aec0d3fb5fa3d35c8a2",
+      "status": "diverged",
+      "ahead": 13,
+      "behind": 44,
+      "merge_base": "aec179910c39081d820396409ff3139ff2264132",
+      "returned_files": 8,
+      "capped": false,
+      "files": [
+        {
+          "filename": "docs/ai/ACTIVE_WORK.md",
+          "status": "modified",
+          "additions": 35,
+          "deletions": 0,
+          "changes": 35,
+          "previous_filename": null
+        },
+        {
+          "filename": "docs/handoffs/PAYMENT_URI_QUERY_BOUNDARIES_20261121.md",
+          "status": "added",
+          "additions": 27,
+          "deletions": 0,
+          "changes": 27,
+          "previous_filename": null
+        },
+        {
+          "filename": "docs/handoffs/PAYMENT_URI_RUNTIME_TYPES_20261121.md",
+          "status": "added",
+          "additions": 35,
+          "deletions": 0,
+          "changes": 35,
+          "previous_filename": null
+        },
+        {
+          "filename": "docs/handoffs/PAYMENT_URI_UTF16_20261121.md",
+          "status": "added",
+          "additions": 43,
+          "deletions": 0,
+          "changes": 43,
+          "previous_filename": null
+        },
+        {
+          "filename": "packages/payment-uri/src/query-boundaries.test.ts",
+          "status": "added",
+          "additions": 53,
+          "deletions": 0,
+          "changes": 53,
+          "previous_filename": null
+        },
+        {
+          "filename": "packages/payment-uri/src/query-runtime-types.test.ts",
+          "status": "added",
+          "additions": 41,
+          "deletions": 0,
+          "changes": 41,
+          "previous_filename": null
+        },
+        {
+          "filename": "packages/payment-uri/src/query-surrogate.test.ts",
+          "status": "added",
+          "additions": 41,
+          "deletions": 0,
+          "changes": 41,
+          "previous_filename": null
+        },
+        {
+          "filename": "packages/payment-uri/src/query.ts",
+          "status": "modified",
+          "additions": 11,
+          "deletions": 2,
+          "changes": 13,
+          "previous_filename": null
+        }
+      ]
+    },
+    {
+      "name": "automation/20261121T0900Z/qa/firefox-closed-details-reflow",
+      "sha": "df0e715686bc42d270617692a7e310a8b362e840",
+      "status": "ahead",
+      "ahead": 584,
+      "behind": 0,
+      "merge_base": "eb59d93cffed7848c4aac37d0e9650b87239c6da",
+      "returned_files": 300,
+      "capped": true,
+      "files": [
+        {
+          "filename": ".claude/skills/ghostpay-package-map/PACKAGE_MAP.md",
+          "status": "modified",
+          "additions": 4,
+          "deletions": 4,
+          "changes": 8,
+          "previous_filename": null
+        },
+        {
+          "filename": ".github/actions/setup-forge/action.yml",
+          "status": "modified",
+          "additions": 10,
+          "deletions": 0,
+          "changes": 10,
+          "previous_filename": null
+        },
+        {
+          "filename": ".github/workflows/ci.yml",
+          "status": "modified",
+          "additions": 1,
+          "deletions": 1,
+          "changes": 2,
+          "previous_filename": null
+        },
+        {
+          "filename": ".github/workflows/native-browser-qualification.yml",
+          "status": "added",
+          "additions": 112,
+          "deletions": 0,
+          "changes": 112,
+          "previous_filename": null
+        },
+        {
+          "filename": ".github/workflows/pages.yml",
+          "status": "modified",
+          "additions": 46,
+          "deletions": 4,
+          "changes": 50,
+          "previous_filename": null
+        },
+        {
+          "filename": ".github/workflows/tor-static.yml",
+          "status": "added",
+          "additions": 114,
+          "deletions": 0,
+          "changes": 114,
+          "previous_filename": null
+        },
+        {
+          "filename": "README.md",
+          "status": "modified",
+          "additions": 32,
+          "deletions": 7,
+          "changes": 39,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/relayer/package.json",
+          "status": "modified",
+          "additions": 5,
+          "deletions": 4,
+          "changes": 9,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/DEVIATIONS.md",
+          "status": "modified",
+          "additions": 36,
+          "deletions": 5,
+          "changes": 41,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/e2e/accessibility-audit.ts",
+          "status": "modified",
+          "additions": 2,
+          "deletions": 1,
+          "changes": 3,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/e2e/accessibility.spec.ts",
+          "status": "modified",
+          "additions": 30,
+          "deletions": 1,
+          "changes": 31,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/e2e/app.spec.ts",
+          "status": "modified",
+          "additions": 20,
+          "deletions": 1,
+          "changes": 21,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/e2e/backup-ownership.spec.ts",
+          "status": "added",
+          "additions": 208,
+          "deletions": 0,
+          "changes": 208,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/e2e/backup-panel.spec.ts",
+          "status": "modified",
+          "additions": 2,
+          "deletions": 2,
+          "changes": 4,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/e2e/btc-spentness.spec.ts",
+          "status": "added",
+          "additions": 88,
+          "deletions": 0,
+          "changes": 88,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/e2e/btc-worker.spec.ts",
+          "status": "modified",
+          "additions": 17,
+          "deletions": 2,
+          "changes": 19,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/e2e/clipboard-privacy.spec.ts",
+          "status": "added",
+          "additions": 75,
+          "deletions": 0,
+          "changes": 75,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/e2e/contextual-help.spec.ts",
+          "status": "modified",
+          "additions": 4,
+          "deletions": 2,
+          "changes": 6,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/e2e/core-journey.spec.ts",
+          "status": "modified",
+          "additions": 23,
+          "deletions": 4,
+          "changes": 27,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/e2e/devnet-journey.spec.ts",
+          "status": "modified",
+          "additions": 32,
+          "deletions": 6,
+          "changes": 38,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/e2e/devnet/invoiceTamper.ts",
+          "status": "added",
+          "additions": 19,
+          "deletions": 0,
+          "changes": 19,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/e2e/devnet/pages.ts",
+          "status": "modified",
+          "additions": 1,
+          "deletions": 0,
+          "changes": 1,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/e2e/devnet/ui.ts",
+          "status": "modified",
+          "additions": 3,
+          "deletions": 1,
+          "changes": 4,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/e2e/flowMocks.ts",
+          "status": "modified",
+          "additions": 1,
+          "deletions": 1,
+          "changes": 2,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/e2e/flows.spec.ts",
+          "status": "modified",
+          "additions": 59,
+          "deletions": 86,
+          "changes": 145,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/e2e/helpers.ts",
+          "status": "modified",
+          "additions": 12,
+          "deletions": 1,
+          "changes": 13,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/e2e/httpRedirectFixture.d.mts",
+          "status": "added",
+          "additions": 8,
+          "deletions": 0,
+          "changes": 8,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/e2e/httpRedirectFixture.mjs",
+          "status": "added",
+          "additions": 68,
+          "deletions": 0,
+          "changes": 68,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/e2e/idle-session.spec.ts",
+          "status": "added",
+          "additions": 184,
+          "deletions": 0,
+          "changes": 184,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/e2e/invoice-signer.spec.ts",
+          "status": "added",
+          "additions": 330,
+          "deletions": 0,
+          "changes": 330,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/e2e/network-authorization.spec.ts",
+          "status": "added",
+          "additions": 376,
+          "deletions": 0,
+          "changes": 376,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/e2e/network-isolation.spec.ts",
+          "status": "modified",
+          "additions": 23,
+          "deletions": 7,
+          "changes": 30,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/e2e/pages-devnet.spec.ts",
+          "status": "modified",
+          "additions": 74,
+          "deletions": 31,
+          "changes": 105,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/e2e/payment-request-file.spec.ts",
+          "status": "added",
+          "additions": 206,
+          "deletions": 0,
+          "changes": 206,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/e2e/print-targets.spec.ts",
+          "status": "added",
+          "additions": 131,
+          "deletions": 0,
+          "changes": 131,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/e2e/privacy-mask-history.spec.ts",
+          "status": "added",
+          "additions": 98,
+          "deletions": 0,
+          "changes": 98,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/e2e/privacy-settings.spec.ts",
+          "status": "added",
+          "additions": 81,
+          "deletions": 0,
+          "changes": 81,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/e2e/private-scan-checkpoints.spec.ts",
+          "status": "added",
+          "additions": 142,
+          "deletions": 0,
+          "changes": 142,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/e2e/stealth-export.spec.ts",
+          "status": "added",
+          "additions": 536,
+          "deletions": 0,
+          "changes": 536,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/e2e/stealthExportFixtures.ts",
+          "status": "added",
+          "additions": 363,
+          "deletions": 0,
+          "changes": 363,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/e2e/sweep.spec.ts",
+          "status": "modified",
+          "additions": 9,
+          "deletions": 1,
+          "changes": 10,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/e2e/wallet-disclosure.spec.ts",
+          "status": "added",
+          "additions": 77,
+          "deletions": 0,
+          "changes": 77,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/e2e/walletFixture.ts",
+          "status": "added",
+          "additions": 88,
+          "deletions": 0,
+          "changes": 88,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/locales/ar.json",
+          "status": "modified",
+          "additions": 383,
+          "deletions": 17,
+          "changes": 400,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/locales/en.json",
+          "status": "modified",
+          "additions": 384,
+          "deletions": 18,
+          "changes": 402,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/locales/es.json",
+          "status": "modified",
+          "additions": 383,
+          "deletions": 17,
+          "changes": 400,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/locales/ja.json",
+          "status": "modified",
+          "additions": 383,
+          "deletions": 17,
+          "changes": 400,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/package.json",
+          "status": "modified",
+          "additions": 12,
+          "deletions": 9,
+          "changes": 21,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/playwright.native.config.ts",
+          "status": "added",
+          "additions": 39,
+          "deletions": 0,
+          "changes": 39,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/scripts/apply-csp.d.mts",
+          "status": "added",
+          "additions": 7,
+          "deletions": 0,
+          "changes": 7,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/scripts/apply-csp.mjs",
+          "status": "added",
+          "additions": 121,
+          "deletions": 0,
+          "changes": 121,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/scripts/csp.d.mts",
+          "status": "modified",
+          "additions": 1,
+          "deletions": 0,
+          "changes": 1,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/scripts/csp.mjs",
+          "status": "modified",
+          "additions": 35,
+          "deletions": 13,
+          "changes": 48,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/scripts/scan-bundle.d.mts",
+          "status": "modified",
+          "additions": 1,
+          "deletions": 1,
+          "changes": 2,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/scripts/scan-bundle.mjs",
+          "status": "modified",
+          "additions": 131,
+          "deletions": 33,
+          "changes": 164,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/scripts/test-reconciliation-idb.mjs",
+          "status": "modified",
+          "additions": 17,
+          "deletions": 2,
+          "changes": 19,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/scripts/test-seller-vault-idb.mjs",
+          "status": "modified",
+          "additions": 164,
+          "deletions": 3,
+          "changes": 167,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/scripts/validate-deployments.d.mts",
+          "status": "modified",
+          "additions": 6,
+          "deletions": 1,
+          "changes": 7,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/scripts/validate-deployments.mjs",
+          "status": "modified",
+          "additions": 49,
+          "deletions": 1,
+          "changes": 50,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/AppShell.beforeUnload.test.tsx",
+          "status": "added",
+          "additions": 101,
+          "deletions": 0,
+          "changes": 101,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/AppShell.frameGuard.test.tsx",
+          "status": "added",
+          "additions": 83,
+          "deletions": 0,
+          "changes": 83,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/AppShell.idleClock.test.tsx",
+          "status": "modified",
+          "additions": 314,
+          "deletions": 7,
+          "changes": 321,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/AppShell.network.test.tsx",
+          "status": "added",
+          "additions": 64,
+          "deletions": 0,
+          "changes": 64,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/AppShell.privacy.test.tsx",
+          "status": "added",
+          "additions": 307,
+          "deletions": 0,
+          "changes": 307,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/AppShell.quickHide.test.tsx",
+          "status": "added",
+          "additions": 44,
+          "deletions": 0,
+          "changes": 44,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/AppShell.tsx",
+          "status": "modified",
+          "additions": 323,
+          "deletions": 78,
+          "changes": 401,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/buildScripts.test.ts",
+          "status": "modified",
+          "additions": 46,
+          "deletions": 0,
+          "changes": 46,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/components/AddressReuseNotice.test.tsx",
+          "status": "added",
+          "additions": 32,
+          "deletions": 0,
+          "changes": 32,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/components/AddressReuseNotice.tsx",
+          "status": "added",
+          "additions": 19,
+          "deletions": 0,
+          "changes": 19,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/components/ClipboardPrivacyControls.tsx",
+          "status": "added",
+          "additions": 31,
+          "deletions": 0,
+          "changes": 31,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/components/ClipboardPrivacySync.tsx",
+          "status": "added",
+          "additions": 13,
+          "deletions": 0,
+          "changes": 13,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/components/Common.clipboardPrivacy.test.tsx",
+          "status": "added",
+          "additions": 202,
+          "deletions": 0,
+          "changes": 202,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/components/Common.test.tsx",
+          "status": "modified",
+          "additions": 21,
+          "deletions": 0,
+          "changes": 21,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/components/Common.tsx",
+          "status": "modified",
+          "additions": 10,
+          "deletions": 3,
+          "changes": 13,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/components/ContextHelp.tsx",
+          "status": "modified",
+          "additions": 26,
+          "deletions": 7,
+          "changes": 33,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/components/Disclosure.manifest.test.tsx",
+          "status": "added",
+          "additions": 72,
+          "deletions": 0,
+          "changes": 72,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/components/Disclosure.tsx",
+          "status": "modified",
+          "additions": 13,
+          "deletions": 9,
+          "changes": 22,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/components/InvoiceSignerVerification.test.tsx",
+          "status": "added",
+          "additions": 143,
+          "deletions": 0,
+          "changes": 143,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/components/InvoiceSignerVerification.tsx",
+          "status": "added",
+          "additions": 121,
+          "deletions": 0,
+          "changes": 121,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/components/MerchantProfilePanel.tsx",
+          "status": "modified",
+          "additions": 9,
+          "deletions": 2,
+          "changes": 11,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/components/MerchantTemplateIssuer.metadata.test.tsx",
+          "status": "added",
+          "additions": 117,
+          "deletions": 0,
+          "changes": 117,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/components/MerchantTemplateIssuer.retention.test.tsx",
+          "status": "added",
+          "additions": 189,
+          "deletions": 0,
+          "changes": 189,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/components/MerchantTemplateIssuer.tsx",
+          "status": "modified",
+          "additions": 15,
+          "deletions": 2,
+          "changes": 17,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/components/MetadataRetentionControls.test.tsx",
+          "status": "added",
+          "additions": 171,
+          "deletions": 0,
+          "changes": 171,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/components/MetadataRetentionControls.tsx",
+          "status": "added",
+          "additions": 72,
+          "deletions": 0,
+          "changes": 72,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/components/PaymentProofQr.retention.test.tsx",
+          "status": "added",
+          "additions": 250,
+          "deletions": 0,
+          "changes": 250,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/components/PaymentRequestDownload.test.tsx",
+          "status": "added",
+          "additions": 56,
+          "deletions": 0,
+          "changes": 56,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/components/PaymentRequestDownload.tsx",
+          "status": "added",
+          "additions": 23,
+          "deletions": 0,
+          "changes": 23,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/components/PaymentRequestFileInput.test.tsx",
+          "status": "added",
+          "additions": 238,
+          "deletions": 0,
+          "changes": 238,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/components/PaymentRequestFileInput.tsx",
+          "status": "added",
+          "additions": 162,
+          "deletions": 0,
+          "changes": 162,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/components/PaymentRequestQr.tsx",
+          "status": "modified",
+          "additions": 13,
+          "deletions": 2,
+          "changes": 15,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/components/PrintableBill.test.tsx",
+          "status": "modified",
+          "additions": 14,
+          "deletions": 1,
+          "changes": 15,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/components/PrintableBill.tsx",
+          "status": "modified",
+          "additions": 7,
+          "deletions": 12,
+          "changes": 19,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/components/PrivacyControls.tsx",
+          "status": "added",
+          "additions": 29,
+          "deletions": 0,
+          "changes": 29,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/components/PrivacyQuickHide.test.tsx",
+          "status": "added",
+          "additions": 120,
+          "deletions": 0,
+          "changes": 120,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/components/PrivacyQuickHide.tsx",
+          "status": "added",
+          "additions": 28,
+          "deletions": 0,
+          "changes": 28,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/components/PrivateHistory.tsx",
+          "status": "added",
+          "additions": 22,
+          "deletions": 0,
+          "changes": 22,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/components/ReceiptPanel.archive.regeneration.test.tsx",
+          "status": "added",
+          "additions": 110,
+          "deletions": 0,
+          "changes": 110,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/components/ReceiptPanel.archive.rejection.test.tsx",
+          "status": "added",
+          "additions": 74,
+          "deletions": 0,
+          "changes": 74,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/components/ReceiptPanel.test.tsx",
+          "status": "modified",
+          "additions": 87,
+          "deletions": 5,
+          "changes": 92,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/components/ReceiptPanel.tsx",
+          "status": "modified",
+          "additions": 37,
+          "deletions": 9,
+          "changes": 46,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/components/ReconciliationLedger.privacy.test.tsx",
+          "status": "added",
+          "additions": 79,
+          "deletions": 0,
+          "changes": 79,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/components/ReconciliationLedger.test.tsx",
+          "status": "modified",
+          "additions": 46,
+          "deletions": 2,
+          "changes": 48,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/components/ReconciliationLedger.tsx",
+          "status": "modified",
+          "additions": 7,
+          "deletions": 2,
+          "changes": 9,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/components/SecretBackup.clipboardPrivacy.test.tsx",
+          "status": "added",
+          "additions": 155,
+          "deletions": 0,
+          "changes": 155,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/components/SecretBackup.test.tsx",
+          "status": "modified",
+          "additions": 80,
+          "deletions": 18,
+          "changes": 98,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/components/SecretBackup.tsx",
+          "status": "modified",
+          "additions": 29,
+          "deletions": 17,
+          "changes": 46,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/components/SecretBackup.views.test.tsx",
+          "status": "modified",
+          "additions": 5,
+          "deletions": 1,
+          "changes": 6,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/components/SensitiveContent.tsx",
+          "status": "added",
+          "additions": 31,
+          "deletions": 0,
+          "changes": 31,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/components/SharedComponents.i18n.test.tsx",
+          "status": "modified",
+          "additions": 1,
+          "deletions": 1,
+          "changes": 2,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/components/StealthExportArchive.tsx",
+          "status": "added",
+          "additions": 128,
+          "deletions": 0,
+          "changes": 128,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/components/StealthExportCommon.expiry.test.tsx",
+          "status": "added",
+          "additions": 90,
+          "deletions": 0,
+          "changes": 90,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/components/StealthExportCommon.review.test.tsx",
+          "status": "added",
+          "additions": 70,
+          "deletions": 0,
+          "changes": 70,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/components/StealthExportCommon.tsx",
+          "status": "added",
+          "additions": 204,
+          "deletions": 0,
+          "changes": 204,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/components/StealthExportDownload.test.tsx",
+          "status": "added",
+          "additions": 61,
+          "deletions": 0,
+          "changes": 61,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/components/StealthExportMaster.tsx",
+          "status": "added",
+          "additions": 92,
+          "deletions": 0,
+          "changes": 92,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/components/StealthExportPayment.test.tsx",
+          "status": "added",
+          "additions": 311,
+          "deletions": 0,
+          "changes": 311,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/components/StealthExportPayment.tsx",
+          "status": "added",
+          "additions": 196,
+          "deletions": 0,
+          "changes": 196,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/components/StealthExportRecovery.test.tsx",
+          "status": "added",
+          "additions": 430,
+          "deletions": 0,
+          "changes": 430,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/components/StealthExportRecovery.tsx",
+          "status": "added",
+          "additions": 289,
+          "deletions": 0,
+          "changes": 289,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/components/StealthExportSelection.test.tsx",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0,
+          "changes": 0,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/components/StealthExportVerification.test.tsx",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0,
+          "changes": 0,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/components/StealthExportVerification.tsx",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0,
+          "changes": 0,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/components/TagArchive.test.tsx",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0,
+          "changes": 0,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/components/WalletAttempts.test.tsx",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0,
+          "changes": 0,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/components/WalletAttempts.tsx",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0,
+          "changes": 0,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/components/WalletDisclosure.quickHide.test.tsx",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0,
+          "changes": 0,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/components/WalletDisclosure.test.tsx",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0,
+          "changes": 0,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/components/WalletDisclosure.tsx",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0,
+          "changes": 0,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/features/btc/BtcView.endpointConsent.test.tsx",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0,
+          "changes": 0,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/features/btc/BtcView.headerOwnership.test.tsx",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0,
+          "changes": 0,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/features/btc/BtcView.headers.test.tsx",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0,
+          "changes": 0,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/features/btc/BtcView.secrets.test.tsx",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0,
+          "changes": 0,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/features/btc/BtcView.spentness.test.tsx",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0,
+          "changes": 0,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/features/btc/BtcView.test.tsx",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0,
+          "changes": 0,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/features/btc/BtcView.tsx",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0,
+          "changes": 0,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/features/btc/esplora.isolation.test.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0,
+          "changes": 0,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/features/btc/esplora.test.ts",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0,
+          "changes": 0,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/features/btc/esplora.ts",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0,
+          "changes": 0,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/features/btc/fixtures.testutil.ts",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0,
+          "changes": 0,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/features/btc/headers.test.ts",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0,
+          "changes": 0,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/features/btc/headers.ts",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0,
+          "changes": 0,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/features/btc/oracleSource.test.ts",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0,
+          "changes": 0,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/features/btc/oracleSource.ts",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0,
+          "changes": 0,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/features/btc/oracleWorker.test.ts",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0,
+          "changes": 0,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/features/btc/scan-secrets.hardening.test.ts",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0,
+          "changes": 0,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/features/btc/scan.localSpends.test.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0,
+          "changes": 0,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/features/btc/scan.spends.test.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0,
+          "changes": 0,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/features/btc/scan.spentness-completion.test.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0,
+          "changes": 0,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/features/btc/scan.ts",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0,
+          "changes": 0,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/features/btc/scanWorker.test.ts",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0,
+          "changes": 0,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/features/btc/scanWorkerClient.ts",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0,
+          "changes": 0,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/features/btc/scanWorkerMessages.ts",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0,
+          "changes": 0,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/features/btc/scanWorkerProtocol.ts",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0,
+          "changes": 0,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/features/btc/scanWorkerSource.test.ts",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0,
+          "changes": 0,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/features/btc/scanWorkerSource.ts",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0,
+          "changes": 0,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/features/btc/verification.ts",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0,
+          "changes": 0,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/features/chainViews.i18n.test.tsx",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0,
+          "changes": 0,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/features/policy/PolicyCreate.tsx",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0,
+          "changes": 0,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/features/policy/PolicyPay.tsx",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0,
+          "changes": 0,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/features/policy/PolicyReceive.regression.test.tsx",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0,
+          "changes": 0,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/features/policy/PolicyReceive.tsx",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0,
+          "changes": 0,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/features/policy/PolicyView.guard.test.tsx",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0,
+          "changes": 0,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/features/policy/PolicyView.more.test.tsx",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0,
+          "changes": 0,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/features/policy/PolicyView.network.test.tsx",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0,
+          "changes": 0,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/features/policy/PolicyView.scope.test.tsx",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0,
+          "changes": 0,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/features/policy/PolicyView.test.tsx",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0,
+          "changes": 0,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/features/policy/PolicyView.tsx",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0,
+          "changes": 0,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/features/policy/chain.ts",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0,
+          "changes": 0,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/features/policy/fixtures.testutil.ts",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0,
+          "changes": 0,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/features/policy/pay.selfcheck.test.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0,
+          "changes": 0,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/features/policy/pay.ts",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0,
+          "changes": 0,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/features/policy/policy.logic.test.ts",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0,
+          "changes": 0,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/features/policy/scan2.ts",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0,
+          "changes": 0,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/features/policy/send.test.ts",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0,
+          "changes": 0,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/features/policy/send.ts",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0,
+          "changes": 0,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/features/registry/RegistryView.history.test.tsx",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0,
+          "changes": 0,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/features/registry/RegistryView.i18n.test.tsx",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0,
+          "changes": 0,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/features/registry/RegistryView.network.test.tsx",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0,
+          "changes": 0,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/features/registry/RegistryView.test.tsx",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0,
+          "changes": 0,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/features/registry/RegistryView.tsx",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0,
+          "changes": 0,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/features/solana/SolanaView.lock.test.tsx",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0,
+          "changes": 0,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/features/solana/SolanaView.test.tsx",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0,
+          "changes": 0,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/features/solana/SolanaView.tsx",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0,
+          "changes": 0,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/features/solana/chain.hardening.test.ts",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0,
+          "changes": 0,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/features/solana/scan-secrets.hardening.test.ts",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0,
+          "changes": 0,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/features/solana/scan.ts",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0,
+          "changes": 0,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/features/solana/sweep.ts",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0,
+          "changes": 0,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/features/tron/TronView.lock.test.tsx",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0,
+          "changes": 0,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/features/tron/TronView.privacy.test.tsx",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0,
+          "changes": 0,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/features/tron/TronView.test.tsx",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0,
+          "changes": 0,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/features/tron/TronView.tsx",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0,
+          "changes": 0,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/features/tron/chain.hardening.test.ts",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0,
+          "changes": 0,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/features/tron/scan.ts",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0,
+          "changes": 0,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/features/tron/sweep.ts",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0,
+          "changes": 0,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/i18n/message.test.ts",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0,
+          "changes": 0,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/i18n/securityKeys.test.ts",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0,
+          "changes": 0,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/i18n/securityKeys.ts",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0,
+          "changes": 0,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/lib/addressReuse.test.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0,
+          "changes": 0,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/lib/addressReuse.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0,
+          "changes": 0,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/lib/boundedRequest.browser.test.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0,
+          "changes": 0,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/lib/boundedRequest.test.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0,
+          "changes": 0,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/lib/boundedRequest.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0,
+          "changes": 0,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/lib/clipboardPrivacy.test.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0,
+          "changes": 0,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/lib/clipboardPrivacy.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0,
+          "changes": 0,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/lib/defaultServices.authorization.test.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0,
+          "changes": 0,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/lib/defaultServices.networkGuard.test.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0,
+          "changes": 0,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/lib/defaultServices.privacySelection.test.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0,
+          "changes": 0,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/lib/defaultServices.test.ts",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0,
+          "changes": 0,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/lib/defaultServices.ts",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0,
+          "changes": 0,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/lib/displayText.test.ts",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0,
+          "changes": 0,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/lib/errors.ts",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0,
+          "changes": 0,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/lib/executionSettings.test.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0,
+          "changes": 0,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/lib/executionSettings.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0,
+          "changes": 0,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/lib/format.test.ts",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0,
+          "changes": 0,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/lib/format.ts",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0,
+          "changes": 0,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/lib/frameGuard.test.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0,
+          "changes": 0,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/lib/frameGuard.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0,
+          "changes": 0,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/lib/hardening.test.ts",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0,
+          "changes": 0,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/lib/invoiceCreate.metadata.test.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0,
+          "changes": 0,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/lib/invoiceCreate.ts",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0,
+          "changes": 0,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/lib/invoiceMetadata.test.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0,
+          "changes": 0,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/lib/invoiceMetadata.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0,
+          "changes": 0,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/lib/invoiceSignerPins.test.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0,
+          "changes": 0,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/lib/invoiceSignerPins.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0,
+          "changes": 0,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/lib/invoiceVerification.test.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0,
+          "changes": 0,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/lib/invoiceVerification.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0,
+          "changes": 0,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/lib/jitter.test.ts",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0,
+          "changes": 0,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/lib/jitter.ts",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0,
+          "changes": 0,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/lib/keyVault.secretExport.test.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0,
+          "changes": 0,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/lib/keyVault.ts",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0,
+          "changes": 0,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/lib/manifest.test.ts",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0,
+          "changes": 0,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/lib/manifest.ts",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0,
+          "changes": 0,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/lib/merchantTemplate.metadata.test.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0,
+          "changes": 0,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/lib/merchantTemplate.ts",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0,
+          "changes": 0,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/lib/metadataRetention.test.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0,
+          "changes": 0,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/lib/metadataRetention.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0,
+          "changes": 0,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/lib/networkAuthorization.adapters.test.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0,
+          "changes": 0,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/lib/networkAuthorization.profileConsistency.test.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0,
+          "changes": 0,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/lib/networkAuthorization.test.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0,
+          "changes": 0,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/lib/networkAuthorization.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0,
+          "changes": 0,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/lib/networkOperation.test.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0,
+          "changes": 0,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/lib/networkOperation.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0,
+          "changes": 0,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/lib/networkSelection.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0,
+          "changes": 0,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/lib/payExec.acceptance.test.ts",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0,
+          "changes": 0,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/lib/payExec.test.ts",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0,
+          "changes": 0,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/lib/paymentExportRpc.test.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0,
+          "changes": 0,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/lib/paymentExportRpc.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0,
+          "changes": 0,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/lib/paymentKeyExport.expiry.test.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0,
+          "changes": 0,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/lib/paymentKeyExport.interop.test.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0,
+          "changes": 0,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/lib/paymentKeyExport.test.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0,
+          "changes": 0,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/lib/paymentKeyExport.testutil.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0,
+          "changes": 0,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/lib/paymentKeyExport.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0,
+          "changes": 0,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/lib/privacyMode.test.tsx",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0,
+          "changes": 0,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/lib/privacyMode.tsx",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0,
+          "changes": 0,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/lib/privateScanLifecycle.test.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0,
+          "changes": 0,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/lib/privateScanLifecycle.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0,
+          "changes": 0,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/lib/privateScanPerformance.nocov.test.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0,
+          "changes": 0,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/lib/privateScanStore.test.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0,
+          "changes": 0,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/lib/privateScanStore.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0,
+          "changes": 0,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/lib/qrKinds.test.ts",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0,
+          "changes": 0,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/lib/qrKinds.ts",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0,
+          "changes": 0,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/lib/receipts.test.ts",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0,
+          "changes": 0,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/lib/receipts.ts",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0,
+          "changes": 0,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/lib/reconciliationVault.idb.test.ts",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0,
+          "changes": 0,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/lib/reconciliationVault.ts",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0,
+          "changes": 0,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/lib/relayerClient.test.ts",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0,
+          "changes": 0,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/lib/relayerClient.ts",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0,
+          "changes": 0,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/lib/relayerContract.test.ts",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0,
+          "changes": 0,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/lib/requestFileInterop.test.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0,
+          "changes": 0,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/lib/scanClient.bulkEvidence.test.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0,
+          "changes": 0,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/lib/scanClient.test.ts",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0,
+          "changes": 0,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/lib/scanClient.ts",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0,
+          "changes": 0,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/lib/scanCursorSlot.test.ts",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0,
+          "changes": 0,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/lib/scanCursorSlot.ts",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0,
+          "changes": 0,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/lib/scanMatches.test.ts",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0,
+          "changes": 0,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/lib/scanMatches.ts",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0,
+          "changes": 0,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/lib/scanPrivacy.authorization.test.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0,
+          "changes": 0,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/lib/scanPrivacy.bulkEvidence.test.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0,
+          "changes": 0,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/lib/scanPrivacy.clients.test.ts",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0,
+          "changes": 0,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/lib/scanPrivacy.scheduler.test.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0,
+          "changes": 0,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/lib/scanPrivacy.test.ts",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0,
+          "changes": 0,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/lib/scanPrivacy.ts",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0,
+          "changes": 0,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/lib/scannerCore.test.ts",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0,
+          "changes": 0,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/lib/scannerCore.ts",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0,
+          "changes": 0,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/lib/services.ts",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0,
+          "changes": 0,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/lib/session.atomicity.test.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0,
+          "changes": 0,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/lib/session.idleLock.test.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0,
+          "changes": 0,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/lib/session.ts",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0,
+          "changes": 0,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/lib/settings.loopback.test.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0,
+          "changes": 0,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/lib/settings.test.ts",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0,
+          "changes": 0,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/lib/settings.ts",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0,
+          "changes": 0,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/lib/settings.uiPrivacy.test.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0,
+          "changes": 0,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/lib/settingsExchange.test.ts",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0,
+          "changes": 0,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/lib/settingsExchange.ts",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0,
+          "changes": 0,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/lib/settingsPrivacy.test.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0,
+          "changes": 0,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/lib/stealthExport.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0,
+          "changes": 0,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/lib/sweep.destinations.privacy.test.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0,
+          "changes": 0,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/lib/sweep.nativeReview.test.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0,
+          "changes": 0,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/lib/sweep.reviewAuthority.test.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0,
+          "changes": 0,
+          "previous_filename": null
+        }
+      ]
+    },
+    {
+      "name": "automation/20261121T1033Z/bug/fiat-minor-units",
+      "sha": "f3e5540777491559e79565cafe0978f5e8e30003",
+      "status": "ahead",
+      "ahead": 8,
+      "behind": 0,
+      "merge_base": "eb59d93cffed7848c4aac37d0e9650b87239c6da",
+      "returned_files": 4,
+      "capped": false,
+      "files": [
+        {
+          "filename": "apps/web/src/lib/format.test.ts",
+          "status": "modified",
+          "additions": 23,
+          "deletions": 0,
+          "changes": 23,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/lib/format.ts",
+          "status": "modified",
+          "additions": 3,
+          "deletions": 0,
+          "changes": 3,
+          "previous_filename": null
+        },
+        {
+          "filename": "docs/ai/ACTIVE_WORK.md",
+          "status": "modified",
+          "additions": 19,
+          "deletions": 0,
+          "changes": 19,
+          "previous_filename": null
+        },
+        {
+          "filename": "docs/handoffs/FIAT_MINOR_UNITS_20261121.md",
+          "status": "added",
+          "additions": 30,
+          "deletions": 0,
+          "changes": 30,
+          "previous_filename": null
+        }
+      ]
+    },
+    {
+      "name": "chatgpt/ghostpay-browser-selfchecks-20261121",
+      "sha": "1edc524e69554e4a45017858c7e3e25c46dae419",
+      "status": "ahead",
+      "ahead": 3,
+      "behind": 0,
+      "merge_base": "eb59d93cffed7848c4aac37d0e9650b87239c6da",
+      "returned_files": 13,
+      "capped": false,
+      "files": [
+        {
+          "filename": "apps/web/locales/ar.json",
+          "status": "modified",
+          "additions": 11,
+          "deletions": 0,
+          "changes": 11,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/locales/en.json",
+          "status": "modified",
+          "additions": 11,
+          "deletions": 0,
+          "changes": 11,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/locales/es.json",
+          "status": "modified",
+          "additions": 11,
+          "deletions": 0,
+          "changes": 11,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/locales/ja.json",
+          "status": "modified",
+          "additions": 11,
+          "deletions": 0,
+          "changes": 11,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/AppShell.tsx",
+          "status": "modified",
+          "additions": 2,
+          "deletions": 0,
+          "changes": 2,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/components/BrowserChecks.test.tsx",
+          "status": "added",
+          "additions": 55,
+          "deletions": 0,
+          "changes": 55,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/components/BrowserChecks.tsx",
+          "status": "added",
+          "additions": 68,
+          "deletions": 0,
+          "changes": 68,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/i18n/securityKeys.ts",
+          "status": "modified",
+          "additions": 11,
+          "deletions": 0,
+          "changes": 11,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/lib/browserChecks.test.ts",
+          "status": "added",
+          "additions": 85,
+          "deletions": 0,
+          "changes": 85,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/lib/browserChecks.ts",
+          "status": "added",
+          "additions": 69,
+          "deletions": 0,
+          "changes": 69,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/styles/app.css",
+          "status": "modified",
+          "additions": 11,
+          "deletions": 0,
+          "changes": 11,
+          "previous_filename": null
+        },
+        {
+          "filename": "docs/ai/ACTIVE_WORK.md",
+          "status": "modified",
+          "additions": 11,
+          "deletions": 0,
+          "changes": 11,
+          "previous_filename": null
+        },
+        {
+          "filename": "docs/handoffs/BROWSER_SELF_CHECKS_20261121.md",
+          "status": "added",
+          "additions": 11,
+          "deletions": 0,
+          "changes": 11,
+          "previous_filename": null
+        }
+      ]
+    },
+    {
+      "name": "chatgpt/ghostpay-csv-leading-whitespace-20261121",
+      "sha": "d283116dfcf3baa2e0ffc6dbf2d5657830849315",
+      "status": "ahead",
+      "ahead": 4,
+      "behind": 0,
+      "merge_base": "eb59d93cffed7848c4aac37d0e9650b87239c6da",
+      "returned_files": 4,
+      "capped": false,
+      "files": [
+        {
+          "filename": "docs/ai/ACTIVE_WORK.md",
+          "status": "modified",
+          "additions": 11,
+          "deletions": 0,
+          "changes": 11,
+          "previous_filename": null
+        },
+        {
+          "filename": "docs/handoffs/MERCHANT_LEDGER_CSV_FORMULA_PREFIX_20261121.md",
+          "status": "added",
+          "additions": 26,
+          "deletions": 0,
+          "changes": 26,
+          "previous_filename": null
+        },
+        {
+          "filename": "packages/merchant-ledger/src/csv.formula-prefix.test.ts",
+          "status": "added",
+          "additions": 37,
+          "deletions": 0,
+          "changes": 37,
+          "previous_filename": null
+        },
+        {
+          "filename": "packages/merchant-ledger/src/csv.ts",
+          "status": "modified",
+          "additions": 2,
+          "deletions": 1,
+          "changes": 3,
+          "previous_filename": null
+        }
+      ]
+    },
+    {
+      "name": "chatgpt/ghostpay-ledger-exponent-guard-20261121-0313",
+      "sha": "0d1193014e3a28f529afcba7787fcaea9bdac280",
+      "status": "ahead",
+      "ahead": 4,
+      "behind": 0,
+      "merge_base": "eb59d93cffed7848c4aac37d0e9650b87239c6da",
+      "returned_files": 4,
+      "capped": false,
+      "files": [
+        {
+          "filename": "docs/ai/ACTIVE_WORK.md",
+          "status": "modified",
+          "additions": 11,
+          "deletions": 0,
+          "changes": 11,
+          "previous_filename": null
+        },
+        {
+          "filename": "docs/handoffs/MERCHANT_LEDGER_EXPONENT_GUARD_20261121.md",
+          "status": "added",
+          "additions": 31,
+          "deletions": 0,
+          "changes": 31,
+          "previous_filename": null
+        },
+        {
+          "filename": "packages/merchant-ledger/src/decimal.ts",
+          "status": "modified",
+          "additions": 2,
+          "deletions": 0,
+          "changes": 2,
+          "previous_filename": null
+        },
+        {
+          "filename": "packages/merchant-ledger/src/ledger.test.ts",
+          "status": "modified",
+          "additions": 13,
+          "deletions": 0,
+          "changes": 13,
+          "previous_filename": null
+        }
+      ]
+    },
+    {
+      "name": "chatgpt/ghostpay-rpc-layout-reflow-20261121-r1",
+      "sha": "63d5a0d0d1b08db14cbd52bd720736f4ceb4612e",
+      "status": "ahead",
+      "ahead": 5,
+      "behind": 0,
+      "merge_base": "eb59d93cffed7848c4aac37d0e9650b87239c6da",
+      "returned_files": 5,
+      "capped": false,
+      "files": [
+        {
+          "filename": "apps/web/e2e/settings-rpc-reflow.spec.ts",
+          "status": "added",
+          "additions": 55,
+          "deletions": 0,
+          "changes": 55,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/styles/app.css",
+          "status": "modified",
+          "additions": 10,
+          "deletions": 0,
+          "changes": 10,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/views/Settings.tsx",
+          "status": "modified",
+          "additions": 5,
+          "deletions": 3,
+          "changes": 8,
+          "previous_filename": null
+        },
+        {
+          "filename": "docs/ai/ACTIVE_WORK.md",
+          "status": "modified",
+          "additions": 12,
+          "deletions": 0,
+          "changes": 12,
+          "previous_filename": null
+        },
+        {
+          "filename": "docs/handoffs/SETTINGS_RPC_REFLOW_20261121.md",
+          "status": "added",
+          "additions": 31,
+          "deletions": 0,
+          "changes": 31,
+          "previous_filename": null
+        }
+      ]
+    },
+    {
+      "name": "feat/f04-deliberate-local-export-20261121",
+      "sha": "a9f19eb236fb2265f48444a0b4ad7bbffb411897",
+      "status": "ahead",
+      "ahead": 64,
+      "behind": 0,
+      "merge_base": "eb59d93cffed7848c4aac37d0e9650b87239c6da",
+      "returned_files": 81,
+      "capped": false,
+      "files": [
+        {
+          "filename": ".claude/skills/ghostpay-package-map/PACKAGE_MAP.md",
+          "status": "modified",
+          "additions": 3,
+          "deletions": 3,
+          "changes": 6,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/package.json",
+          "status": "modified",
+          "additions": 2,
+          "deletions": 0,
+          "changes": 2,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/features/future/ghostproof/fixtures.testutil.ts",
+          "status": "added",
+          "additions": 36,
+          "deletions": 0,
+          "changes": 36,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/features/future/ghostproof/index.ts",
+          "status": "added",
+          "additions": 4,
+          "deletions": 0,
+          "changes": 4,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/features/future/ghostproof/review.test.ts",
+          "status": "added",
+          "additions": 197,
+          "deletions": 0,
+          "changes": 197,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/features/future/ghostproof/review.ts",
+          "status": "added",
+          "additions": 199,
+          "deletions": 0,
+          "changes": 199,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/features/future/ghostproof/session.test.ts",
+          "status": "added",
+          "additions": 126,
+          "deletions": 0,
+          "changes": 126,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/features/future/ghostproof/session.ts",
+          "status": "added",
+          "additions": 65,
+          "deletions": 0,
+          "changes": 65,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/features/future/merchant-dashboard/export.test.ts",
+          "status": "added",
+          "additions": 138,
+          "deletions": 0,
+          "changes": 138,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/features/future/merchant-dashboard/export.ts",
+          "status": "added",
+          "additions": 188,
+          "deletions": 0,
+          "changes": 188,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/features/future/merchant-dashboard/index.ts",
+          "status": "added",
+          "additions": 8,
+          "deletions": 0,
+          "changes": 8,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/features/future/merchant-dashboard/model.ts",
+          "status": "added",
+          "additions": 199,
+          "deletions": 0,
+          "changes": 199,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/features/future/merchant-dashboard/projection.test.ts",
+          "status": "added",
+          "additions": 310,
+          "deletions": 0,
+          "changes": 310,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/features/future/merchant-dashboard/projection.ts",
+          "status": "added",
+          "additions": 220,
+          "deletions": 0,
+          "changes": 220,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/features/future/merchant-dashboard/select.ts",
+          "status": "added",
+          "additions": 42,
+          "deletions": 0,
+          "changes": 42,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/features/future/private-recurring/fixtures.testutil.ts",
+          "status": "added",
+          "additions": 25,
+          "deletions": 0,
+          "changes": 25,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/features/future/private-recurring/index.ts",
+          "status": "added",
+          "additions": 11,
+          "deletions": 0,
+          "changes": 11,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/features/future/private-recurring/model.test.ts",
+          "status": "added",
+          "additions": 158,
+          "deletions": 0,
+          "changes": 158,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/features/future/private-recurring/model.ts",
+          "status": "added",
+          "additions": 213,
+          "deletions": 0,
+          "changes": 213,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/features/future/private-recurring/review.test.ts",
+          "status": "added",
+          "additions": 217,
+          "deletions": 0,
+          "changes": 217,
+          "previous_filename": null
+        },
+        {
+          "filename": "apps/web/src/features/future/private-recurring/review.ts",
+          "status": "added",
+          "additions": 136,
+          "deletions": 0,
+          "changes": 136,
+          "previous_filename": null
+        },
+        {
+          "filename": "docs/ai/ACTIVE_WORK.md",
+          "status": "modified",
+          "additions": 279,
+          "deletions": 0,
+          "changes": 279,
+          "previous_filename": null
+        },
+        {
+          "filename": "docs/consolidation/dormant-modules-20261121-1f782/CODEQL_FOLLOWUP.md",
+          "status": "added",
+          "additions": 21,
+          "deletions": 0,
+          "changes": 21,
+          "previous_filename": null
+        },
+        {
+          "filename": "docs/consolidation/dormant-modules-20261121-1f782/DEPENDENCY_REVIEW.md",
+          "status": "added",
+          "additions": 17,
+          "deletions": 0,
+          "changes": 17,
+          "previous_filename": null
+        },
+        {
+          "filename": "docs/consolidation/dormant-modules-20261121-1f782/EVIDENCE.json.gz",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0,
+          "changes": 0,
+          "previous_filename": null
+        },
+        {
+          "filename": "docs/consolidation/dormant-modules-20261121-1f782/EXECUTION.json",
+          "status": "added",
+          "additions": 690,
+          "deletions": 0,
+          "changes": 690,
+          "previous_filename": null
+        },
+        {
+          "filename": "docs/consolidation/dormant-modules-20261121-1f782/PUBLICATION.json",
+          "status": "added",
+          "additions": 116,
+          "deletions": 0,
+          "changes": 116,
+          "previous_filename": null
+        },
+        {
+          "filename": "docs/consolidation/dormant-modules-20261121-1f782/REPORT.md",
+          "status": "added",
+          "additions": 49,
+          "deletions": 0,
+          "changes": 49,
+          "previous_filename": null
+        },
+        {
+          "filename": "docs/consolidation/future-modules-20261121-1f782/F04_COMPOSITION.md",
+          "status": "added",
+          "additions": 45,
+          "deletions": 0,
+          "changes": 45,
+          "previous_filename": null
+        },
+        {
+          "filename": "docs/future/modules/COMMON.md",
+          "status": "added",
+          "additions": 144,
+          "deletions": 0,
+          "changes": 144,
+          "previous_filename": null
+        },
+        {
+          "filename": "docs/future/modules/F04-merchant-dashboard/COORDINATOR_VERIFICATION.md",
+          "status": "added",
+          "additions": 32,
+          "deletions": 0,
+          "changes": 32,
+          "previous_filename": null
+        },
+        {
+          "filename": "docs/future/modules/F04-merchant-dashboard/HANDOFF.md",
+          "status": "added",
+          "additions": 140,
+          "deletions": 0,
+          "changes": 140,
+          "previous_filename": null
+        },
+        {
+          "filename": "docs/future/modules/F04-merchant-dashboard/IMPLEMENTATION.md",
+          "status": "added",
+          "additions": 110,
+          "deletions": 0,
+          "changes": 110,
+          "previous_filename": null
+        },
+        {
+          "filename": "docs/future/modules/F04-merchant-dashboard/INDEPENDENT_REVIEW.md",
+          "status": "added",
+          "additions": 94,
+          "deletions": 0,
+          "changes": 94,
+          "previous_filename": null
+        },
+        {
+          "filename": "docs/future/modules/F04-merchant-dashboard/PUBLICATION.json",
+          "status": "added",
+          "additions": 56,
+          "deletions": 0,
+          "changes": 56,
+          "previous_filename": null
+        },
+        {
+          "filename": "docs/future/modules/F04-merchant-dashboard/SPEC.md",
+          "status": "added",
+          "additions": 146,
+          "deletions": 0,
+          "changes": 146,
+          "previous_filename": null
+        },
+        {
+          "filename": "docs/future/modules/F04-merchant-dashboard/verification/coordinator/SHA256SUMS.json",
+          "status": "added",
+          "additions": 8,
+          "deletions": 0,
+          "changes": 8,
+          "previous_filename": null
+        },
+        {
+          "filename": "docs/future/modules/F04-merchant-dashboard/verification/coordinator/artifact-comparison.json",
+          "status": "added",
+          "additions": 45,
+          "deletions": 0,
+          "changes": 45,
+          "previous_filename": null
+        },
+        {
+          "filename": "docs/future/modules/F04-merchant-dashboard/verification/coordinator/f04-current-main-bundle-scan.txt",
+          "status": "added",
+          "additions": 6,
+          "deletions": 0,
+          "changes": 6,
+          "previous_filename": null
+        },
+        {
+          "filename": "docs/future/modules/F04-merchant-dashboard/verification/coordinator/f04-current-main-focused-tests.txt",
+          "status": "added",
+          "additions": 14,
+          "deletions": 0,
+          "changes": 14,
+          "previous_filename": null
+        },
+        {
+          "filename": "docs/future/modules/F04-merchant-dashboard/verification/coordinator/f04-current-main-lean-build.txt",
+          "status": "added",
+          "additions": 34,
+          "deletions": 0,
+          "changes": 34,
+          "previous_filename": null
+        },
+        {
+          "filename": "docs/future/modules/F04-merchant-dashboard/verification/coordinator/f04-current-main-web-typecheck.txt",
+          "status": "added",
+          "additions": 5,
+          "deletions": 0,
+          "changes": 5,
+          "previous_filename": null
+        },
+        {
+          "filename": "docs/future/modules/F04-merchant-dashboard/verification/coordinator/f04-final-coverage.txt",
+          "status": "added",
+          "additions": 30,
+          "deletions": 0,
+          "changes": 30,
+          "previous_filename": null
+        },
+        {
+          "filename": "docs/future/modules/F05-ghostproof/COORDINATOR_VERIFICATION.md",
+          "status": "added",
+          "additions": 32,
+          "deletions": 0,
+          "changes": 32,
+          "previous_filename": null
+        },
+        {
+          "filename": "docs/future/modules/F05-ghostproof/HANDOFF.md",
+          "status": "added",
+          "additions": 131,
+          "deletions": 0,
+          "changes": 131,
+          "previous_filename": null
+        },
+        {
+          "filename": "docs/future/modules/F05-ghostproof/INDEPENDENT_REVIEW.md",
+          "status": "added",
+          "additions": 129,
+          "deletions": 0,
+          "changes": 129,
+          "previous_filename": null
+        },
+        {
+          "filename": "docs/future/modules/F05-ghostproof/PUBLICATION.json",
+          "status": "added",
+          "additions": 51,
+          "deletions": 0,
+          "changes": 51,
+          "previous_filename": null
+        },
+        {
+          "filename": "docs/future/modules/F05-ghostproof/SPEC.md",
+          "status": "added",
+          "additions": 163,
+          "deletions": 0,
+          "changes": 163,
+          "previous_filename": null
+        },
+        {
+          "filename": "docs/future/modules/F05-ghostproof/verification/coordinator/SHA256SUMS.json",
+          "status": "added",
+          "additions": 11,
+          "deletions": 0,
+          "changes": 11,
+          "previous_filename": null
+        },
+        {
+          "filename": "docs/future/modules/F05-ghostproof/verification/coordinator/artifact-comparison.json",
+          "status": "added",
+          "additions": 45,
+          "deletions": 0,
+          "changes": 45,
+          "previous_filename": null
+        },
+        {
+          "filename": "docs/future/modules/F05-ghostproof/verification/coordinator/f05-current-main-bundle-scan.txt",
+          "status": "added",
+          "additions": 6,
+          "deletions": 0,
+          "changes": 6,
+          "previous_filename": null
+        },
+        {
+          "filename": "docs/future/modules/F05-ghostproof/verification/coordinator/f05-current-main-focused-tests.txt",
+          "status": "added",
+          "additions": 14,
+          "deletions": 0,
+          "changes": 14,
+          "previous_filename": null
+        },
+        {
+          "filename": "docs/future/modules/F05-ghostproof/verification/coordinator/f05-current-main-lean-build.txt",
+          "status": "added",
+          "additions": 34,
+          "deletions": 0,
+          "changes": 34,
+          "previous_filename": null
+        },
+        {
+          "filename": "docs/future/modules/F05-ghostproof/verification/coordinator/f05-current-main-web-typecheck.txt",
+          "status": "added",
+          "additions": 5,
+          "deletions": 0,
+          "changes": 5,
+          "previous_filename": null
+        },
+        {
+          "filename": "docs/future/modules/F05-ghostproof/verification/coordinator/f05-final-coverage.txt",
+          "status": "added",
+          "additions": 29,
+          "deletions": 0,
+          "changes": 29,
+          "previous_filename": null
+        },
+        {
+          "filename": "docs/future/modules/F05-ghostproof/verification/coordinator/f05-scoped-lint-coordinator.txt",
+          "status": "added",
+          "additions": 4,
+          "deletions": 0,
+          "changes": 4,
+          "previous_filename": null
+        },
+        {
+          "filename": "docs/future/modules/F05-ghostproof/verification/coordinator/f05-scoped-typecheck-coordinator.txt",
+          "status": "added",
+          "additions": 4,
+          "deletions": 0,
+          "changes": 4,
+          "previous_filename": null
+        },
+        {
+          "filename": "docs/future/modules/F05-ghostproof/verification/coordinator/initial-whole-web-typecheck-resource-failure.txt",
+          "status": "added",
+          "additions": 13,
+          "deletions": 0,
+          "changes": 13,
+          "previous_filename": null
+        },
+        {
+          "filename": "docs/future/modules/F05-ghostproof/verification/focused-tests.txt",
+          "status": "added",
+          "additions": 33,
+          "deletions": 0,
+          "changes": 33,
+          "previous_filename": null
+        },
+        {
+          "filename": "docs/future/modules/F05-ghostproof/verification/scoped-typecheck.txt",
+          "status": "added",
+          "additions": 4,
+          "deletions": 0,
+          "changes": 4,
+          "previous_filename": null
+        },
+        {
+          "filename": "docs/future/modules/F10-private-recurring/COORDINATOR_VERIFICATION.md",
+          "status": "added",
+          "additions": 32,
+          "deletions": 0,
+          "changes": 32,
+          "previous_filename": null
+        },
+        {
+          "filename": "docs/future/modules/F10-private-recurring/HANDOFF.md",
+          "status": "added",
+          "additions": 148,
+          "deletions": 0,
+          "changes": 148,
+          "previous_filename": null
+        },
+        {
+          "filename": "docs/future/modules/F10-private-recurring/INDEPENDENT_REVIEW.md",
+          "status": "added",
+          "additions": 85,
+          "deletions": 0,
+          "changes": 85,
+          "previous_filename": null
+        },
+        {
+          "filename": "docs/future/modules/F10-private-recurring/PUBLICATION.json",
+          "status": "added",
+          "additions": 46,
+          "deletions": 0,
+          "changes": 46,
+          "previous_filename": null
+        },
+        {
+          "filename": "docs/future/modules/F10-private-recurring/SPEC.md",
+          "status": "added",
+          "additions": 161,
+          "deletions": 0,
+          "changes": 161,
+          "previous_filename": null
+        },
+        {
+          "filename": "docs/future/modules/F10-private-recurring/verification/coordinator/SHA256SUMS.json",
+          "status": "added",
+          "additions": 10,
+          "deletions": 0,
+          "changes": 10,
+          "previous_filename": null
+        },
+        {
+          "filename": "docs/future/modules/F10-private-recurring/verification/coordinator/artifact-comparison.json",
+          "status": "added",
+          "additions": 45,
+          "deletions": 0,
+          "changes": 45,
+          "previous_filename": null
+        },
+        {
+          "filename": "docs/future/modules/F10-private-recurring/verification/coordinator/f10-current-main-bundle-scan.txt",
+          "status": "added",
+          "additions": 6,
+          "deletions": 0,
+          "changes": 6,
+          "previous_filename": null
+        },
+        {
+          "filename": "docs/future/modules/F10-private-recurring/verification/coordinator/f10-current-main-focused-tests.txt",
+          "status": "added",
+          "additions": 14,
+          "deletions": 0,
+          "changes": 14,
+          "previous_filename": null
+        },
+        {
+          "filename": "docs/future/modules/F10-private-recurring/verification/coordinator/f10-current-main-lean-build.txt",
+          "status": "added",
+          "additions": 34,
+          "deletions": 0,
+          "changes": 34,
+          "previous_filename": null
+        },
+        {
+          "filename": "docs/future/modules/F10-private-recurring/verification/coordinator/f10-current-main-web-typecheck.txt",
+          "status": "added",
+          "additions": 5,
+          "deletions": 0,
+          "changes": 5,
+          "previous_filename": null
+        },
+        {
+          "filename": "docs/future/modules/F10-private-recurring/verification/coordinator/f10-final-coverage.txt",
+          "status": "added",
+          "additions": 25,
+          "deletions": 0,
+          "changes": 25,
+          "previous_filename": null
+        },
+        {
+          "filename": "docs/future/modules/F10-private-recurring/verification/coordinator/f10-scoped-lint-coordinator.txt",
+          "status": "added",
+          "additions": 4,
+          "deletions": 0,
+          "changes": 4,
+          "previous_filename": null
+        },
+        {
+          "filename": "docs/future/modules/F10-private-recurring/verification/coordinator/f10-scoped-typecheck-coordinator.txt",
+          "status": "added",
+          "additions": 4,
+          "deletions": 0,
+          "changes": 4,
+          "previous_filename": null
+        },
+        {
+          "filename": "docs/future/modules/README.md",
+          "status": "added",
+          "additions": 112,
+          "deletions": 0,
+          "changes": 112,
+          "previous_filename": null
+        },
+        {
+          "filename": "docs/future/modules/SOURCES.md",
+          "status": "added",
+          "additions": 52,
+          "deletions": 0,
+          "changes": 52,
+          "previous_filename": null
+        },
+        {
+          "filename": "docs/future/modules/modules.json",
+          "status": "added",
+          "additions": 817,
+          "deletions": 0,
+          "changes": 817,
+          "previous_filename": null
+        },
+        {
+          "filename": "docs/handoffs/F04_EXPORT_CONSENT_20261121.md",
+          "status": "added",
+          "additions": 43,
+          "deletions": 0,
+          "changes": 43,
+          "previous_filename": null
+        },
+        {
+          "filename": "package-lock.json",
+          "status": "modified",
+          "additions": 2,
+          "deletions": 0,
+          "changes": 2,
+          "previous_filename": null
+        },
+        {
+          "filename": "scripts/tests/future-module-isolation.test.mjs",
+          "status": "added",
+          "additions": 176,
+          "deletions": 0,
+          "changes": 176,
+          "previous_filename": null
+        },
+        {
+          "filename": "scripts/tests/lean-core-reachability.test.mjs",
+          "status": "modified",
+          "additions": 3,
+          "deletions": 0,
+          "changes": 3,
+          "previous_filename": null
+        }
+      ]
+    }
+  ]
+}
