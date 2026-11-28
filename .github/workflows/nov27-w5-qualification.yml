@@ -75,6 +75,14 @@ jobs:
           const runnerPath = 'verification/independent-beta/harness/seller-run.mjs';
           let runner = readFileSync(runnerPath, 'utf8');
           runner = replaceOnce(runner,
+            `    links: {},\n    // payments[intent]`,
+            `    links: {},\n    expectedInvoices: {},\n    // payments[intent]`,
+            'expected invoice store');
+          runner = replaceOnce(runner,
+            `      world.links[intent] = r.link;\n      // The harness's own expectation of expiry`,
+            `      world.links[intent] = r.link;\n      await openScan(S1);\n      const ledger = await unlockLedger(S1);\n      const registeredView = await observeSeller(S1);\n      const registeredCard = registeredView.cards.find(card => card.units === INTENTS[intent].units);\n      if (!['unlocked', 'already-unlocked'].includes(ledger) || registeredView.ledgerPresent !== true ||\n          registeredView.ledgerVisible !== true || registeredView.ledgerLocked !== false ||\n          !/^0x[0-9a-f]{64}$/.test(registeredCard?.digest ?? '')) {\n        throw new Error(\`harness: invoice \${intent} registration was not read back\`);\n      }\n      world.expectedInvoices[intent] = { digest: registeredCard.digest, units: INTENTS[intent].units };\n      // The harness's own expectation of expiry`,
+            'registered invoice readback identity');
+          runner = replaceOnce(runner,
             `      rec.obs = Object.fromEntries(Object.entries(obs).map(([k, o]) => [k, o.closed ? 'closed' : { matches: o.matches, cards: o.cards.map((c) => c.text.slice(0, 400)), alerts: o.alerts, scanStatus: o.scanStatus, ledgerLocked: o.ledgerLocked }]));`,
             `      rec.obs = Object.fromEntries(Object.entries(obs).map(([k, o]) => [k, o.closed ? 'closed' : { matches: o.matches, cards: o.cards.map((c) => c.text.slice(0, 400)), alerts: o.alerts, scanStatus: o.scanStatus, ledgerPresent: o.ledgerPresent, ledgerVisible: o.ledgerVisible, ledgerLocked: o.ledgerLocked }]));`,
             'trace ledger presence');
@@ -84,7 +92,7 @@ jobs:
             'ready readback');
           runner = replaceOnce(runner,
             `      for (const label of ['S1', 'S2']) {\n        await world.tabs[label].reload();\n        await world.tabs[label].waitForTimeout(800);\n        await sellerReady(world, label);\n      }\n      return { compared: true };`,
-            `      const tabs = {};\n      for (const label of ['S1', 'S2']) {\n        await world.tabs[label].reload();\n        await world.tabs[label].waitForTimeout(800);\n        tabs[label] = await sellerReady(world, label);\n      }\n      return { compared: true, tabs };`,
+            `      const tabs = {};\n      for (const label of ['S1', 'S2']) {\n        await world.tabs[label].reload();\n        await world.tabs[label].waitForTimeout(800);\n        tabs[label] = await sellerReady(world, label);\n      }\n      return { compared: true, tabs, expectedIdentities: Object.entries(world.expectedInvoices).map(([intent, value]) => ({ intent, ...value })) };`,
             'comparison readbacks');
           writeFileSync(runnerPath, runner);
           JS
@@ -182,6 +190,15 @@ jobs:
               if (step.op !== 'compareTabs') continue;
               const observed = r.trace?.find(row => row.i === i);
               const expectedUnits = ['498750000000000000', '299250000000000000'];
+              const expectedIdentities = observed?.result?.expectedIdentities;
+              const expectedByUnits = new Map((expectedIdentities ?? []).map(id => [id.units, id.digest]));
+              const expectedByIntent = new Map((expectedIdentities ?? []).map(id => [id.intent, id]));
+              const expectedReady = Array.isArray(expectedIdentities) && expectedIdentities.length === 2 &&
+                new Set(expectedIdentities.map(id => id.intent)).size === 2 && expectedByIntent.get('X')?.units === expectedUnits[0] &&
+                expectedByIntent.get('C')?.units === expectedUnits[1] &&
+                new Set(expectedIdentities.map(id => id.units)).size === 2 && expectedUnits.every(units => expectedByUnits.has(units)) &&
+                new Set(expectedIdentities.map(id => id.digest)).size === 2 &&
+                expectedIdentities.every(id => /^0x[0-9a-f]{64}$/.test(id?.digest ?? ''));
               const ready = tab => {
                 const view = observed?.obs?.[tab];
                 const result = observed?.result?.tabs?.[tab];
@@ -191,12 +208,13 @@ jobs:
                   const units = (text.match(/(\d{6,}) base units of native/) ?? [])[1];
                   return [units, digest];
                 }));
-                return Array.isArray(view?.cards) && view.ledgerPresent === true && view.ledgerVisible === true &&
+                return expectedReady && Array.isArray(view?.cards) && view.cards.length === 2 && visibleIdentities.size === 2 &&
+                  view.ledgerPresent === true && view.ledgerVisible === true &&
                   view.ledgerLocked === false && ['unlocked', 'already-unlocked'].includes(result?.ledger) &&
                   result?.readback?.ledgerPresent === true && result.readback.ledgerVisible === true &&
                   result.readback.ledgerLocked === false && Array.isArray(identities) && identities.length === 2 &&
-                  expectedUnits.every(units => identities.some(id => id?.units === units && /^0x[0-9a-f]{64}$/.test(id?.digest ?? '') &&
-                    visibleIdentities.get(units) === id.digest));
+                  expectedUnits.every(units => identities.some(id => id?.units === units && id.digest === expectedByUnits.get(units) &&
+                    visibleIdentities.get(units) === expectedByUnits.get(units)));
               };
               const identities = tab => new Map((observed?.result?.tabs?.[tab]?.readback?.identities ?? []).map(id => [id.units, id.digest]));
               const sameIdentities = () => expectedUnits.every(units => identities('S1').get(units) === identities('S2').get(units));
