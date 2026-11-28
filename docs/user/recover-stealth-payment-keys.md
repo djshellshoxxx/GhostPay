@@ -81,17 +81,22 @@ master spending key. To return money, send it from the one-time address instead.
 
 ## Option A: GhostPay in a fresh browser
 
-Use these steps in a build that includes **Open a stealth key export**. If Seller keys only offers the regular
-keystore form, use [the reference recovery script](#option-b-the-reference-recovery-script) for a Spec 18 file.
+In a fresh browser profile, open a GhostPay build you trust and go to **Seller keys → Recover from a file**.
+Choose your file. GhostPay reads it locally and identifies its contents before asking for a passphrase.
 
-Open **Seller keys**, then **Open a stealth key export**. The app accepts an encrypted export without the original
-installation, site, host or account: GhostPay is a static page and does no server-side recovery. Use a new browser
-profile, open a GhostPay build you trust (one you built or verified yourself is best), load the file and enter the passphrase. The
-page checks every key against its address before showing anything, and a file with any problem is refused as a whole.
+| File identified | What to do |
+| --- | --- |
+| Seller keystore | Enter its passphrase and choose **Decrypt and load** in a session with no seller keys loaded. This restores the original spending, viewing and invoice-signing keys. |
+| Master backup | Enter its passphrase and choose **Open export**. Review the recovered identity before loading the spending and viewing keys. |
+| Encrypted payment keys | Enter the file passphrase and choose **Open export** to see the addresses covered by this backup. Each private key is checked against its address. |
+| Public payment record | Choose **Open export** to view the record. It contains public information and needs no passphrase. |
+
+Earlier builds may label the stealth recovery panel **Open a stealth key export**. If Seller keys only offers the regular
+keystore form, use [the reference recovery script](#option-b-the-reference-recovery-script) for a Spec 18 file.
 
 ### Verify a backup without replacing your keys
 
-To check an existing encrypted file, select it under **Open a stealth key export**, enter its passphrase, and choose
+To check an encrypted payment-key export or master backup, select it under **Recover from a file**, enter its passphrase, and choose
 **Check export without importing**. A successful verification authenticates the file, checks each private key
 against its public identity, and disposes the recovered private material. It does not install keys into the current
 session. A public-only record cannot pass as a recoverable secret backup.
