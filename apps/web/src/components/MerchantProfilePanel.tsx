@@ -8,6 +8,7 @@ import { OfflineProfileReview } from '../features/future/ghostid/OfflineProfileR
 import { Field, Mono, Notice } from './Common';
 import { MerchantTemplateIssuer } from './MerchantTemplateIssuer';
 import { merchantTemplateAmount } from '../lib/merchantTemplate';
+import { ControlTip } from './ControlTips';
 import { MerchantProfileNotice } from './MerchantProfileNotice';
 
 /** Full-profile presentation only. Never changes invoice fields, signer trust or payment authorization. */
@@ -132,13 +133,13 @@ export function MerchantProfilePanel(props: { readonly search: string }): ReactN
 
   return (
     <details open={profile !== undefined || url !== ''} className="card">
-      <summary>{t('merchantProfile.load.title')}</summary>
+      <ControlTip message="merchantProfile.load.privacy"><summary>{t('merchantProfile.load.title')}</summary></ControlTip>
       {import.meta.env.VITE_GHOSTID_OFFLINE_REVIEW === '1' && <OfflineProfileReview nowMs={services.nowMs} />}
       <Field label={t('merchantProfile.load.url')} hint={t('merchantProfile.load.privacy')}>
-        {(id, describedBy) => <input id={id} aria-describedby={describedBy} type="text" inputMode="url" maxLength={2048} autoComplete="off" spellCheck={false} value={url} onChange={(event) => { cancel(); setUrl(event.target.value); setProfile(undefined); setOrigin(undefined); setFailed(false); }} />}
+        {(id, describedBy) => <ControlTip message="merchantProfile.load.privacy"><input id={id} aria-describedby={describedBy} type="text" inputMode="url" maxLength={2048} autoComplete="off" spellCheck={false} value={url} onChange={(event) => { cancel(); setUrl(event.target.value); setProfile(undefined); setOrigin(undefined); setFailed(false); }} /></ControlTip>}
       </Field>
-      <button type="button" className="btn" disabled={loading || url.trim() === ''} onClick={load}>{t(loading ? 'merchantProfile.load.loading' : 'merchantProfile.load.action')}</button>
-      {loading && <button type="button" className="btn" onClick={cancel}>{t('merchantProfile.load.cancel')}</button>}
+      <ControlTip message="merchantProfile.load.privacy"><button type="button" className="btn" disabled={loading || url.trim() === ''} onClick={load}>{t(loading ? 'merchantProfile.load.loading' : 'merchantProfile.load.action')}</button></ControlTip>
+      {loading && <ControlTip message="tips.cancel"><button type="button" className="btn" onClick={cancel}>{t('merchantProfile.load.cancel')}</button></ControlTip>}
       {failed && <Notice kind="error">{t('merchantProfile.load.failed')}</Notice>}
       {expired && <Notice kind="warn">{t('merchantProfile.expired')}</Notice>}
       {profile !== undefined && !expired && <>

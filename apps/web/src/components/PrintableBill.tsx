@@ -1,3 +1,4 @@
+import { ControlTip } from './ControlTips';
 import { useState, type ReactNode, type RefCallback } from 'react';
 import { flushSync } from 'react-dom';
 import type { Invoice } from '@ghostpay/invoice-schema';
@@ -119,7 +120,7 @@ export function PrintBillButton(props: PrintableBillProps): ReactNode {
   const { printRef, print } = usePrintTarget();
   return (
     <>
-      <button
+      <ControlTip message="tips.print"><button
         type="button"
         className="btn"
         onClick={() => {
@@ -128,7 +129,7 @@ export function PrintBillButton(props: PrintableBillProps): ReactNode {
         }}
       >
         {t('bill.print')}
-      </button>
+      </button></ControlTip>
       {printing && <PrintableBill {...props} printRef={printRef} />}
     </>
   );

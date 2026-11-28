@@ -77,3 +77,22 @@ dl.glossary dd { margin: 0 0 .6rem; }
 @media print { details { border: 0; } details > * { display: block; } summary { display: none; } .flow-lanes { grid-template-columns: 1fr; } }
 .matrix { table-layout: auto; min-width: 46rem; }
 .matrix th[scope="row"] { min-width: 12rem; }
+
+/* The static guides and the no-script landing page share the same optional instructions. */
+.guide-tip-switch { display: inline-flex; align-items: center; gap: .5rem; min-height: 44px; }
+.guide-tip-switch input { width: 1.25rem; height: 1.25rem; }
+@media screen {
+  body:has(#guide-tips:checked) :is(a, summary, .table-wrap)[title]::after,
+  :is(a, summary, .table-wrap)[title]:focus-visible::after {
+    content: attr(title) / "";
+    display: block;
+    padding-inline-start: .65rem;
+    margin-block: .3rem;
+    border-inline-start: 3px solid var(--accent);
+    color: var(--text);
+    font-size: .875rem;
+    font-weight: normal;
+    overflow-wrap: anywhere;
+  }
+}
+@media print { .guide-tip-switch { display: none; } }

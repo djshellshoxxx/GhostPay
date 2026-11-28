@@ -1,3 +1,4 @@
+import { ControlTip } from './ControlTips';
 import { useCallback, useEffect, useRef, useState, useSyncExternalStore, type ReactNode } from 'react';
 import { SOURCE_TRANSLATOR, useI18nOptional } from '../i18n/context';
 import type { Translator } from '../i18n/translator';
@@ -157,7 +158,7 @@ export function SecretBackup(props: { readonly reveal: () => string; readonly te
     return (
       <Notice kind="warn" title={text.title}>
         <p>{text.warning} {text.hiddenHint}</p>
-        <button type="button" className="btn" onClick={() => { generation.current += 1; setCopy('idle'); setShown(props.reveal()); }}>{text.show}</button>
+        <ControlTip message="tips.showSecret"><button type="button" className="btn" onClick={() => { generation.current += 1; setCopy('idle'); setShown(props.reveal()); }}>{text.show}</button></ControlTip>
       </Notice>
     );
   }
@@ -168,23 +169,23 @@ export function SecretBackup(props: { readonly reveal: () => string; readonly te
       {copy === 'confirm' ? (
         <>
           <p><strong>{text.copyWarning}</strong></p>
-          {copyPending && <p role="status" aria-live="polite">{t('btc.seed.copying')}</p>}
-          <button type="button" className="btn btn-danger" disabled={copyPending} onClick={() => { copyNow(shown); }}>{text.copyConfirm}</button>{' '}
-          <button type="button" className="btn" disabled={copyPending} onClick={() => { setCopy('idle'); }}>{text.copyCancel}</button>{' '}
+          {copyPending && <ControlTip message="tips.clipboardStatus"><p role="status" aria-live="polite">{t('btc.seed.copying')}</p></ControlTip>}
+          <ControlTip message="tips.copySecret"><button type="button" className="btn btn-danger" disabled={copyPending} onClick={() => { copyNow(shown); }}>{text.copyConfirm}</button></ControlTip>{' '}
+          <ControlTip message="tips.cancel"><button type="button" className="btn" disabled={copyPending} onClick={() => { setCopy('idle'); }}>{text.copyCancel}</button></ControlTip>{' '}
         </>
       ) : (
         <>
-          {copy !== 'idle' && <p role="status">{copy === 'copied' ? text.copied : text.copyFailed}</p>}
-          <button type="button" className="btn" onClick={() => { setCopy('confirm'); }}>{text.copy}</button>{' '}
+          {copy !== 'idle' && <ControlTip message="tips.clipboardStatus"><p role="status">{copy === 'copied' ? text.copied : text.copyFailed}</p></ControlTip>}
+          <ControlTip message="tips.reviewCopy"><button type="button" className="btn" onClick={() => { setCopy('confirm'); }}>{text.copy}</button></ControlTip>{' '}
         </>
       )}
-      <button
+      <ControlTip message="tips.hideSecret"><button
         type="button"
         className="btn"
         onClick={hide}
       >
         {text.hide}
-      </button>
+      </button></ControlTip>
     </Notice>
   );
 }
@@ -201,13 +202,13 @@ export function CopiedBackupNotice(): ReactNode {
   if (!unverified) return null;
   return (
     <Notice kind="warn" title={t('clipboard.backup.unverified.title')}>
-      <p role="status">{t('clipboard.backup.unverified.body')}</p>
+      <ControlTip message="clipboard.backup.unverified.body"><p role="status">{t('clipboard.backup.unverified.body')}</p></ControlTip>
       <p className="hint">{t('clipboard.backup.empty.hint')}</p>
-      <button type="button" className="btn" onClick={() => { void clearCopiedRecovery(); }}>{t('clipboard.backup.retry')}</button>{' '}
-      <button type="button" className="btn btn-danger" onClick={() => { void emptyClipboardOnRequest().then((ok) => { setEmptyFailed(!ok); }); }}>
+      <ControlTip message="tips.retryClipboard"><button type="button" className="btn" onClick={() => { void clearCopiedRecovery(); }}>{t('clipboard.backup.retry')}</button></ControlTip>{' '}
+      <ControlTip message="clipboard.backup.empty.hint"><button type="button" className="btn btn-danger" onClick={() => { void emptyClipboardOnRequest().then((ok) => { setEmptyFailed(!ok); }); }}>
         {t('clipboard.backup.empty')}
-      </button>
-      {emptyFailed && <p role="alert">{t('clipboard.backup.empty.failed')}</p>}
+      </button></ControlTip>
+      {emptyFailed && <ControlTip message="tips.clipboardStatus"><p role="alert">{t('clipboard.backup.empty.failed')}</p></ControlTip>}
     </Notice>
   );
 }

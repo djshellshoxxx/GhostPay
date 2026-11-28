@@ -1,3 +1,4 @@
+import { ControlTip } from './ControlTips';
 import { findChain } from '@ghostpay/chain-adapters';
 import { useEffect, useId, useRef, useState, type FormEvent, type ReactNode } from 'react';
 import { captureUserMessage, displayMessage, type DisplayMessage } from '../lib/errors';
@@ -141,9 +142,9 @@ export function StealthExportPayment(props: { readonly match: ScanMatch; readonl
   const m = props.match;
   return (
     <div className="stealth-export" data-testid="payment-details">
-      <button type="button" className="btn" aria-expanded={open} aria-controls={panelId} onClick={() => { if (open) close(); else setOpen(true); }}>
+      <ControlTip message="stealthExport.details.ownership.body"><button type="button" className="btn" aria-expanded={open} aria-controls={panelId} onClick={() => { if (open) close(); else setOpen(true); }}>
         {t('stealthExport.details.toggle')}
-      </button>
+      </button></ControlTip>
       {open && (
         <section id={panelId} className="panel stack" aria-label={t('stealthExport.details.toggle')}>
           {message !== undefined && <Notice kind={message.kind}>{displayMessage(message.text, t)}</Notice>}
@@ -160,7 +161,7 @@ export function StealthExportPayment(props: { readonly match: ScanMatch; readonl
 
           <h4>{t('stealthExport.details.public.heading')}</h4>
           <p className="hint">{t('stealthExport.details.public.hint')}</p>
-          <p><button type="button" className="btn" data-testid="stealth-export-public" onClick={onPublic}>{t('stealthExport.details.public.download')}</button></p>
+          <p><ControlTip message="stealthExport.details.public.hint"><button type="button" className="btn" data-testid="stealth-export-public" onClick={onPublic}>{t('stealthExport.details.public.download')}</button></ControlTip></p>
 
           <Notice kind="warn">{t('stealthExport.details.rpcPrivacy')}</Notice>
           <CredentialFields value={credential} onChange={(next) => { setCredential(next); setRawStep(false); }} disabled={busy !== undefined} />
@@ -169,7 +170,7 @@ export function StealthExportPayment(props: { readonly match: ScanMatch; readonl
           <p className="hint">{t('stealthExport.details.encrypted.hint')}</p>
           <form onSubmit={onEncrypted} className="stack" autoComplete="off">
             <NewPassphraseFields value={newPass} onChange={setNewPass} disabled={busy !== undefined} />
-            <button type="submit" className="btn" data-testid="stealth-export-encrypted" disabled={busy !== undefined || !credentialReady(credential)}>{t('stealthExport.details.encrypted.download')}</button>
+            <ControlTip message="stealthExport.details.encrypted.hint"><button type="submit" className="btn" data-testid="stealth-export-encrypted" disabled={busy !== undefined || !credentialReady(credential)}>{t('stealthExport.details.encrypted.download')}</button></ControlTip>
           </form>
 
           {generated !== undefined && <StealthExportVerification file={generated} downloadStarted={downloadStarted} onRetryDownload={retryDownload} announce={props.announce} />}
@@ -177,15 +178,15 @@ export function StealthExportPayment(props: { readonly match: ScanMatch; readonl
           <h4>{t('stealthExport.details.raw.heading')}</h4>
           <p className="hint">{t('stealthExport.details.raw.hint')}</p>
           {!rawStep ? (
-            <p><button type="button" className="btn" data-testid="stealth-export-raw" disabled={busy !== undefined || !credentialReady(credential)} onClick={() => { setMessage(undefined); setRawStep(true); }}>{t('stealthExport.details.raw.start')}</button></p>
+            <p><ControlTip message="stealthExport.details.raw.hint"><button type="button" className="btn" data-testid="stealth-export-raw" disabled={busy !== undefined || !credentialReady(credential)} onClick={() => { setMessage(undefined); setRawStep(true); }}>{t('stealthExport.details.raw.start')}</button></ControlTip></p>
           ) : (
             <div ref={confirmRef} tabIndex={-1} role="group" aria-label={t('stealthExport.raw.confirm.title')}>
               <Notice kind="warn" title={t('stealthExport.raw.confirm.title')}>{t('stealthExport.raw.confirm.body')}</Notice>
-              <button type="button" className="btn btn-danger" data-testid="stealth-export-raw-confirm" disabled={busy !== undefined} onClick={onRaw}>{t('stealthExport.raw.confirm.download')}</button>{' '}
-              <button type="button" className="btn" onClick={() => { op.stop(); reset(); }}>{t('stealthExport.cancel')}</button>
+              <ControlTip message="tips.rawKey"><button type="button" className="btn btn-danger" data-testid="stealth-export-raw-confirm" disabled={busy !== undefined} onClick={onRaw}>{t('stealthExport.raw.confirm.download')}</button></ControlTip>{' '}
+              <ControlTip message="tips.cancel"><button type="button" className="btn" onClick={() => { op.stop(); reset(); }}>{t('stealthExport.cancel')}</button></ControlTip>
             </div>
           )}
-          {busy !== undefined && !rawStep && <p><button type="button" className="btn" onClick={() => { op.stop(); reset(); setMessage(undefined); }}>{t('stealthExport.cancel')}</button></p>}
+          {busy !== undefined && !rawStep && <p><ControlTip message="tips.cancel"><button type="button" className="btn" onClick={() => { op.stop(); reset(); setMessage(undefined); }}>{t('stealthExport.cancel')}</button></ControlTip></p>}
         </section>
       )}
     </div>

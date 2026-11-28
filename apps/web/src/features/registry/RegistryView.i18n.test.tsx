@@ -65,7 +65,7 @@ describe('registry publication outcomes retain semantic parts until render', () 
     } : en)}><LocaleControl /><App /></I18nProvider>, makeServices({ createRpc: () => Promise.resolve(rpc), discoverWallets: () => Promise.resolve([{ id: 'test', name: 'Locale Wallet', kind: 'injected', provider: wallet }]) }));
     const user = userEvent.setup();
     await user.click(within(screen.getByRole('navigation', { name: 'Main' })).getByRole('button', { name: 'Public registry' }));
-    await user.click(screen.getByRole('checkbox'));
+    await user.click(screen.getByRole('checkbox', { name: /I understand this publicly associates my meta-address/i }));
     await user.click(screen.getByRole('button', { name: 'Find wallets' }));
     await user.click(await screen.findByRole('button', { name: 'Connect Locale Wallet' }));
     await user.click(await screen.findByRole('button', { name: action === 'publish' ? 'Review publish transaction' : 'Review clear transaction' }));

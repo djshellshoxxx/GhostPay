@@ -268,3 +268,40 @@ summary { cursor: pointer; min-height: 44px; display: flex; align-items: center;
 .context-help-text[hidden] { display: none; }
 
 @media (prefers-reduced-motion: reduce) { * { scroll-behavior: auto !important; transition: none !important; animation: none !important; } }
+
+/* Control instructions never cover a pressed control in inline (touch) mode. */
+.control-tips-switch { display: flex; align-items: center; flex-wrap: wrap; gap: .5rem; }
+.control-tips-switch input { inline-size: 1.25rem; block-size: 1.25rem; }
+.control-tips-switch label { padding-block: .5rem; }
+.control-tip-inline, .control-tip-bubble {
+  color: var(--text);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-inline-start: 3px solid var(--accent);
+  border-radius: .35rem;
+  padding: .4rem .65rem;
+  font-size: .875rem;
+  font-weight: normal;
+  line-height: 1.45;
+  overflow-wrap: anywhere;
+  text-align: start;
+}
+.control-tip-bubble {
+  position: fixed;
+  z-index: 2147483647;
+  box-sizing: border-box;
+  max-inline-size: min(36ch, calc(100vw - 12px));
+  max-block-size: 42vh;
+  overflow: auto;
+}
+.control-tip-inline { display: block; max-inline-size: 65ch; margin-block: .25rem .5rem; }
+label:has(> [data-control-tip] + .control-tip-inline) { display: flex; flex-wrap: wrap; align-items: center; gap: .4rem; }
+label > .control-tip-inline { order: 1; flex-basis: 100%; }
+.check:has(> .control-tip-inline) { flex-wrap: wrap; }
+.check > .control-tip-inline, .control-tips-switch > .control-tip-inline { order: 1; flex-basis: 100%; }
+.actions > .control-tip-inline { flex-basis: 100%; }
+.skip:not(:focus) + .control-tip-inline,
+[aria-live]:empty + .control-tip-inline, [role='status']:empty + .control-tip-inline { display: none; }
+@media print {
+  .control-tip-inline, .control-tip-bubble, .control-tips-switch { display: none !important; }
+}

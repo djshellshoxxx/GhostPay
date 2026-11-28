@@ -1,3 +1,4 @@
+import { ControlTip } from './ControlTips';
 import { useCallback, useEffect, useRef, useState, type ChangeEvent, type ReactNode } from 'react';
 import {
   activeDeviceId,
@@ -350,21 +351,21 @@ export function CameraImporter({ label, onText, scopeKey, active = true, onInput
       <h3>{label}</h3>
       <p>{t('camera.consent')}</p>
       <div className="stack">
-        <video ref={video} muted playsInline aria-label={t('camera.preview')} hidden={!running} style={{ width: '100%', maxWidth: '32rem' }} />
-        {running || busy ? <button type="button" className="btn" onClick={() => { stop(); resetTransfer(); inputChanged.current?.(); setStatus('camera.status.stopped'); }}>{t('camera.stop')}</button>
-          : <button type="button" className="btn" disabled={!active} onClick={() => { begin(); }}>{t('camera.scan')}</button>}
-        {running && canSwitch ? <button type="button" className="btn" onClick={switchCamera}>{t('camera.switch')}</button> : null}
-        <label>{t('camera.pasteLabel')}<textarea rows={3} dir="ltr" maxLength={65_536} autoComplete="off" spellCheck={false} value={text} onChange={(event) => { stop(); inputChanged.current?.(); setStatus(assembler.current === null ? undefined : 'camera.multipart.progress'); setText(event.target.value); }} /></label>
-        <button type="button" className="btn" disabled={!active || busy || text.trim() === ''} onClick={paste}>{t('camera.usePasted')}</button>
-        <label>{t('camera.file.label')}<input type="file" accept="image/*" disabled={!active || busy} onChange={readImage} /></label>
+        <ControlTip message="camera.status.active"><video ref={video} muted playsInline aria-label={t('camera.preview')} hidden={!running} style={{ width: '100%', maxWidth: '32rem' }} /></ControlTip>
+        {running || busy ? <ControlTip message="tips.stopCamera"><button type="button" className="btn" onClick={() => { stop(); resetTransfer(); inputChanged.current?.(); setStatus('camera.status.stopped'); }}>{t('camera.stop')}</button></ControlTip>
+          : <ControlTip message="camera.consent"><button type="button" className="btn" disabled={!active} onClick={() => { begin(); }}>{t('camera.scan')}</button></ControlTip>}
+        {running && canSwitch ? <ControlTip message="tips.switchCamera"><button type="button" className="btn" onClick={switchCamera}>{t('camera.switch')}</button></ControlTip> : null}
+        <label>{t('camera.pasteLabel')}<ControlTip message="tips.pasteQr"><textarea rows={3} dir="ltr" maxLength={65_536} autoComplete="off" spellCheck={false} value={text} onChange={(event) => { stop(); inputChanged.current?.(); setStatus(assembler.current === null ? undefined : 'camera.multipart.progress'); setText(event.target.value); }} /></ControlTip></label>
+        <ControlTip message="tips.readQr"><button type="button" className="btn" disabled={!active || busy || text.trim() === ''} onClick={paste}>{t('camera.usePasted')}</button></ControlTip>
+        <label>{t('camera.file.label')}<ControlTip message="tips.image"><input type="file" accept="image/*" disabled={!active || busy} onChange={readImage} /></ControlTip></label>
         {transfer === undefined ? null : (
           <>
-            <progress max={transfer.total} value={transfer.received} aria-label={t('camera.multipart.progressLabel')} aria-valuetext={progressText(transfer)} />
-            <button type="button" className="btn" onClick={startOver}>{t('camera.multipart.startOver')}</button>
+            <ControlTip message="tips.parts"><progress max={transfer.total} value={transfer.received} aria-label={t('camera.multipart.progressLabel')} aria-valuetext={progressText(transfer)} /></ControlTip>
+            <ControlTip message="tips.resetParts"><button type="button" className="btn" onClick={startOver}>{t('camera.multipart.startOver')}</button></ControlTip>
           </>
         )}
-        <p ref={statusEl} tabIndex={-1} role="status" aria-live="polite">{statusText()}</p>
-        {alert === undefined ? null : <p role="alert">{t(alert)}</p>}
+        <ControlTip message="tips.scanStatus"><p ref={statusEl} tabIndex={-1} role="status" aria-live="polite">{statusText()}</p></ControlTip>
+        {alert === undefined ? null : <ControlTip message="tips.scanStatus"><p role="alert">{t(alert)}</p></ControlTip>}
       </div>
     </section>
   );

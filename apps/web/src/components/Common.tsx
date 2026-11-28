@@ -1,3 +1,4 @@
+import { ControlTip } from './ControlTips';
 import { useEffect, useId, useRef, useState, type ReactNode } from 'react';
 import { useClipboardDelayMs } from '../state';
 import { copyClipboardText } from '../lib/clipboardPrivacy';
@@ -10,7 +11,7 @@ import { ContextHelp } from './ContextHelp';
 export function Notice(props: { readonly kind: 'info' | 'warn' | 'error' | 'ok'; readonly title?: string; readonly children: ReactNode }): ReactNode {
   const t = useI18nOptional()?.t ?? SOURCE_TRANSLATOR.t;
   const label = t(`common.notice.${props.kind}`);
-  return (
+  const notice = (
     <div className={`notice notice-${props.kind}`} role={props.kind === 'error' ? 'alert' : 'note'}>
       <strong className="notice-title">
         <span aria-hidden="true">{{ info: 'ℹ', warn: '⚠', error: '✖', ok: '✔' }[props.kind]} </span>
@@ -20,6 +21,9 @@ export function Notice(props: { readonly kind: 'info' | 'warn' | 'error' | 'ok';
       <div>{props.children}</div>
     </div>
   );
+  if (props.kind === 'error') return <ControlTip message="tips.error">{notice}</ControlTip>;
+  if (props.kind === 'warn') return <ControlTip message="tips.warning">{notice}</ControlTip>;
+  return notice;
 }
 
 export function Field(props: {
@@ -59,7 +63,7 @@ export function CopyButton(props: { readonly text: string; readonly label: strin
     return () => { attempt.current += 1; };
   }, [props.text]);
   return (
-    <button
+    <ControlTip message="tips.copy"><button
       type="button"
       className="btn"
       onClick={() => {
@@ -80,7 +84,7 @@ export function CopyButton(props: { readonly text: string; readonly label: strin
       }}
     >
       {state === 'copied' ? t('common.copy.copied') : state === 'failed' ? t('common.copy.failed') : props.label}
-    </button>
+    </button></ControlTip>
   );
 }
 

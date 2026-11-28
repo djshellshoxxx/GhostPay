@@ -1,3 +1,4 @@
+import { ControlTip } from '../components/ControlTips';
 import { InvoiceMetadataChoice, DownloadInvoiceLink } from '../components/InvoiceSharing';
 import { ManifestBanner } from '../components/ManifestBanner';
 import { usePresentationGeneration } from '../components/SessionPresentationBoundary';
@@ -110,9 +111,9 @@ function InvoiceForm({ supportedOnly }: { readonly supportedOnly: boolean }): Re
       <section aria-labelledby="inv-h">
         <h2 id="inv-h">{t('create.title')}</h2>
         <Notice kind="info">{t('create.needKeys')}</Notice>
-        <button type="button" className="btn btn-primary" onClick={() => { app.setView('seller'); }}>
+        <ControlTip message="home.seller.body"><button type="button" className="btn btn-primary" onClick={() => { app.setView('seller'); }}>
           {t('create.goSeller')}
-        </button>
+        </button></ControlTip>
       </section>
     );
   }
@@ -123,13 +124,13 @@ function InvoiceForm({ supportedOnly }: { readonly supportedOnly: boolean }): Re
         <h2 id="inv-h">{t('create.title')}</h2>
         <p>{t('create.draft.available')}</p>
         <div className="actions">
-          <button type="button" className="btn btn-primary" onClick={editor.resume}>{t('create.draft.resume')}</button>
-          <button type="button" className="btn" onClick={editor.remove}>{t('create.draft.remove')}</button>
+          <ControlTip message="tips.resumeDraft"><button type="button" className="btn btn-primary" onClick={editor.resume}>{t('create.draft.resume')}</button></ControlTip>
+          <ControlTip message="tips.deleteDraft"><button type="button" className="btn" onClick={editor.remove}>{t('create.draft.remove')}</button></ControlTip>
         </div>
       </section>
     );
   }
-  if (editor.status === 'opening') return <p role="status">{t('create.draft.opening')}</p>;
+  if (editor.status === 'opening') return <ControlTip message="tips.draftStatus"><p role="status">{t('create.draft.opening')}</p></ControlTip>;
 
   const choices = tokenChoices(chainId);
   const FIAT_QUOTE_AVAILABLE = fiatQuoteAvailable(chainId, token, currency);
@@ -244,16 +245,16 @@ function InvoiceForm({ supportedOnly }: { readonly supportedOnly: boolean }): Re
       <div className="panel">
         <p>{t('create.draft.hint')}</p>
         {editor.status === 'off'
-          ? <button type="button" className="btn" onClick={editor.save}>{t('create.draft.keep')}</button>
-          : <button type="button" className="btn" onClick={editor.remove}>{t('create.draft.remove')}</button>}
-        {editor.status !== 'off' && <p role="status">{t(DRAFT_MESSAGES[editor.status])}</p>}
+          ? <ControlTip message="create.draft.hint"><button type="button" className="btn" onClick={editor.save}>{t('create.draft.keep')}</button></ControlTip>
+          : <ControlTip message="tips.deleteDraft"><button type="button" className="btn" onClick={editor.remove}>{t('create.draft.remove')}</button></ControlTip>}
+        {editor.status !== 'off' && <ControlTip message="tips.draftStatus"><p role="status">{t(DRAFT_MESSAGES[editor.status])}</p></ControlTip>}
       </div>
       <form onSubmit={onSubmit} className="stack" noValidate>
         <fieldset>
           <legend>{t('create.where.legend')}</legend>
           <Field label={t('create.chain')}>
             {(id) => (
-              <select
+              <ControlTip message="tips.invoiceNetwork"><select
                 id={id}
                 value={chainId}
                 onChange={(e) => {
@@ -265,7 +266,7 @@ function InvoiceForm({ supportedOnly }: { readonly supportedOnly: boolean }): Re
                     {c.name}
                   </option>
                 ))}
-              </select>
+              </select></ControlTip>
             )}
           </Field>
           <ManifestBanner manifest={manifest} />
@@ -274,13 +275,13 @@ function InvoiceForm({ supportedOnly }: { readonly supportedOnly: boolean }): Re
           )}
           <Field label={t('create.token')}>
             {(id) => (
-              <select id={id} value={token} onChange={(e) => { change({ token: e.target.value }); }}>
+              <ControlTip message="tips.invoiceAsset"><select id={id} value={token} onChange={(e) => { change({ token: e.target.value }); }}>
                 {choices.map((c) => (
                   <option key={c.value} value={c.value}>
                     {c.label}
                   </option>
                 ))}
-              </select>
+              </select></ControlTip>
             )}
           </Field>
         </fieldset>
@@ -289,30 +290,30 @@ function InvoiceForm({ supportedOnly }: { readonly supportedOnly: boolean }): Re
           <legend>{t('create.amount.legend')}</legend>
           <Field label={t('create.pricing')}>
             {(id) => (
-              <select id={id} value={effectiveAmountMode} onChange={(e) => { change({ amountMode: !supportedOnly && FIAT_QUOTE_AVAILABLE && e.target.value === 'fiat_quote' ? 'fiat_quote' : 'fixed_token' }); }}>
+              <ControlTip message="tips.pricing"><select id={id} value={effectiveAmountMode} onChange={(e) => { change({ amountMode: !supportedOnly && FIAT_QUOTE_AVAILABLE && e.target.value === 'fiat_quote' ? 'fiat_quote' : 'fixed_token' }); }}>
                 <option value="fixed_token">{t('create.pricing.fixed')}</option>
                 {!supportedOnly && <option value="fiat_quote" disabled={!FIAT_QUOTE_AVAILABLE}>
                   {FIAT_QUOTE_AVAILABLE ? t('create.pricing.fiat') : t('create.pricing.fiatUnavailable')}
                 </option>}
-              </select>
+              </select></ControlTip>
             )}
           </Field>
           {effectiveAmountMode === 'fixed_token' ? (
             <Field label={t('create.tokenAmount')} hint={t('create.tokenAmount.hint')}>
-              {(id, d) => <input id={id} aria-describedby={d} inputMode="decimal" value={tokenAmount} onChange={(e) => { change({ tokenAmount: e.target.value }); }} />}
+              {(id, d) => <ControlTip message="create.tokenAmount.hint"><input id={id} aria-describedby={d} inputMode="decimal" value={tokenAmount} onChange={(e) => { change({ tokenAmount: e.target.value }); }} /></ControlTip>}
             </Field>
           ) : (
             <Notice kind="info">
               {t('create.fiatNotice')}
             </Notice>
           )}
-          <Field label={t('create.currency')}>{(id) => <input id={id} maxLength={3} value={currency} onChange={(e) => { change({ currency: e.target.value }); }} />}</Field>
+          <Field label={t('create.currency')}>{(id) => <ControlTip message="tips.currency"><input id={id} maxLength={3} value={currency} onChange={(e) => { change({ currency: e.target.value }); }} /></ControlTip>}</Field>
           <Field label={t('create.feePolicy')}>
             {(id) => (
-              <select id={id} value={feePolicy} onChange={(e) => { change({ feePolicy: e.target.value as FeePolicy }); }}>
+              <ControlTip message="tips.feePayer"><select id={id} value={feePolicy} onChange={(e) => { change({ feePolicy: e.target.value as FeePolicy }); }}>
                 <option value="seller_pays">{t('create.feePolicy.seller')}</option>
                 <option value="payer_pays">{t('create.feePolicy.payer')}</option>
-              </select>
+              </select></ControlTip>
             )}
           </Field>
         </fieldset>
@@ -329,56 +330,56 @@ function InvoiceForm({ supportedOnly }: { readonly supportedOnly: boolean }): Re
           }} />
           {items.map((it, i) => (
             <div className="row" key={i}>
-              {!minimalMetadata && <Field label={t('create.item.description', { n: String(i + 1) })}>{(id) => <input id={id} value={it.description} maxLength={200} onChange={(e) => { setItem(i, { description: e.target.value }); }} />}</Field>}
-              <Field label={t('create.item.quantity', { n: String(i + 1) })}>{(id) => <input id={id} inputMode="numeric" value={it.quantity} onChange={(e) => { setItem(i, { quantity: e.target.value }); }} />}</Field>
-              <Field label={t('create.item.unitPrice', { n: String(i + 1) })}>{(id) => <input id={id} inputMode="decimal" value={it.unitPrice} onChange={(e) => { setItem(i, { unitPrice: e.target.value }); }} />}</Field>
+              {!minimalMetadata && <Field label={t('create.item.description', { n: String(i + 1) })}>{(id) => <ControlTip message="tips.itemText"><input id={id} value={it.description} maxLength={200} onChange={(e) => { setItem(i, { description: e.target.value }); }} /></ControlTip>}</Field>}
+              <Field label={t('create.item.quantity', { n: String(i + 1) })}>{(id) => <ControlTip message="tips.quantity"><input id={id} inputMode="numeric" value={it.quantity} onChange={(e) => { setItem(i, { quantity: e.target.value }); }} /></ControlTip>}</Field>
+              <Field label={t('create.item.unitPrice', { n: String(i + 1) })}>{(id) => <ControlTip message="tips.price"><input id={id} inputMode="decimal" value={it.unitPrice} onChange={(e) => { setItem(i, { unitPrice: e.target.value }); }} /></ControlTip>}</Field>
               {items.length > 1 && (
-                <button type="button" className="btn" onClick={() => { change({ items: items.filter((_, idx) => idx !== i) }); }}>
+                <ControlTip message="tips.removeItem"><button type="button" className="btn" onClick={() => { change({ items: items.filter((_, idx) => idx !== i) }); }}>
                   {t('create.item.remove', { n: String(i + 1) })}
-                </button>
+                </button></ControlTip>
               )}
             </div>
           ))}
-          <button type="button" className="btn" onClick={() => { change({ items: [...items, { ...emptyItem }] }); }} disabled={items.length >= 50}>
+          <ControlTip message="tips.addItem"><button type="button" className="btn" onClick={() => { change({ items: [...items, { ...emptyItem }] }); }} disabled={items.length >= 50}>
             {t('create.item.add')}
-          </button>
-          <Field label={t('create.taxRate')}>{(id) => <input id={id} inputMode="decimal" value={taxRate} onChange={(e) => { change({ taxRate: e.target.value }); }} />}</Field>
+          </button></ControlTip>
+          <Field label={t('create.taxRate')}>{(id) => <ControlTip message="tips.tax"><input id={id} inputMode="decimal" value={taxRate} onChange={(e) => { change({ taxRate: e.target.value }); }} /></ControlTip>}</Field>
         </fieldset>
 
         <fieldset>
           <legend>{t('create.validity.legend')}</legend>
-          <Field label={t('create.expiryHours')}>{(id) => <input id={id} type="number" min={1} max={2160} value={expiryHours} onChange={(e) => { change({ expiryHours: Number(e.target.value) }); }} />}</Field>
-          <Field label={t('create.quoteMinutes')}>{(id) => <input id={id} type="number" min={1} max={1440} value={quoteMinutes} onChange={(e) => { change({ quoteMinutes: Number(e.target.value) }); }} />}</Field>
-          <Field label={t('create.slippage')}>{(id) => <input id={id} type="number" min={0} max={10000} value={slippage} onChange={(e) => { change({ slippage: Number(e.target.value) }); }} />}</Field>
+          <Field label={t('create.expiryHours')}>{(id) => <ControlTip message="tips.expiry"><input id={id} type="number" min={1} max={2160} value={expiryHours} onChange={(e) => { change({ expiryHours: Number(e.target.value) }); }} /></ControlTip>}</Field>
+          <Field label={t('create.quoteMinutes')}>{(id) => <ControlTip message="tips.quoteExpiry"><input id={id} type="number" min={1} max={1440} value={quoteMinutes} onChange={(e) => { change({ quoteMinutes: Number(e.target.value) }); }} /></ControlTip>}</Field>
+          <Field label={t('create.slippage')}>{(id) => <ControlTip message="tips.slippage"><input id={id} type="number" min={0} max={10000} value={slippage} onChange={(e) => { change({ slippage: Number(e.target.value) }); }} /></ControlTip>}</Field>
           {!supportedOnly && (
             <>
               <Field label={t('create.buffer.label')} hint={t('create.buffer.hint', BUFFER_CAP_VALUES)}>
                 {(id, d) => (
-                  <select id={id} aria-describedby={d} value={effectiveBufferMode} onChange={(e) => { change({ bufferMode: e.target.value as BufferMode }); }}>
+                  <ControlTip message="create.buffer.v2Notice"><select id={id} aria-describedby={d} value={effectiveBufferMode} onChange={(e) => { change({ bufferMode: e.target.value as BufferMode }); }}>
                     <option value="off">{t('create.buffer.off')}</option>
                     <option value="declined" disabled={!bufferChoicesAvailable}>{t('create.buffer.declined')}</option>
                     <option value="range" disabled={!bufferChoicesAvailable}>{t('create.buffer.range')}</option>
-                  </select>
+                  </select></ControlTip>
                 )}
               </Field>
               {!bufferChoicesAvailable && <Notice kind="info">{t('create.buffer.nativeHint')}</Notice>}
               {effectiveBufferMode === 'range' && (
                 <>
-                  <Field label={t('create.buffer.min')}>{(id) => <input id={id} inputMode="numeric" autoComplete="off" value={bufferMin} onChange={(e) => { change({ bufferMin: e.target.value }); }} />}</Field>
-                  <Field label={t('create.buffer.max')}>{(id) => <input id={id} inputMode="numeric" autoComplete="off" value={bufferMax} onChange={(e) => { change({ bufferMax: e.target.value }); }} />}</Field>
+                  <Field label={t('create.buffer.min')}>{(id) => <ControlTip message="create.buffer.error.min"><input id={id} inputMode="numeric" autoComplete="off" value={bufferMin} onChange={(e) => { change({ bufferMin: e.target.value }); }} /></ControlTip>}</Field>
+                  <Field label={t('create.buffer.max')}>{(id) => <ControlTip message="create.buffer.error.max"><input id={id} inputMode="numeric" autoComplete="off" value={bufferMax} onChange={(e) => { change({ bufferMax: e.target.value }); }} /></ControlTip>}</Field>
                 </>
               )}
               <Notice kind="info">{t('create.buffer.v2Notice')}</Notice>
             </>
           )}
-          {!minimalMetadata && <Field label={t('create.memo')}>{(id) => <textarea id={id} rows={2} maxLength={500} value={memo} onChange={(e) => { change({ memo: e.target.value }); }} />}</Field>}
+          {!minimalMetadata && <Field label={t('create.memo')}>{(id) => <ControlTip message="tips.memo"><textarea id={id} rows={2} maxLength={500} value={memo} onChange={(e) => { change({ memo: e.target.value }); }} /></ControlTip>}</Field>}
           <div className="check">
-            <input id="enc" type="checkbox" checked={encrypt} disabled={protectWithPassphrase} onChange={(e) => { change({ encrypt: e.target.checked }); }} />
+            <ControlTip message="create.encrypt.hint"><input id="enc" type="checkbox" checked={encrypt} disabled={protectWithPassphrase} onChange={(e) => { change({ encrypt: e.target.checked }); }} /></ControlTip>
             <label htmlFor="enc">{minimalMetadata ? t('create.metadata.bearer') : t('create.encrypt')}</label>
           </div>
           <p className="hint">{minimalMetadata ? t('create.metadata.bearerHint') : t('create.encrypt.hint')}</p>
           <div className="check">
-            <input id="passphrase-protect" type="checkbox" checked={protectWithPassphrase} onChange={(e) => { change({ protectWithPassphrase: e.target.checked }); }} />
+            <ControlTip message="create.bearer.passphrase"><input id="passphrase-protect" type="checkbox" checked={protectWithPassphrase} onChange={(e) => { change({ protectWithPassphrase: e.target.checked }); }} /></ControlTip>
             <label htmlFor="passphrase-protect">{t('create.passphrase.protect')}</label>
           </div>
           {protectWithPassphrase && (
@@ -387,11 +388,11 @@ function InvoiceForm({ supportedOnly }: { readonly supportedOnly: boolean }): Re
                 label={t('create.passphrase.label')}
                 hint={`${passphrase !== '' && passphrase === suggested ? t('create.passphrase.hintSuggested', { words: GENERATED_PASSPHRASE_WORDS, bits: GENERATED_PASSPHRASE_BITS }) : t('create.passphrase.hintPlain')} ${t('create.passphrase.hintSend')}`}
               >
-                {(id, d) => <input id={id} aria-describedby={d} type={passphrase !== '' && passphrase === suggested ? 'text' : 'password'} autoComplete="off" spellCheck={false} value={passphrase} onChange={(e) => { setPassphrase(e.target.value); }} />}
+                {(id, d) => <ControlTip message="create.passphrase.hintSend"><input id={id} aria-describedby={d} type={passphrase !== '' && passphrase === suggested ? 'text' : 'password'} autoComplete="off" spellCheck={false} value={passphrase} onChange={(e) => { setPassphrase(e.target.value); }} /></ControlTip>}
               </Field>
-              <p><button type="button" className="btn" onClick={() => { const next = generatePassphrase(); setSuggested(next); setPassphrase(next); setPassphraseAgain(''); }}>{t('create.passphrase.another')}</button></p>
+              <p><ControlTip message="tips.suggest"><button type="button" className="btn" onClick={() => { const next = generatePassphrase(); setSuggested(next); setPassphrase(next); setPassphraseAgain(''); }}>{t('create.passphrase.another')}</button></ControlTip></p>
               <Field label={t('create.passphrase.repeat')}>
-                {(id) => <input id={id} type="password" autoComplete="off" value={passphraseAgain} onChange={(e) => { setPassphraseAgain(e.target.value); }} />}
+                {(id) => <ControlTip message="tips.repeat"><input id={id} type="password" autoComplete="off" value={passphraseAgain} onChange={(e) => { setPassphraseAgain(e.target.value); }} /></ControlTip>}
               </Field>
             </>
           )}
@@ -400,7 +401,7 @@ function InvoiceForm({ supportedOnly }: { readonly supportedOnly: boolean }): Re
         <fieldset>
           <legend>{t('create.matching.legend')}</legend>
           <div className="check">
-            <input id="register-matching" aria-describedby="register-matching-help" type="checkbox" checked={registerForMatching} onChange={(e) => { setRegisterForMatching(e.target.checked); }} />
+            <ControlTip message="help.merchantRegistration"><input id="register-matching" aria-describedby="register-matching-help" type="checkbox" checked={registerForMatching} onChange={(e) => { setRegisterForMatching(e.target.checked); }} /></ControlTip>
             <label htmlFor="register-matching">{t('create.matching.label')}</label>
           </div>
           <p className="hint">{t('create.matching.hint')}</p>
@@ -408,7 +409,7 @@ function InvoiceForm({ supportedOnly }: { readonly supportedOnly: boolean }): Re
         </fieldset>
 
         <Notice kind="warn">{t('ledger.late.beforeCreate')}</Notice>
-        <button type="submit" className="btn btn-primary">{t('create.submit')}</button>
+        <ControlTip message="tips.createInvoice"><button type="submit" className="btn btn-primary">{t('create.submit')}</button></ControlTip>
       </form>
 
       {error !== undefined && <Notice kind="error">{displayMessage(error, t)}</Notice>}
@@ -423,7 +424,7 @@ function InvoiceForm({ supportedOnly }: { readonly supportedOnly: boolean }): Re
           {registration?.kind === 'busy' && <Notice kind="info">{t('create.registration.busy')}</Notice>}
           {registration?.kind === 'ok' && <Notice kind="ok">{t('create.registration.ok')}</Notice>}
           {registration?.kind === 'error' && <Notice kind="warn">{t('create.registration.error', { message: displayMessage(registration.message, t) })}</Notice>}
-          <Field label={t('create.link.label')}>{(id) => <textarea id={id} readOnly rows={4} className="mono" value={visibleCreated.link} onFocus={(e) => { e.currentTarget.select(); }} />}</Field>
+          <Field label={t('create.link.label')}>{(id) => <ControlTip message="create.bearer.lead"><textarea id={id} readOnly rows={4} className="mono" value={visibleCreated.link} onFocus={(e) => { e.currentTarget.select(); }} /></ControlTip>}</Field>
           <p><CopyButton text={visibleCreated.link} label={t('create.link.copy')} autoClearAfterMs={app.settings.invoiceLinkClipboardDelaySec * 1_000} /></p>
           <DownloadInvoiceLink link={visibleCreated.link} />
           <PaymentRequestDownload fragment={visibleCreated.fragment} />
@@ -436,9 +437,9 @@ function InvoiceForm({ supportedOnly }: { readonly supportedOnly: boolean }): Re
           />
         </div>
       )}
-      <div aria-live="polite">
+      <ControlTip message="tips.previewStatus"><div aria-live="polite">
         {previewExpired && visibleCreated === undefined && <Notice kind="info">{t('retention.expired')}</Notice>}
-      </div>
+      </div></ControlTip>
       {/* Outside the result, so focus and the outcome message survive the cleanup it performs. */}
       <MetadataRetentionControls />
     </section>

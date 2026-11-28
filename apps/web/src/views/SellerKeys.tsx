@@ -1,3 +1,4 @@
+import { ControlTip } from '../components/ControlTips';
 import { subscribeAppLock } from '../lib/appLock';
 import { useEffect, useId, useRef, useState, useSyncExternalStore, type FormEvent, type ReactNode } from 'react';
 import { CopyButton, Field, Mono, Notice, SafeText, downloadText } from '../components/Common';
@@ -41,8 +42,8 @@ export function BackupGate(props: { readonly children: ReactNode; readonly headi
   const gate = (
     <div className="panel">
       <Notice kind="warn" title={t('backupGate.title')}>{backup.signerOnly ? t('backupGate.signerOnly.body') : t('backupGate.body')}</Notice>
-      <Field label={t('backupGate.waiverLabel', { phrase })}>{(id) => <input id={id} autoComplete="off" spellCheck={false} value={typed} onChange={(e) => { setTyped(e.target.value); }} />}</Field>
-      <button type="button" className="btn" disabled={typed.trim().toLowerCase() !== phrase.toLowerCase()} onClick={() => { waiveSessionBackup(); }}>{t('backupGate.waive')}</button>
+      <Field label={t('backupGate.waiverLabel', { phrase })}>{(id) => <ControlTip message="tips.confirmPhrase"><input id={id} autoComplete="off" spellCheck={false} value={typed} onChange={(e) => { setTyped(e.target.value); }} /></ControlTip>}</Field>
+      <ControlTip message="tips.waive"><button type="button" className="btn" disabled={typed.trim().toLowerCase() !== phrase.toLowerCase()} onClick={() => { waiveSessionBackup(); }}>{t('backupGate.waive')}</button></ControlTip>
     </div>
   );
   return props.heading === undefined ? gate : (
@@ -510,7 +511,7 @@ export function SellerKeys(props: { readonly archive?: ReactNode } = {}): ReactN
         {t('sellerKeys.memory.body')}
       </Notice>
       {message !== undefined && <Notice kind={message.kind}>{displayMessage(message.text, t)}</Notice>}
-      {vaultState === 'checking' && <p role="status">{t('sellerKeys.checkingVault')}</p>}
+      {vaultState === 'checking' && <ControlTip message="tips.vaultStatus"><p role="status">{t('sellerKeys.checkingVault')}</p></ControlTip>}
       {vaultState === 'unavailable' && (
         <Notice kind="warn" title={t('sellerKeys.storageUnavailable.title')}>
           {t('sellerKeys.storageUnavailable.body')}
@@ -521,19 +522,19 @@ export function SellerKeys(props: { readonly archive?: ReactNode } = {}): ReactN
           <h3 id="vault-unlock-h">{t('sellerKeys.vaultSavedHeading')}</h3>
           <p>{t('sellerKeys.unlockExplain')}</p>
           <form onSubmit={onUnlockVault} className="stack" autoComplete="off">
-            <Field label={t('sellerKeys.vaultPassphrase')} hint={t('sellerKeys.vaultNoBrowserSave')}>{(id, d) => <input id={id} aria-describedby={d} type="password" autoComplete="off" name="ghostpay-vault-unlock" value={vaultUnlockPass} onChange={(e) => { stopOperation(); setConfirmReplace(false); setVaultUnlockPass(e.target.value); }} />}</Field>
-            <button type="submit" className="btn" disabled={vaultBusy || vaultUnlockPass === ''}>{t('sellerKeys.unlockVault')}</button>
-            {unlockBusy && <button type="button" className="btn" onClick={cancelImport}>{t('sellerKeys.cancelUnlock')}</button>}
+            <Field label={t('sellerKeys.vaultPassphrase')} hint={t('sellerKeys.vaultNoBrowserSave')}>{(id, d) => <ControlTip message="tips.vaultPass"><input id={id} aria-describedby={d} type="password" autoComplete="off" name="ghostpay-vault-unlock" value={vaultUnlockPass} onChange={(e) => { stopOperation(); setConfirmReplace(false); setVaultUnlockPass(e.target.value); }} /></ControlTip>}</Field>
+            <ControlTip message="sellerKeys.unlockExplain"><button type="submit" className="btn" disabled={vaultBusy || vaultUnlockPass === ''}>{t('sellerKeys.unlockVault')}</button></ControlTip>
+            {unlockBusy && <ControlTip message="tips.cancel"><button type="button" className="btn" onClick={cancelImport}>{t('sellerKeys.cancelUnlock')}</button></ControlTip>}
           </form>
           {confirmReplace && (
             <Notice kind="warn" title={backup?.signerOnly === true ? t('sellerKeys.unlockReplacesSignerOnly.title') : backup?.backedUp === true ? t('sellerKeys.unlockReplacesUnverified.title') : t('sellerKeys.unlockReplaces.title')}>
               <p>{backup?.signerOnly === true ? t('sellerKeys.unlockReplacesSignerOnly.body') : backup?.backedUp === true ? t('sellerKeys.unlockReplacesUnverified.body') : t('sellerKeys.unlockReplaces.body')}</p>
-              <button type="button" className="btn btn-danger" disabled={vaultBusy} onClick={() => { unlockVault(true); }}>{t('sellerKeys.unlockReplaces.confirm')}</button>{' '}
-              <button type="button" className="btn" onClick={() => { setConfirmReplace(false); }}>{t('sellerKeys.cancel')}</button>
+              <ControlTip message="tips.replaceKeys"><button type="button" className="btn btn-danger" disabled={vaultBusy} onClick={() => { unlockVault(true); }}>{t('sellerKeys.unlockReplaces.confirm')}</button></ControlTip>{' '}
+              <ControlTip message="tips.cancel"><button type="button" className="btn" onClick={() => { setConfirmReplace(false); }}>{t('sellerKeys.cancel')}</button></ControlTip>
             </Notice>
           )}
           {!confirmVaultDelete ? (
-            <button type="button" className="btn btn-danger" disabled={vaultBusy} onClick={onRequestDeleteVault}>{t('sellerKeys.deleteVault')}</button>
+            <ControlTip message="sellerKeys.deleteExplain"><button type="button" className="btn btn-danger" disabled={vaultBusy} onClick={onRequestDeleteVault}>{t('sellerKeys.deleteVault')}</button></ControlTip>
           ) : (
             <div>
               <p>{t('sellerKeys.deleteExplain')}</p>
@@ -545,12 +546,12 @@ export function SellerKeys(props: { readonly archive?: ReactNode } = {}): ReactN
                 </>
               )}
               {deletesLoadedKeys ? (
-                <Field label={t('sellerKeys.deletePassphrase')}>{(id) => <input id={id} type="password" autoComplete="off" name="ghostpay-vault-delete" value={deletePass} onChange={(e) => { setDeletePass(e.target.value); }} />}</Field>
+                <Field label={t('sellerKeys.deletePassphrase')}>{(id) => <ControlTip message="tips.vaultPass"><input id={id} type="password" autoComplete="off" name="ghostpay-vault-delete" value={deletePass} onChange={(e) => { setDeletePass(e.target.value); }} /></ControlTip>}</Field>
               ) : (
-                <Field label={t('sellerKeys.deleteSoleCopy', { phrase: deleteAction })}>{(id) => <input id={id} autoComplete="off" spellCheck={false} value={deletePhrase} onChange={(e) => { setDeletePhrase(e.target.value); }} />}</Field>
+                <Field label={t('sellerKeys.deleteSoleCopy', { phrase: deleteAction })}>{(id) => <ControlTip message="tips.confirmPhrase"><input id={id} autoComplete="off" spellCheck={false} value={deletePhrase} onChange={(e) => { setDeletePhrase(e.target.value); }} /></ControlTip>}</Field>
               )}
-              <button type="button" className="btn btn-danger" disabled={vaultBusy || !deleteAuthorized} onClick={onDeleteVault}>{deleteAction}</button>{' '}
-              <button type="button" className="btn" onClick={() => { setDeleteExpected(undefined); setDeletePass(''); }}>{t('sellerKeys.cancel')}</button>
+              <ControlTip message="sellerKeys.deleteExplain"><button type="button" className="btn btn-danger" disabled={vaultBusy || !deleteAuthorized} onClick={onDeleteVault}>{deleteAction}</button></ControlTip>{' '}
+              <ControlTip message="tips.cancel"><button type="button" className="btn" onClick={() => { setDeleteExpected(undefined); setDeletePass(''); }}>{t('sellerKeys.cancel')}</button></ControlTip>
             </div>
           )}
         </section>
@@ -559,35 +560,35 @@ export function SellerKeys(props: { readonly archive?: ReactNode } = {}): ReactN
       {s === undefined ? (
         <>
           <p>
-            <button type="button" className="btn btn-primary" onClick={() => { try { generateSession(); done({ key: 'sellerKeys.generated' }); } catch (err) { fail(err); } }}>
+            <ControlTip message="tips.generate"><button type="button" className="btn btn-primary" onClick={() => { try { generateSession(); done({ key: 'sellerKeys.generated' }); } catch (err) { fail(err); } }}>
               {t('sellerKeys.generate')}
-            </button>
+            </button></ControlTip>
           </p>
           <details onToggle={(event) => { if (!event.currentTarget.open) { setSpend(''); setViewKey(''); setSigning(''); } }}>
-            <summary>{t('sellerKeys.importHex')}</summary>
+            <ControlTip message="tips.hex"><summary>{t('sellerKeys.importHex')}</summary></ControlTip>
             <form onSubmit={onImportRaw} className="stack" autoComplete="off">
-              <Field label={t('sellerKeys.spendKey')}>{(id) => <input id={id} type="password" autoComplete="off" spellCheck={false} value={spend} onChange={(e) => { setSpend(e.target.value); }} />}</Field>
-              <Field label={t('sellerKeys.viewKey')}>{(id) => <input id={id} type="password" autoComplete="off" spellCheck={false} value={view} onChange={(e) => { setViewKey(e.target.value); }} />}</Field>
+              <Field label={t('sellerKeys.spendKey')}>{(id) => <ControlTip message="tips.spend"><input id={id} type="password" autoComplete="off" spellCheck={false} value={spend} onChange={(e) => { setSpend(e.target.value); }} /></ControlTip>}</Field>
+              <Field label={t('sellerKeys.viewKey')}>{(id) => <ControlTip message="tips.view"><input id={id} type="password" autoComplete="off" spellCheck={false} value={view} onChange={(e) => { setViewKey(e.target.value); }} /></ControlTip>}</Field>
               <Field label={t('sellerKeys.signKey.label')} hint={t('sellerKeys.signKey.hint')}>
-                {(id, d) => <input id={id} aria-describedby={d} type="password" autoComplete="off" spellCheck={false} value={signing} onChange={(e) => { setSigning(e.target.value); }} />}
+                {(id, d) => <ControlTip message="sellerKeys.signKey.hint"><input id={id} aria-describedby={d} type="password" autoComplete="off" spellCheck={false} value={signing} onChange={(e) => { setSigning(e.target.value); }} /></ControlTip>}
               </Field>
-              <button type="submit" className="btn">{t('sellerKeys.loadKeys')}</button>
+              <ControlTip message="tips.loadHex"><button type="submit" className="btn">{t('sellerKeys.loadKeys')}</button></ControlTip>
             </form>
           </details>
           <details onToggle={(event) => { if (!event.currentTarget.open) cancelImport(); }}>
-            <summary>{t('sellerKeys.importKeystore')}</summary>
+            <ControlTip message="help.keystoreFile"><summary>{t('sellerKeys.importKeystore')}</summary></ControlTip>
             <form onSubmit={onImportKeystore} className="stack">
               <Field label={t('sellerKeys.keystoreFile')} help={{ label: t('help.about', { control: t('sellerKeys.keystoreFile') }), text: t('help.keystoreFile') }}>{(id, describedBy) => <>
-                <input id={id} aria-describedby={[describedBy, file === undefined ? undefined : `${id}-file`].filter(Boolean).join(' ') || undefined} ref={fileInput} type="file" accept="application/json,.json" onChange={(e) => {
+                <ControlTip message="help.keystoreFile"><input id={id} aria-describedby={[describedBy, file === undefined ? undefined : `${id}-file`].filter(Boolean).join(' ') || undefined} ref={fileInput} type="file" accept="application/json,.json" onChange={(e) => {
                   const chosen = e.currentTarget.files?.[0]; e.currentTarget.value = '';
                   if (chosen === undefined) return;
                   clearImport(); setFile(chosen);
-                }} />
+                }} /></ControlTip>
                 {file !== undefined && <p className="hint" id={`${id}-file`}>{t('upload.selectedFile')}: <bdi><SafeText value={file.name} /></bdi></p>}
               </>}</Field>
-              <Field label={t('sellerKeys.passphrase')}>{(id) => <input id={id} type="password" autoComplete="off" value={importPass} onChange={(e) => { stopOperation(); setImportPass(e.target.value); }} />}</Field>
-              <button type="submit" className="btn" disabled={busy}>{t('sellerKeys.decryptLoad')}</button>
-              {busy && <button type="button" className="btn" onClick={cancelImport}>{t('sellerKeys.cancelKeystore')}</button>}
+              <Field label={t('sellerKeys.passphrase')}>{(id) => <ControlTip message="tips.filePass"><input id={id} type="password" autoComplete="off" value={importPass} onChange={(e) => { stopOperation(); setImportPass(e.target.value); }} /></ControlTip>}</Field>
+              <ControlTip message="tips.loadFile"><button type="submit" className="btn" disabled={busy}>{t('sellerKeys.decryptLoad')}</button></ControlTip>
+              {busy && <ControlTip message="tips.cancel"><button type="button" className="btn" onClick={cancelImport}>{t('sellerKeys.cancelKeystore')}</button></ControlTip>}
             </form>
             <CameraImporter multipart label={t('sellerKeys.importKeystoreQr')} scopeKey={app.session} onInputChange={cancelImport} onText={(text, signal) => {
               validateKeystoreEnvelope(text);
@@ -616,47 +617,47 @@ export function SellerKeys(props: { readonly archive?: ReactNode } = {}): ReactN
           <h3 id="keystore-backup-h" tabIndex={-1}>{t('sellerKeys.backupHeading')}</h3>
           <form onSubmit={onExport} className="stack" autoComplete="off">
             <Field label={t('sellerKeys.passphraseMin')} {...(pass !== '' && pass === suggestedPass ? { hint: suggestedHint } : {})}>
-              {(id, d) => <input id={id} aria-describedby={d} type={pass !== '' && pass === suggestedPass ? 'text' : 'password'} autoComplete="new-password" spellCheck={false} value={pass} onChange={(e) => { setPass(e.target.value); }} />}
+              {(id, d) => <ControlTip message="tips.newPass"><input id={id} aria-describedby={d} type={pass !== '' && pass === suggestedPass ? 'text' : 'password'} autoComplete="new-password" spellCheck={false} value={pass} onChange={(e) => { setPass(e.target.value); }} /></ControlTip>}
             </Field>
-            <p><button type="button" className="btn" onClick={suggestPass}>{t('sellerKeys.suggestAnother')}</button></p>
-            <Field label={t('sellerKeys.repeatPassphrase')}>{(id) => <input id={id} type="password" autoComplete="new-password" value={pass2} onChange={(e) => { setPass2(e.target.value); }} />}</Field>
+            <p><ControlTip message="tips.suggest"><button type="button" className="btn" onClick={suggestPass}>{t('sellerKeys.suggestAnother')}</button></ControlTip></p>
+            <Field label={t('sellerKeys.repeatPassphrase')}>{(id) => <ControlTip message="tips.repeat"><input id={id} type="password" autoComplete="new-password" value={pass2} onChange={(e) => { setPass2(e.target.value); }} /></ControlTip>}</Field>
             {stepUpNeeded && (
               <Field label={t('sellerKeys.stepUp.label')} hint={t('sellerKeys.stepUp.hint')}>
-                {(id, d) => <input id={id} aria-describedby={d} type="password" autoComplete="off" name="ghostpay-step-up-export" value={exportStepUp} onChange={(e) => { setExportStepUp(e.target.value); }} />}
+                {(id, d) => <ControlTip message="sellerKeys.stepUp.hint"><input id={id} aria-describedby={d} type="password" autoComplete="off" name="ghostpay-step-up-export" value={exportStepUp} onChange={(e) => { setExportStepUp(e.target.value); }} /></ControlTip>}
               </Field>
             )}
-            <button type="submit" className="btn" disabled={busy}>{t('sellerKeys.downloadKeystore')}</button>
+            <ControlTip message="tips.keystoreDownload"><button type="submit" className="btn" disabled={busy}>{t('sellerKeys.downloadKeystore')}</button></ControlTip>
           </form>
           <p className="hint">{t('sellerKeys.formatNote')}</p>
           {backupQr !== undefined && (
             <>
-              <label className="checkbox"><input type="checkbox" checked={backupSmaller} onChange={(e) => { setBackupSmaller(e.target.checked); }} /> {t('sellerKeys.backupSmaller')}</label>
+              <label className="checkbox"><ControlTip message="sellerKeys.backupSmallerHint"><input type="checkbox" checked={backupSmaller} onChange={(e) => { setBackupSmaller(e.target.checked); }} /></ControlTip> {t('sellerKeys.backupSmaller')}</label>
               <p className="hint">{t('sellerKeys.backupSmallerHint')}</p>
               <QrFrame kind="secret" text={backupQr} caption={t('sellerKeys.backupCaption')} {...(backupParts === undefined ? {} : { chunks: backupParts })} />
-              <button type="button" className="btn" onClick={() => { setBackupQr(undefined); }}>{t('sellerKeys.forgetQr')}</button>
+              <ControlTip message="tips.hideQr"><button type="button" className="btn" onClick={() => { setBackupQr(undefined); }}>{t('sellerKeys.forgetQr')}</button></ControlTip>
             </>
           )}
 
           <section className="panel" aria-labelledby="verify-backup-h">
             <h4 id="verify-backup-h">{t('sellerKeys.verify.heading')}</h4>
             <p>{t('sellerKeys.verify.explain')}</p>
-            <div role="status">
+            <ControlTip message="tips.verifyStatus"><div role="status">
               {verifyBusy && verifyStage !== undefined && <p>{verifyStage === 'reading' ? t('sellerKeys.verify.reading') : t('sellerKeys.verify.checking')}</p>}
               {verifyResult?.kind === 'ok' && <Notice kind="ok">{t('sellerKeys.verify.ok')} {t('sellerKeys.verify.limit')}</Notice>}
-            </div>
+            </div></ControlTip>
             {verifyResult?.kind === 'error' && <Notice kind="error">{displayMessage(verifyResult.text, t)}</Notice>}
             <form onSubmit={onVerifyBackup} className="stack" autoComplete="off">
               <Field label={t('sellerKeys.verify.file')}>{(id) => <>
-                <input id={id} aria-describedby={verifyFile === undefined ? undefined : `${id}-file`} ref={verifyFileInput} type="file" accept="application/json,.json" onChange={(e) => {
+                <ControlTip message="tips.exactFile"><input id={id} aria-describedby={verifyFile === undefined ? undefined : `${id}-file`} ref={verifyFileInput} type="file" accept="application/json,.json" onChange={(e) => {
                   const chosen = e.currentTarget.files?.[0]; e.currentTarget.value = '';
                   if (chosen === undefined) return;
                   cancelVerify(); setVerifyFile(chosen);
-                }} />
+                }} /></ControlTip>
                 {verifyFile !== undefined && <p className="hint" id={`${id}-file`}>{t('upload.selectedFile')}: <bdi><SafeText value={verifyFile.name} /></bdi></p>}
               </>}</Field>
-              <Field label={t('sellerKeys.verify.passphrase')}>{(id) => <input id={id} type="password" autoComplete="off" name="ghostpay-verify-backup" value={verifyPass} onChange={(e) => { if (operation.current?.kind === 'verify') stopOperation(); setVerifyStage(undefined); setVerifyResult(undefined); setVerifyPass(e.target.value); }} />}</Field>
-              <button type="submit" className="btn" disabled={verifyBusy || verifyFile === undefined || verifyPass === ''}>{t('sellerKeys.verify.submit')}</button>
-              {verifyBusy && <button type="button" className="btn" onClick={cancelVerify}>{t('sellerKeys.verify.cancel')}</button>}
+              <Field label={t('sellerKeys.verify.passphrase')}>{(id) => <ControlTip message="tips.filePass"><input id={id} type="password" autoComplete="off" name="ghostpay-verify-backup" value={verifyPass} onChange={(e) => { if (operation.current?.kind === 'verify') stopOperation(); setVerifyStage(undefined); setVerifyResult(undefined); setVerifyPass(e.target.value); }} /></ControlTip>}</Field>
+              <ControlTip message="sellerKeys.verify.explain"><button type="submit" className="btn" disabled={verifyBusy || verifyFile === undefined || verifyPass === ''}>{t('sellerKeys.verify.submit')}</button></ControlTip>
+              {verifyBusy && <ControlTip message="tips.cancel"><button type="button" className="btn" onClick={cancelVerify}>{t('sellerKeys.verify.cancel')}</button></ControlTip>}
             </form>
           </section>
 
@@ -672,32 +673,32 @@ export function SellerKeys(props: { readonly archive?: ReactNode } = {}): ReactN
             {vaultState === 'empty' ? (
               <form onSubmit={onSaveVault} className="stack" autoComplete="off">
                 <Field label={t('sellerKeys.newVaultPass')} hint={vaultSavePass !== '' && vaultSavePass === suggestedVaultPass ? `${suggestedHint} ${t('sellerKeys.vaultNoBrowserSave')}` : t('sellerKeys.vaultNoBrowserSave')}>
-                  {(id, d) => <input id={id} aria-describedby={d} type={vaultSavePass !== '' && vaultSavePass === suggestedVaultPass ? 'text' : 'password'} autoComplete="off" name="ghostpay-vault-new" spellCheck={false} value={vaultSavePass} onChange={(e) => { setVaultSavePass(e.target.value); }} />}
+                  {(id, d) => <ControlTip message="tips.newVaultPass"><input id={id} aria-describedby={d} type={vaultSavePass !== '' && vaultSavePass === suggestedVaultPass ? 'text' : 'password'} autoComplete="off" name="ghostpay-vault-new" spellCheck={false} value={vaultSavePass} onChange={(e) => { setVaultSavePass(e.target.value); }} /></ControlTip>}
                 </Field>
-                <p><button type="button" className="btn" onClick={suggestVaultPass}>{t('sellerKeys.suggestAnotherVault')}</button></p>
-                <Field label={t('sellerKeys.repeatVaultPass')}>{(id) => <input id={id} type="password" autoComplete="off" name="ghostpay-vault-new-again" value={vaultSavePass2} onChange={(e) => { setVaultSavePass2(e.target.value); }} />}</Field>
+                <p><ControlTip message="tips.suggest"><button type="button" className="btn" onClick={suggestVaultPass}>{t('sellerKeys.suggestAnotherVault')}</button></ControlTip></p>
+                <Field label={t('sellerKeys.repeatVaultPass')}>{(id) => <ControlTip message="tips.repeat"><input id={id} type="password" autoComplete="off" name="ghostpay-vault-new-again" value={vaultSavePass2} onChange={(e) => { setVaultSavePass2(e.target.value); }} /></ControlTip>}</Field>
                 {backup?.vaultStepUp === true && (
                   <Field label={t('sellerKeys.stepUp.label')} hint={t('sellerKeys.stepUp.hint')}>
-                    {(id, d) => <input id={id} aria-describedby={d} type="password" autoComplete="off" name="ghostpay-step-up-vault-save" value={saveStepUp} onChange={(e) => { setSaveStepUp(e.target.value); }} />}
+                    {(id, d) => <ControlTip message="sellerKeys.stepUp.hint"><input id={id} aria-describedby={d} type="password" autoComplete="off" name="ghostpay-step-up-vault-save" value={saveStepUp} onChange={(e) => { setSaveStepUp(e.target.value); }} /></ControlTip>}
                   </Field>
                 )}
-                <button type="submit" className="btn" disabled={vaultBusy}>{t('sellerKeys.saveVault')}</button>
+                <ControlTip message="sellerKeys.vaultExplain"><button type="submit" className="btn" disabled={vaultBusy}>{t('sellerKeys.saveVault')}</button></ControlTip>
               </form>
             ) : vaultState === 'saved' ? (
               <p>{t('sellerKeys.vaultExists')}</p>
-            ) : vaultState === 'unavailable' ? null : <p role="status">{t('sellerKeys.checkingAvailability')}</p>}
+            ) : vaultState === 'unavailable' ? null : <ControlTip message="tips.vaultStatus"><p role="status">{t('sellerKeys.checkingAvailability')}</p></ControlTip>}
           </section>
 
           <h3>{t('sellerKeys.forgetHeading')}</h3>
-          <button type="button" className="btn btn-danger" onClick={onWipe}>
+          <ControlTip message="sellerKeys.wipeHint"><button type="button" className="btn btn-danger" onClick={onWipe}>
             {t('sellerKeys.wipe')}
-          </button>
+          </button></ControlTip>
           {confirmWipe && (
             // The typed hex still sweeps payments when only the signing key generated for it is unsaved (C-R10).
             <Notice kind="warn" title={backup?.signerOnly === true ? t('sellerKeys.wipeSignerOnly.title') : backup?.backedUp === true ? t('sellerKeys.wipeUnverified.title') : t('sellerKeys.wipeUnsaved.title')}>
               <p>{backup?.signerOnly === true ? t('sellerKeys.wipeSignerOnly.body') : backup?.backedUp === true ? t('sellerKeys.wipeUnverified.body') : t('sellerKeys.wipeUnsaved.body')}</p>
-              <button type="button" className="btn btn-danger" onClick={wipe}>{t('sellerKeys.wipeUnsaved.confirm')}</button>{' '}
-              <button type="button" className="btn" onClick={() => { setConfirmWipe(false); }}>{t('sellerKeys.cancel')}</button>
+              <ControlTip message="tips.wipe"><button type="button" className="btn btn-danger" onClick={wipe}>{t('sellerKeys.wipeUnsaved.confirm')}</button></ControlTip>{' '}
+              <ControlTip message="tips.cancel"><button type="button" className="btn" onClick={() => { setConfirmWipe(false); }}>{t('sellerKeys.cancel')}</button></ControlTip>
             </Notice>
           )}
           {/* Local scan state is keyed by a hash of the public keys and outlives the wipe (audit I-1). */}
@@ -712,7 +713,7 @@ export function SellerKeys(props: { readonly archive?: ReactNode } = {}): ReactN
       {!suspended && <>
       <h3>{t('sellerKeys.registryHeading')}</h3>
       <p className="hint">{t('sellerKeys.registryHint')}</p>
-      <p><button type="button" className="btn" onClick={() => { app.setView('registry'); }}>{t('sellerKeys.openRegistry')}</button></p>
+      <p><ControlTip message="sellerKeys.registryHint"><button type="button" className="btn" onClick={() => { app.setView('registry'); }}>{t('sellerKeys.openRegistry')}</button></ControlTip></p>
       </>}
     </section>
   );

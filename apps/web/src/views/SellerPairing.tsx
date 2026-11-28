@@ -1,3 +1,4 @@
+import { ControlTip } from '../components/ControlTips';
 import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { CameraImporter } from '../components/CameraImporter';
 import { CopyButton, Field, Mono, Notice, downloadText } from '../components/Common';
@@ -79,19 +80,19 @@ export function SellerPairing(props: { readonly session: SessionPublic | undefin
         <>
           <h4>{t('sellerKeys.pairing.exportHeading')}</h4>
           <QrFrame kind="device" text={exportText} caption={t('sellerKeys.pairing.caption')} />
-          <Field label={t('sellerKeys.pairing.textLabel')}>{(id) => <textarea id={id} dir="ltr" readOnly rows={4} spellCheck={false} value={exportText} />}</Field>
+          <Field label={t('sellerKeys.pairing.textLabel')}>{(id) => <ControlTip message="sellerKeys.pairing.intro"><textarea id={id} dir="ltr" readOnly rows={4} spellCheck={false} value={exportText} /></ControlTip>}</Field>
           <p>
             <CopyButton text={exportText} label={t('sellerKeys.pairing.copy')} />{' '}
-            <button type="button" className="btn" onClick={() => { downloadText('ghostpay-seller-public.json', exportText, 'application/json'); }}>{t('sellerKeys.pairing.download')}</button>
+            <ControlTip message="sellerKeys.pairing.intro"><button type="button" className="btn" onClick={() => { downloadText('ghostpay-seller-public.json', exportText, 'application/json'); }}>{t('sellerKeys.pairing.download')}</button></ControlTip>
           </p>
         </>
       )}
       <h4>{t('sellerKeys.pairing.importHeading')}</h4>
       <Field label={t('sellerKeys.pairing.fileLabel')} help={{ label: t('help.about', { control: t('sellerKeys.pairing.fileLabel') }), text: t('help.sellerConfigFile') }}>
-        {(id, describedBy) => <input id={id} aria-describedby={describedBy} ref={fileInput} type="file" accept="application/json,.json" onChange={(e) => { const file = e.currentTarget.files?.[0]; e.currentTarget.value = ''; onFile(file); }} />}
+        {(id, describedBy) => <ControlTip message="help.sellerConfigFile"><input id={id} aria-describedby={describedBy} ref={fileInput} type="file" accept="application/json,.json" onChange={(e) => { const file = e.currentTarget.files?.[0]; e.currentTarget.value = ''; onFile(file); }} /></ControlTip>}
       </Field>
       <CameraImporter label={t('sellerKeys.pairing.importLabel')} scopeKey={importScope} onInputChange={() => { generation.current += 1; setPreview(undefined); setError(undefined); }} onText={(text, signal) => (signal.aborted ? false : accept(text))} />
-      <button type="button" className="btn" onClick={clear}>{t('sellerKeys.pairing.clear')}</button>
+      <ControlTip message="tips.discardPreview"><button type="button" className="btn" onClick={clear}>{t('sellerKeys.pairing.clear')}</button></ControlTip>
       {error !== undefined && <Notice kind="error">{t(error)}</Notice>}
       {preview !== undefined && verdict !== undefined && (
         <section aria-label={t('sellerKeys.pairing.previewHeading')}>

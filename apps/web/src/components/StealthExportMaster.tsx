@@ -1,3 +1,4 @@
+import { ControlTip } from './ControlTips';
 import { useState, type FormEvent, type ReactNode } from 'react';
 import { captureUserMessage, displayMessage, type DisplayMessage } from '../lib/errors';
 import { exportMasterBackup } from '../lib/paymentKeyExport';
@@ -81,8 +82,8 @@ export function StealthExportMaster(props: { readonly announce: (message: string
       <form onSubmit={onSubmit} className="stack" autoComplete="off">
         <CredentialFields value={credential} onChange={setCredential} disabled={busy} />
         <NewPassphraseFields value={newPass} onChange={setNewPass} disabled={busy} />
-        <button type="submit" className="btn" data-testid="stealth-master-download" disabled={busy || !credentialReady(credential)}>{t('stealthExport.master.download')}</button>
-        {busy && <button type="button" className="btn" onClick={() => { op.stop(); reset(); setMessage(undefined); }}>{t('stealthExport.cancel')}</button>}
+        <ControlTip message="stealthExport.verify.masterScope"><button type="submit" className="btn" data-testid="stealth-master-download" disabled={busy || !credentialReady(credential)}>{t('stealthExport.master.download')}</button></ControlTip>
+        {busy && <ControlTip message="tips.cancel"><button type="button" className="btn" onClick={() => { op.stop(); reset(); setMessage(undefined); }}>{t('stealthExport.cancel')}</button></ControlTip>}
       </form>
       {generated !== undefined && <StealthExportVerification file={generated} downloadStarted={downloadStarted} onRetryDownload={() => { download(generated); }} announce={props.announce} />}
     </section>

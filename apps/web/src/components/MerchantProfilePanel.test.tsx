@@ -30,6 +30,8 @@ describe('merchant profile panel', () => {
     const h = mount();
     expect(h.fetchFn).not.toHaveBeenCalled();
     expect(screen.getByText(/reveals your IP address/)).toBeTruthy();
+    expect(h.container.querySelector('summary')?.getAttribute('aria-description')).toMatch(/reveals your IP address/);
+    expect(screen.getByRole('button', { name: 'Load profile' }).getAttribute('aria-description')).toMatch(/reveals your IP address/);
     fireEvent.click(screen.getByRole('button', { name: 'Load profile' }));
     await screen.findByText('Test merchant');
     expect(h.fetchFn).toHaveBeenCalledTimes(1);

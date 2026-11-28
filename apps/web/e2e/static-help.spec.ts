@@ -17,7 +17,7 @@ for (const guide of [
     await expect(stylesheets).toHaveCount(2);
     expect(await stylesheets.evaluateAll((links) => links.every((link) => (link as HTMLLinkElement).sheet !== null))).toBe(true);
 
-    for (const viewport of [{ width: 375, height: 667 }, { width: 768, height: 1024 }, { width: 1440, height: 900 }]) {
+    for (const viewport of [{ width: 320, height: 640 }, { width: 375, height: 667 }, { width: 768, height: 1024 }, { width: 1440, height: 900 }]) {
       await page.setViewportSize(viewport);
       const widths = await page.evaluate(() => ({
         viewport: document.documentElement.clientWidth,
@@ -36,6 +36,21 @@ for (const guide of [
 
 test.describe('help without JavaScript', () => {
   test.use({ javaScriptEnabled: false });
+  test('guide links, disclosures and scrollable tables explain themselves without JavaScript', async ({ page }) => {
+    for (const path of ['/', '/help.html', '/privacy.html']) {
+      await page.goto(path);
+      const toggle = page.getByRole('checkbox', { name: 'Show control tips' });
+      await toggle.check();
+      const controls = page.locator('a[href]:visible, summary:visible, [tabindex="0"]:visible, input:visible');
+      expect(await controls.evaluateAll((elements) => elements.every((el) => Boolean(el.getAttribute('title')?.trim())))).toBe(true);
+      const link = page.getByRole('navigation').getByRole('link').first();
+      const instruction = await link.getAttribute('title');
+      expect(instruction).toBeTruthy();
+      expect(await link.evaluate((el) => getComputedStyle(el, '::after').content)).toContain(instruction!);
+      await toggle.uncheck();
+      expect(await link.evaluate((el) => getComputedStyle(el, '::after').content)).toBe('none');
+    }
+  });
   test('the no-JavaScript entry links to usable local help and privacy pages', async ({ page }) => {
     await page.goto('/');
     await expect(page.getByRole('heading', { name: 'This app needs JavaScript', exact: true })).toBeVisible();

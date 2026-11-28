@@ -1,3 +1,4 @@
+import { ControlTip } from './ControlTips';
 import { useEffect, useId, useState, type ReactNode } from 'react';
 import { SOURCE_TRANSLATOR, useI18nOptional } from '../i18n/context';
 import { savePrivacyMode, usePrivacy } from '../lib/privacyMode';
@@ -30,18 +31,20 @@ export function PrivacyControls(): ReactNode {
   return (
     <div className="privacy-controls" role="group" aria-label={t('privacyUx.modeLabel')}>
       <label>
-        <input type="checkbox" role="switch" data-privacy-safe-control checked={enabled} aria-describedby={hint}
-          onChange={(event) => { hide(); setSaved(savePrivacyMode(event.target.checked)); }} />
+        <ControlTip message="privacyUx.modeHint"><input type="checkbox" role="switch" data-privacy-safe-control checked={enabled} aria-describedby={hint}
+          onChange={(event) => { hide(); setSaved(savePrivacyMode(event.target.checked)); }} /></ControlTip>
         {' '}{t('privacyUx.modeLabel')}
       </label>
       <p className="hint" id={hint}>{t('privacyUx.modeHint')}</p>
       {saved === false && <Notice kind="warn">{t('privacyUx.notSaved')}</Notice>}
       {enabled && <>
-        <p role="status">{t(masked ? 'privacyUx.hidden' : 'privacyUx.revealed')}</p>
-        <button type="button" className="btn" aria-keyshortcuts={masked ? undefined : SHORTCUT} onClick={masked ? reveal : hide}>
+        <ControlTip message="tips.maskStatus"><p role="status">{t(masked ? 'privacyUx.hidden' : 'privacyUx.revealed')}</p></ControlTip>
+        <ControlTip message={masked ? 'tips.reveal' : 'tips.hide'}><button type="button" className="btn" aria-keyshortcuts={masked ? undefined : SHORTCUT} onClick={masked ? reveal : hide}>
           {masked ? t('privacyUx.reveal') : <>{t('privacyUx.hide')} (<kbd>{SHORTCUT}</kbd>)</>}
-        </button>
+        </button></ControlTip>
       </>}
     </div>
   );
 }
+
+// i18n-use: tips.hide tips.reveal

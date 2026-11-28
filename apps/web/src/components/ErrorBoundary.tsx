@@ -1,3 +1,4 @@
+import { ControlTip } from './ControlTips';
 import { Component, type ReactNode } from 'react';
 import { SOURCE_TRANSLATOR, useI18nOptional } from '../i18n/context';
 import { Notice } from './Common';
@@ -52,8 +53,8 @@ function ErrorPanel(props: { readonly onBack: () => void; readonly reload: () =>
         {t('errorBoundary.body')}
       </Notice>
       <div className="actions">
-        <button type="button" className="btn btn-primary" onClick={props.onBack}>{t('errorBoundary.back')}</button>
-        <button type="button" className="btn" onClick={props.reload}>{t('errorBoundary.reload')}</button>
+        <ControlTip message="tips.returnHome"><button type="button" className="btn btn-primary" onClick={props.onBack}>{t('errorBoundary.back')}</button></ControlTip>
+        <ControlTip message="tips.reload"><button type="button" className="btn" onClick={props.reload}>{t('errorBoundary.reload')}</button></ControlTip>
       </div>
       <p className="hint">{t('errorBoundary.reloadHint')}</p>
     </section>

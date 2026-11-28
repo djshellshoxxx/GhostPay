@@ -1,3 +1,4 @@
+import { ControlTip } from './ControlTips';
 import { useEffect, useId, useRef, useState, type FormEvent, type ReactNode } from 'react';
 import { UserFacingError, captureUserMessage, displayMessage, type DisplayMessage } from '../lib/errors';
 import { verifyStealthExport, type StealthExportFile, type VerifiedStealthExport } from '../lib/paymentKeyExport';
@@ -75,31 +76,31 @@ export function StealthExportVerification(props: {
   return (
     <section className="stack" aria-labelledby={headingId} data-testid="stealth-export-verification">
       <h4 id={headingId}>{t('stealthExport.verify.heading')}</h4>
-      <p role="status" aria-live="polite" data-testid="stealth-export-backup-state">
+      <ControlTip message="stealthExport.verify.scope"><p role="status" aria-live="polite" data-testid="stealth-export-backup-state">
         {visibleVerified !== undefined ? t('stealthExport.verify.savedSuccess') : visibleRetained ? t('stealthExport.verify.retained') : t(props.downloadStarted ? 'stealthExport.verify.downloadStarted' : 'stealthExport.verify.generated')}
-      </p>
-      {visibleVerified === undefined && <p><button type="button" className="btn" disabled={busy} onClick={props.onRetryDownload}>{t('stealthExport.verify.retryDownload')}</button></p>}
+      </p></ControlTip>
+      {visibleVerified === undefined && <p><ControlTip message="tips.retryDownload"><button type="button" className="btn" disabled={busy} onClick={props.onRetryDownload}>{t('stealthExport.verify.retryDownload')}</button></ControlTip></p>}
       <p className="hint">{t('stealthExport.verify.scope')}</p>
       <div className="check">
-        <input id={retainedId} type="checkbox" checked={visibleRetained} onChange={(event) => { cancel(); setRetained(event.target.checked); }} />
+        <ControlTip message="tips.kept"><input id={retainedId} type="checkbox" checked={visibleRetained} onChange={(event) => { cancel(); setRetained(event.target.checked); }} /></ControlTip>
         <label htmlFor={retainedId}>{t('stealthExport.verify.keep')}</label>
       </div>
       <form onSubmit={onVerify} className="stack" autoComplete="off">
         <Field label={t('stealthExport.verify.file')}>{(id) => <>
-          <input id={id} type="file" accept="application/json,.json" onChange={(event) => {
+          <ControlTip message="tips.exactFile"><input id={id} type="file" accept="application/json,.json" onChange={(event) => {
             const file = event.currentTarget.files?.[0]; event.currentTarget.value = '';
             if (file === undefined) return;
             cancel(); setSelected(file);
-          }} />
+          }} /></ControlTip>
           {selected !== undefined && <p className="hint">{t('upload.selectedFile')}</p>}
         </>}</Field>
         <Field label={t('stealthExport.verify.passphrase')}>
-          {(id) => <input id={id} type="password" autoComplete="off" value={passphrase} disabled={busy} onChange={(event) => { setPassphrase(event.target.value); setVerified(undefined); setError(undefined); }} />}
+          {(id) => <ControlTip message="tips.filePass"><input id={id} type="password" autoComplete="off" value={passphrase} disabled={busy} onChange={(event) => { setPassphrase(event.target.value); setVerified(undefined); setError(undefined); }} /></ControlTip>}
         </Field>
-        <button type="submit" className="btn" disabled={busy || !retained || selected === undefined || passphrase === ''}>{t('stealthExport.verify.submit')}</button>
-        {busy && <button type="button" className="btn" onClick={cancel}>{t('stealthExport.cancel')}</button>}
+        <ControlTip message="tips.verifyFile"><button type="submit" className="btn" disabled={busy || !retained || selected === undefined || passphrase === ''}>{t('stealthExport.verify.submit')}</button></ControlTip>
+        {busy && <ControlTip message="tips.cancel"><button type="button" className="btn" onClick={cancel}>{t('stealthExport.cancel')}</button></ControlTip>}
       </form>
-      {busy && <p role="status">{t('stealthExport.open.working')}</p>}
+      {busy && <ControlTip message="tips.work"><p role="status">{t('stealthExport.open.working')}</p></ControlTip>}
       {error !== undefined && <Notice kind="error">{displayMessage(error, t)}</Notice>}
       {visibleVerified?.kind === 'master' && <p className="hint">{t('stealthExport.verify.masterScope')}</p>}
     </section>

@@ -1,3 +1,4 @@
+import { ControlTip } from '../components/ControlTips';
 import { useEffect, useId, useMemo, useRef, useState, type FormEvent, type ReactNode } from 'react';
 import { CameraImporter } from '../components/CameraImporter';
 import { QrFrame } from '../components/QrFrame';
@@ -155,14 +156,14 @@ export function Settings(): ReactNode {
           {services.chains.map((c) => (
             <div key={c.chainId} className="rpc-row">
               <Field label={t('settings.rpc.url', { chain: c.name })} help={{ label: t('help.about', { control: t('settings.rpc.url', { chain: c.name }) }), text: t('help.rpc') }}>
-                {(id, describedBy) => <input id={id} aria-describedby={describedBy} type="url" dir="ltr" spellCheck={false} value={rpc[String(c.chainId)] ?? ''} onChange={(e) => { invalidateTest(c.chainId); setRpc({ ...rpc, [String(c.chainId)]: e.target.value }); }} />}
+                {(id, describedBy) => <ControlTip message="help.rpc"><input id={id} aria-describedby={describedBy} type="url" dir="ltr" spellCheck={false} value={rpc[String(c.chainId)] ?? ''} onChange={(e) => { invalidateTest(c.chainId); setRpc({ ...rpc, [String(c.chainId)]: e.target.value }); }} /></ControlTip>}
               </Field>
               <Field label={t('settings.rpc.secondary.label', { chain: c.name })} hint={t('settings.rpc.secondary.hint')}>
-                {(id, d) => <input id={id} aria-describedby={d} type="url" spellCheck={false} value={rpc2[String(c.chainId)] ?? ''} onChange={(e) => { setRpc2({ ...rpc2, [String(c.chainId)]: e.target.value }); }} />}
+                {(id, d) => <ControlTip message="settings.rpc.secondary.hint"><input id={id} aria-describedby={d} type="url" spellCheck={false} value={rpc2[String(c.chainId)] ?? ''} onChange={(e) => { setRpc2({ ...rpc2, [String(c.chainId)]: e.target.value }); }} /></ControlTip>}
               </Field>
               <div className="rpc-test-row">
-                <button type="button" className="btn" onClick={() => { onTest(c.chainId); }}>{t('settings.rpc.test', { chain: c.name })}</button>
-                <p role="status" className="hint">{displayMessage(checks[c.chainId] ?? '', t)}</p>
+                <ControlTip message="tips.testRpc"><button type="button" className="btn" onClick={() => { onTest(c.chainId); }}>{t('settings.rpc.test', { chain: c.name })}</button></ControlTip>
+                <ControlTip message="tips.rpcStatus"><p role="status" className="hint">{displayMessage(checks[c.chainId] ?? '', t)}</p></ControlTip>
               </div>
             </div>
           ))}
@@ -170,51 +171,51 @@ export function Settings(): ReactNode {
         <fieldset>
           <legend>{t('settings.relayer.legend')}</legend>
           <Field label={t('settings.relayer.label')} hint={t('settings.relayer.hint')}>
-            {(id, d) => <input id={id} aria-describedby={d} type="url" spellCheck={false} value={relayer} onChange={(e) => { setRelayer(e.target.value); }} />}
+            {(id, d) => <ControlTip message="settings.relayer.hint"><input id={id} aria-describedby={d} type="url" spellCheck={false} value={relayer} onChange={(e) => { setRelayer(e.target.value); }} /></ControlTip>}
           </Field>
         </fieldset>
         <fieldset>
           <legend>{t('settings.delay.legend')}</legend>
-          <Field label={t('settings.delay.min')}>{(id) => <input id={id} type="number" min={0} value={minSec} onChange={(e) => { setMinSec(Number(e.target.value)); }} />}</Field>
-          <Field label={t('settings.delay.max')}>{(id) => <input id={id} type="number" min={0} value={maxSec} onChange={(e) => { setMaxSec(Number(e.target.value)); }} />}</Field>
+          <Field label={t('settings.delay.min')}>{(id) => <ControlTip message="tips.minDelay"><input id={id} type="number" min={0} value={minSec} onChange={(e) => { setMinSec(Number(e.target.value)); }} /></ControlTip>}</Field>
+          <Field label={t('settings.delay.max')}>{(id) => <ControlTip message="tips.maxDelay"><input id={id} type="number" min={0} value={maxSec} onChange={(e) => { setMaxSec(Number(e.target.value)); }} /></ControlTip>}</Field>
           <p className="hint">{t('settings.delay.range', { min: minSec, max: maxSec })}</p>
         </fieldset>
         <fieldset>
           <legend>{t('settings.safety.legend')}</legend>
           <Field label={t('settings.lock.idleLabel')} hint={t('settings.lock.keysHint')}>
-            {(id, d) => <input id={id} aria-describedby={d} type="number" min={1} max={240} value={lock} onChange={(e) => { setLock(Number(e.target.value)); }} />}
+            {(id, d) => <ControlTip message="settings.lock.keysHint"><input id={id} aria-describedby={d} type="number" min={1} max={240} value={lock} onChange={(e) => { setLock(Number(e.target.value)); }} /></ControlTip>}
           </Field>
           <p className="hint">{t('settings.lock.summary', { minutes: lock })}</p>
           <Field label={t('settings.theme.label')}>
             {(id) => (
-              <select id={id} value={theme} onChange={(e) => { setTheme(e.target.value as SettingsData['theme']); }}>
+              <ControlTip message="tips.theme"><select id={id} value={theme} onChange={(e) => { setTheme(e.target.value as SettingsData['theme']); }}>
                 <option value="system">{t('settings.theme.system')}</option>
                 <option value="light">{t('settings.theme.light')}</option>
                 <option value="dark">{t('settings.theme.dark')}</option>
-              </select>
+              </select></ControlTip>
             )}
           </Field>
           <div className="check">
-            <input id="autoclear" type="checkbox" checked={autoClear} onChange={(e) => { setAutoClear(e.target.checked); }} />
+            <ControlTip message="tips.clearFragment"><input id="autoclear" type="checkbox" checked={autoClear} onChange={(e) => { setAutoClear(e.target.checked); }} /></ControlTip>
             <label htmlFor="autoclear">{t('settings.autoclear.label')}</label>
           </div>
           <Field label={t('settings.invoiceClipboard.label')} hint={t('settings.invoiceClipboard.hint')}>
             {(id, describedBy) => (
-              <select id={id} aria-describedby={describedBy} value={clipboardDelaySec}
+              <ControlTip message="settings.invoiceClipboard.hint"><select id={id} aria-describedby={describedBy} value={clipboardDelaySec}
                 onChange={(e) => { setClipboardDelaySec(invoiceLinkClipboardDelay(Number(e.target.value))); }}>
                 <option value={0}>{t('settings.invoiceClipboard.off')}</option>
                 {INVOICE_LINK_CLIPBOARD_DELAYS_SEC.map((seconds) => (
                   <option key={seconds} value={seconds}>{t('settings.invoiceClipboard.seconds', { seconds })}</option>
                 ))}
-              </select>
+              </select></ControlTip>
             )}
           </Field>
           <Field label={t('settings.pins.label')} hint={t('settings.pins.hint')}>
-            {(id, d) => <textarea id={id} aria-describedby={d} rows={3} spellCheck={false} value={pins} onChange={(e) => { setPins(e.target.value); }} />}
+            {(id, d) => <ControlTip message="settings.pins.hint"><textarea id={id} aria-describedby={d} rows={3} spellCheck={false} value={pins} onChange={(e) => { setPins(e.target.value); }} /></ControlTip>}
           </Field>
           <p className="hint">{t('settings.pins.count', { count: pins.split('\n').filter((line) => line.trim() !== '').length })}</p>
         </fieldset>
-        <button type="submit" className="btn btn-primary">{t('settings.save')}</button>
+        <ControlTip message="tips.saveSettings"><button type="submit" className="btn btn-primary">{t('settings.save')}</button></ControlTip>
       </form>
       <ScanPrivacySection />
       <SettingsExchangeSection onApplied={(next, applied) => {
@@ -321,7 +322,7 @@ function SettingsExchangeSection({ onApplied }: { readonly onApplied: (next: Set
 
   const sectionToggle = (section: 'preferences' | 'rpcUrls' | 'rpcUrlsSecondary' | 'relayerUrl'): ReactNode => (
     <div className="check">
-      <input id={`${uid}-apply-${section}`} type="checkbox" checked={selection[section] === true} onChange={(e) => { select({ [section]: e.target.checked }); }} />
+      <ControlTip message="settings.exchange.reviewHint"><input id={`${uid}-apply-${section}`} type="checkbox" checked={selection[section] === true} onChange={(e) => { select({ [section]: e.target.checked }); }} /></ControlTip>
       <label htmlFor={`${uid}-apply-${section}`}>{t('settings.exchange.applySection', { section: t(SECTION_LABEL[section]) })}</label>
     </div>
   );
@@ -363,7 +364,7 @@ function SettingsExchangeSection({ onApplied }: { readonly onApplied: (next: Set
           const id = `${uid}-export-${section}`;
           return (
             <div className="check" key={section}>
-              <input id={id} type="checkbox" disabled={!available} checked={available && sections.includes(section)} aria-describedby={available ? undefined : `${id}-empty`} onChange={(e) => { toggleSection(section, e.target.checked); }} />
+              <ControlTip message="settings.exchange.exportHint"><input id={id} type="checkbox" disabled={!available} checked={available && sections.includes(section)} aria-describedby={available ? undefined : `${id}-empty`} onChange={(e) => { toggleSection(section, e.target.checked); }} /></ControlTip>
               <label htmlFor={id}>{t(SECTION_LABEL[section])}</label>
               {!available && <span id={`${id}-empty`} className="hint"> {t('settings.exchange.nothingSaved')}</span>}
             </div>
@@ -372,10 +373,10 @@ function SettingsExchangeSection({ onApplied }: { readonly onApplied: (next: Set
         <h4>{t('settings.exchange.includedHeading')}</h4>
         {listing.length === 0 ? <p>{t('settings.exchange.includedNothing')}</p> : <ul aria-label={t('settings.exchange.includedHeading')}>{listing.map((line, i) => <li key={i} dir="auto">{line}</li>)}</ul>}
         {endpointsIncluded && <Notice kind="warn">{t('settings.exchange.privacyWarning')}</Notice>}
-        <button type="button" className="btn" disabled={listing.length === 0} onClick={onExport}>{t('settings.exchange.export')}</button>
+        <ControlTip message="tips.exportSettings"><button type="button" className="btn" disabled={listing.length === 0} onClick={onExport}>{t('settings.exchange.export')}</button></ControlTip>
         {exportError !== undefined && <Notice kind="error">{displayMessage(exportError, t)}</Notice>}
       </fieldset>
-      {transfer !== undefined && <><QrFrame kind="device" text={transfer} caption={t('settings.exchange.title')} allowExport={!sections.some((x) => x === 'rpcUrls' || x === 'rpcUrlsSecondary' || x === 'relayerUrl')} /><button type="button" className="btn" onClick={() => { setTransfer(undefined); }}>{t('settings.exchange.hide')}</button></>}
+      {transfer !== undefined && <><QrFrame kind="device" text={transfer} caption={t('settings.exchange.title')} allowExport={!sections.some((x) => x === 'rpcUrls' || x === 'rpcUrlsSecondary' || x === 'relayerUrl')} /><ControlTip message="tips.hideQr"><button type="button" className="btn" onClick={() => { setTransfer(undefined); }}>{t('settings.exchange.hide')}</button></ControlTip></>}
       <CameraImporter label={t('settings.exchange.import')} scopeKey={s} onInputChange={discard} onText={(text, signal) => {
         const incoming = parseSettingsExchange(text, chainIds);
         if (signal.aborted) return false;
@@ -385,7 +386,7 @@ function SettingsExchangeSection({ onApplied }: { readonly onApplied: (next: Set
       {preview !== undefined && <div>
         <h4>{t('settings.exchange.review')}</h4>
         <p className="hint">{t('settings.exchange.reviewHint')}</p>
-        {!preview.changed && <p role="status">{t('settings.exchange.noChanges')}</p>}
+        {!preview.changed && <ControlTip message="tips.importStatus"><p role="status">{t('settings.exchange.noChanges')}</p></ControlTip>}
         {preview.preferences !== undefined && <fieldset>
           <legend>{t(SECTION_LABEL.preferences)}</legend>
           {table([{ key: 'preferences', label: t(SECTION_LABEL.preferences), current: prefsValue(preview.preferences.current), incoming: prefsValue(preview.preferences.incoming), changed: preview.preferences.changed }])}
@@ -405,20 +406,20 @@ function SettingsExchangeSection({ onApplied }: { readonly onApplied: (next: Set
           <p>{t('settings.exchange.signersUnchanged', { count: signers.unchanged })}</p>
           {signers.added.map((key) => (
             <div className="check" key={key}>
-              <input id={`${uid}-pin-${key}`} type="checkbox" checked={adds.includes(key)} onChange={(e) => { select({ addSigners: e.target.checked ? [...adds, key] : adds.filter((k) => k !== key) }); }} />
+              <ControlTip message="settings.exchange.signersTrustHint"><input id={`${uid}-pin-${key}`} type="checkbox" checked={adds.includes(key)} onChange={(e) => { select({ addSigners: e.target.checked ? [...adds, key] : adds.filter((k) => k !== key) }); }} /></ControlTip>
               <label htmlFor={`${uid}-pin-${key}`} title={key}>{t('settings.exchange.signerAdd', { fingerprint: fingerprint(key) })}</label>
             </div>
           ))}
           {signers.removed.length > 0 && <>
             <ul>{signers.removed.map((key) => <li key={key} title={key}>{t('settings.exchange.signerRemoved', { fingerprint: fingerprint(key) })}</li>)}</ul>
             <div className="check">
-              <input id={`${uid}-unpin`} type="checkbox" checked={selection.removeSigners === true} onChange={(e) => { select({ removeSigners: e.target.checked }); }} />
+              <ControlTip message="tips.unpin"><input id={`${uid}-unpin`} type="checkbox" checked={selection.removeSigners === true} onChange={(e) => { select({ removeSigners: e.target.checked }); }} /></ControlTip>
               <label htmlFor={`${uid}-unpin`}>{t('settings.exchange.signersRemove', { count: signers.removed.length })}</label>
             </div>
           </>}
           {!signers.changed && unchanged}
         </fieldset>}
-        {confirming && <div role="alertdialog" aria-labelledby={`${uid}-confirm-h`} aria-describedby={`${uid}-confirm-d`} className="panel">
+        {confirming && <ControlTip message="settings.exchange.confirmBody"><div role="alertdialog" aria-labelledby={`${uid}-confirm-h`} aria-describedby={`${uid}-confirm-d`} className="panel">
           <h4 id={`${uid}-confirm-h`}>{t('settings.exchange.confirmTitle')}</h4>
           <p id={`${uid}-confirm-d`}>{t('settings.exchange.confirmBody')}</p>
           <ul>
@@ -430,14 +431,14 @@ function SettingsExchangeSection({ onApplied }: { readonly onApplied: (next: Set
             {adds.map((key) => <li key={`add-${key}`} title={key}>{t('settings.exchange.confirmPin', { fingerprint: fingerprint(key) })}</li>)}
             {selection.removeSigners === true && (signers?.removed ?? []).map((key) => <li key={`rm-${key}`} title={key}>{t('settings.exchange.confirmUnpin', { fingerprint: fingerprint(key) })}</li>)}
           </ul>
-          <button type="button" className="btn btn-primary" onClick={doApply}>{t('settings.exchange.confirm')}</button>
-          <button type="button" className="btn" onClick={() => { setConfirming(false); }}>{t('settings.exchange.back')}</button>
-        </div>}
+          <ControlTip message="settings.exchange.confirmBody"><button type="button" className="btn btn-primary" onClick={doApply}>{t('settings.exchange.confirm')}</button></ControlTip>
+          <ControlTip message="tips.backReview"><button type="button" className="btn" onClick={() => { setConfirming(false); }}>{t('settings.exchange.back')}</button></ControlTip>
+        </div></ControlTip>}
         {preview.changed && !confirming && <>
-          <button type="button" className="btn" disabled={!canApply} aria-describedby={canApply ? undefined : `${uid}-apply-hint`} onClick={onApply}>{t('settings.exchange.apply')}</button>
+          <ControlTip message="settings.exchange.reviewHint"><button type="button" className="btn" disabled={!canApply} aria-describedby={canApply ? undefined : `${uid}-apply-hint`} onClick={onApply}>{t('settings.exchange.apply')}</button></ControlTip>
           {!canApply && <p id={`${uid}-apply-hint`} className="hint">{t('settings.exchange.selectSomething')}</p>}
         </>}
-        <button type="button" className="btn" onClick={discard}>{t('settings.exchange.discard')}</button>
+        <ControlTip message="tips.discardPreview"><button type="button" className="btn" onClick={discard}>{t('settings.exchange.discard')}</button></ControlTip>
       </div>}
       {message !== undefined && <Notice kind={message.kind}>{displayMessage(message.text, t)}</Notice>}
     </section>
@@ -511,58 +512,58 @@ function ScanPrivacySection(): ReactNode {
         </p>
         <Field label={t('settings.scanPrivacy.transport')}>
           {(id) => (
-            <select id={id} value={cfg.transport} onChange={(e) => { set({ transport: e.target.value as ScanTransportKind }); }}>
+            <ControlTip message="settings.scanPrivacy.hint"><select id={id} value={cfg.transport} onChange={(e) => { set({ transport: e.target.value as ScanTransportKind }); }}>
               <option value="direct">{t('settings.scanPrivacy.transportDirect')}</option>
               <option value="tor-browser">{t('settings.scanPrivacy.transportTor')}</option>
               <option value="local-proxy">{t('settings.scanPrivacy.transportProxy')}</option>
-            </select>
+            </select></ControlTip>
           )}
         </Field>
         <div className="check">
-          <input id="scan-require-proxy" type="checkbox" checked={cfg.requireProxy} onChange={(e) => { set({ requireProxy: e.target.checked }); }} />
+          <ControlTip message="tips.requireProxy"><input id="scan-require-proxy" type="checkbox" checked={cfg.requireProxy} onChange={(e) => { set({ requireProxy: e.target.checked }); }} /></ControlTip>
           <label htmlFor="scan-require-proxy">{t('settings.scanPrivacy.requireProxy')}</label>
         </div>
         {services.chains.map((c) => (
           <Field key={c.chainId} label={t('settings.scanPrivacy.endpoint', { chain: c.name })} hint={cfg.transport === 'local-proxy' ? t('settings.scanPrivacy.endpointRequired') : t('settings.scanPrivacy.endpointOptional')}>
-            {(id, d) => <input id={id} aria-describedby={d} type="url" spellCheck={false} value={cfg.endpoints[String(c.chainId)] ?? ''} onChange={(e) => { set({ endpoints: { ...cfg.endpoints, [String(c.chainId)]: e.target.value } }); }} />}
+            {(id, d) => <ControlTip message={cfg.transport === 'local-proxy' ? 'settings.scanPrivacy.endpointRequired' : 'settings.scanPrivacy.endpointOptional'}><input id={id} aria-describedby={d} type="url" spellCheck={false} value={cfg.endpoints[String(c.chainId)] ?? ''} onChange={(e) => { set({ endpoints: { ...cfg.endpoints, [String(c.chainId)]: e.target.value } }); }} /></ControlTip>}
           </Field>
         ))}
         <Field label={t('settings.scanPrivacy.source')}>
           {(id) => (
-            <select id={id} value={cfg.source} onChange={(e) => { set({ source: e.target.value === 'indexer' ? 'indexer' : 'rpc' }); }}>
+            <ControlTip message="tips.source"><select id={id} value={cfg.source} onChange={(e) => { set({ source: e.target.value === 'indexer' ? 'indexer' : 'rpc' }); }}>
               <option value="rpc">{t('settings.scanPrivacy.sourceRpc')}</option>
               <option value="indexer">{t('settings.scanPrivacy.sourceIndexer')}</option>
-            </select>
+            </select></ControlTip>
           )}
         </Field>
         {cfg.source === 'indexer' && services.chains.map((c) => (
           <Field key={c.chainId} label={t('settings.scanPrivacy.indexerUrl', { chain: c.name })}>
-            {(id) => <input id={id} type="url" spellCheck={false} value={cfg.indexerUrls[String(c.chainId)] ?? ''} onChange={(e) => { set({ indexerUrls: { ...cfg.indexerUrls, [String(c.chainId)]: e.target.value } }); }} />}
+            {(id) => <ControlTip message="tips.indexer"><input id={id} type="url" spellCheck={false} value={cfg.indexerUrls[String(c.chainId)] ?? ''} onChange={(e) => { set({ indexerUrls: { ...cfg.indexerUrls, [String(c.chainId)]: e.target.value } }); }} /></ControlTip>}
           </Field>
         ))}
         <Field label={t('settings.scanPrivacy.window')} hint={t('settings.scanPrivacy.windowHint')}>
-          {(id, d) => <input id={id} aria-describedby={d} type="number" min={0} value={Number.isNaN(cfg.windowBlocks) ? '' : cfg.windowBlocks} onChange={(e) => { set({ windowBlocks: num(e.target.value) }); }} />}
+          {(id, d) => <ControlTip message="settings.scanPrivacy.windowHint"><input id={id} aria-describedby={d} type="number" min={0} value={Number.isNaN(cfg.windowBlocks) ? '' : cfg.windowBlocks} onChange={(e) => { set({ windowBlocks: num(e.target.value) }); }} /></ControlTip>}
         </Field>
-        <Field label={t('settings.scanPrivacy.jitterMin')}>{(id) => <input id={id} type="number" min={0} value={Number.isNaN(cfg.jitterMinMs) ? '' : cfg.jitterMinMs} onChange={(e) => { set({ jitterMinMs: num(e.target.value) }); }} />}</Field>
-        <Field label={t('settings.scanPrivacy.jitterMax')}>{(id) => <input id={id} type="number" min={0} value={Number.isNaN(cfg.jitterMaxMs) ? '' : cfg.jitterMaxMs} onChange={(e) => { set({ jitterMaxMs: num(e.target.value) }); }} />}</Field>
+        <Field label={t('settings.scanPrivacy.jitterMin')}>{(id) => <ControlTip message="tips.minJitter"><input id={id} type="number" min={0} value={Number.isNaN(cfg.jitterMinMs) ? '' : cfg.jitterMinMs} onChange={(e) => { set({ jitterMinMs: num(e.target.value) }); }} /></ControlTip>}</Field>
+        <Field label={t('settings.scanPrivacy.jitterMax')}>{(id) => <ControlTip message="tips.maxJitter"><input id={id} type="number" min={0} value={Number.isNaN(cfg.jitterMaxMs) ? '' : cfg.jitterMaxMs} onChange={(e) => { set({ jitterMaxMs: num(e.target.value) }); }} /></ControlTip>}</Field>
         <Field label={t('settings.scanPrivacy.budget')} hint={t('settings.scanPrivacy.budgetHint')}>
-          {(id, d) => <input id={id} aria-describedby={d} type="number" min={1} value={Number.isNaN(cfg.openLaneBudget) ? '' : cfg.openLaneBudget} onChange={(e) => { set({ openLaneBudget: num(e.target.value) }); }} />}
+          {(id, d) => <ControlTip message="settings.scanPrivacy.budgetHint"><input id={id} aria-describedby={d} type="number" min={1} value={Number.isNaN(cfg.openLaneBudget) ? '' : cfg.openLaneBudget} onChange={(e) => { set({ openLaneBudget: num(e.target.value) }); }} /></ControlTip>}
         </Field>
         <Field label={t('settings.scanLanes.flood')} hint={t('settings.scanLanes.floodHint')}>
-          {(id, d) => <input id={id} aria-describedby={d} type="number" min={1} max={MAX_FLOOD_PER_BLOCK} value={Number.isNaN(lanes.floodPerBlock) ? '' : lanes.floodPerBlock} onChange={(e) => { setLane({ floodPerBlock: num(e.target.value) }); }} />}
+          {(id, d) => <ControlTip message="settings.scanLanes.floodHint"><input id={id} aria-describedby={d} type="number" min={1} max={MAX_FLOOD_PER_BLOCK} value={Number.isNaN(lanes.floodPerBlock) ? '' : lanes.floodPerBlock} onChange={(e) => { setLane({ floodPerBlock: num(e.target.value) }); }} /></ControlTip>}
         </Field>
         <div className="check">
-          <input id="scan-spam-score" type="checkbox" checked={lanes.spamScoring} onChange={(e) => { setLane({ spamScoring: e.target.checked }); }} />
+          <ControlTip message="tips.spam"><input id="scan-spam-score" type="checkbox" checked={lanes.spamScoring} onChange={(e) => { setLane({ spamScoring: e.target.checked }); }} /></ControlTip>
           <label htmlFor="scan-spam-score">{t('settings.scanLanes.score')}</label>
         </div>
         <div className="check">
-          <input id="scan-privacy-transfers" type="checkbox" checked={lanes.privacySetTransfers} onChange={(e) => { setLane({ privacySetTransfers: e.target.checked }); }} />
+          <ControlTip message="tips.transfers"><input id="scan-privacy-transfers" type="checkbox" checked={lanes.privacySetTransfers} onChange={(e) => { setLane({ privacySetTransfers: e.target.checked }); }} /></ControlTip>
           <label htmlFor="scan-privacy-transfers">{t('settings.scanLanes.transfers')}</label>
         </div>
         <p className="hint">{t('settings.scanLanes.transfersHint', { blocks: String(PRIVACY_TRANSFER_WINDOW_BLOCKS) })}</p>
         {lanes.unreadable === true && <Notice kind="warn">{t('scanPrivacy.blocked.settingsUnreadable')}</Notice>}
         <div className="check">
-          <input id="scan-match-cover" type="checkbox" checked={lanes.matchCover} onChange={(e) => { setLane({ matchCover: e.target.checked }); }} />
+          <ControlTip message="tips.cover"><input id="scan-match-cover" type="checkbox" checked={lanes.matchCover} onChange={(e) => { setLane({ matchCover: e.target.checked }); }} /></ControlTip>
           <label htmlFor="scan-match-cover">{t('settings.scanLanes.matchCover')}</label>
         </div>
         <p className="hint">{t('settings.scanLanes.matchCoverHint')}</p>
@@ -575,8 +576,8 @@ function ScanPrivacySection(): ReactNode {
           {lanes.matchCover && <li><strong>{t('scanPrivacy.disclosure.rpcParty')}:</strong> {t('scanLanes.disclosure.matchCover')}</li>}
         </ul>
         <div className="actions">
-          <button type="button" className="btn" onClick={() => { set(applyParanoidPreset(cfg)); }}>{t('settings.scanPrivacy.paranoid')}</button>
-          <button type="submit" className="btn btn-primary">{t('settings.scanPrivacy.save')}</button>
+          <ControlTip message="tips.preset"><button type="button" className="btn" onClick={() => { set(applyParanoidPreset(cfg)); }}>{t('settings.scanPrivacy.paranoid')}</button></ControlTip>
+          <ControlTip message="tips.saveScan"><button type="submit" className="btn btn-primary">{t('settings.scanPrivacy.save')}</button></ControlTip>
         </div>
         {message !== undefined && <Notice kind={message.kind}>{displayMessage(message.text, t)}</Notice>}
       </fieldset>

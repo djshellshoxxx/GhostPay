@@ -1,3 +1,4 @@
+import { ControlTip } from './ControlTips';
 import { MAX_PAYMENT_REQUEST_FILE_BYTES, parsePaymentRequestFile } from '@ghostpay/invoice-schema';
 import { useCallback, useEffect, useRef, useState, type ChangeEvent, type ReactNode } from 'react';
 import type { MessageKey } from '../i18n/catalog';
@@ -155,12 +156,12 @@ export function PaymentRequestFileInput({ onText, scopeKey, onInputChange, super
   return (
     <div className="stack" ref={root}>
       <Field label={t('requestFile.label')} hint={t('requestFile.hint')}>
-        {(id, describedBy) => <input id={id} aria-describedby={describedBy} type="file" accept="application/json,.gpr.json,.json" onChange={choose} />}
+        {(id, describedBy) => <ControlTip message="requestFile.hint"><input id={id} aria-describedby={describedBy} type="file" accept="application/json,.gpr.json,.json" onChange={choose} /></ControlTip>}
       </Field>
       {message !== undefined && (message.error && message.key !== 'requestFile.rejected'
         ? <Notice kind="error">{t(message.key)}</Notice>
         // The owning view shows the single alert with the specific refusal reason; this stays a polite status.
-        : <p role="status">{t(message.key)}</p>)}
+        : <ControlTip message="tips.requestStatus"><p role="status">{t(message.key)}</p></ControlTip>)}
     </div>
   );
 }

@@ -1,3 +1,4 @@
+import { ControlTip } from './ControlTips';
 import { useCallback, useEffect, useId, useRef, useState, type ReactNode } from 'react';
 import { makeQr, qrSvgText } from '../lib/qr';
 import { localizedQrKind, qrKindClass, type QrIconId, type QrKind } from '../lib/qrKinds';
@@ -259,20 +260,20 @@ export function QrFrame(props: QrFrameProps): ReactNode {
   const stepper =
     parts === null ? null : (
       <div className="qr-parts" role="group" aria-label={t('qrFrame.multipart')}>
-        <p className="qr-part-status" role="status">
+        <ControlTip message="tips.parts"><p className="qr-part-status" role="status">
           {t('qrFrame.part', { part: safeIndex + 1, total })}
-        </p>
-        <button type="button" className="btn" disabled={safeIndex === 0} onClick={() => { setIndex(safeIndex - 1); }}>
+        </p></ControlTip>
+        <ControlTip message="tips.prev"><button type="button" className="btn" disabled={safeIndex === 0} onClick={() => { setIndex(safeIndex - 1); }}>
           {t('qrFrame.previous')}
-        </button>
-        <button type="button" className="btn" disabled={safeIndex === total - 1} onClick={() => { setIndex(safeIndex + 1); }}>
+        </button></ControlTip>
+        <ControlTip message="tips.next"><button type="button" className="btn" disabled={safeIndex === total - 1} onClick={() => { setIndex(safeIndex + 1); }}>
           {t('qrFrame.next')}
-        </button>
+        </button></ControlTip>
         {reduced ? (
           <p className="qr-note">{t('qrFrame.reduced')}</p>
         ) : (
           <label className="qr-auto">
-            <input type="checkbox" checked={auto} onChange={(e) => { setAuto(e.target.checked); }} /> {t('qrFrame.auto', { seconds: PART_INTERVAL_MS / 1000 })}
+            <ControlTip message="tips.cycle"><input type="checkbox" checked={auto} onChange={(e) => { setAuto(e.target.checked); }} /></ControlTip> {t('qrFrame.auto', { seconds: PART_INTERVAL_MS / 1000 })}
           </label>
         )}
       </div>
@@ -299,31 +300,31 @@ export function QrFrame(props: QrFrameProps): ReactNode {
           {stepper}
           <div className="qr-actions">
             {rules.revealRequired && (
-              <button type="button" className="btn" onClick={() => { hide('qrFrame.hidden.manual'); }}>
+              <ControlTip message="tips.hideQr"><button type="button" className="btn" onClick={() => { hide('qrFrame.hidden.manual'); }}>
                 {t('qrFrame.hide')}
-              </button>
+              </button></ControlTip>
             )}
-            <button type="button" className="btn" ref={openerRef} onClick={() => { setLargeFor(payloadScope(props)); }}>
+            <ControlTip message="tips.largeQr"><button type="button" className="btn" ref={openerRef} onClick={() => { setLargeFor(payloadScope(props)); }}>
               {t('qrFrame.larger')}
-            </button>
+            </button></ControlTip>
             {rules.allowCopyText && props.allowExport !== false && <CopyButton text={current} label={t('qrFrame.copy')} />}
             {rules.allowDownload && props.allowExport !== false && (
-              <button type="button" className="btn" onClick={download}>
+              <ControlTip message="tips.saveQr"><button type="button" className="btn" onClick={download}>
                 {t('qrFrame.download')}
-              </button>
+              </button></ControlTip>
             )}
           </div>
         </div>
       ) : (
         <div className="qr-body qr-hidden">
-          <button type="button" className="btn btn-primary" ref={revealRef} onClick={() => { setRevealedFor(payloadScope(props)); setHiddenNote(undefined); }}>
+          <ControlTip message="tips.showQr"><button type="button" className="btn btn-primary" ref={revealRef} onClick={() => { setRevealedFor(payloadScope(props)); setHiddenNote(undefined); }}>
             {t('qrFrame.reveal')}
-          </button>
+          </button></ControlTip>
         </div>
       )}
-      <p className="qr-note" role="status">
+      <ControlTip message="tips.qrStatus"><p className="qr-note" role="status">
         {hiddenNote === undefined ? '' : t(hiddenNote)}
-      </p>
+      </p></ControlTip>
       {large && visible && (
         <div className="qr-large" ref={dialogRef} role="dialog" aria-modal="true" aria-label={t('qrFrame.largeLabel', { kind: info.label })} aria-describedby={largeDescId}>
           <p className="qr-large-label">
@@ -340,17 +341,17 @@ export function QrFrame(props: QrFrameProps): ReactNode {
           <p className="qr-note">{t('qrFrame.brightness')}</p>
           {parts !== null && (
             <div className="qr-actions">
-              <button type="button" className="btn" disabled={safeIndex === 0} onClick={() => { setIndex(safeIndex - 1); }}>
+              <ControlTip message="tips.prev"><button type="button" className="btn" disabled={safeIndex === 0} onClick={() => { setIndex(safeIndex - 1); }}>
                 {t('qrFrame.previous')}
-              </button>
-              <button type="button" className="btn" disabled={safeIndex === total - 1} onClick={() => { setIndex(safeIndex + 1); }}>
+              </button></ControlTip>
+              <ControlTip message="tips.next"><button type="button" className="btn" disabled={safeIndex === total - 1} onClick={() => { setIndex(safeIndex + 1); }}>
                 {t('qrFrame.next')}
-              </button>
+              </button></ControlTip>
             </div>
           )}
-          <button type="button" className="btn btn-primary" ref={closeRef} onClick={() => { setLargeFor(undefined); }}>
+          <ControlTip message="tips.closeQr"><button type="button" className="btn btn-primary" ref={closeRef} onClick={() => { setLargeFor(undefined); }}>
             {t('qrFrame.close')}
-          </button>
+          </button></ControlTip>
         </div>
       )}
     </section>

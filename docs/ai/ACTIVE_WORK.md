@@ -1,3 +1,8 @@
+# Contextual control help for the browser beta
+
+Worker: Codex, branch `codex/beta-control-tooltips`, base `b890a76603b924829fdbe2b4fb2c5626f0cf4e36`.
+Owns control descriptions in lean routes and their shared components, help presentation, translations and coverage tests. Other workers own payment, recovery and privacy behavior in several of the same files. This change is limited to presentation. Acceptance covers keyboard, pointer and touch help, disabled and conditional controls, and value-free text through masking and navigation.
+
 # Recorded low residuals (web) — 2026-11-27 UTC
 
 Worker: local Claude Code worker W7 on the existing merged branch `claude/consolidation-stack-20261126`, fast-forwarded

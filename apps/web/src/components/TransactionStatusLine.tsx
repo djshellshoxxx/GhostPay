@@ -1,3 +1,4 @@
+import { ControlTip } from './ControlTips';
 import type { ReactNode } from 'react';
 import { SOURCE_TRANSLATOR, useI18nOptional } from '../i18n/context';
 import type { MessageKey } from '../i18n/sourceCatalog';
@@ -21,7 +22,7 @@ export function TransactionStatusLine({ status }: { readonly status: DisplayMess
   const announced = announcedStatus(status);
   return (
     <>
-      <p role="status" className="status">{displayMessage(announced, t)}</p>
+      <ControlTip message="tips.txStatus"><p role="status" className="status">{displayMessage(announced, t)}</p></ControlTip>
       {announced !== status && <p className="status">{displayMessage(status, t)}</p>}
     </>
   );

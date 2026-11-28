@@ -1,3 +1,4 @@
+import { ControlTip } from './ControlTips';
 import { useEffect, useRef, useState, type FormEvent, type ReactNode } from 'react';
 import { UserFacingError, captureUserMessage, displayMessage, type DisplayMessage } from '../lib/errors';
 import { loadedKeysRecoverable } from '../lib/keyVault';
@@ -194,20 +195,20 @@ export function StealthExportRecovery(props: { readonly announce: (message: stri
       {message !== undefined && <Notice kind={message.kind}>{displayMessage(message.text, t)}</Notice>}
       <form onSubmit={onOpen} className="stack" autoComplete="off">
         <Field label={t('stealthExport.open.file')}>{(id) => <>
-          <input id={id} aria-describedby={file === undefined ? undefined : `${id}-file`} ref={fileInput} type="file" accept="application/json,.json" onChange={(e) => {
+          <ControlTip message="stealthExport.open.body"><input id={id} aria-describedby={file === undefined ? undefined : `${id}-file`} ref={fileInput} type="file" accept="application/json,.json" onChange={(e) => {
             const chosen = e.currentTarget.files?.[0]; e.currentTarget.value = '';
             if (chosen === undefined) return;
             closeExport(); setFile(chosen);
-          }} />
+          }} /></ControlTip>
           {/* Main convention (07722292): the chosen file's name is not echoed back. */}
           {file !== undefined && <p className="hint" id={`${id}-file`}>{t('upload.selectedFile')}</p>}
         </>}</Field>
         <Field label={t('stealthExport.open.passphrase')} hint={t('stealthExport.open.passphraseHint')}>
-          {(id, d) => <input id={id} aria-describedby={d} type="password" autoComplete="off" name="ghostpay-stealth-export-open" disabled={busy} value={passphrase} onChange={(e) => { setPassphrase(e.target.value); setVerified(undefined); setMessage(undefined); }} />}
+          {(id, d) => <ControlTip message="stealthExport.open.passphraseHint"><input id={id} aria-describedby={d} type="password" autoComplete="off" name="ghostpay-stealth-export-open" disabled={busy} value={passphrase} onChange={(e) => { setPassphrase(e.target.value); setVerified(undefined); setMessage(undefined); }} /></ControlTip>}
         </Field>
-        <button type="submit" className="btn" data-testid="stealth-export-open-submit" disabled={busy || file === undefined}>{t('stealthExport.open.submit')}</button>
-        <button type="button" className="btn" data-testid="stealth-export-verify-submit" disabled={busy || file === undefined} onClick={() => { openSelected('verify'); }}>{t('stealthExport.open.verify')}</button>
-        {busy && <button type="button" className="btn" onClick={closeExport}>{t('stealthExport.cancel')}</button>}
+        <ControlTip message="stealthExport.open.body"><button type="submit" className="btn" data-testid="stealth-export-open-submit" disabled={busy || file === undefined}>{t('stealthExport.open.submit')}</button></ControlTip>
+        <ControlTip message="tips.verifyFile"><button type="button" className="btn" data-testid="stealth-export-verify-submit" disabled={busy || file === undefined} onClick={() => { openSelected('verify'); }}>{t('stealthExport.open.verify')}</button></ControlTip>
+        {busy && <ControlTip message="tips.cancel"><button type="button" className="btn" onClick={closeExport}>{t('stealthExport.cancel')}</button></ControlTip>}
       </form>
 
       {verified !== undefined && (
@@ -244,13 +245,13 @@ export function StealthExportRecovery(props: { readonly announce: (message: stri
                 {rawIndex === index ? (
                   <div ref={confirmRef} tabIndex={-1} role="group" aria-label={t('stealthExport.raw.confirm.title')}>
                     <Notice kind="warn" title={t('stealthExport.raw.confirm.title')}>{t('stealthExport.raw.confirm.body')}</Notice>
-                    <button type="button" className="btn btn-danger" onClick={() => { onDownloadRaw(index); }}>{t('stealthExport.raw.confirm.download')}</button>{' '}
-                    <button type="button" className="btn" onClick={() => { setRawIndex(undefined); }}>{t('stealthExport.cancel')}</button>
+                    <ControlTip message="tips.rawKey"><button type="button" className="btn btn-danger" onClick={() => { onDownloadRaw(index); }}>{t('stealthExport.raw.confirm.download')}</button></ControlTip>{' '}
+                    <ControlTip message="tips.cancel"><button type="button" className="btn" onClick={() => { setRawIndex(undefined); }}>{t('stealthExport.cancel')}</button></ControlTip>
                   </div>
                 ) : (
-                  <button type="button" className="btn" aria-label={t('stealthExport.open.entry.downloadFor', { address: record.stealthAddress })} onClick={() => { setMessage(undefined); setRawIndex(index); }}>
+                  <ControlTip message="stealthExport.details.raw.hint"><button type="button" className="btn" aria-label={t('stealthExport.open.entry.downloadFor', { address: record.stealthAddress })} onClick={() => { setMessage(undefined); setRawIndex(index); }}>
                     {t('stealthExport.open.entry.download')}
-                  </button>
+                  </button></ControlTip>
                 )}
               </li>
             ))}
@@ -266,14 +267,14 @@ export function StealthExportRecovery(props: { readonly announce: (message: stri
           {shown.loaded ? (
             <Notice kind="info">{t('stealthExport.open.master.loaded')}</Notice>
           ) : (
-            <p><button type="button" className="btn btn-primary" disabled={busy || confirmReplace !== undefined} onClick={onLoadMaster}>{t('stealthExport.open.master.load')}</button></p>
+            <p><ControlTip message="stealthExport.open.master.body"><button type="button" className="btn btn-primary" disabled={busy || confirmReplace !== undefined} onClick={onLoadMaster}>{t('stealthExport.open.master.load')}</button></ControlTip></p>
           )}
           {confirmReplace !== undefined && (
             <div ref={confirmRef} tabIndex={-1} role="group" aria-label={t(confirmReplace === 'saved' ? 'stealthExport.open.replace.savedTitle' : 'stealthExport.open.replace.title')}>
               <Notice kind="warn" title={t(confirmReplace === 'saved' ? 'stealthExport.open.replace.savedTitle' : 'stealthExport.open.replace.title')}>
                 <p>{t(confirmReplace === 'saved' ? 'stealthExport.open.replace.savedBody' : 'stealthExport.open.replace.body')}</p>
-                <button type="button" className="btn btn-danger" disabled={busy} onClick={confirmInstall}>{t('stealthExport.open.replace.confirm')}</button>{' '}
-                <button type="button" className="btn" onClick={() => { op.stop(); replacement.current = undefined; setBusy(false); setConfirmReplace(undefined); }}>{t('stealthExport.cancel')}</button>
+                <ControlTip message="tips.replaceKeys"><button type="button" className="btn btn-danger" disabled={busy} onClick={confirmInstall}>{t('stealthExport.open.replace.confirm')}</button></ControlTip>{' '}
+                <ControlTip message="tips.cancel"><button type="button" className="btn" onClick={() => { op.stop(); replacement.current = undefined; setBusy(false); setConfirmReplace(undefined); }}>{t('stealthExport.cancel')}</button></ControlTip>
               </Notice>
             </div>
           )}
@@ -281,7 +282,7 @@ export function StealthExportRecovery(props: { readonly announce: (message: stri
       )}
 
       {shown !== undefined && shown.kind !== 'public' && (
-        <p><button type="button" className="btn" onClick={closeExport}>{t('stealthExport.open.close')}</button></p>
+        <p><ControlTip message="tips.closeBackup"><button type="button" className="btn" onClick={closeExport}>{t('stealthExport.open.close')}</button></ControlTip></p>
       )}
     </section>
   );
