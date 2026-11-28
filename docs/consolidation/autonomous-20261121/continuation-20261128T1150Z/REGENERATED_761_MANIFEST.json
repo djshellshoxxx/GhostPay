@@ -1,0 +1,73 @@
+{
+  "schema": "ghostpay-regenerated-source-proof/1",
+  "createdAt": "2026-11-28T12:10:51.258834+00:00",
+  "archive": {
+    "path": "regenerated-761-proof.tar.xz",
+    "bytes": 363992,
+    "sha256": "e5ffee9d24bdfdeb11ba984ac4110ca79e63f482e9fbe32782296444130588df",
+    "gitBlob": "dac96bf4023ffa16023acbe78efe6f67ad1ade45"
+  },
+  "files": [
+    {
+      "path": "MANIFEST.json",
+      "bytes": 1592,
+      "sha256": "63a2725d5eff356b33dd0d951de0548024a20ec4e6d047aa380e3be2ce2e5e02",
+      "gitBlob": "ce4a3ec665eacf0a5d176cc9e01ef388bef0b3d7"
+    },
+    {
+      "path": "README.md",
+      "bytes": 6124,
+      "sha256": "5dc52dbe700d91f9fb4ac9fc68422d4282e139693d7a1d0d8c1fc57e594cbe63",
+      "gitBlob": "3f609623e18e3c8b65ffffdb0168162318441d71"
+    },
+    {
+      "path": "ROOT_SOURCE_BYTES_CHECK.json",
+      "bytes": 1157,
+      "sha256": "4c62bcbff086d34fb327e0cecc856fe2807edd77a156179f2637c7fd68794c91",
+      "gitBlob": "b9fcb845c1ba17cf88da82c9ba937f2a1c1283f3"
+    },
+    {
+      "path": "ROOT_TREE_HASH_CHECK.json",
+      "bytes": 1866,
+      "sha256": "6ef899ca62f713c0ba2b266bfe59bf4ab108d50e4b20e7e1507910a7c76a1e8d",
+      "gitBlob": "e9e954579f9b755823e80e553cd24ee52ca626c5"
+    },
+    {
+      "path": "composition-proof.json",
+      "bytes": 14037,
+      "sha256": "a7e33d62cbfefb5f6c1a744be9f84b2a9b3454e9a7b45444297c637f1489b0aa",
+      "gitBlob": "1a74ec6d88bc7409ff38d1f773857848f471ac2b"
+    },
+    {
+      "path": "final-ref-readback.json",
+      "bytes": 1499,
+      "sha256": "f2342eba5e45fb5b15d7088a7c04961a03aedd0762dcbc784e98f6bac2a09454",
+      "gitBlob": "e3f1e87ff83b18c3fbd4325666677d5b918cfebe"
+    },
+    {
+      "path": "root_verify_tree.py",
+      "bytes": 3771,
+      "sha256": "d95dffa14105dee00505da12af616634d7520b78de08cf0f093d202e58383656",
+      "gitBlob": "6ac9fb9b5a144b283482706c2c4d3a539521a21b"
+    },
+    {
+      "path": "source-inputs.json",
+      "bytes": 5568653,
+      "sha256": "be4b57bca6849cedc4a41b2003353a79bf53f8996ec30ecacb47252ad4c94e12",
+      "gitBlob": "769c2a51ccea054d11b725e71e260e2df6f3c2e0"
+    },
+    {
+      "path": "verifier-initial-attempt.json",
+      "bytes": 960,
+      "sha256": "05fcd3443585ccadae5b56adec1b6c3dbfa68e4cd7f4c4690d05d7ba129660ab",
+      "gitBlob": "5c5896ab4cb2d5f6c451bc373ffcc9be83cd12f7"
+    },
+    {
+      "path": "verify_source_composition.py",
+      "bytes": 10068,
+      "sha256": "8709255f157efe70bb0593d5dbb97f8dc4f7e52d8d9b4a8fe78fea67e8a40c54",
+      "gitBlob": "c2c9140c3c2a18a84837740d58af6f47e59b9ac8"
+    }
+  ],
+  "scope": "Fresh source-composition verification; no product tests or missing test-log recovery."
+}

@@ -1,0 +1,385 @@
+{
+  "review_kind": "NEW read-only source-composition proof; no product tests executed",
+  "reviewer": "/root/review_761",
+  "refs_checked_at": "2026-11-28 12:01:50 UTC",
+  "input_created_at": "2026-11-28 12:04:28 UTC",
+  "source_inputs_sha256": "be4b57bca6849cedc4a41b2003353a79bf53f8996ec30ecacb47252ad4c94e12",
+  "refs": {
+    "checked_at": "2026-11-28 12:01:50 UTC",
+    "main": "0934ea094cb1db90293b74d2d1e9d9324e09a883",
+    "candidate": "c5a4e07ce7129a525f857d7c5a4e35c44b92422e",
+    "synthetic": "1fdfc4d27cc1fd9c57c57d2d2cd66e81c1f5cf2b"
+  },
+  "common_base": "70458ebe3ae4a5502d7c39ae25d37342dbde971b",
+  "commits": {
+    "main": {
+      "sha": "0934ea094cb1db90293b74d2d1e9d9324e09a883",
+      "tree": "1ffed94d3568537da2d0d370136b53f3bb116b9d",
+      "parents": [
+        "70458ebe3ae4a5502d7c39ae25d37342dbde971b",
+        "2b416c0069a04241dff9925e87c99c6d04f21cfa"
+      ],
+      "message": "Merge pull request #768 from djshellshoxxx/fix/static-guides-back-to-top\n\nFix keyboard navigation on the no-JavaScript entry and static guides"
+    },
+    "candidate": {
+      "sha": "c5a4e07ce7129a525f857d7c5a4e35c44b92422e",
+      "tree": "2a1baa84d3665a81d80f223dbde8c9b85a74ce8c",
+      "parents": [
+        "559a95ed31c0fe744be17b322b8583ad0b2901d6",
+        "70458ebe3ae4a5502d7c39ae25d37342dbde971b"
+      ],
+      "message": "Merge current main after #762 into quick-hide regression candidate"
+    },
+    "synthetic": {
+      "sha": "1fdfc4d27cc1fd9c57c57d2d2cd66e81c1f5cf2b",
+      "tree": "2a1baa84d3665a81d80f223dbde8c9b85a74ce8c",
+      "parents": [
+        "70458ebe3ae4a5502d7c39ae25d37342dbde971b",
+        "c5a4e07ce7129a525f857d7c5a4e35c44b92422e"
+      ],
+      "message": "Merge c5a4e07ce7129a525f857d7c5a4e35c44b92422e into 70458ebe3ae4a5502d7c39ae25d37342dbde971b"
+    }
+  },
+  "recursive_tree_roundtrips": {
+    "main": {
+      "tree": "1ffed94d3568537da2d0d370136b53f3bb116b9d",
+      "all_tree_entries": 5679,
+      "leaf_entries": 5057,
+      "verified_subtrees": 622,
+      "subtree_mismatches": [],
+      "root_sha_matches": true
+    },
+    "candidate": {
+      "tree": "2a1baa84d3665a81d80f223dbde8c9b85a74ce8c",
+      "all_tree_entries": 5681,
+      "leaf_entries": 5059,
+      "verified_subtrees": 622,
+      "subtree_mismatches": [],
+      "root_sha_matches": true
+    },
+    "base": {
+      "tree": "bb661db29cf79d6838156aefaa34a0f620f49c9c",
+      "all_tree_entries": 5679,
+      "leaf_entries": 5057,
+      "verified_subtrees": 622,
+      "subtree_mismatches": [],
+      "root_sha_matches": true
+    }
+  },
+  "main_delta": [
+    {
+      "path": "apps/web/e2e/static-help.spec.ts",
+      "before": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "d644ed26f79b9ff20c55c82fc434fe77b8d61a28"
+      },
+      "after": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "b561d94d7c4b727666f092b1ef60c349a96b6b79"
+      }
+    },
+    {
+      "path": "apps/web/help.html",
+      "before": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "0ef8fcf9fd1d369c53bddb31eec04ce23394fd08"
+      },
+      "after": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "5d945864eb86d1de5e89fbe025069afa803b1797"
+      }
+    },
+    {
+      "path": "apps/web/index.html",
+      "before": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "5cda775490be7326b684528d484614a0a5cb33bd"
+      },
+      "after": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "90e9e505ce2f664deb6556cac5e501a900d8c13d"
+      }
+    },
+    {
+      "path": "apps/web/privacy.html",
+      "before": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "08663c2100c2cfbb356b99c388996ed91032c352"
+      },
+      "after": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "e0b1531a343da30187665fd548f6618b682eb0bd"
+      }
+    },
+    {
+      "path": "docs/ai/ACTIVE_WORK.md",
+      "before": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "13f20e9cbdeffaf9a8666a7e8ce5b992e2521e4c"
+      },
+      "after": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "93babbfa38fdfa7b65a6b6931b3ecc64344cb461"
+      }
+    }
+  ],
+  "candidate_delta": [
+    {
+      "path": "apps/web/src/components/PrivacyControls.donor300.test.tsx",
+      "before": null,
+      "after": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "7425cbe3842903fba5ffb57f446c6d77f1165337"
+      }
+    },
+    {
+      "path": "docs/ai/ACTIVE_WORK.md",
+      "before": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "13f20e9cbdeffaf9a8666a7e8ce5b992e2521e4c"
+      },
+      "after": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "25e456c95e5d65e63b92bc064fa05adc5b6b9b7b"
+      }
+    },
+    {
+      "path": "docs/handoffs/QUICK_HIDE_300_DISPOSITION_20261127.md",
+      "before": null,
+      "after": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "92d1cd555516eb30a6f3cf3a8d5e39e413f893e9"
+      }
+    }
+  ],
+  "overlap": [
+    "docs/ai/ACTIVE_WORK.md"
+  ],
+  "file_blob_verification": [
+    {
+      "name": "active_base",
+      "path": "docs/ai/ACTIVE_WORK.md",
+      "commit": "70458ebe3ae4a5502d7c39ae25d37342dbde971b",
+      "blob": "13f20e9cbdeffaf9a8666a7e8ce5b992e2521e4c",
+      "bytes": 687945,
+      "sha256": "9e998fcebf483cbda0b197c598141fcd4d0544d7583dedb8b0c0d6a5e3af058e"
+    },
+    {
+      "name": "active_main",
+      "path": "docs/ai/ACTIVE_WORK.md",
+      "commit": "0934ea094cb1db90293b74d2d1e9d9324e09a883",
+      "blob": "93babbfa38fdfa7b65a6b6931b3ecc64344cb461",
+      "bytes": 688656,
+      "sha256": "39cd6b5560e28001bbaeb7fab207713cc974353ccf4054fd5129bfb39a7216b9"
+    },
+    {
+      "name": "active_candidate",
+      "path": "docs/ai/ACTIVE_WORK.md",
+      "commit": "c5a4e07ce7129a525f857d7c5a4e35c44b92422e",
+      "blob": "25e456c95e5d65e63b92bc064fa05adc5b6b9b7b",
+      "bytes": 688794,
+      "sha256": "5d2f2377fc8bd10741936b668203c8bfab513aea2fe246d62c1c74e3d2878f62"
+    },
+    {
+      "name": "candidate_test",
+      "path": "apps/web/src/components/PrivacyControls.donor300.test.tsx",
+      "commit": "c5a4e07ce7129a525f857d7c5a4e35c44b92422e",
+      "blob": "7425cbe3842903fba5ffb57f446c6d77f1165337",
+      "bytes": 5737,
+      "sha256": "48f4528003d05565df61591dce9938f3d44515bfaf60d35b0cb72dbf8f03a8f0"
+    },
+    {
+      "name": "candidate_handoff",
+      "path": "docs/handoffs/QUICK_HIDE_300_DISPOSITION_20261127.md",
+      "commit": "c5a4e07ce7129a525f857d7c5a4e35c44b92422e",
+      "blob": "92d1cd555516eb30a6f3cf3a8d5e39e413f893e9",
+      "bytes": 2310,
+      "sha256": "0c6936bf1ea250efaded991a5e1b35668bdad5d7f44fe99eed1b998b378907b6"
+    }
+  ],
+  "current_main_instruction_verification": [
+    {
+      "path": "AGENTS.md",
+      "blob": "a3511246951e3ac6878ba385b82238e7d6ea1f67",
+      "sha256": "b6e98b0e59a9e5a3f7f40156ba680726548eeab6ac51e82c0bd68cba93070277"
+    },
+    {
+      "path": "docs/ai/STOP_WORK_20261125.md",
+      "blob": "f4f0a656e0488813f7d19e74e573458515e9fd71",
+      "sha256": "dc641afbf924642c6ad2cd2a1fd5f22a0e9f32b6faa28dc8f89be2991f84d2f2"
+    },
+    {
+      "path": "docs/ai/WORKFLOW.md",
+      "blob": "37f625bb62b2b2479a0492495abbf34f55fee943",
+      "sha256": "5895562e5264b45c9e23a2c45f756dc3493c54c81561c093cbc995ea74d3c144"
+    },
+    {
+      "path": "docs/ai/HANDOFF.md",
+      "blob": "95a9c272dc6019697a72db088b717fa0d271dc84",
+      "sha256": "4af9530af7c0943c6e329bb92d86f6dcf36b5f988a4da6211d56a8e32945017d"
+    }
+  ],
+  "active_work": {
+    "base_blob": "13f20e9cbdeffaf9a8666a7e8ce5b992e2521e4c",
+    "main_blob": "93babbfa38fdfa7b65a6b6931b3ecc64344cb461",
+    "candidate_blob": "25e456c95e5d65e63b92bc064fa05adc5b6b9b7b",
+    "prospective_blob": "a4779409bf6711a113730de79b908e495b364c86",
+    "base_bytes": 687945,
+    "main_prefix_bytes": 711,
+    "candidate_suffix_bytes": 849,
+    "main_prefix_lines": 11,
+    "candidate_suffix_lines": 7,
+    "combined_bytes": 689505,
+    "combined_sha256": "919f363df78b92d4b3e9b0531c00dc26a84ccfa0aab199e85efdd1d12dd520a3",
+    "main_equals_prefix_plus_base": true,
+    "candidate_equals_base_plus_suffix": true,
+    "combined_equals_prefix_plus_complete_candidate": true,
+    "combined_equals_complete_main_plus_suffix": true,
+    "prefix_utf8": "# Static guide footer keyboard navigation\n\nCodex owns the page heading and footer link in `apps/web/{help,privacy}.html` and the matching\nregression in `apps/web/e2e/static-help.spec.ts` on `fix/static-guides-back-to-top`.\nBase: `70458ebe3ae4a5502d7c39ae25d37342dbde971b`. With JavaScript disabled, Enter on\n\u201cBack to top\u201d must focus the page heading and the next Tab must focus \u201cOpen app\u201d on both guides.\n\nThe follow-up on PR #768 starts at `0d7d069da7e0145b8a373e45de150e82744713ca` and adds\nthe `<noscript>` navigation in `apps/web/index.html` to this claim. With JavaScript disabled,\nthe first Tab must reveal the skip link, Enter must focus main, and the next Tab must reach the inline help guide.\n\n",
+    "suffix_utf8": "\n\n---\n\n# Quick-hide donor #300 test recovery \u2014 2026-11-27 UTC\n\nWorker: consolidation coordinator; isolated branch `test/quick-hide-donor-300-20261127`, base `fd5e591151765b2dafe6345501ca40393e0f176a`. Own only new `apps/web/src/components/PrivacyControls.donor300.test.tsx`, new `docs/handoffs/QUICK_HIDE_300_DISPOSITION_20261127.md` and this additive claim. #760 identifies #300 residual tests as unassigned; #742 owns separate masking and wallet focus files and is untouched. Donor #300 head `137628961463fc5abd8b7927b2efe6b18a0a206a` remains unchanged. Preserve current PrivacyControls implementation; adapt applicable test intent to #708 global reveal design, do not restore PrivateHistory or change product behavior. Exact-head hosted CI and independent review required; no main merge or lease acquisition. All ten exclusions remain binding.\n"
+  },
+  "synthetic_merge": {
+    "stale_relative_to_current_main": true,
+    "actual_tree": "2a1baa84d3665a81d80f223dbde8c9b85a74ce8c",
+    "actual_tree_is_exact_candidate_tree": true,
+    "actual_base_parent": "70458ebe3ae4a5502d7c39ae25d37342dbde971b",
+    "current_main": "0934ea094cb1db90293b74d2d1e9d9324e09a883",
+    "does_not_establish_current_main_qualification": true
+  },
+  "prospective_composition": {
+    "tree": "e8e52390e112ce80d098765229658e95ad40f566",
+    "matches_previously_reported_tree": true,
+    "leaf_entries": 5059,
+    "computed_subtrees": 622,
+    "canonical_leaf_map_sha256": "307bca8f8a3f1e9274815b6a23fb439c31bcb32bf06923da679dcfb557facdf1",
+    "relative_to_main": [
+      {
+        "path": "apps/web/src/components/PrivacyControls.donor300.test.tsx",
+        "before": null,
+        "after": {
+          "mode": "100644",
+          "type": "blob",
+          "sha": "7425cbe3842903fba5ffb57f446c6d77f1165337"
+        }
+      },
+      {
+        "path": "docs/ai/ACTIVE_WORK.md",
+        "before": {
+          "mode": "100644",
+          "type": "blob",
+          "sha": "93babbfa38fdfa7b65a6b6931b3ecc64344cb461"
+        },
+        "after": {
+          "mode": "100644",
+          "type": "blob",
+          "sha": "a4779409bf6711a113730de79b908e495b364c86"
+        }
+      },
+      {
+        "path": "docs/handoffs/QUICK_HIDE_300_DISPOSITION_20261127.md",
+        "before": null,
+        "after": {
+          "mode": "100644",
+          "type": "blob",
+          "sha": "92d1cd555516eb30a6f3cf3a8d5e39e413f893e9"
+        }
+      }
+    ],
+    "relative_to_candidate": [
+      {
+        "path": "apps/web/e2e/static-help.spec.ts",
+        "before": {
+          "mode": "100644",
+          "type": "blob",
+          "sha": "d644ed26f79b9ff20c55c82fc434fe77b8d61a28"
+        },
+        "after": {
+          "mode": "100644",
+          "type": "blob",
+          "sha": "b561d94d7c4b727666f092b1ef60c349a96b6b79"
+        }
+      },
+      {
+        "path": "apps/web/help.html",
+        "before": {
+          "mode": "100644",
+          "type": "blob",
+          "sha": "0ef8fcf9fd1d369c53bddb31eec04ce23394fd08"
+        },
+        "after": {
+          "mode": "100644",
+          "type": "blob",
+          "sha": "5d945864eb86d1de5e89fbe025069afa803b1797"
+        }
+      },
+      {
+        "path": "apps/web/index.html",
+        "before": {
+          "mode": "100644",
+          "type": "blob",
+          "sha": "5cda775490be7326b684528d484614a0a5cb33bd"
+        },
+        "after": {
+          "mode": "100644",
+          "type": "blob",
+          "sha": "90e9e505ce2f664deb6556cac5e501a900d8c13d"
+        }
+      },
+      {
+        "path": "apps/web/privacy.html",
+        "before": {
+          "mode": "100644",
+          "type": "blob",
+          "sha": "08663c2100c2cfbb356b99c388996ed91032c352"
+        },
+        "after": {
+          "mode": "100644",
+          "type": "blob",
+          "sha": "e0b1531a343da30187665fd548f6618b682eb0bd"
+        }
+      },
+      {
+        "path": "docs/ai/ACTIVE_WORK.md",
+        "before": {
+          "mode": "100644",
+          "type": "blob",
+          "sha": "25e456c95e5d65e63b92bc064fa05adc5b6b9b7b"
+        },
+        "after": {
+          "mode": "100644",
+          "type": "blob",
+          "sha": "a4779409bf6711a113730de79b908e495b364c86"
+        }
+      }
+    ],
+    "main_only_changes_preserved": true,
+    "candidate_only_changes_preserved": true,
+    "unchanged_base_leaf_entries_verified": 5052,
+    "unchanged_leaf_errors": [],
+    "unexpected_paths": []
+  },
+  "scope": {
+    "application_tests_executed": false,
+    "browser_tests_executed": false,
+    "source_edits": false,
+    "remote_mutations": false,
+    "lock_or_merge_attempts": false,
+    "historical_test_logs_restored_or_recreated": false,
+    "calculation_method": "Git SHA-1 object serialization, validated against all source root and subtree identities; additive three-way leaf composition with byte-exact registry union.",
+    "qualification_limit": "Source preservation only. Existing exact-head CI, main/lease/owner checks and resulting-composition qualification remain required."
+  }
+}

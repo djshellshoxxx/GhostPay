@@ -1,0 +1,43 @@
+{
+  "schema": "ghostpay-checkpoint-publication-receipt/1",
+  "verifiedAt": "2026-11-28 12:02:18 UTC",
+  "branch": "integration/ghostpay-autonomous-ledger-20261121-5ceb",
+  "pr": 380,
+  "commit": "61558994d9c524204540fce4d0789b4e7379e457",
+  "tree": "452b1739f8fff2c43bae9764b37ca161cb557b0b",
+  "parent": "106418a09592993b96d21a7b93c274f83e95e429",
+  "preservedExistingLeaves": 4074,
+  "addedFiles": 13,
+  "modifiedExistingFiles": 0,
+  "removedFiles": 0,
+  "normalFastForward": true,
+  "force": false,
+  "readmeURL": "https://github.com/djshellshoxxx/GhostPay/blob/61558994d9c524204540fce4d0789b4e7379e457/docs/consolidation/autonomous-20261121/continuation-20261128T1150Z/README.md",
+  "mainMerge": false,
+  "productSourceChange": false,
+  "leaseAcquired": false,
+  "deployment": false,
+  "comments": [
+    {
+      "pr": 380,
+      "id": 7238917543,
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/380#issuecomment-7238917543",
+      "created_at": "2026-11-28T11:59:34Z",
+      "body": "### Consolidation continuation published — 2026-11-28\n\n[Source-pinned handoff and evidence](https://github.com/djshellshoxxx/GhostPay/blob/61558994d9c524204540fce4d0789b4e7379e457/docs/consolidation/autonomous-20261121/continuation-20261128T1150Z/README.md) are now committed at `61558994d9c524204540fce4d0789b4e7379e457` (tree `452b1739f8fff2c43bae9764b37ca161cb557b0b`). Expected-head non-force update from `106418a09592993b96d21a7b93c274f83e95e429`; one parent, 13 new checkpoint files, all 4,074 existing ledger leaves unchanged. No new PR, main merge, product-source change, lease acquisition, deployment or automation change.\n\nSubstantive results: #761 qualified/marked ready at unchanged `c5a4e07c...`; independent old/new #753 qualification boundaries recorded; unique owner-dependent #243/#248 fixture intent preserved; #636 title/body held and new `b05addc2...` head explicitly held. All stopped features remain excluded.\n\n**Evidence availability limitation:** before publication, the original scratch checkout and final proof/log directories became unavailable for an undetermined reason. Actual cached records and remote readbacks were recovered and hash-verified. The archive includes the complete earlier **872-ref / 833-head / 160-open-PR** observation and a verified small source proof. The later **876-ref / 837-head / 162-open-PR** analysis and **15 residual rows / ten included equivalence revalidations** are recorded as prior reported results; their final complete per-ref proof, local test logs and artifact ZIPs are not claimed recovered. Independent documentation review corrected the 33 PR associations to 32 exact captured-head matches plus the #779 race. The full mission and global behavioral unresolved count remain open/unknown.\n\nLatest recorded main readback (11:52:56 UTC) is `0934ea09...`: CodeQL and Hosting succeeded; CI, manually triggered Pages and scheduled Nightly remain queued (seven successful / 32 queued discovered checks). Generation 79 at `489f8d50...` is held by `claude-cloud-lead-ghostpay-6a`; no takeover. #761 still has five successful workflows, 37 success / three publishing-only skips. Recover or regenerate exact merge proof before relying on unavailable local evidence, refresh current gates/overlaps, and leave integration with the qualified lease holder. #753's new head still needs its own built-artifact/hosted qualification; prior browser artifacts do not qualify its changed HTML tree."
+    },
+    {
+      "pr": 761,
+      "id": 7238919689,
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/761#issuecomment-7238919689",
+      "created_at": "2026-11-28T11:59:45Z",
+      "body": "### Evidence checkpoint and availability limit\n\nThe [qualified source review and recovered checkpoint](https://github.com/djshellshoxxx/GhostPay/blob/61558994d9c524204540fce4d0789b4e7379e457/docs/consolidation/autonomous-20261121/continuation-20261128T1150Z/README.md) are now versioned on existing #380 at `61558994d9c524204540fce4d0789b4e7379e457`. The exact candidate remains `c5a4e07ce7129a525f857d7c5a4e35c44b92422e`, open/ready/unmerged; fresh generic reads retain five successful workflows and 37 success / three publishing-only skips.\n\nThe original local checkout, 43-test logs, handler program/output and complete merge-preservation proof became unavailable during publication for an undetermined reason. Earlier qualification statements remain recorded in comment 7238167453; the checkpoint explicitly does not claim these missing bytes were recovered. Reconstruct/verify the prospective tree and regenerate the necessary missing evidence before using it for integration. This is an evidence-availability correction, not a new code/test failure or a gate waiver.\n\nAt the final 11:52:56 UTC readback, main `0934ea09...` still had CI queued and generation 79 was held by `claude-cloud-lead-ghostpay-6a`. Preserve that owner's control and #766's separate scope. No merge or lease action was taken here."
+    },
+    {
+      "pr": 753,
+      "id": 7238921331,
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/753#issuecomment-7238921331",
+      "created_at": "2026-11-28T11:59:55Z",
+      "body": "### Versioned review checkpoint — evidence availability\n\nThe [#380 checkpoint](https://github.com/djshellshoxxx/GhostPay/blob/61558994d9c524204540fce4d0789b4e7379e457/docs/consolidation/autonomous-20261121/continuation-20261128T1150Z/README.md) now preserves the actual cached new-head API/review objects, source/run identities and independent documentation review. The original scratch directories became unavailable before publication; the complete local preservation proof, downloaded six old-head ZIPs and 63-test execution log were not recovered. Their earlier validation statements remain in comments 7238173317/7238609261, with missing-file hashes/provenance distinguished from available bytes. No missing proof or log was synthesized.\n\nHead `6bb0d3de76d863470d66040f184b7f961072f0df` remains open/draft and owned by the existing qualifier. The earlier browser reports remain scoped to the old tree. Continue current-head artifacts and gates; re-download immutable reports or regenerate necessary proof if required for integration. No new failure, source repair, approval waiver, browser run or merge is claimed by this checkpoint."
+    }
+  ]
+}
