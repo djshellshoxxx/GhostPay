@@ -1,3 +1,7 @@
+## Scan consent and recovery-export cancellation — November 28, 2026
+
+Codex, branch `fix/scan-consent-and-export-cancel-70458ebe`, base `70458ebe3ae4a5502d7c39ae25d37342dbde971b`. Own the Scan route consent check, recovery export RPC signal forwarding, the corresponding chain-adapter and fetch transport code, and focused tests. Acceptance requires zero additional payment-address lookups after cancellation, ordinary retry success, and enforcement of the current transfer-estimate preference before optional token lookups. Use mock transports and synthetic local sessions. No release or contract changes.
+
 # Recorded low residuals (web) — 2026-11-27 UTC
 
 Worker: local Claude Code worker W7 on the existing merged branch `claude/consolidation-stack-20261126`, fast-forwarded
