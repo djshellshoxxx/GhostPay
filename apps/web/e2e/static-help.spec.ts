@@ -36,6 +36,20 @@ for (const guide of [
 
 test.describe('help without JavaScript', () => {
   test.use({ javaScriptEnabled: false });
+
+  for (const path of ['/help.html', '/privacy.html']) {
+    test(`${path} returns keyboard focus to the heading from the footer`, async ({ page }) => {
+      await page.goto(path);
+      const backToTop = page.getByRole('contentinfo').getByRole('link', { name: 'Back to top', exact: true });
+      await backToTop.press('Enter');
+      const heading = page.getByRole('heading', { level: 1 });
+      await expect(heading).toBeFocused();
+      await expect(heading).toBeInViewport();
+      await page.keyboard.press('Tab');
+      await expect(page.getByRole('navigation', { name: 'Site' }).getByRole('link', { name: 'Open app', exact: true })).toBeFocused();
+    });
+  }
+
   test('the no-JavaScript entry links to usable local help and privacy pages', async ({ page }) => {
     await page.goto('/');
     await expect(page.getByRole('heading', { name: 'This app needs JavaScript', exact: true })).toBeVisible();
