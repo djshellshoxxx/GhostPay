@@ -5420,3 +5420,7 @@ respective owners. Use disposable fixtures and record only sanitized results.
 ## November 27 audit — approved Pages payment origin
 
 Worker Codex origin, branch `audit/nov27-origin-87060`, base `b890a76603b924829fdbe2b4fb2c5626f0cf4e36`. Own the Pages build origin, lean manifest and wallet gates, smoke origin checks, corresponding workflow arguments, docs and regressions. Preserve the signed manifest, on-chain read-back, shared-testnet decision and explicit local fixture. Acceptance requires zero wallet requests on origin mismatch, working approved-origin payment and manifest-free demo, and an independent post-deployment origin check. Coordinate workflow hunks with the deployment archive worker.
+
+## Home recovery shortcut and sample invoice
+
+Codex owns branch `pages/recovery-sample-mobile-qa`, based on `0934ea094cb1db90293b74d2d1e9d9324e09a883`. Own the new Home controls, their small integration points in the Home and seller navigation, new locale keys and mobile journey tests. Acceptance covers opening the existing encrypted-keystore importer, a read-only sample with no wallet requests, and touch/browser qualification. Independent follow-up to the single approved Pages release.

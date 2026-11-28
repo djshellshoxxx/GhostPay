@@ -66,8 +66,8 @@ test('a keystore written by the independent codec restores on this device, refus
   const dialogs: string[] = [];
   page.on('dialog', (dialog) => { dialogs.push(dialog.type()); void dialog.dismiss(); });
   await page.goto('/');
-  await openKeys(page);
-  await importPanel(page).locator('summary').tap();
+  await page.getByRole('button', { name: 'Restore from a backup' }).tap();
+  await expect(importPanel(page).locator('summary')).toBeFocused();
   const file = importPanel(page).getByLabel('Keystore file', { exact: true });
 
   // A damaged copy and a wrong passphrase load nothing on the device.
@@ -123,8 +123,8 @@ test('the encrypted backup QR shown on another device restores here from an imag
       });
     });
     await page.goto('/');
-    await openKeys(page);
-    await importPanel(page).locator('summary').tap();
+    await page.getByRole('button', { name: 'Restore from a backup' }).tap();
+    await expect(importPanel(page).locator('summary')).toBeFocused();
     const importer = page.getByRole('region', { name: 'Import encrypted keystore QR' });
     await importer.getByRole('button', { name: 'Scan with camera' }).tap();
     await expect(importer.getByText(/Camera access was denied/)).toBeVisible();
@@ -157,8 +157,8 @@ test('the smaller multi-part backup codes shown on another device restore here o
     }
 
     await page.goto('/');
-    await openKeys(page);
-    await importPanel(page).locator('summary').tap();
+    await page.getByRole('button', { name: 'Restore from a backup' }).tap();
+    await expect(importPanel(page).locator('summary')).toBeFocused();
     const importer = page.getByRole('region', { name: 'Import encrypted keystore QR' });
     // Out of order, as a person scanning a looping code would: the last part first, then the rest.
     const order = [total - 1, ...Array.from({ length: total - 1 }, (_, i) => i)];

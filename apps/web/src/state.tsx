@@ -28,7 +28,7 @@ export const VIEW_LABELS: Readonly<Record<ViewId, MessageKey>> = {
 
 export interface AppState {
   readonly view: ViewId;
-  readonly setView: (v: ViewId) => void;
+  readonly setView: (v: ViewId, focus?: 'keystore-import') => void;
   readonly settings: Settings;
   /**
    * Persists settings; returns false if browser storage refused (settings still apply for this tab).

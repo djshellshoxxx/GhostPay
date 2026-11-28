@@ -1,5 +1,6 @@
 import { useEffect, useState, type ReactNode } from 'react';
 import { ChainFeeList, useLimits } from '../components/Disclosure';
+import { HomeWalkthroughs } from '../components/HomeWalkthroughs';
 import { Mono } from '../components/Common';
 import { computeReleaseHash, entryScriptUrl } from '../lib/release';
 import { useServices } from '../lib/services';
@@ -59,6 +60,8 @@ export function Home(): ReactNode {
           </button>
         </article>
       </div>
+
+      <HomeWalkthroughs />
 
       <h3>{t('home.limits.title')}</h3>
       <ul className="plain-list">
