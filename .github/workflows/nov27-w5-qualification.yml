@@ -24,6 +24,7 @@ jobs:
       HARNESS_TREE: 7ddc2ff45fdfc35a2fc04c884246757f5adde3ce
       BASE_REF: ${{ github.event.pull_request.base.ref }}
       LANE: ${{ matrix.lane }}
+      W5_PORT: '4173'
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -59,7 +60,34 @@ jobs:
           npm run build:libs
           ./node_modules/.bin/playwright install --with-deps chromium
           W5_PROPERTY_SCALE=10 node --test verification/independent-beta/harness/selftest.test.mjs
-          node verification/independent-beta/harness/build.mjs --profile lean > "$RUNNER_TEMP/w5-build.log" 2>&1
+          node --input-type=module > "$RUNNER_TEMP/w5-build.log" 2>&1 <<'JS'
+          import assert from 'node:assert/strict';
+          import { execFileSync } from 'node:child_process';
+          import { cpSync, existsSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+          import { join } from 'node:path';
+          import { prepareManifestFixture } from './apps/web/e2e/prepare-manifest.mjs';
+          import { DIST, distFingerprint, sourceIdentity } from './verification/independent-beta/harness/build.mjs';
+          const source = sourceIdentity();
+          assert(source.head === process.env.CLIENT && source.productionTreeClean);
+          assert(!existsSync(DIST), 'Unexpected prebuilt web artifacts');
+          const origin = 'http://localhost:' + process.env.W5_PORT;
+          const build = join(process.env.RUNNER_TEMP, 'w5-pages');
+          const fixture = prepareManifestFixture();
+          try {
+            const env = { ...process.env, GITHUB_SHA: source.head, GP_COMMIT: source.head, GHOSTPAY_PAGES_DEV: '1',
+              GHOSTPAY_PAGES_ORIGIN: origin, GHOSTPAY_PAGES_DEPLOYMENTS_DIR: fixture.directory, GHOSTPAY_RELEASE_PUBKEYS: fixture.publicKey };
+            execFileSync('bash', ['scripts/pages/build-pages.sh', build], { env, stdio: 'inherit' });
+            const site = join(build, 'site');
+            execFileSync(process.execPath, ['scripts/pages/verify-pages-artifact.mjs', site, join(build, 'evidence/SHA256SUMS'),
+              '--expect-commit', source.head], { stdio: 'inherit' });
+            assert.equal(JSON.parse(readFileSync(join(site, 'build-info.json'))).pagesOrigin, origin);
+            cpSync(site, DIST, { recursive: true });
+            writeFileSync(join(DIST, '.w5-build.json'), JSON.stringify({ profile: 'lean', ...source, dist: distFingerprint(),
+              approvedFixtureOrigin: origin, builtAt: new Date().toISOString() }));
+          } finally {
+            rmSync(fixture.directory, { recursive: true, force: true });
+          }
+          JS
       - name: Exercise the named scenarios and eight deterministic seeds
         working-directory: client
         run: |
@@ -101,6 +129,7 @@ jobs:
           const validSource = record.pinnedMain === CLIENT && record.source.head === CLIENT &&
             record.source.productionTreeClean && record.productionPathsDifferingFromPinnedMain.length === 0 &&
             record.build.head === CLIENT && record.build.profile === 'lean' && record.build.productionTreeClean &&
+            record.build.approvedFixtureOrigin === 'http://localhost:' + process.env.W5_PORT &&
             record.build.dist.sha256 === fingerprint.sha256 && record.build.dist.files === fingerprint.files;
           assert(validSource, 'Source or bundle identity mismatch');
           const names = new Set(record.results.map(r => r.name));
@@ -111,14 +140,24 @@ jobs:
             const r = record.results.find(row => row.name === s.name);
             const isControl = s.name === control.name;
             const expectedControlDetected = isControl && control.expectViolations.every(id => r.violations.some(v => v.inv === id));
-            return { scenario: s.name, harnessError: r.harnessError !== null, unexpectedViolations: isControl ? 0 : r.violations.length,
+            const declared = new Set(isControl ? control.expectViolations : []);
+            const invariantCounts = {};
+            const additionalControlInvariants = {};
+            for (const { inv } of r.violations) {
+              const id = /^(I[1-8]|SI(?:[1-9]|1[0-2]))$/.test(inv) ? inv : 'unrecognized';
+              invariantCounts[id] = (invariantCounts[id] ?? 0) + 1;
+              if (isControl && !declared.has(inv)) additionalControlInvariants[id] = (additionalControlInvariants[id] ?? 0) + 1;
+            }
+            return { scenario: s.name, injectedPositiveControl: isControl, harnessError: r.harnessError !== null,
+              violations: r.violations.length, invariantCounts, requiredControlInvariants: [...declared],
+              additionalControlInvariants, ordinaryViolations: isControl ? 0 : r.violations.length,
               ambiguities: r.ambiguities.length, blockedOrigins: r.blockedOrigins.length, expectedControlDetected };
           });
           const exitCode = Number(readFileSync(join(RUNNER_TEMP, 'w5-exit'), 'utf8').trim());
-          const passed = exitCode === 0 && outcomes.every(r => !r.harnessError && !r.unexpectedViolations && !r.blockedOrigins) &&
+          const passed = exitCode === 0 && outcomes.every(r => !r.harnessError && !r.ordinaryViolations && !r.blockedOrigins) &&
             outcomes.find(r => r.scenario === control.name).expectedControlDetected;
           const evidence = { lane: LANE, client: CLIENT, clientTree: CLIENT_TREE, harness: HARNESS, harnessTree: HARNESS_TREE,
-            fixture: 'signed loopback lean build', bundle: fingerprint, rawReportSha256: createHash('sha256').update(raw).digest('hex'),
+            fixture: 'signed loopback lean Pages build', approvedOrigin: record.build.approvedFixtureOrigin, bundle: fingerprint, rawReportSha256: createHash('sha256').update(raw).digest('hex'),
             passed, exitCode, outcomes };
           writeFileSync(join(RUNNER_TEMP, 'w5-summary.json'), JSON.stringify(evidence, null, 2) + '\n', { mode: 0o600 });
           console.log(JSON.stringify({ passed, scenarios: outcomes.length, lane: LANE }));
