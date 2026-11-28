@@ -1,6 +1,6 @@
 {
   "format": "ghostpay-work-claims/1",
-  "updated_at": "2026-11-28T02:31:28Z",
+  "updated_at": "2026-11-28T02:37:09Z",
   "claims": [
     {
       "id": "P-COORD",
@@ -133,6 +133,34 @@
       "shared_interfaces": "none",
       "acceptance": "Regression red on main, green with fix; cancel-signal test fails when signal wiring is removed; all Scan view tests and related disclosure tests pass; web typecheck/lint/full tests; hosted CI exact head; independent review; merge under the integration lock.",
       "integration": "pending"
+    },
+    {
+      "id": "S-DOCS-ACCURACY",
+      "coordinator": "SECONDARY",
+      "worker": "secondary-w3",
+      "status": "active",
+      "claimed_at": "2026-11-28T02:37:09Z",
+      "base_sha": "b890a76603b924829fdbe2b4fb2c5626f0cf4e36",
+      "branch": "secondary/docs-accuracy/recovery-privacy",
+      "spec": "SECONDARY analysis A4 (docs vs source at b890a766): recovery-instruction and privacy-claim inaccuracies",
+      "scope": "Docs-only corrections of user/operator statements that contradict current source: idle-lock recovery steps, where seller keys are stored, discoverability and stale status of the stealth-key recovery guide, settings-transfer contents, Tor/private-path and second-RPC claims, wss:// and loopback-proxy advice, sweep-destination reuse statement, manifest authentication statement, stale threat-model status. Excludes sweep gas-funding advice (PRIMARY P-M1), DEPLOYMENT_MANIFEST/deployments README (P-M4), README.md (#639), session-security.md and docs/pages/README.md lines touched by #762/#764/#720, help.html/privacy.html (#766).",
+      "paths": [
+        "docs/user/troubleshooting.md",
+        "docs/pages/README.md (lines ~33-35, ~49-51 only)",
+        "docs/user/product-guide.md",
+        "docs/user/recover-stealth-payment-keys.md",
+        "docs/user/README.md (start-here rows only)",
+        "docs/INDEX.md (user/pages rows only)",
+        "docs/user/privacy-limits.md (not line ~30, not gas-funding lines ~62-63/~144)",
+        "docs/user/review-and-pay-an-invoice.md",
+        "SECURITY.md (manifest status line only)",
+        "docs/threat-model/{PRIVACY_THREAT_MODEL,THREAT_MODEL,metadata-exposure-matrix}.md (status rows)",
+        ".claude/skills/ghostpay-security-invariants/REFERENCE.md (section 1 destination-reuse and manifest lines only)",
+        "docs/ai/ACTIVE_WORK.md (one additive entry on the task branch)"
+      ],
+      "shared_interfaces": "none (documentation only)",
+      "acceptance": "Every changed sentence cites source evidence in the PR body; no forbidden wording; links resolve; no code change; hosted CI green; independent review; merge under the integration lock.",
+      "integration": "pending"
     }
   ],
   "observed_external": [
@@ -140,6 +168,11 @@
       "branch": "codex/beta-control-tooltips",
       "head": "e9b14cf2",
       "note": "Observed 2026-11-28 02:20Z; ACTIVE_WORK entry 'Contextual control help for the browser beta' (Codex). Presentation-only ControlTip wrappers in many lean views, including Sweep.tsx and CreateInvoice.tsx. PRIMARY behavioural claims above touch the same files in different behaviour; whichever merges second keeps both."
+    },
+    {
+      "branch": "automation/20261127/bug/browser-digest-deadline",
+      "head": "701ae992",
+      "note": "Observed by SECONDARY 2026-11-28 ~02:35Z, no PR yet; owns apps/web/src/lib/browserChecks{,.test}.ts."
     }
   ]
 }
