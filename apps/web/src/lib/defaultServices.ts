@@ -36,7 +36,7 @@ export function createDefaultServices(): Services {
     sleep: (ms) => new Promise((r) => setTimeout(r, ms)),
     fetchFn: (u, i) => fetch(u, i),
     loadManifest: (id) => loadDefaultManifest(id),
-    createRpc: (chain, url) => createClient(chain, url),
+    createRpc: createClient,
     discoverWallets: () => discoverWallets(window),
     createScanWorker: createBrowserScanWorker,
     checkpoints: localCheckpointStore(safeStorage()),

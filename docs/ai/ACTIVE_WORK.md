@@ -5420,3 +5420,15 @@ respective owners. Use disposable fixtures and record only sanitized results.
 ## November 27 audit — approved Pages payment origin
 
 Worker Codex origin, branch `audit/nov27-origin-87060`, base `b890a76603b924829fdbe2b4fb2c5626f0cf4e36`. Own the Pages build origin, lean manifest and wallet gates, smoke origin checks, corresponding workflow arguments, docs and regressions. Preserve the signed manifest, on-chain read-back, shared-testnet decision and explicit local fixture. Acceptance requires zero wallet requests on origin mismatch, working approved-origin payment and manifest-free demo, and an independent post-deployment origin check. Coordinate workflow hunks with the deployment archive worker.
+
+## Seller payment finality and scan RPC consent
+
+Codex owns these two payment-client audit fixes on `fix/payment-finality-scan-consent`,
+based on `0934ea094cb1db90293b74d2d1e9d9324e09a883`. Paths cover the shared verifier
+and its tests in `packages/chain-adapters/src/payments*.ts`, the Settings snapshot in
+`apps/web/src/{AppShell,state}.tsx`, the scan client wiring in `views/Scan.tsx` and
+`lib/{settings,services,defaultServices,scanPrivacy}.ts`, and focused web regressions.
+Acceptance requires fresh bounded confirmation depth after reading evidence, zero sends
+to a retired scan provider before the storage event arrives, and a working session-only
+provider after a refused preference write. PR #769 owns token-lane revocation and abort
+propagation. PRs #248 and #775 cover durable discovery. Preserve those changes at integration.
