@@ -6,9 +6,9 @@ import { notifyAppLock } from '../lib/appLock';
 import * as keyVault from '../lib/keyVault';
 import { MemoryKeyVaultStore, setKeyVaultStoreForTests } from '../lib/keyVault';
 import type { ScanMatch } from '../lib/scanClient';
-import { clearSession, generateSession } from '../lib/session';
+import { clearSession, generateSession, suspendSession } from '../lib/session';
 import { ServicesContext, type Services } from '../lib/services';
-import { DEFAULT_SETTINGS } from '../lib/settings';
+import { DEFAULT_SETTINGS, SETTINGS_KEY } from '../lib/settings';
 import * as sweepLib from '../lib/sweep';
 import { SWEEP_JOURNAL_KEY } from '../lib/sweepAttemptJournal';
 import { AppContext, beginSweepAttempt, getSweepAttempt, resetSweepAttemptsForTests, type AppState } from '../state';
@@ -113,6 +113,29 @@ async function answer(m: ReturnType<typeof mount>, index = 0): Promise<void> {
 }
 
 describe('Sweep quote lifecycle', () => {
+  it('handles a session that locks before authorization without starting a request', async () => {
+    const m = mount();
+    await ready(m);
+    act(() => { suspendSession(); });
+    fireEvent.click(screen.getByRole('button', { name: QUOTE }));
+    expect((await screen.findByRole('alert')).textContent).toMatch(/locked/i);
+    expect(m.requests).toEqual([]);
+    expect(screen.getByRole<HTMLButtonElement>('button', { name: QUOTE }).disabled).toBe(false);
+  });
+
+  it('handles a session cleared before authorization without starting a request', async () => {
+    const m = mount();
+    await ready(m);
+    const reads = m.rpcCalls();
+    // The session store can become unavailable before this context projection is replaced.
+    act(() => { clearSession(false); });
+    fireEvent.click(screen.getByRole('button', { name: QUOTE }));
+    expect((await screen.findByRole('alert')).textContent).toMatch(/load or generate seller keys/i);
+    expect(m.requests).toEqual([]);
+    expect(m.rpcCalls()).toBe(reads);
+    expect(screen.getByRole<HTMLButtonElement>('button', { name: QUOTE }).disabled).toBe(false);
+  });
+
   it('keeps an authorized quote through an unrelated context render', async () => {
     const m = mount();
     await ready(m);
@@ -485,5 +508,82 @@ describe('Sweep review-change messaging and read availability', () => {
       await settle();
     }
     expect(getSweepAttempt(CHAIN, OWNER)).toMatchObject({ chainId: CHAIN, owner: OWNER, order: ORDER, status: 'submitted', expectedHash: HASH });
+  });
+});
+
+/** Storage written by another tab whose notification has not reached this one yet. */
+function otherTabSaves(m: ReturnType<typeof mount>, patch: Partial<typeof DEFAULT_SETTINGS>): void {
+  window.localStorage.setItem(SETTINGS_KEY, JSON.stringify({ ...m.app().settings, ...patch }));
+}
+const REFUSED = /Nothing was sent: the RPC, relayer or scan privacy settings changed in another tab/;
+const REPLACED = [
+  ['the RPC', { rpcUrls: { [String(CHAIN)]: 'https://other-rpc.test/' } }],
+  ['the relayer', { relayerUrl: 'https://other-relayer.test' }],
+] as const;
+
+/** What `mount` shows is what is saved, so a later save differs from it only where the patch does. */
+function savedBeforeOpening(): void {
+  window.localStorage.setItem(SETTINGS_KEY, JSON.stringify({ ...DEFAULT_SETTINGS, relayerUrl: 'https://relay.test', rpcUrls: { [String(CHAIN)]: 'https://rpc.test/' } }));
+}
+
+describe('Sweep after another tab replaced only the relayer', () => {
+  beforeEach(savedBeforeOpening);
+
+  it('still reads the balance, which asks no relayer anything', async () => {
+    const m = mount();
+    otherTabSaves(m, { relayerUrl: 'https://other-relayer.test' });
+    fireEvent.click(screen.getByRole('button', { name: READ }));
+    expect(await screen.findByText('5 USDC')).toBeTruthy();
+    expect(m.requests).toEqual([]);
+  });
+});
+
+describe.each(REPLACED)('Sweep after another tab replaced %s', (_name, patch) => {
+  beforeEach(savedBeforeOpening);
+
+  it('asks no relayer for a quote', async () => {
+    const m = mount();
+    await ready(m);
+    const reads = m.rpcCalls();
+    otherTabSaves(m, patch);
+    fireEvent.click(screen.getByRole('button', { name: QUOTE }));
+    expect((await screen.findByRole('alert')).textContent).toMatch(REFUSED);
+    expect(m.requests).toEqual([]);
+    expect(m.rpcCalls()).toBe(reads);
+  });
+
+  it('signs no relayed order', async () => {
+    const m = mount();
+    await reviewedQuote(m);
+    const submitted = vi.spyOn(sweepLib, 'relayedSweep');
+    otherTabSaves(m, patch);
+    fireEvent.click(screen.getByRole('button', { name: SIGN }));
+    expect((await screen.findByRole('alert')).textContent).toMatch(REFUSED);
+    expect(submitted).not.toHaveBeenCalled();
+  });
+
+  it.each([false, true])('signs no direct sweep (replacement: %s)', async (resign) => {
+    const m = mount();
+    await reviewedDirect(m, resign);
+    const submitted = vi.spyOn(sweepLib, 'directSweep');
+    const reads = m.rpcCalls();
+    otherTabSaves(m, patch);
+    fireEvent.click(screen.getByRole('button', { name: resign ? RESIGN : DIRECT }));
+    expect((await screen.findByRole('alert')).textContent).toMatch(REFUSED);
+    expect(submitted).not.toHaveBeenCalled();
+    expect(m.rpcCalls()).toBe(reads);
+  });
+
+  it('hands off no direct sweep when the change lands while signing', async () => {
+    const m = mount();
+    await reviewedDirect(m, false);
+    vi.spyOn(sweepLib, 'directSweep').mockImplementation((input) => {
+      otherTabSaves(m, patch);
+      input.onBeforeHandoff?.(directAttempt(input));
+      return Promise.resolve(directResult(input));
+    });
+    fireEvent.click(screen.getByRole('button', { name: DIRECT }));
+    expect((await screen.findByRole('alert')).textContent).toMatch(REFUSED);
+    expect(getSweepAttempt(CHAIN, OWNER)).toBeUndefined();
   });
 });

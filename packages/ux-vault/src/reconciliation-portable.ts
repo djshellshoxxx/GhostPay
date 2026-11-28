@@ -138,6 +138,8 @@ export interface Cutoff {
 interface ScannedPaymentPage {
   readonly finalizedThrough?: bigint;
   readonly resumed?: boolean;
+  /** Whether wrong view tags were also checked. Only an explicit `false` excuses a record such a page cannot report. */
+  readonly deep?: boolean;
   readonly from: bigint;
   readonly through: bigint;
   readonly canonicalHash: (height: bigint) => Promise<string>;
@@ -365,9 +367,13 @@ function proposeInvoiceMatch(
   const byId = new Map<string, ContextRecord>();
   for (const item of [...context, record]) byId.set(item.id, item);
   const all = [...byId.values()];
-  const claimed = new Set(
-    all.filter((r) => verifiedLiveObservation(r) && r.invoiceDigest !== undefined).map((r) => r.invoiceDigest),
-  );
+  // A live linked record keeps its invoice while it can still be restored: quarantined (unverified) or pending evidence
+  // is reversible, so releasing the invoice would let a second payment be linked and double-count it. Only a reorg
+  // tombstone (invalidated-after-reorg) frees the invoice.
+  const reservesInvoice = (r: ContextRecord): boolean => r.invoiceDigest !== undefined && (verifiedLiveObservation(r) ||
+    ((r.evidenceStatus === 'unverified-at-scan' || r.evidenceStatus === 'pending-at-scan') &&
+      (r.provenance === undefined || r.provenance === 'live-scan')));
+  const claimed = new Set(all.filter(reservesInvoice).map((r) => r.invoiceDigest));
   const open = invoices.filter((invoice) => !claimed.has(invoice.invoiceDigest));
   const candidates = open.filter((invoice) => candidate(invoice, record));
   if (candidates.length === 0) return { kind: 'none' };
@@ -965,6 +971,10 @@ class ReconciliationVault {
             checked.provenance !== record.provenance || checked.recordedAt !== record.recordedAt ||
             checked.evidenceStatus !== record.evidenceStatus || checked.lateAcceptedAt !== record.lateAcceptedAt) continue;
         const hash = checkedHashes.get(record.blockNumber);
+        // A normal scan cannot report a wrong-view-tag payment, so its absence says nothing while the block is
+        // confirmed unchanged. A replaced or unconfirmed block, and the depth check below, still apply.
+        if (page?.deep === false && !record.viewTagMatched && record.evidenceStatus === 'verified-at-scan' &&
+            hash === record.blockHash) continue;
         const replaced = hash !== undefined && hash !== record.blockHash;
         const evidenceStatus = replaced ? 'invalidated-after-reorg' : 'unverified-at-scan';
         if (replaced) tombstones.add(record.id);
@@ -1031,6 +1041,11 @@ class ReconciliationVault {
       }
       // Check the final CAS snapshot. A missing log and a present but unverifiable transfer both need a replay.
       if (page !== undefined) {
+        // An unverified record is replayed while it can still be credited: a linked payment, or an unlinked candidate
+        // that lost verified evidence, such as a late payment awaiting the seller's decision (LATE-L1). A candidate
+        // that was never verified is not: an indirect router call stays `claimed` and would pin every later checkpoint.
+        const replayable = (record: VaultRecord): boolean => record.invoiceDigest !== undefined ||
+          (record.evidenceSource === 'verified-router-scan' && document.invoices.some((invoice) => candidate(invoice, record)));
         for (const record of records.values()) {
           if (record.provenance !== 'live-scan' || record.evidenceStatus === 'invalidated-after-reorg') continue;
           const height = BigInt(record.blockNumber);
@@ -1041,8 +1056,8 @@ class ReconciliationVault {
               records.set(record.id, { ...record, evidenceStatus: 'unverified-at-scan' });
               changed = true;
             }
-          } else if (record.invoiceDigest === undefined || record.evidenceStatus !== 'unverified-at-scan' ||
-              (height < page.from && !page.resumed) || height > page.through) continue;
+          } else if (record.evidenceStatus !== 'unverified-at-scan' || (height < page.from && !page.resumed) ||
+              height > page.through || !replayable(record)) continue;
           if (retryHeight === undefined || height < retryHeight) retryHeight = height;
         }
       }

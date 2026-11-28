@@ -239,6 +239,7 @@ test('lean rejects rendered stopped-product modules (owner stop-work containment
     ['F12', '/fixture/src/features/ghostbridge/handoff.ts'], ['F13', '/fixture/src/features/fiat-conversion/terms.ts'],
     ['F14', '/fixture/src/features/future/multichain-routing/route.ts'], ['P07', '/fixture/src/features/device-sync/pair.ts'],
     ['FUTURE', '/fixture/src/features/future/ghostproof/review.ts'],
+    ['FUTURE', '/fixture/../../packages/confidential-amounts/dist/future/p13/index.js'],
   ]) {
     assert.throws(() => leanOutput().generateBundle({}, chunk(id)), new RegExp(`stopped-product module \\(${product} `), id);
     assert.throws(() => leanOutput({ worker: true, workerEvidence: [] }).generateBundle({}, chunk(id)), /stopped-product/, `${id} worker`);

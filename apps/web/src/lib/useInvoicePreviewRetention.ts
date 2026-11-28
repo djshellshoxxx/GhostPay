@@ -23,12 +23,19 @@ export function usePresentationRetention(identity: object | undefined, clear: (r
     window.addEventListener(policy.event, expire);
     window.addEventListener('storage', onStorage);
     window.addEventListener('focus', expire);
+    // Reconcile wall time and current consent before a restored page waits for its suspended timer.
+    window.addEventListener('pageshow', expire);
+    document.addEventListener('visibilitychange', expire);
+    document.addEventListener('resume', expire);
     return () => {
       unregister();
       window.clearInterval(timer);
       window.removeEventListener(policy.event, expire);
       window.removeEventListener('storage', onStorage);
       window.removeEventListener('focus', expire);
+      window.removeEventListener('pageshow', expire);
+      document.removeEventListener('visibilitychange', expire);
+      document.removeEventListener('resume', expire);
     };
   }, [identity, scope]);
 }

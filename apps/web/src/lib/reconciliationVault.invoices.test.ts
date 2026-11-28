@@ -127,6 +127,25 @@ describe('encrypted invoice registration and local matching', () => {
     await expect(vault.confirmProposal({ ...rec(3), chainId: 1, id: rec(3).id.replace(':84532:', ':1:') }, invoice.invoiceDigest)).rejects.toThrow(/scope/);
   });
 
+  it('keeps an invoice reserved while its linked payment is quarantined, so a second payment cannot claim it', async () => {
+    const vault = await unlocked();
+    const invoice = registrationFromInvoice(testInvoice(), 1);
+    await vault.registerInvoice(invoice);
+    const first = rec(1);
+    await vault.observeInvoicePayments([first]);
+    await vault.confirmProposal(first, invoice.invoiceDigest);
+    // RPC uncertainty quarantines the linked inclusion; it can still be restored, so the invoice stays taken.
+    await vault.quarantineInvoicePayments(BigInt(first.blockNumber));
+    expect(await vault.read()).toMatchObject([{ id: first.id, invoiceDigest: invoice.invoiceDigest, evidenceStatus: 'unverified-at-scan' }]);
+    const second = rec(2);
+    await vault.observeInvoicePayments([second]);
+    expect((await vault.proposals([second])).get(second.id)).toEqual({ kind: 'none' });
+    await expect(vault.confirmProposal(second, invoice.invoiceDigest)).rejects.toThrow(/no longer has a single exact/);
+    // Restoring the first inclusion leaves exactly one link to the invoice.
+    await vault.observeInvoicePayments([first]);
+    expect((await vault.read()).filter((r) => r.invoiceDigest === invoice.invoiceDigest)).toMatchObject([{ id: first.id, evidenceStatus: 'verified-at-scan' }]);
+  });
+
   it('never confirms ambiguous proposals', async () => {
     const vault = await unlocked();
     const a = registrationFromInvoice(testInvoice(), 1);
@@ -687,6 +706,72 @@ describe('late payments in the encrypted reconciliation vault', () => {
       { id: second.id, invoiceDigest: invoice.invoiceDigest, evidenceStatus: 'verified-at-scan' },
     ]);
     expect(retries).toEqual([from, from]);
+  });
+
+  // LATE-L1: an unlinked candidate awaiting the seller's decision lost its verified evidence to RPC uncertainty below a
+  // saved checkpoint. Without a retry it stayed unverified, so it could not be accepted, until a manual rescan.
+  it.each([
+    ['late payment awaiting a decision', true],
+    ['on-time payment first seen pending', false],
+  ])('retries a quarantined unlinked %s after the checkpoint has passed it (LATE-L1)', async (_label, late) => {
+    const vault = await unlocked();
+    const invoice = registrationFromInvoice(testInvoice(), 1);
+    await vault.registerInvoice(invoice);
+    const payment = late ? rec(1, { blockTimestamp: String(invoice.expiresAt) }) : rec(1);
+    // A verified on-time match is kept only in memory unless it was first stored while pending.
+    if (!late) await vault.observeInvoicePayments([{ ...payment, evidenceStatus: 'pending-at-scan', evidenceSource: 'router-scan-candidate' }]);
+    await vault.observeInvoicePayments([payment]);
+    expect((await vault.proposals([payment])).get(payment.id))
+      .toMatchObject(late ? { kind: 'ambiguous', reason: 'late-observation' } : { kind: 'exact' });
+    const height = BigInt(payment.blockNumber);
+    await vault.quarantineInvoicePayments(height);
+    expect(await vault.read()).toMatchObject([{ id: payment.id, evidenceStatus: 'unverified-at-scan' }]);
+    expect((await vault.proposals([payment])).get(payment.id)).toMatchObject({ kind: 'none' });
+    await expect(vault.confirmProposal(payment, invoice.invoiceDigest, { current: [payment], acceptLate: late })).rejects.toThrow();
+
+    const retries: bigint[] = [];
+    const resumed = { from: height + 10n, through: height + 20n, resumed: true,
+      canonicalHash: () => Promise.resolve(payment.blockHash), retryFrom: (block: bigint) => { retries.push(block); } };
+    await vault.observeInvoicePayments([], undefined, resumed);
+    expect(retries).toEqual([height]);
+    // A fresh (not resumed) scan that starts above the record does not revisit it, as for linked records.
+    retries.length = 0;
+    await vault.observeInvoicePayments([], undefined, { ...resumed, resumed: false });
+    expect(retries).toEqual([]);
+
+    // The replay from that block re-verifies the transfer, and only then can the seller act on it.
+    await vault.observeInvoicePayments([payment], undefined, { ...resumed, from: height });
+    expect(retries).toEqual([]);
+    expect(await vault.read()).toMatchObject([{ id: payment.id, evidenceStatus: 'verified-at-scan' }]);
+    expect((await vault.read())[0]).not.toHaveProperty('invoiceDigest');
+    await vault.confirmProposal(payment, invoice.invoiceDigest, { current: [payment], acceptLate: late });
+    expect(await vault.read()).toMatchObject([{ invoiceDigest: invoice.invoiceDigest, evidenceStatus: 'verified-at-scan' }]);
+  });
+
+  it('does not pin the checkpoint on unlinked records that were never verified or no longer match an invoice (LATE-L1)', async () => {
+    const vault = await unlocked();
+    const invoice = registrationFromInvoice(testInvoice(), 1);
+    await vault.registerInvoice(invoice);
+    // An indirect router call (for example from a contract wallet) stays `claimed`, so unverified, on every replay.
+    // Retrying it would pin every later checkpoint at its block; scanClient gives such claims one replay instead.
+    const claimed = rec(1, { evidenceStatus: 'unverified-at-scan', evidenceSource: 'router-scan-candidate' });
+    const height = BigInt(claimed.blockNumber);
+    const retries: bigint[] = [];
+    const page = { from: height, through: height + 20n, resumed: true,
+      canonicalHash: () => Promise.resolve(claimed.blockHash), retryFrom: (block: bigint) => { retries.push(block); } };
+    for (let replay = 0; replay < 2; replay++) await vault.observeInvoicePayments([claimed], undefined, page);
+    expect(await vault.read()).toMatchObject([{ id: claimed.id, evidenceStatus: 'unverified-at-scan', evidenceSource: 'router-scan-candidate' }]);
+    await vault.observeInvoicePayments([], undefined, { ...page, from: height + 10n });
+    expect(retries).toEqual([]);
+
+    // A quarantined observation whose invoice the seller removed has nothing left to credit.
+    const other = rec(2, { blockTimestamp: String(invoice.expiresAt) });
+    await vault.observeInvoicePayments([other]);
+    await vault.quarantineInvoicePayments(BigInt(other.blockNumber));
+    await vault.removeInvoice(invoice.invoiceDigest);
+    await vault.observeInvoicePayments([], undefined, { ...page, from: BigInt(other.blockNumber) + 10n });
+    expect(retries).toEqual([]);
+    expect((await vault.read()).find((record) => record.id === other.id)).toMatchObject({ evidenceStatus: 'unverified-at-scan' });
   });
 
   it('withholds an accepted payment through conflicting duplicate deliveries in either order', async () => {

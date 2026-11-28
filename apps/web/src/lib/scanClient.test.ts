@@ -1528,7 +1528,8 @@ describe('two-provider replay-tail checkpoint anchor', () => {
     const map = new Map<string, string>();
     const saves: unknown[] = [];
     const store = localCheckpointStore({ getItem: (k) => map.get(k) ?? null, setItem: (k, v) => void map.set(k, v), removeItem: (k) => void map.delete(k) });
-    const recording: CheckpointStore = { ...store, save: (id, key, cursor) => { saves.push(cursor); store.save(id, key, cursor); } };
+    // Forwards `expected`: without it the save is forward-only and runScan's own rewinds below would be refused.
+    const recording: CheckpointStore = { ...store, save: (id, key, cursor, expected) => { saves.push(cursor); store.save(id, key, cursor, expected); } };
     return { map, saves, store: recording };
   };
   async function unlockedScanVault(s: ReturnType<typeof setup>, sellerKeyId: string) {

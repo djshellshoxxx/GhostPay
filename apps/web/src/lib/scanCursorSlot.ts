@@ -3,7 +3,7 @@ import { wipe } from '@ghostpay/secret-box';
 import { hkdf } from '@noble/hashes/hkdf.js';
 import { sha256 } from '@noble/hashes/sha2.js';
 import { bytesToHex, utf8ToBytes } from '@noble/hashes/utils.js';
-import { getSessionPublic, revealViewingKey, type SessionPublic } from './session';
+import { captureSessionGuard, getSessionPublic, revealViewingKey, type SessionPublic } from './session';
 
 /**
  * Lends the viewing private key of the seller keys `keyId` names to `use`, then wipes the copy. Returns `undefined`, without
@@ -20,19 +20,25 @@ export interface ViewingKeyLender {
 }
 
 /**
- * The session's public snapshot if it holds the keys `keyId` names. Every install creates a new snapshot and every wipe
- * removes it, notified or not (`subscribeSession` misses `clearSession(false)`), so its identity marks every key change.
+ * The active session's public snapshot if it holds the keys `keyId` names. Every install creates a new snapshot and every
+ * wipe removes it, notified or not (`subscribeSession` misses `clearSession(false)`). Idle suspension keeps that snapshot,
+ * so the secret-free guard also checks the deadline and refuses suspended access before any cached slot is reused.
  */
 function sessionHolding(keyId: string): SessionPublic | undefined {
+  try { captureSessionGuard(); } catch { return undefined; }
   const pub = getSessionPublic();
   return pub !== undefined && checkpointKeyId(pub.spendingPublicKey, pub.viewingPublicKey) === keyId ? pub : undefined;
 }
 
 /** The loaded session's viewing key, and only for its own key id: a checkpoint is never read or written for other keys. */
 export const sessionViewingKey: ViewingKeyLender = Object.assign(<T>(keyId: string, use: (viewingKey: Uint8Array) => T): T | undefined => {
-  if (sessionHolding(keyId) === undefined) return undefined;
-  const viewingKey = revealViewingKey();
+  const expected = sessionHolding(keyId);
+  if (expected === undefined) return undefined;
+  let viewingKey: Uint8Array;
+  try { viewingKey = revealViewingKey(); } catch { return undefined; }
   try {
+    // Borrowing checks the deadline again. A lock listener may replace the wallet during that observation.
+    if (getSessionPublic() !== expected) return undefined;
     return use(viewingKey);
   } finally {
     wipe(viewingKey);

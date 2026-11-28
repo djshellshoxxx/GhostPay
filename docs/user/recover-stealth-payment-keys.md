@@ -92,7 +92,7 @@ page checks every key against its address before showing anything, and a file wi
 ### Verify a backup without replacing your keys
 
 To check an existing encrypted file, select it under **Open a stealth key export**, enter its passphrase, and choose
-**Verify backup without importing**. A successful verification authenticates the file, checks each private key
+**Check export without importing**. A successful verification authenticates the file, checks each private key
 against its public identity, and disposes the recovered private material. It does not install keys into the current
 session. A public-only record cannot pass as a recoverable secret backup.
 

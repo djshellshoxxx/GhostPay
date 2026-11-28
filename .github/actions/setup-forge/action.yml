@@ -14,6 +14,16 @@ runs:
       with:
         path: ~/.svm
         key: svm-${{ runner.os }}-0.8.28
+    # A restored cache is not integrity-checked by actions/cache, and svm prefers ~/.svm when it exists. Fail closed
+    # if a cached solc differs from the official binaries.soliditylang.org build (audit F-3, 2026-11-18).
+    - shell: bash
+      run: |
+        set -euo pipefail
+        expected=9a0fb7e0db2c0641dbae1c5cc645dc686820c83af516226abb1c0a2f76636f25
+        for f in "$HOME/.svm/0.8.28/solc-0.8.28" "${XDG_DATA_HOME:-$HOME/.local/share}/svm/0.8.28/solc-0.8.28"; do
+          [[ -e "$f" ]] || continue
+          echo "$expected  $f" | sha256sum -c --quiet - || { echo "::error::cached solc 0.8.28 hash mismatch: $f"; exit 1; }
+        done
     # forge re-checks content hashes recorded in its cache file, so a partial restore (restore-keys) only
     # skips recompilation of unchanged sources; it cannot serve a stale artifact.
     - uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5

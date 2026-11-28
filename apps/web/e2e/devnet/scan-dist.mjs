@@ -15,7 +15,7 @@ const root = fileURLToPath(new URL('../..', import.meta.url));
 const deploymentDir = process.env['GHOSTPAY_DEPLOYMENTS_DIR'] === undefined ? resolve(root, 'deployments') : resolve(process.env['GHOSTPAY_DEPLOYMENTS_DIR']);
 const problems = [
   ...await validateDeployments(deploymentDir, parseReleaseKeys(process.env['GHOSTPAY_RELEASE_PUBKEYS'])),
-  ...scanBundle(resolve(dist), resolve(root, 'src'), resolve(root, 'vite.config.ts')),
+  ...scanBundle(resolve(dist), resolve(root, 'src'), resolve(root, 'vite.config.ts'), process.env['VITE_GHOSTPAY_PAGES_ORIGIN']),
 ];
 if (problems.length > 0) {
   console.error('Devnet bundle scan FAILED:');

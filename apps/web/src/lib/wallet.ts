@@ -2,6 +2,7 @@ import { parseQuantity, type Address, type Hex } from '@ghostpay/chain-adapters'
 import type { Abi } from 'viem';
 import { getAddress, isAddress, keccak256, toBytes } from 'viem/utils';
 import { attemptTxDigest, beginAttempt, readAttempts, removeUnsentAttempt, browserAttemptStorage, finishReturnedAttempt, withAttemptJournal, type AttemptInput, type AttemptLockManager, type AttemptStorage, type JournalAccess, type WalletAttempt } from './duplicateAttemptJournal';
+import { assertPagesWalletOrigin } from './pagesOrigin';
 import { UserFacingError } from './errors';
 import { TransactionOutcomeError, WalletRequestRejectedError } from './transactionOutcome';
 import { prepareWalletChainSwitch, prepareWalletConnection, prepareWalletSignature, prepareWalletTransaction, requireApproval, walletRequestParams, type WalletDisclosureApproval, type WalletDisclosureGate, type WalletDisclosureRequest } from './walletDisclosure';
@@ -165,6 +166,7 @@ export interface WalletSession {
 }
 
 async function call(p: Eip1193Provider, method: string, params?: readonly unknown[]): Promise<unknown> {
+  assertPagesWalletOrigin();
   try {
     return await p.request(params === undefined ? { method } : { method, params });
   } catch (e) {
@@ -224,7 +226,7 @@ async function readChainId(p: Eip1193Provider, assertCurrent?: () => void): Prom
   // consistently lying provider; the independent RPC check after sending covers that when an RPC is configured.
   let net: unknown;
   try {
-    net = await p.request({ method: 'net_version' });
+    net = await call(p, 'net_version');
   } catch {
     net = undefined;
   }
@@ -243,6 +245,7 @@ export async function connectWallet(
   wallet: WalletInfo, expectedChainId: number, assertCurrent?: () => void, signal?: AbortSignal,
   options?: { readonly disclosure?: WalletDisclosureGate },
 ): Promise<WalletSession> {
+  assertPagesWalletOrigin();
   const disclosure = options?.disclosure;
   const provider = wallet.provider;
   let approval: WalletDisclosureApproval | undefined;
@@ -389,6 +392,7 @@ function invalidateWalletIdentity(session: WalletSession): void {
 /** Re-reads account and chain immediately before a signature or send. */
 export async function recheckWallet(s: WalletSession, assertCurrent?: () => void): Promise<void> {
   assertCurrent?.();
+  assertPagesWalletOrigin();
   const checkAccount = async (): Promise<void> => {
     const accounts = await call(s.wallet.provider, 'eth_accounts');
     assertCurrent?.();
@@ -541,6 +545,7 @@ interface StartedRequest {
 export async function sendViaWallet(s: WalletSession, tx: TxRequest, assertCurrent?: () => void, options?: WalletAttemptOptions): Promise<Hex> {
   // Captured once, before any await: a caller editing `tx` or `options` later cannot change what was reviewed,
   // journaled or sent.
+  assertPagesWalletOrigin();
   const captured: TxRequest = Object.freeze({ to: tx.to, data: tx.data, value: tx.value });
   const attemptOptions = options === undefined ? undefined : Object.freeze({ ...options });
   const disclose = s.disclosure;
@@ -580,7 +585,7 @@ export async function sendViaWallet(s: WalletSession, tx: TxRequest, assertCurre
       ...(attemptOptions?.lockManager === undefined ? {} : { lockManager: attemptOptions.lockManager }),
       ...(attemptOptions?.journalLockHeld === true ? { lockHeld: true } : {}),
     };
-    const box: { started?: StartedRequest; abandoned?: boolean; unsent?: WalletAttempt } = {};
+    const box: { started?: StartedRequest; abandoned?: boolean; begun?: WalletAttempt } = {};
     const refuseIfAbandoned = (): void => {
       // A lock manager that settles before running its callback must never start a request this call already refused (QA-1).
       if (box.abandoned === true) throw new UserFacingError({ key: 'error.duplicateAttemptJournal.theWalletAttemptJournalIsUnavailableOrInvalidNoNew' });
@@ -593,20 +598,24 @@ export async function sendViaWallet(s: WalletSession, tx: TxRequest, assertCurre
           refuseIfAbandoned();
           check();
           attemptOptions?.beforeAttemptStart?.(input.key, store);
-          return beginAttempt(input, store);
+          // Kept before the commit: if the commit lands but the mirror write after it, or the authority check in invoke(),
+          // then fails, this record was never sent (REV-I5, QA-5). A refused duplicate throws first and is never kept.
+          box.begun = beginAttempt(input, store);
+          return box.begun;
         }, access, (attempt) => {
           refuseIfAbandoned();
           // invoke() throws only from its authority check, before the provider is called: the committed record is unsent.
-          try { box.started = invoke(attempt); } catch (e) { box.unsent = attempt; throw e; }
+          box.started = invoke(attempt);
         });
       } catch (e) {
         if (box.started !== undefined) { /* The provider was invoked: a failing lock wrapper cannot erase the request. */ }
         else {
           box.abandoned = true;
-          const unsent = box.unsent;
+          const unsent = box.begun;
           if (unsent !== undefined) {
-            // Nothing reached the wallet, so the `unknown` record would only block a legitimate retry (QA-5). If removal
-            // fails the record stays: refusing a retry is the safe direction.
+            // Nothing reached the wallet, so the `unknown` record would only block a legitimate retry (QA-5, REV-I5). The
+            // removal matches this record's id, `unknown` status and action, so a commit that never landed, or another
+            // tab's record for the same key, is left alone. If removal fails the record stays: refusing a retry is safe.
             try { await withAttemptJournal((store) => { removeUnsentAttempt(unsent, store); }, access); } catch { /* kept */ }
           }
           throw e;
@@ -648,6 +657,7 @@ export async function sendViaWallet(s: WalletSession, tx: TxRequest, assertCurre
 
 /** `eth_signTypedData_v4`; the caller verifies the recovered signer. */
 export async function signTypedDataViaWallet(s: WalletSession, typedDataJson: string, assertCurrent?: () => void): Promise<Hex> {
+  assertPagesWalletOrigin();
   const disclose = s.disclosure;
   const disclosed = disclose === undefined ? undefined : prepareWalletSignature(s.chainId, s.account, typedDataJson);
   const authority = walletAuthority(s, assertCurrent);

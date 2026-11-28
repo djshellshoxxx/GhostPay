@@ -6,11 +6,14 @@ import { describe, expect, it } from 'vitest';
 // connection. Test approvers would not notice a call site that forgot it; this source check does.
 
 const SRC = join(__dirname, '..');
+// Test-only helpers (`*.testutil.ts`) drive a synthetic wallet and cannot render the disclosure hook. They are not a
+// production connection, so they are outside the call-site scan; the last case below proves production never imports one.
+const TEST_UTILITY = /\.testutil\.(ts|tsx)$/;
 function sources(dir: string): string[] {
   return readdirSync(dir).flatMap((name) => {
     const path = join(dir, name);
     if (statSync(path).isDirectory()) return name === 'test' ? [] : sources(path);
-    return /\.(ts|tsx)$/.test(name) && !/\.test\.(ts|tsx)$/.test(name) ? [path] : [];
+    return /\.(ts|tsx)$/.test(name) && !/\.test\.(ts|tsx)$/.test(name) && !TEST_UTILITY.test(name) ? [path] : [];
   });
 }
 
@@ -48,6 +51,20 @@ describe('every production wallet connection passes the disclosure gate', () => 
 
   it('each call passes its hook-backed disclosure option', () => {
     for (const { file, call, source } of calls) expect({ file, passesGate: passesDisclosure(call, source) }).toEqual({ file, passesGate: true });
+  });
+
+  it('keeps test-only helpers out of production: no non-test source imports a *.testutil module', () => {
+    const all = (dir: string): string[] =>
+      readdirSync(dir).flatMap((name) => {
+        const path = join(dir, name);
+        if (statSync(path).isDirectory()) return all(path);
+        return /\.(ts|tsx)$/.test(name) ? [path] : [];
+      });
+    const offenders = all(SRC)
+      .filter((file) => !/\.test\.(ts|tsx)$/.test(file) && !TEST_UTILITY.test(file) && !file.includes(`${join(SRC, 'test')}`))
+      .filter((file) => /(?:\bfrom|\bimport)\s*\(?\s*['"][^'"]*\.testutil(?:\.js)?['"]/.test(readFileSync(file, 'utf8')))
+      .map((file) => relative(SRC, file));
+    expect(offenders).toEqual([]);
   });
 
   const hooks = 'const walletDisclosure = useWalletDisclosure(); const disclosure = useWalletDisclosure();';
