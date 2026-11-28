@@ -77,7 +77,7 @@ describe('Registry view', () => {
     const user = await open(makeServices({ createRpc: () => Promise.resolve(chain(wallet)), discoverWallets: () => Promise.resolve([walletInfo(wallet)]) }));
     expect(screen.getByText('Back up these seller keys first')).toBeTruthy();
     expect(screen.queryByText(pub.metaAddress)).toBeNull();
-    expect(screen.queryByRole('checkbox')).toBeNull();
+    expect(screen.queryByRole('checkbox', { name: /I understand this publicly associates my meta-address/i })).toBeNull();
     expect(screen.queryByRole('button', { name: 'Find wallets' })).toBeNull();
     // The lookup and the QR review stay available: they publish nothing.
     expect(screen.getByRole('button', { name: 'Look up' })).toBeTruthy();
@@ -85,12 +85,12 @@ describe('Registry view', () => {
     // Download is not verification: publishing and the public meta-address remain gated.
     expect(screen.getByText('Back up these seller keys first')).toBeTruthy();
     expect(screen.queryByText(pub.metaAddress)).toBeNull();
-    expect(screen.queryByRole('checkbox')).toBeNull();
+    expect(screen.queryByRole('checkbox', { name: /I understand this publicly associates my meta-address/i })).toBeNull();
     await user.type(screen.getByLabelText(/To continue without a backup/), 'continue without backup');
     await user.click(screen.getByRole('button', { name: 'Continue without a backup' }));
     expect(screen.queryByText('Back up these seller keys first')).toBeNull();
     expect(screen.getByText(pub.metaAddress)).toBeTruthy();
-    await user.click(screen.getByRole('checkbox'));
+    await user.click(screen.getByRole('checkbox', { name: /I understand this publicly associates my meta-address/i }));
     await user.click(screen.getByRole('button', { name: 'Find wallets' }));
     await user.click(await screen.findByRole('button', { name: 'Connect Mock Wallet' }));
     expect(await screen.findByRole('button', { name: 'Review publish transaction' })).toBeTruthy();
@@ -100,7 +100,7 @@ describe('Registry view', () => {
     const pub = importSession({ spendingKeyHex: '11'.repeat(32), viewingKeyHex: '22'.repeat(32) });
     await open();
     expect(screen.getByText(pub.metaAddress)).toBeTruthy();
-    expect(screen.getByRole('checkbox')).toBeTruthy();
+    expect(screen.getByRole('checkbox', { name: /I understand this publicly associates my meta-address/i })).toBeTruthy();
     expect(screen.queryByText('Back up these seller keys first')).toBeNull();
     expect(screen.queryByRole('button', { name: 'Find wallets' })).toBeNull();
   });
@@ -113,7 +113,7 @@ describe('Registry view', () => {
     const user = await open(makeServices({ createRpc: () => Promise.resolve(rpc), discoverWallets: () => Promise.resolve([walletInfo(wallet)]) }));
     expect(screen.getByText(/public association with your wallet address/)).toBeTruthy();
     expect(screen.queryByRole('button', { name: 'Find wallets' })).toBeNull();
-    await user.click(screen.getByRole('checkbox'));
+    await user.click(screen.getByRole('checkbox', { name: /I understand this publicly associates my meta-address/i }));
     await user.click(screen.getByRole('button', { name: 'Find wallets' }));
     await user.click(await screen.findByRole('button', { name: 'Connect Mock Wallet' }));
     await user.click(await screen.findByRole('button', { name: 'Review publish transaction' }));
@@ -142,14 +142,14 @@ describe('Registry view', () => {
       },
     } };
     const user = await open(makeServices({ createRpc: () => Promise.resolve(chain(wallet)), discoverWallets: () => Promise.resolve([info]) }));
-    await user.click(screen.getByRole('checkbox'));
+    await user.click(screen.getByRole('checkbox', { name: /I understand this publicly associates my meta-address/i }));
     await user.click(screen.getByRole('button', { name: 'Find wallets' }));
     await user.click(await screen.findByRole('button', { name: 'Connect Mock Wallet' }));
     await user.click(await screen.findByRole('button', { name: 'Review publish transaction' }));
     block = true;
     await user.click(screen.getByRole('button', { name: 'Publish to registry' }));
     await waitFor(() => { expect(release).toBeTypeOf('function'); });
-    await user.click(screen.getByRole('checkbox'));
+    await user.click(screen.getByRole('checkbox', { name: /I understand this publicly associates my meta-address/i }));
     await act(async () => { release?.(); await Promise.resolve(); });
     expect(wallet.sent).toBeUndefined();
   });
@@ -157,11 +157,11 @@ describe('Registry view', () => {
     generateWaivedSession();
     const wallet = new MockWallet({ chainId: SEPOLIA });
     const user = await open(makeServices({ createRpc: () => Promise.resolve(chain(wallet)), discoverWallets: () => Promise.resolve([walletInfo(wallet)]) }));
-    await user.click(screen.getByRole('checkbox'));
+    await user.click(screen.getByRole('checkbox', { name: /I understand this publicly associates my meta-address/i }));
     await user.click(screen.getByRole('button', { name: 'Find wallets' }));
     await user.click(await screen.findByRole('button', { name: 'Connect Mock Wallet' }));
     await user.click(await screen.findByRole('button', { name: 'Review publish transaction' }));
-    await user.click(screen.getByRole('checkbox'));
+    await user.click(screen.getByRole('checkbox', { name: /I understand this publicly associates my meta-address/i }));
     expect(screen.queryByRole('button', { name: 'Publish to registry' })).toBeNull();
   });
 
@@ -169,7 +169,7 @@ describe('Registry view', () => {
     generateWaivedSession();
     const wallet = new MockWallet({ chainId: SEPOLIA });
     const user = await open(makeServices({ createRpc: () => Promise.resolve(chain(wallet, '0x')), discoverWallets: () => Promise.resolve([walletInfo(wallet)]) }));
-    await user.click(screen.getByRole('checkbox'));
+    await user.click(screen.getByRole('checkbox', { name: /I understand this publicly associates my meta-address/i }));
     await user.click(screen.getByRole('button', { name: 'Find wallets' }));
     await user.click(await screen.findByRole('button', { name: 'Connect Mock Wallet' }));
     await user.click(await screen.findByRole('button', { name: 'Review publish transaction' }));
@@ -183,7 +183,7 @@ describe('Registry view', () => {
     const wallet = new MockWallet({ chainId: SEPOLIA });
     const rpc = chain(wallet, '0x6001', '0x', `0x${'11'.repeat(32)}`);
     const user = await open(makeServices({ createRpc: () => Promise.resolve(rpc), discoverWallets: () => Promise.resolve([walletInfo(wallet)]) }));
-    await user.click(screen.getByRole('checkbox'));
+    await user.click(screen.getByRole('checkbox', { name: /I understand this publicly associates my meta-address/i }));
     await user.click(screen.getByRole('button', { name: 'Find wallets' }));
     await user.click(await screen.findByRole('button', { name: 'Connect Mock Wallet' }));
     await user.click(await screen.findByRole('button', { name: 'Review publish transaction' }));
@@ -195,7 +195,7 @@ describe('Registry view', () => {
     generateWaivedSession();
     const wallet = new MockWallet({ chainId: SEPOLIA });
     const user = await open(makeServices({ createRpc: () => Promise.resolve(chain(wallet)), discoverWallets: () => Promise.resolve([walletInfo(wallet)]) }));
-    await user.click(screen.getByRole('checkbox'));
+    await user.click(screen.getByRole('checkbox', { name: /I understand this publicly associates my meta-address/i }));
     await user.click(screen.getByRole('button', { name: 'Find wallets' }));
     await user.click(await screen.findByRole('button', { name: 'Connect Mock Wallet' }));
     await user.click(await screen.findByRole('button', { name: 'Review clear transaction' }));
@@ -214,7 +214,7 @@ describe('Registry view', () => {
     generateWaivedSession();
     const wallet = new MockWallet({ chainId: SEPOLIA });
     const user = await open(makeServices({ discoverWallets: () => Promise.resolve([walletInfo(wallet)]) }), false);
-    await user.click(screen.getByRole('checkbox'));
+    await user.click(screen.getByRole('checkbox', { name: /I understand this publicly associates my meta-address/i }));
     await user.click(screen.getByRole('button', { name: 'Find wallets' }));
     await user.click(await screen.findByRole('button', { name: 'Connect Mock Wallet' }));
     await user.click(await screen.findByRole('button', { name: 'Review publish transaction' }));
