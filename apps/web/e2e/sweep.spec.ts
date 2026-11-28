@@ -16,6 +16,8 @@ const nav = (page: Page) => page.getByRole('navigation', { name: 'Main' });
 const keys = (page: Page) => page.locator('section[aria-labelledby="keys-h"]');
 const sweep = (page: Page) => page.locator('section[aria-labelledby="sw-h"]');
 const sign = (page: Page) => sweep(page).getByRole('button', { name: 'Sign and broadcast directly' });
+/** Starts a direct sweep: computes the transaction for review (G07-D2). Disabled while signing is locked. */
+const review = (page: Page) => sweep(page).getByRole('button', { name: 'Review the direct sweep' });
 // A successful send also renders a separate Submitted summary. Check the durable attempt card, identified by its
 // read-only status control, rather than choosing an arbitrary matching title/hash. Notice titles include an icon/colon.
 const pendingAttempt = (page: Page) => sweep(page).getByRole('note').filter({
@@ -69,15 +71,22 @@ for (const outcome of ['success', 'unknown'] as const) {
     expect(workers.some((url) => /\/assets\/scanner\.worker-/.test(url))).toBe(true);
     await sweep(page).getByLabel('Destination address (your own wallet)').fill(DESTINATION);
     await sweep(page).getByLabel('Vault passphrase (required for each sweep action)').fill(PASS);
-    await expect(sign(page)).toBeEnabled();
+    await expect(review(page)).toBeEnabled();
+    await review(page).click();
+    // The review needs its own step-up; signing it needs the passphrase again.
+    await slowExpect(sign(page)).toBeEnabled();
+    await expect(sweep(page).getByRole('group', { name: 'Check this sweep before you sign it' })).toContainText('Sends 5 USDC to');
+    await sweep(page).getByLabel('Vault passphrase (required for each sweep action)').fill(PASS);
     await auditAccessibility(page, `sweep-${outcome}-direct-signing-ready`);
     await sign(page).click();
     // The route deliberately holds the real signed raw transaction while the UI is busy and the journal is durable.
     await slowExpect.poll(() => network.state.handoffLocks.length).toBe(1);
     const working = sweep(page).getByRole('status').filter({ hasText: 'Working…' });
     await expect(working).toBeVisible();
-    await expect(sign(page)).toBeDisabled();
-    await sign(page).dispatchEvent('click');
+    // The review is spent at handoff: no sign control remains, and a new review is disarmed while busy.
+    await expect(sign(page)).toHaveCount(0);
+    await expect(review(page)).toBeDisabled();
+    await review(page).dispatchEvent('click');
     expect(network.state.raws).toHaveLength(1);
     // The route publishes its lock before asynchronous signer recovery finishes. Wait for the held response itself.
     await slowExpect.poll(() => network.state.releaseBroadcast !== undefined).toBe(true);
@@ -97,12 +106,12 @@ for (const outcome of ['success', 'unknown'] as const) {
     const broadcastRequests = network.state.raws.length;
     expect(new Set(network.state.raws).size).toBe(1); // Transport retries can only repeat the identical signed bytes.
     await expect(pendingAttempt(page).locator('code')).toHaveText(expectedHash);
-    await expect(sign(page)).toBeDisabled();
+    await expect(review(page)).toBeDisabled();
     await expect(sweep(page).getByLabel('Vault passphrase (required for each sweep action)')).toHaveValue('');
     await expect.poll(() => readSweepJournal(page)).toMatchObject([{ nonce: 0, expectedHash, status: outcome === 'success' ? 'submitted' : 'unknown-after-handoff' }]);
     await sweep(page).getByRole('button', { name: 'Check status', exact: true }).click();
     await expect(sweep(page).getByRole('button', { name: 'Check status', exact: true })).toBeEnabled();
-    await expect(sign(page)).toBeDisabled(); // An absent receipt does not erase the lock.
+    await expect(review(page)).toBeDisabled(); // An absent receipt does not erase the lock.
     await auditAccessibility(page, `sweep-${outcome}-pending-status-lock-retained`);
 
     await page.reload();
@@ -122,8 +131,8 @@ for (const outcome of ['success', 'unknown'] as const) {
     await expect(pendingAttempt(page).locator('.notice-title')).toContainText(title);
     await expect(pendingAttempt(page).locator('code')).toHaveText(expectedHash);
     await sweep(page).getByLabel('Destination address (your own wallet)').fill(DESTINATION);
-    await expect(sign(page)).toBeDisabled();
-    await sign(page).dispatchEvent('click');
+    await expect(review(page)).toBeDisabled();
+    await review(page).dispatchEvent('click');
     expect(network.state.raws).toHaveLength(broadcastRequests);
     await expect.poll(() => readSweepJournal(page)).toMatchObject([{ nonce: 0, expectedHash }]);
     await auditAccessibility(page, `sweep-${outcome}-reloaded-and-rescanned-duplicate-refused`);

@@ -557,8 +557,13 @@ test('core journey: keys -> signed invoice -> consented payment -> scan -> bound
     await sweepView(s).getByLabel(/Directly/).check();
     await sweepView(s).getByLabel('Destination address (your own wallet)').fill(DESTINATION);
     await sweepView(s).getByLabel('Vault passphrase (required for each sweep action)').fill(VAULT_PASS);
+    const review = sweepView(s).getByRole('button', { name: 'Review the direct sweep' });
+    await expect(review).toBeEnabled();
+    await review.click();
+    // Reviewing and signing are separate step-up authorized actions (G07-D2).
     const sign = sweepView(s).getByRole('button', { name: 'Sign and broadcast directly' });
-    await expect(sign).toBeEnabled();
+    await kdfExpect(sign).toBeEnabled();
+    await sweepView(s).getByLabel('Vault passphrase (required for each sweep action)').fill(VAULT_PASS);
     await sign.click();
     await kdfExpect.poll(() => sim.raws.length).toBe(1);
     const raw = sim.raws[0];
@@ -652,8 +657,8 @@ test('stale session: a lock and reimport of the same keys mid-sweep refuses the 
     await sweepView(s).getByRole('button', { name: 'Read balance from the Settings RPC' }).click();
     await sweepView(s).getByLabel(/Directly/).check();
     await sweepView(s).getByLabel('Destination address (your own wallet)').fill(DESTINATION);
-    const held = sim.hold('eth_gasPrice'); // The first RPC read inside the actual direct sweep, after its session capture.
-    await sweepView(s).getByRole('button', { name: 'Sign and broadcast directly' }).click();
+    const held = sim.hold('eth_gasPrice'); // The first RPC read inside the actual direct sweep review, after its session capture.
+    await sweepView(s).getByRole('button', { name: 'Review the direct sweep' }).click();
     await held.arrived;
 
     // Lock (wipe from memory), then reimport the very same keys while the sweep waits on its RPC.

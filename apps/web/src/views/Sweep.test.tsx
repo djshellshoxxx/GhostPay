@@ -73,6 +73,8 @@ interface RawSink {
   mined?: number;
   pendingAbsent?: boolean;
   receiptFailed?: boolean;
+  /** Answer for eth_getTransactionCount at 'pending' (default 0x0). */
+  pendingNonce?: string;
 }
 
 const ORACLE = '0x420000000000000000000000000000000000000F';
@@ -87,6 +89,7 @@ function extra(balance: bigint, nativeBalance: bigint, rawSink: RawSink) {
       case 'eth_gasPrice':
         return rawSink.gasPriceHold?.() ?? rawSink.gasPrice ?? '0x3b9aca00';
       case 'eth_getTransactionCount':
+        if (params[1] === 'pending' && rawSink.pendingNonce !== undefined) return rawSink.pendingNonce;
         return params[1] === 'finalized' && rawSink.finalizedNonce !== undefined ? rawSink.finalizedNonce : '0x0';
       case 'eth_estimateGas':
         return rawSink.estimate ?? '0xc350';
@@ -901,6 +904,86 @@ describe('Sweep', () => {
     expect(await screen.findByText('Outcome unknown')).toBeTruthy();
     expect(sink.calls).toContain('eth_sendRawTransaction');
     expect(screen.queryByText(/could not dry-run this sweep/)).toBeNull();
+  });
+
+  describe('G07-D2: a direct sweep is shown before the in-page key signs it', () => {
+    it('shows the amount, destination, worst-case fee, fee reserve and leftover, sends nothing, then signs exactly that', async () => {
+      const sink: RawSink = { calls: [], raws: [], estimate: '0x5208', l1Fee: 3_000_000_000_000n };
+      const user = await toSweep({ nativePayment: true, raw: sink });
+      expect(await screen.findByText('0.1 ETH')).toBeTruthy();
+      await user.click(screen.getByLabelText(/Directly/));
+      await user.type(screen.getByLabelText('Destination address (your own wallet)'), DEST);
+      // A native sweep pays gas from the swept amount: no top-up, so no gas-funding notice.
+      expect(screen.queryByText('Funding gas can link your wallet to this payment')).toBeNull();
+      expect(screen.queryByRole('button', { name: SIGN_DIRECT })).toBeNull();
+      await user.click(screen.getByRole('button', { name: REVIEW_DIRECT }));
+      const review = await screen.findByRole('group', { name: 'Check this sweep before you sign it' });
+      const text = review.textContent ?? '';
+      // 0.1 ETH - 21 000 gas at 2 gwei - twice the 0.000003 ETH L1 data fee.
+      expect(text).toContain('Sends 0.099952 ETH to');
+      expect(within(review).getByText(DEST)).toBeTruthy();
+      expect(text).toContain('Network fee: at most 0.000042 ETH (gas limit 21000, at most 2 gwei per unit of gas).');
+      expect(text).toContain('Also kept back for the OP Stack L1 data and operator fees: 0.000006 ETH.');
+      expect(text).toContain('Of the 0.000048 ETH kept back, whatever the network does not charge stays at the one-time address');
+      expect(text).toMatch(/valid for 2 minutes/);
+      expect(sink.calls).not.toContain('eth_sendRawTransaction');
+      expect(window.sessionStorage.getItem(SWEEP_JOURNAL_KEY)).toBeNull();
+      // The fee moves before the click: the signed transaction is still the reviewed one.
+      sink.gasPrice = '0x77359400';
+      await user.click(within(review).getByRole('button', { name: SIGN_DIRECT }));
+      expect(await screen.findByText('Submitted')).toBeTruthy();
+      const tx = parseTransaction(sink.raw as `0x${string}`);
+      expect(tx.value).toBe(99_952_000_000_000_000n);
+      expect(tx.maxFeePerGas).toBe(2_000_000_000n);
+      expect(tx.gas).toBe(21_000n);
+      // One review, one signature.
+      expect(screen.queryByRole('group', { name: 'Check this sweep before you sign it' })).toBeNull();
+    });
+
+    it.each(['destination', 'mode', 'balance read', 'app lock'] as const)('drops a shown review when the %s changes; nothing is signed', async (change) => {
+      const sink: RawSink = { calls: [], raws: [] };
+      const user = await toSweep({ raw: sink });
+      await screen.findByText('5 USDC');
+      await user.click(screen.getByLabelText(/Directly/));
+      const destination = screen.getByLabelText('Destination address (your own wallet)');
+      await user.type(destination, DEST);
+      await user.click(screen.getByRole('button', { name: REVIEW_DIRECT }));
+      expect(await screen.findByRole('button', { name: SIGN_DIRECT })).toBeTruthy();
+      if (change === 'destination') await user.type(destination, '7');
+      if (change === 'mode') await user.click(screen.getByLabelText(/Through the relayer/));
+      if (change === 'balance read') {
+        await user.click(screen.getByRole('button', { name: 'Read balance from the Settings RPC' }));
+        await screen.findByText('5 USDC');
+      }
+      if (change === 'app lock') act(() => { notifyAppLock('idle'); });
+      await waitFor(() => { expect(screen.queryByRole('button', { name: SIGN_DIRECT })).toBeNull(); });
+      expect(sink.raws).toEqual([]);
+      expect(window.sessionStorage.getItem(SWEEP_JOURNAL_KEY)).toBeNull();
+    });
+
+    it('a review that turns out of date at signing is dropped with a reason; nothing is signed', async () => {
+      const sink: RawSink = { calls: [], raws: [] };
+      const user = await toSweep({ raw: sink });
+      await screen.findByText('5 USDC');
+      await user.click(screen.getByLabelText(/Directly/));
+      await user.type(screen.getByLabelText('Destination address (your own wallet)'), DEST);
+      await user.click(screen.getByRole('button', { name: REVIEW_DIRECT }));
+      const sign = await screen.findByRole('button', { name: SIGN_DIRECT });
+      sink.pendingNonce = '0x1';
+      await user.click(sign);
+      expect((await screen.findByRole('alert')).textContent).toMatch(/changed since you reviewed this sweep/);
+      expect(screen.queryByRole('button', { name: SIGN_DIRECT })).toBeNull();
+      expect(sink.raws).toEqual([]);
+      expect(screen.getByRole<HTMLButtonElement>('button', { name: REVIEW_DIRECT }).disabled).toBe(false);
+    });
+
+    it('G07-D1: a token sweep in direct mode explains that funding its gas links a wallet; the relayer mode does not show it', async () => {
+      const user = await toSweep();
+      await screen.findByText('5 USDC');
+      expect(screen.queryByText('Funding gas can link your wallet to this payment')).toBeNull();
+      await user.click(screen.getByLabelText(/Directly/));
+      expect(screen.getByText(/Sending that coin from a wallet you use elsewhere publicly links that wallet to this payment/)).toBeTruthy();
+    });
   });
 
   it('L4-02: a deep-scan payment whose announced view tag is wrong can be swept', async () => {
