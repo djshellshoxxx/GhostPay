@@ -2,11 +2,12 @@
 import { screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import type { RpcClient } from '@ghostpay/chain-adapters';
+import { createClient, findChain, RpcHttpError, type RpcClient } from '@ghostpay/chain-adapters';
 import { MemoryKeyVaultStore, saveEncryptedVault, setKeyVaultStoreForTests } from '../lib/keyVault';
 import * as exportModule from '../lib/paymentKeyExport';
 import { TEST_N, captureDownloads } from '../lib/paymentKeyExport.testutil';
 import { clearSession, generateSession } from '../lib/session';
+import { SCAN_LANES_KEY } from '../lib/scanSpam';
 import { SETTINGS_KEY } from '../lib/settings';
 import { decryptPaymentKeys } from '../lib/stealthExport';
 import type { Services } from '../lib/services';
@@ -38,7 +39,10 @@ afterEach(() => {
 });
 
 /** Runs a scan that finds one payment to freshly generated keys, with every eth_getCode the scan RPC answers recorded. */
-async function scanOnePayment(codeFor: (stealthAddress: string) => Record<string, string> = () => ({})): Promise<{ user: ReturnType<typeof userEvent.setup>; stealthAddress: string; codeQueries: string[] }> {
+async function scanOnePayment(
+  codeFor: (stealthAddress: string) => Record<string, string> = () => ({}),
+  exportCode?: (signal?: AbortSignal, address?: string) => Promise<unknown>,
+): Promise<{ user: ReturnType<typeof userEvent.setup>; stealthAddress: string; codeQueries: string[] }> {
   const pub = generateSession();
   const store = new MemoryKeyVaultStore();
   setKeyVaultStoreForTests(store);
@@ -47,7 +51,17 @@ async function scanOnePayment(codeFor: (stealthAddress: string) => Record<string
   const mine = makeLog({ announcer: FAKE_ANNOUNCER, metaAddress: pub.metaAddress, block: 120, index: 0, caller: FAKE_ROUTER, amount: 2_500_000n });
   const scanRpc = withManifestChain(chainWithLogs(84532, 500, [mine.log]), { code: { ...FAKE_CODE, ...codeFor(mine.stealthAddress) } });
   const codeQueries: string[] = [];
-  const recorded: RpcClient = { ...scanRpc, request: (method, params) => { if (method === 'eth_getCode') codeQueries.push(String(params[0]).toLowerCase()); return scanRpc.request(method, params); } };
+  const recorded: RpcClient = {
+    ...scanRpc,
+    request: (method, params, signal) => {
+      if (method === 'eth_getCode') {
+        const address = String(params[0]).toLowerCase();
+        codeQueries.push(address);
+        if (address === mine.stealthAddress.toLowerCase() && exportCode !== undefined) return exportCode(signal, address);
+      }
+      return scanRpc.request(method, params);
+    },
+  };
   const user = userEvent.setup();
   renderApp(makeServices({ loadManifest: loaded, createRpc: () => Promise.resolve(recorded), createScanWorker: () => new InlineWorker() }));
   await user.click(within(screen.getByRole('navigation', { name: 'Main' })).getByRole('button', { name: 'Scan and receive' }));
@@ -75,6 +89,8 @@ describe('Scan > Payment details (spec 18)', () => {
     const encrypted = exportModule.exportEncryptedPayment;
     const spy = vi.spyOn(exportModule, 'exportEncryptedPayment').mockImplementation((m, c, p, o) => encrypted(m, c, p, { ...o, N: TEST_N }));
     const { user, stealthAddress, codeQueries } = await scanOnePayment();
+    // A later change to the optional scan statistic does not revoke a separately confirmed export.
+    window.localStorage.setItem(SCAN_LANES_KEY, JSON.stringify({ privacySetTransfers: true }));
     const row = screen.getByText(stealthAddress).closest('li') as HTMLElement;
     await user.click(within(row).getByRole('button', { name: 'Payment details' }));
     expect(within(row).getByText(/could not be verified as a payment/)).toBeTruthy();
@@ -89,6 +105,58 @@ describe('Scan > Payment details (spec 18)', () => {
     expect(codeQueries.filter((a) => a === stealthAddress.toLowerCase())).toHaveLength(1);
     const opened = await decryptPaymentKeys(await downloads.files[0]!.blob.text(), FILE_PASS, { expectedChainId: 84532 });
     expect(opened.header.payments[0]?.stealthAddress).toBe(stealthAddress);
+  });
+
+  it('Cancel aborts the pending account read through the verified scan client', async () => {
+    let release!: (code: string) => void;
+    const waiting = new Promise<string>((resolve) => { release = resolve; });
+    const read = vi.fn<(signal?: AbortSignal) => Promise<string>>().mockReturnValue(waiting);
+    const { user, stealthAddress } = await scanOnePayment(undefined, read);
+    const row = screen.getByText(stealthAddress).closest('li') as HTMLElement;
+    await user.click(within(row).getByRole('button', { name: 'Payment details' }));
+    await user.type(within(row).getByLabelText('Passphrase of your encrypted vault'), VAULT_PASS);
+    await user.click(within(row).getByRole('button', { name: 'Prepare the private key download' }));
+    await user.click(within(row).getByRole('button', { name: 'Download the private key' }));
+    try {
+      await waitFor(() => { expect(read).toHaveBeenCalledOnce(); });
+      const signal = read.mock.calls[0]?.[0];
+      expect(signal?.aborted).toBe(false);
+      await user.click(within(row).getByRole('button', { name: 'Cancel' }));
+      expect(signal?.aborted).toBe(true);
+    } finally {
+      release('0x');
+    }
+    expect(downloads.files).toEqual([]);
+  });
+
+  it.each(['single', 'archive'] as const)('cancels the actual %s export RPC retry before another lookup', async (mode) => {
+    let lookups = 0;
+    let resumeRetry: (() => void) | undefined;
+    const client = await createClient(findChain(84532)!, 'https://rpc.test', {
+      transport: { send: (_url, body) => {
+        const { id, method } = JSON.parse(body) as { id: number; method: string };
+        if (method === 'eth_getCode' && ++lookups === 1) throw new RpcHttpError(429);
+        return Promise.resolve(JSON.stringify({ jsonrpc: '2.0', id, result: method === 'eth_chainId' ? '0x14a34' : '0x' }));
+      } },
+      retries: 1, sleep: () => new Promise<void>((resolve) => { resumeRetry = resolve; }),
+    });
+    let completed: Promise<unknown> | undefined;
+    const { user, stealthAddress } = await scanOnePayment(undefined, (signal, address) => {
+      completed = client.request('eth_getCode', [address, 'latest'], signal);
+      return completed;
+    });
+    const panel = within(mode === 'single' ? screen.getByText(stealthAddress).closest('li')! : screen.getByTestId('payment-keys-archive'));
+    await user.click(panel.getByRole('button', { name: mode === 'single' ? 'Payment details' : 'Export all payment keys (encrypted)' }));
+    await user.type(panel.getByLabelText('Passphrase of your encrypted vault'), VAULT_PASS);
+    await user.type(panel.getByLabelText('New passphrase for the export file (at least 14 characters)'), FILE_PASS);
+    await user.type(panel.getByLabelText('Repeat the export file passphrase'), FILE_PASS);
+    await user.click(panel.getByRole('button', { name: mode === 'single' ? 'Download encrypted keypair' : 'Download encrypted archive' }));
+    await waitFor(() => { expect(resumeRetry).toBeDefined(); }, { timeout: 30_000 });
+    await user.click(panel.getByRole('button', { name: 'Cancel' }));
+    resumeRetry!();
+    await expect(completed).rejects.toThrow();
+    expect(lookups).toBe(1);
+    expect(downloads.files).toEqual([]);
   });
 
   it('refuses the private key of an address that holds code (contract or EIP-7702 delegation)', async () => {

@@ -1,3 +1,18 @@
+## Scan consent and recovery-export cancellation — November 28, 2026
+
+Codex, branch `fix/scan-consent-and-export-cancel-70458ebe`, base `70458ebe3ae4a5502d7c39ae25d37342dbde971b`. Own the Scan route consent check, recovery export RPC signal forwarding, the corresponding chain-adapter and fetch transport code, and focused tests. Acceptance requires zero additional payment-address lookups after cancellation, ordinary retry success, and enforcement of the current transfer-estimate preference before optional token lookups. Use mock transports and synthetic local sessions. No release or contract changes.
+
+# Cancel seller payment-key export RPC reads — 2026-11-28 UTC
+
+Worker: Codex, branch `ux/nov28-export`, base main `70458ebe3ae4a5502d7c39ae25d37342dbde971b`.
+Owned paths: the export RPC binding in `apps/web/src/views/Scan.tsx`, request forwarding in
+`apps/web/src/lib/scanPrivacy.ts`, the JSON-RPC request/retry path in `packages/chain-adapters/src/rpc.ts`,
+the browser fetch transport in `packages/net-transport/src/fetchTransport.ts`, and focused synthetic tests.
+Acceptance: an aborted export cannot start another account read or reconnect check, either Pages fetch path
+aborts the in-flight browser request, and an independent later export may still use the verified client.
+Draft #269's network grant and stopped-scan export design are separate. No changes to that branch, financial
+operations, on-chain deployment, or release activation. The scan UX repair owns different Scan.tsx hunks.
+
 # Static guide footer keyboard navigation
 
 Codex owns the page heading and footer link in `apps/web/{help,privacy}.html` and the matching
