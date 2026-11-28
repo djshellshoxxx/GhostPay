@@ -7,9 +7,23 @@ import { defineConfig } from '@playwright/test';
  * which starts anvil, deploys, signs the 84532 devnet manifest and then runs this config). The web server is the actual
  * Pages build (scripts/pages/build-pages.sh: lean profile, relative base, bundle scans, site verifier) with that signed
  * manifest bundled, served by scripts/pages/serve-pages.mjs under /GhostPay/ exactly like a GitHub project page (no
- * security headers, sub-path only). Only e2e/pages-devnet.spec.ts runs here. The build goes to a new directory under
- * the runner's temp dir and its own port (default 4175), so it never touches apps/web/dist or the other suites' 4173/4174.
+ * security headers, sub-path only). The native Pages spec runs by default. GHOSTPAY_PAGES_ERC20=plain|permit selects
+ * the separate ERC-20 specs on a fresh invocation of the same runner; their token fixtures never affect the native
+ * suite. GHOSTPAY_PAGES_BROWSER selects its engine. The build goes to a new directory under the runner's temp dir and
+ * its own port (default 4175), so it never touches apps/web/dist or the other suites' 4173/4174.
  */
+
+const erc20Mode = process.env['GHOSTPAY_PAGES_ERC20'];
+if (erc20Mode !== undefined && erc20Mode !== 'plain' && erc20Mode !== 'permit') {
+  throw new Error('GHOSTPAY_PAGES_ERC20 must be plain or permit, or unset for the native Pages journey.');
+}
+const browserName = process.env['GHOSTPAY_PAGES_BROWSER'] ?? 'chromium';
+if (browserName !== 'chromium' && browserName !== 'firefox' && browserName !== 'webkit') {
+  throw new Error('GHOSTPAY_PAGES_BROWSER must be chromium, firefox or webkit.');
+}
+if (erc20Mode === undefined && browserName !== 'chromium') {
+  throw new Error('Selecting another Pages engine requires GHOSTPAY_PAGES_ERC20.');
+}
 
 // Chromium is pre-installed in this environment; never run `playwright install`.
 const CANDIDATES = [
@@ -17,7 +31,9 @@ const CANDIDATES = [
   '/opt/pw-browsers/chromium-1194/chrome-linux/chrome',
   '/opt/pw-browsers/chromium',
 ].filter((p): p is string => typeof p === 'string');
-const executablePath = CANDIDATES.find((p) => existsSync(p));
+// Firefox/WebKit use their own managed executables, never Chromium's path or launch arguments.
+const executablePath = browserName === 'chromium' && process.env['GHOSTPAY_MANAGED_BROWSER'] !== '1'
+  ? CANDIDATES.find((p) => existsSync(p)) : undefined;
 
 const PAGES_BASE = '/GhostPay/';
 const statePath = process.env['GHOSTPAY_DEVNET_STATE'];
@@ -37,7 +53,9 @@ const site = `${out}/site`;
 
 export default defineConfig({
   testDir: './e2e',
-  testMatch: /pages-devnet\.spec\.ts$/,
+  testMatch: erc20Mode === undefined
+    ? /(^|[/\\])pages-devnet\.spec\.ts$/
+    : /(^|[/\\])erc20-pages-(devnet|boundaries)\.spec\.ts$/,
   // Traces/screenshots of a failed run stay with the runner's temp directory, never in the source tree.
   outputDir: `${out}-results`,
   timeout: 240_000,
@@ -45,11 +63,17 @@ export default defineConfig({
   fullyParallel: false,
   workers: 1,
   retries: 0,
-  reporter: [['list']],
+  ...(erc20Mode === undefined ? {} : { forbidOnly: true, projects: [{ name: `erc20-${browserName}` }] }),
+  reporter: erc20Mode === undefined ? [['list']] : [
+    ['list'], ['json', { outputFile: `${out}-results/erc20-report.json` }],
+  ],
   use: {
     baseURL: `http://localhost:${String(port)}${PAGES_BASE}`,
+    browserName,
     ...(executablePath === undefined ? {} : { launchOptions: { executablePath, args: ['--no-sandbox'] } }),
     serviceWorkers: 'block',
+    // Recovery enters disposable secrets. The workflow retains only a sanitized summary, never DOM/trace/downloads.
+    ...(erc20Mode === undefined ? {} : { trace: 'off', screenshot: 'off', video: 'off' }),
     // A stuck action fails within this bound instead of consuming the whole test budget.
     actionTimeout: 30_000,
   },

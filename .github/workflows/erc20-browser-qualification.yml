@@ -1,0 +1,283 @@
+name: ERC-20 browser qualification
+# The lean Pages artifact and existing contracts on disposable local Anvil chains only.
+# Each token mode / browser engine gets a fresh chain, build, wallet and browser profiles. Nothing is published.
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/erc20-browser-qualification.yml'
+      - 'apps/web/**'
+      - 'packages/**'
+      - 'scripts/pages/**'
+      - 'scripts/beta/browser-devnet.sh'
+      - 'scripts/beta/erc20-report-membership.mjs'
+      - 'scripts/tests/erc20-report-membership.test.mjs'
+      - 'scripts/testnet/**'
+      - 'scripts/build-workspaces.mjs'
+      - 'package.json'
+      - 'package-lock.json'
+      - 'tsconfig.base.json'
+      - '!**/*.md'
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/erc20-browser-qualification.yml'
+      - 'apps/web/**'
+      - 'packages/**'
+      - 'scripts/pages/**'
+      - 'scripts/beta/browser-devnet.sh'
+      - 'scripts/beta/erc20-report-membership.mjs'
+      - 'scripts/tests/erc20-report-membership.test.mjs'
+      - 'scripts/testnet/**'
+      - 'scripts/build-workspaces.mjs'
+      - 'package.json'
+      - 'package-lock.json'
+      - 'tsconfig.base.json'
+      - '!**/*.md'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: erc20-browser-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  qualification:
+    name: ERC-20 Pages (${{ matrix.mode }}, ${{ matrix.browser }})
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      matrix:
+        mode: [plain, permit]
+        browser: [chromium, firefox, webkit]
+    env:
+      GHOSTPAY_PAGES_ERC20: ${{ matrix.mode }}
+      GHOSTPAY_PAGES_BROWSER: ${{ matrix.browser }}
+      GHOSTPAY_MANAGED_BROWSER: '1'
+      PR_HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
+    steps:
+      # Runner paths are available after allocation; the runner context is not valid in job-level env.
+      - name: Initialize temporary evidence paths
+        run: |
+          printf '%s\n' \
+            "ERC20_RUN_ROOT=$RUNNER_TEMP/ghostpay-erc20-$GHOSTPAY_PAGES_ERC20-$GHOSTPAY_PAGES_BROWSER" \
+            "ERC20_EVIDENCE=$RUNNER_TEMP/ghostpay-erc20-evidence-$GHOSTPAY_PAGES_ERC20-$GHOSTPAY_PAGES_BROWSER" >> "$GITHUB_ENV"
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+          fetch-depth: 1
+      # As in Pages acceptance: build libraries from this checkout, never a cached packages/*/dist.
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: '22'
+          package-manager-cache: false
+      - run: npm ci --ignore-scripts
+      - name: Verify qualification collector completeness
+        run: node --test scripts/tests/erc20-report-membership.test.mjs
+      - name: Build workspace libraries from source
+        run: |
+          rm -rf packages/*/dist
+          npm run build:libs
+      - uses: foundry-rs/foundry-toolchain@dba66c27052e63476d886f22216e119ba7e615bf # v1.9.2
+        with:
+          version: v1.8.5
+          cache: false
+      - name: Compile the existing contracts with pinned solc
+        working-directory: packages/contracts
+        run: forge build
+      - name: Install the selected managed browser engine
+        run: ./node_modules/.bin/playwright install --with-deps "$GHOSTPAY_PAGES_BROWSER"
+      - name: Run the ERC-20 Pages journey on a fresh local chain
+        env:
+          BROWSER_DEVNET_MODE: pages
+          BROWSER_DEVNET_KEEP: '1'
+        run: |
+          set -euo pipefail
+          umask 077
+          mkdir -p "$ERC20_RUN_ROOT"
+          export TMPDIR="$ERC20_RUN_ROOT"
+          # Raw Playwright errors may contain entered fixture secrets. Keep the log/report private until cleanup;
+          # the next step publishes only fixed classifications, file/line/status, and content hashes.
+          set +e
+          bash scripts/beta/browser-devnet.sh > "$ERC20_RUN_ROOT/runner.log" 2>&1
+          erc20_status=$?
+          set -e
+          printf '%s\n' "$erc20_status" > "$ERC20_RUN_ROOT/runner-exit.txt"
+          exit "$erc20_status"
+      - name: Record source, build identity and sanitized test outcomes
+        if: always()
+        run: |
+          node --input-type=module <<'NODE'
+          import { createHash } from 'node:crypto';
+          import { execFileSync, spawnSync } from 'node:child_process';
+          import { existsSync, lstatSync, mkdirSync, readFileSync, readdirSync, writeFileSync } from 'node:fs';
+          import { basename, dirname, join, resolve } from 'node:path';
+          import { validateErc20ReportMembership } from './scripts/beta/erc20-report-membership.mjs';
+          import { verifyPagesArtifact } from './scripts/pages/verify-pages-artifact.mjs';
+          const root = resolve(process.env.ERC20_RUN_ROOT);
+          const evidence = resolve(process.env.ERC20_EVIDENCE);
+          if (dirname(root) !== resolve(process.env.RUNNER_TEMP) || dirname(evidence) !== resolve(process.env.RUNNER_TEMP)) {
+            throw new Error('Qualification output must remain in the runner temporary directory.');
+          }
+          mkdirSync(evidence, { recursive: true, mode: 0o700 });
+          const failures = [];
+          const hash = (bytes) => createHash('sha256').update(bytes).digest('hex');
+          const read = (file) => {
+            const stat = lstatSync(file);
+            if (!stat.isFile() || stat.size > 16 * 1024 * 1024) throw new Error('Invalid evidence input.');
+            return readFileSync(file);
+          };
+          const readText = (file) => read(file).toString('utf8');
+          const nonnegative = (value) => Number.isSafeInteger(value) && value >= 0 ? value : null;
+          const optional = (fn, code) => { try { return fn(); } catch { failures.push(code); return undefined; } };
+          const sha = optional(() => execFileSync('git', ['rev-parse', 'HEAD'], { encoding: 'utf8' }).trim(), 'source-unavailable');
+          const tree = optional(() => execFileSync('git', ['rev-parse', 'HEAD^{tree}'], { encoding: 'utf8' }).trim(), 'tree-unavailable');
+          if (sha !== process.env.GITHUB_SHA || spawnSync('git', ['diff', '--quiet', 'HEAD', '--']).status !== 0) failures.push('source-changed');
+          const dirs = existsSync(root) ? readdirSync(root, { withFileTypes: true })
+            .filter((entry) => entry.isDirectory() && /^ghostpay-browser-devnet\.[A-Za-z0-9]{6}$/.test(entry.name)) : [];
+          if (dirs.length !== 1) failures.push('missing-or-ambiguous-run-directory');
+          const run = dirs.length === 1 ? join(root, dirs[0].name) : undefined;
+          const exitText = optional(() => readText(join(root, 'runner-exit.txt')).trim(), 'runner-did-not-finish');
+          const runnerExit = /^[0-9]{1,3}$/.test(exitText ?? '') ? Number(exitText) : null;
+          if (runnerExit !== 0) failures.push('runner-failed');
+          const log = optional(() => readText(join(root, 'runner.log')), 'runner-log-unavailable');
+          const phases = [['== anvil on ', 'anvil-start'], ['== deploy ', 'contract-deploy'],
+            ['== switch the local chain ', 'chain-setup'], ['== sign the devnet manifest ', 'manifest'],
+            ['== playwright ', 'build-and-browser']];
+          const phase = phases.filter(([marker]) => log?.includes(marker)).at(-1)?.[1] ?? 'setup';
+          // Retain compiler location/code only: diagnostic messages can echo source strings or fixture input.
+          const compilerDiagnostics = [...(log ?? '').matchAll(/^([A-Za-z0-9_./-]+\.(?:ts|tsx|mts))\((\d+),(\d+)\): error (TS\d+):/gm)]
+            .slice(0, 50).map((match) => ({ file: match[1], line: Number(match[2]), column: Number(match[3]), code: match[4] }));
+          const report = run === undefined ? undefined : optional(() => JSON.parse(readText(join(run, 'pages-results', 'erc20-report.json'))), 'report-unavailable');
+          const membership = validateErc20ReportMembership(report, {
+            mode: process.env.GHOSTPAY_PAGES_ERC20, browser: process.env.GHOSTPAY_PAGES_BROWSER,
+          });
+          failures.push(...membership.failures);
+          const files = new Set(['erc20-pages-devnet.spec.ts', 'erc20-pages-boundaries.spec.ts']);
+          const cases = [];
+          const publicAttachments = [];
+          const statuses = new Set(['passed', 'failed', 'timedOut', 'skipped', 'interrupted']);
+          function collect(suites) {
+            for (const suite of suites ?? []) {
+              for (const spec of suite.specs ?? []) {
+                const file = basename(spec.file ?? suite.file ?? '');
+                if (!files.has(file)) { failures.push('unexpected-test-file'); continue; }
+                for (const test of spec.tests ?? []) {
+                  const results = test.results ?? [];
+                  const passed = spec.ok === true && test.expectedStatus === 'passed' && test.status === 'expected'
+                    && test.projectName === `erc20-${process.env.GHOSTPAY_PAGES_BROWSER}`
+                    && results.length === 1 && results[0].status === 'passed' && results[0].retry === 0;
+                  cases.push({ file, line: nonnegative(spec.line), column: nonnegative(spec.column), titleSha256: hash(String(spec.title)), passed,
+                    results: results.map((result) => ({
+                      status: statuses.has(result.status) ? result.status : 'invalid', durationMs: nonnegative(result.duration),
+                      retry: nonnegative(result.retry), errorSha256: result.error === undefined ? undefined : hash(JSON.stringify(result.error)),
+                    })) });
+                  for (const result of results) {
+                    for (const attachment of result.attachments ?? []) {
+                      if (attachment.name === 'erc20-public-evidence') {
+                        publicAttachments.push({ file, passed, primary: test === membership.primaryTest, attachment });
+                      }
+                    }
+                  }
+                }
+              }
+              collect(suite.suites);
+            }
+          }
+          if (!membership.failures.includes('invalid-test-report')) {
+            optional(() => collect(report?.suites), 'invalid-test-report');
+          }
+          if (report?.errors?.length) failures.push('global-test-error');
+          if ([...files].some((file) => !cases.some((entry) => entry.file === file))) failures.push('required-spec-not-executed');
+          if (cases.some((entry) => !entry.passed)) failures.push('test-failed-skipped-or-retried');
+          // Accept only this small public schema from the successful primary journey. Never copy arbitrary attachment
+          // bodies, follow attachment paths, or retain a digest of rejected content (which could contain fixture secrets).
+          const publicJourney = optional(() => {
+            const require = (condition) => { if (!condition) throw new Error('Invalid public journey evidence.'); };
+            const exactFields = (value, fields) => value !== null && typeof value === 'object' && !Array.isArray(value)
+              && Object.keys(value).length === fields.length && fields.every((field) => Object.hasOwn(value, field));
+            require(publicAttachments.length === 1);
+            const { file, passed, primary, attachment } = publicAttachments[0];
+            require(file === 'erc20-pages-devnet.spec.ts' && passed && primary);
+            require(exactFields(attachment, ['name', 'contentType', 'body']) && attachment.contentType === 'application/json'
+              && typeof attachment.body === 'string' && attachment.body.length > 0 && attachment.body.length <= 8192);
+            const bytes = Buffer.from(attachment.body, 'base64');
+            require(bytes.toString('base64') === attachment.body);
+            const value = JSON.parse(bytes.toString('utf8'));
+            require(exactFields(value, ['commit', 'mode', 'chainId', 'token', 'gross', 'fee', 'net',
+              'paymentHash', 'fundingHash', 'sweepHash', 'walletMethods', 'recoveredOriginalPayment',
+              'browserName', 'browserVersion', 'playwrightVersion']));
+            require(typeof value.commit === 'string' && /^[0-9a-f]{40}$/.test(value.commit) && value.commit === sha);
+            require(['plain', 'permit'].includes(value.mode) && value.mode === process.env.GHOSTPAY_PAGES_ERC20);
+            require(['chromium', 'firefox', 'webkit'].includes(value.browserName) && value.browserName === process.env.GHOSTPAY_PAGES_BROWSER);
+            const version = (text) => typeof text === 'string' && /^\d{1,6}(?:\.\d{1,6}){1,3}$/.test(text);
+            const lockedVersion = JSON.parse(readText('package-lock.json')).packages['node_modules/@playwright/test'].version;
+            require(version(value.browserVersion) && version(value.playwrightVersion)
+              && value.playwrightVersion === lockedVersion && value.playwrightVersion === report.config.version);
+            require(value.chainId === 84532 && typeof value.token === 'string'
+              && value.token.toLowerCase() === '0x036cbd53842c5426634e7929541ec2318f3dcf7e');
+            require(value.gross === '100000000' && value.fee === '250000' && value.net === '99750000'
+              && value.recoveredOriginalPayment === true);
+            const expectedMethods = value.mode === 'plain'
+              ? ['eth_requestAccounts', 'eth_sendTransaction', 'eth_sendTransaction']
+              : ['eth_requestAccounts', 'eth_signTypedData_v4', 'eth_sendTransaction'];
+            require(JSON.stringify(value.walletMethods) === JSON.stringify(expectedMethods));
+            const txHashes = [value.paymentHash, value.fundingHash, value.sweepHash];
+            require(txHashes.every((tx) => typeof tx === 'string' && /^0x[0-9a-fA-F]{64}$/.test(tx) && !/^0x0{64}$/.test(tx)));
+            require(new Set(txHashes.map((tx) => tx.toLowerCase())).size === 3);
+            return { commit: value.commit, mode: value.mode, chainId: 84532, token: value.token.toLowerCase(),
+              gross: value.gross, fee: value.fee, net: value.net, paymentHash: value.paymentHash.toLowerCase(),
+              fundingHash: value.fundingHash.toLowerCase(), sweepHash: value.sweepHash.toLowerCase(),
+              walletMethods: expectedMethods, recoveredOriginalPayment: true,
+              browserName: value.browserName, browserVersion: value.browserVersion, playwrightVersion: value.playwrightVersion };
+          }, 'public-journey-evidence-unavailable-or-invalid');
+          const build = run === undefined ? undefined : optional(() => {
+            const directory = join(run, 'pages', 'evidence');
+            const record = JSON.parse(readText(join(directory, 'pages-evidence.json')));
+            const sumsPath = join(directory, 'SHA256SUMS');
+            const site = join(run, 'pages', 'site');
+            const verified = verifyPagesArtifact(site, sumsPath, { expectedCommit: sha });
+            if (verified.problems.length || verified.verified !== record.files) throw new Error('Incomplete build.');
+            const info = JSON.parse(readText(join(site, 'build-info.json')));
+            const sums = readText(sumsPath);
+            const lockfileSha256 = hash(read('package-lock.json'));
+            if (record.commit !== sha || record.profile !== 'lean' || record.release !== false
+              || JSON.stringify(record.paymentsEnabledChainIds) !== '[84532]' || record.lockfileSha256 !== lockfileSha256
+              || record.sha256sumsSha256 !== hash(sums) || !/^[0-9a-f]{64}$/.test(record.manifestsSha256)
+              || info.manifestsSha256 !== record.manifestsSha256) throw new Error('Build identity mismatch.');
+            const servedFiles = sums.trim().split('\n').map((line) => {
+              const match = /^([0-9a-f]{64})  \.\/([A-Za-z0-9_./-]+)$/.exec(line);
+              if (!match || match[2].split('/').some((part) => part === '..' || part === '')) throw new Error('Invalid build path.');
+              return { path: match[2], sha256: match[1] };
+            });
+            if (servedFiles.length !== record.files || !servedFiles.some((file) => file.path === 'index.html')) throw new Error('Incomplete build.');
+            return { profile: 'lean', release: false, chainId: 84532, lockfileSha256,
+              manifestsSha256: record.manifestsSha256, sha256sumsSha256: record.sha256sumsSha256, files: servedFiles };
+          }, 'build-identity-unavailable-or-invalid');
+          const record = { format: 'ghostpay-erc20-browser-qualification/1', checkoutCommit: sha, pullRequestHead: process.env.PR_HEAD,
+            tree, mode: process.env.GHOSTPAY_PAGES_ERC20, browser: process.env.GHOSTPAY_PAGES_BROWSER,
+            runnerExit, phase, compilerDiagnostics, runnerLogSha256: log === undefined ? undefined : hash(log),
+            globalErrorSha256: report?.errors?.length ? hash(JSON.stringify(report.errors)) : undefined,
+            passed: failures.length === 0, failures: [...new Set(failures)], cases, build, publicJourney,
+            limits: 'Local Anvil with test token stand-ins and a test-signed manifest; no public-token, physical-device, wallet-extension, release or deployment qualification. Raw logs, downloads, screenshots, traces, keys and passphrases are excluded.' };
+          writeFileSync(join(evidence, 'qualification.json'), JSON.stringify(record, null, 2) + '\n', { mode: 0o600 });
+          console.log(JSON.stringify({ mode: record.mode, browser: record.browser, passed: record.passed, cases: cases.length, failures: record.failures }));
+          if (!record.passed) process.exitCode = 1;
+          NODE
+      - name: Retain only sanitized qualification evidence
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: erc20-pages-${{ matrix.mode }}-${{ matrix.browser }}-${{ github.sha }}
+          path: ${{ env.ERC20_EVIDENCE }}/qualification.json
+          if-no-files-found: error
+          retention-days: 7
+      - name: Remove private temporary fixture data
+        if: always()
+        run: |
+          case "$ERC20_RUN_ROOT" in
+            "$RUNNER_TEMP"/ghostpay-erc20-*) rm -rf -- "$ERC20_RUN_ROOT" ;;
+            *) exit 1 ;;
+          esac

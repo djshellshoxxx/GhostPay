@@ -9,6 +9,77 @@ The follow-up on PR #768 starts at `0d7d069da7e0145b8a373e45de150e82744713ca` an
 the `<noscript>` navigation in `apps/web/index.html` to this claim. With JavaScript disabled,
 the first Tab must reveal the skip link, Enter must focus main, and the next Tab must reach the inline help guide.
 
+## ERC-20 Pages payment and recovery qualification, November 28
+
+Codex continues PR #753 on `test/erc20-pages-recovery-20261127-27c1`, from
+PR head `1d7bd4ea` and main `70458ebe`. Owned paths are the existing ERC-20
+workflow, its report collector regressions, and ERC-20-specific browser tests.
+Acceptance requires both token modes on three managed engines, all eight cases
+in each lane, a complete verified artifact, and recovery of the original funds.
+
+# ERC-20 browser qualification continuation — 2026-11-27 UTC
+
+Coordinator: ChatGPT `1b5b61042913`, continuing the owner's existing #753 task on
+`test/erc20-pages-recovery-20261127-27c1`, not creating a new remote branch.
+Prior head `94b6b5f86bd836461c54cd3f5c5783c731687110`; current main
+`b890a76603b924829fdbe2b4fb2c5626f0cf4e36` incorporated with both parents retained.
+The original implementation handoff reported no ongoing worker and authorized
+continuing the collector/integration gap. Live head and discussion checks found
+no intervening writer; the separate integration coordinator had left this branch
+untouched pending that continuation. The current owner request renews this work.
+
+Own only `.github/workflows/erc20-browser-qualification.yml`, new
+`scripts/beta/erc20-report-membership.mjs`, its focused tests in
+`scripts/tests/erc20-report-membership.test.mjs`, this additive claim, the existing
+ERC-20 handoff and `tasks/{plan,todo}.md`. Preserve original browser/fixture/config
+changes from #753 and all current main behavior. Do not edit #742, #665, the native
+Pages harness or P14 checkpoint-atomicity implementation.
+
+Acceptance: enforce all eight expected case identities exactly once for each
+plain/permit and Chromium/Firefox/WebKit lane; reject missing, duplicate,
+substituted, malformed, skipped and retried cases; bind public evidence to the
+exact primary test; regression-first implementation, independent review, current
+candidate browser evidence and applicable hosted checks. Preserve evidence
+sanitization and source/build binding. No product, dependency, contract,
+deployment or stopped-feature activation. No integration lease is held.
+
+---
+
+# ERC-20 Pages browser payment and fresh-profile recovery qualification — 2026-11-27 UTC
+
+Coordinator: ChatGPT `27c1c13e68a7`; branch `test/erc20-pages-recovery-20261127-27c1`.
+Base: main `c9177f57bc7293fa7a461cfc663c38cc7fe63bf2`. The owner requested continuation
+of the browser-journey design after reviewing qualification candidate #751
+`48254ae02edad512ee37ae072fa4215c947fceb8`. This is a separate test/fixture lane;
+it does not merge that composition or claim any other worker's runtime fixes.
+
+Owned paths: new `apps/web/e2e/devnet/erc20.ts`, `apps/web/e2e/devnet/erc20Ui.ts`,
+`apps/web/e2e/erc20-pages-devnet.spec.ts`, `apps/web/e2e/erc20-pages-boundaries.spec.ts`,
+new `.github/workflows/erc20-browser-qualification.yml`, the additive ERC-20 selection
+and engine configuration in `apps/web/playwright.pages-devnet.config.ts`, the new-spec
+exclusion in `apps/web/playwright.config.ts`, this additive claim, and new
+`docs/handoffs/ERC20_BROWSER_QUALIFICATION_20261127.md`.
+
+Ownership refresh inspected all 155 open PR changed-file inventories. These proposed
+new paths and config hunks have no identified competing claim. Preserve the existing
+`scripts/beta/browser-devnet.sh`, `e2e/devnet/{chain,pages,ui}.ts`, native Pages spec,
+manifest helper and Pages workflow byte-for-byte: older open PRs retain their claims.
+Fixture, browser-spec and CI workers use separate worktrees; only the coordinator integrates.
+
+Acceptance: the actual lean Pages build under `/GhostPay/` drives real local-Anvil
+ERC-20 approval/permit payments, confirmation-gated scan evidence, explicit matching,
+invoice-bound receipts and an actual downloaded seller-keystore restore into a fresh
+browser before spending the original token payment. Prove zero-gas refusal followed
+by an explicit local native top-up and one recovered direct sweep, truthful interruption
+states, and no duplicate payment. Plain/permit fixtures reuse existing test contracts
+at allowlisted addresses on disposable loopback Anvil only. No production contract,
+allowlist, chain scope, dependency, custody, deployed service or stopped-product change.
+No essential test skip counts as a pass. Record exact source/artifact identity and actual
+browser results. Run focused checks, independent review and current-head required CI;
+integration requires a fresh ownership/lease check. No integration lock is held by this claim.
+
+---
+
 # Recorded low residuals (web) — 2026-11-27 UTC
 
 Worker: local Claude Code worker W7 on the existing merged branch `claude/consolidation-stack-20261126`, fast-forwarded
