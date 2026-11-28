@@ -9,6 +9,7 @@ export function ControlTip({ message, children }: {
   readonly message: MessageKey;
   readonly children: ReactElement<{
     'aria-description'?: string;
+    'aria-describedby'?: string;
     'data-control-tip'?: string;
     hidden?: boolean;
     children?: ReactNode;
@@ -17,8 +18,32 @@ export function ControlTip({ message, children }: {
   const inline = useContext(InlineTips);
   const t = useI18nOptional()?.t ?? SOURCE_TRANSLATOR.t;
   const text = t(message);
-  const target = cloneElement(children, { 'aria-description': text, 'data-control-tip': '' });
-  if (!inline || children.props.hidden) return target;
+  const instructionId = useId();
+  const originalDescribedBy = children.props['aria-describedby'];
+  const [appendDescription, setAppendDescription] = useState(false);
+  useEffect(() => {
+    if (originalDescribedBy === undefined) {
+      setAppendDescription(false);
+      return;
+    }
+    const alreadyDescribed = originalDescribedBy.split(/\s+/).some((id) => {
+      const described = document.getElementById(id);
+      return described?.textContent?.trim() === text.trim();
+    });
+    setAppendDescription(!alreadyDescribed);
+  }, [originalDescribedBy, text]);
+  const describedBy = appendDescription
+    ? [...(originalDescribedBy?.split(/\s+/).filter(Boolean) ?? []), instructionId].join(' ')
+    : originalDescribedBy;
+  const target = cloneElement(children, {
+    'aria-description': text,
+    ...(describedBy === undefined ? {} : { 'aria-describedby': describedBy }),
+    'data-control-tip': '',
+  });
+  const accessibleInstruction = appendDescription
+    ? <span id={instructionId} className="sr-only">{text}</span>
+    : null;
+  if (!inline || children.props.hidden) return <>{target}{accessibleInstruction}</>;
   // Inline notes are redundant for assistive technology. Keep them out of enclosing labels' names.
   const note = <span aria-hidden="true" className="control-tip-inline" onClick={(event) => {
     // Notes can be inside a label or summary. Reading or selecting the note must not activate it.
@@ -26,8 +51,8 @@ export function ControlTip({ message, children }: {
   }}>{text}</span>;
   // A closed details element only renders its summary.
   return children.type === 'summary'
-    ? cloneElement(target, {}, children.props.children, note)
-    : <>{target}{note}</>;
+    ? <>{cloneElement(target, {}, children.props.children, note)}{accessibleInstruction}</>
+    : <>{target}{note}{accessibleInstruction}</>;
 }
 
 function tipTarget(node: EventTarget | null): Element | null {
