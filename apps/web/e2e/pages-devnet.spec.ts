@@ -138,6 +138,7 @@ async function prepareDirectSweep(page: Page, vaultPass?: string): Promise<Locat
   await sweepView(page).getByLabel(/Directly/).check();
   await sweepView(page).getByLabel('Destination address (your own wallet)').fill(ACCOUNTS.destination);
   if (vaultPass !== undefined) await sweepView(page).getByLabel('Vault passphrase (required for each sweep action)').fill(vaultPass);
+  await sweepView(page).getByRole('button', { name: 'Review direct sweep' }).click();
   const sign = sweepView(page).getByRole('button', { name: 'Sign and broadcast directly' });
   await expect(sign).toBeEnabled();
   return sign;

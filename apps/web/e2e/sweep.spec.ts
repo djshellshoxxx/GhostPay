@@ -69,6 +69,7 @@ for (const outcome of ['success', 'unknown'] as const) {
     expect(workers.some((url) => /\/assets\/scanner\.worker-/.test(url))).toBe(true);
     await sweep(page).getByLabel('Destination address (your own wallet)').fill(DESTINATION);
     await sweep(page).getByLabel('Vault passphrase (required for each sweep action)').fill(PASS);
+    await sweep(page).getByRole('button', { name: 'Review direct sweep' }).click();
     await expect(sign(page)).toBeEnabled();
     await auditAccessibility(page, `sweep-${outcome}-direct-signing-ready`);
     await sign(page).click();
