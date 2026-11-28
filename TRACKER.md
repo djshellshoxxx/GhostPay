@@ -52,9 +52,9 @@ push, created by PRIMARY 2026-11-28T02:08Z). Integration lock: `origin/automatio
 | sthr_01BBwZJC3BquB2aMJkvVmZgY | engineer | S-REV-I6 | PR (draft) |
 | sthr_01MtnUFj5nZ4Z62jqV5n8z7o | analyst | A1 findings census | DONE reports/A1-findings-census.md |
 | sthr_01FCt1pJYhKcEoZZk2Y67WTw | engineer | S-SCAN-ROUTE | PR (draft) |
-| sthr_014DKKprbq9PCmsmt5z2wt7H | analyst | A2 branch dispositions | reports/A2-branch-dispositions.md |
-| sthr_01T3BKy1k9o8bn56ghpp73hG | analyst | A3a core-crypto/secret-box/address-safety | PAUSED: API rate limit at ~02:21Z; resume when concurrency drops |
-| sthr_013jpfgfiS7zVA3tL5uqeJFt | analyst | A3b invoice-schema/payment-uri/scan-source | PAUSED: API rate limit at ~02:21Z; resume when concurrency drops |
+| sthr_014DKKprbq9PCmsmt5z2wt7H | analyst | A2 branch dispositions | DONE reports/A2-branch-dispositions.md: no unique unowned in-scope code since 11-24; C1 (#544 idle property test) and C2 (#632 e2e) need owner agreement |
+| sthr_01T3BKy1k9o8bn56ghpp73hG | analyst | A3a core-crypto/secret-box/address-safety | RESUMED ~02:45Z |
+| sthr_013jpfgfiS7zVA3tL5uqeJFt | analyst | A3b invoice-schema/payment-uri/scan-source | RESUMED ~02:45Z |
 | sthr_01QyRyvtpWCG3GzxCJ6oHCJB | analyst | A4 docs accuracy | DONE reports/A4-docs-accuracy.md |
 | sthr_01MvMaTZxmKogmZVKbm8izey | engineer | S-DOCS-ACCURACY | PR (draft) |
 
@@ -75,3 +75,10 @@ push, created by PRIMARY 2026-11-28T02:08Z). Integration lock: `origin/automatio
 | A4 H1-H5 help.html/privacy.html | A4 | Hand-off to #766 owner |
 | A4 O2 README status/hosting | A4 | Overlaps #639; after #639 resolves |
 | New external branch automation/20261127/bug/browser-digest-deadline (701ae992) | A1 | owns apps/web/src/lib/browserChecks{,.test}.ts; avoid |
+
+## Branch-disposition outcomes (A2, 231 branches dated >= 11-24 local/UTC)
+
+- No unique, authorised, unowned product code stranded. Both in-scope leftovers are tests in stale open PRs (#544, #632);
+  ownership not released, so not taken.
+- For owners: #726's fix is already on main via #724 (merge 34ba63a2) but the PR is open; #614 (held) has no remaining
+  unique code; STOP_WORK says #636 is closed but it is open on GitHub.

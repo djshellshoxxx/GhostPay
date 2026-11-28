@@ -44,7 +44,7 @@ Bucket counts (Table 1 / Table 2):
 | Archival docs only, or a claim with no code | 11 | 2 |
 | Blocked on an unmerged owner runtime | 3 | 0 |
 
-Five Table 1 rows are owned and also outside beta scope: #720, #653, #678, #643 and #602. I counted each once, in the second bucket.
+Every branch is counted once. The "stopped, deferred, held, or outside beta scope" row also contains branches that still have an open PR: in Table 1 these are #720, #636, #653, #678, #643, #614, #621, #609 and #602; in Table 2 they are #592, #587, #559 and #558. The "owned by an open PR" row lists only in-scope owned work.
 
 Late addition after the snapshot: `automation/20261127/bug/browser-digest-deadline` (`701ae992`, pushed 2026-11-28 02:23Z) is a new BUG-only fix to `apps/web/src/lib/browserChecks.ts`. It has an ACTIVE_WORK claim and **open PR #767**, so it is owned and active.
 
@@ -63,7 +63,7 @@ Late addition after the snapshot: `automation/20261127/bug/browser-digest-deadli
 
   It asserts that the first Create-invoice signature either signs once with a valid signature, or calls the signer zero times and requires unlock.
 - **Why it is authorised.** It covers the shared-core protection of vault and session isolation (idle lock). It is test-only, with no product, dependency or contract change. `fast-check` 4.10.2 is already a devDependency of `apps/web` (`apps/web/package.json:51`).
-- **Why it is stranded.** `docs/handoffs/IDLE_RECOVERY_CORE_20261126.md:68-69` (the #689 port of #544/#577) says: "The donor's 64 generated wake schedules remain in its original ref and were not imported or run in this port." Main's describe block `GP-PAGES-04: first invoice signature after sleep` (`apps/web/src/AppShell.idleClock.test.tsx:445-501`) has the donor's refactored helpers (`readyToSign`, `fillInvoice`, `activate`, `expectLocked`, `expectSigned`) and only the two deterministic cases.
+- **Why it is stranded.** `docs/handoffs/IDLE_RECOVERY_CORE_20261126.md:68-69` (the #689 port of #544/#577) says: "The donor's 64 generated wake schedules remain in its original ref and were not imported or run in this port." Main's describe block `GP-PAGES-04: first invoice signature after sleep` (`apps/web/src/AppShell.idleClock.test.tsx:445-502`) has the donor's refactored helpers (`readyToSign`, `fillInvoice`, `activate`, `expectLocked`, `expectSigned`) and only the two deterministic cases.
 - **Owner.** **Open PR #544** (`test/ghostpay-first-sign-after-sleep`, non-draft, based on the #365 branch rather than main). Its last activity was 2026-11-24 06:00Z, and its four comments are all from 11-24. No ACTIVE_WORK entry or registry claim on any of the 40 most recently pushed branches mentions the wake schedules (grep for `wake schedule|#544|first-sign-after-sleep`).
   - #762 has a thematic neighbour: the claim `audit/nov27-idle-87060` ("Confirm the current IDLE-M1 owner decision … focused sole-copy browser acceptance"). It does not touch this file.
   - **Do not port silently.** Ask on #544 or get an owner hand-off first, as the closed-residual record does for #589 and #632.
@@ -71,7 +71,7 @@ Late addition after the snapshot: `automation/20261127/bug/browser-digest-deadli
   - `npx vitest run src/AppShell.idleClock.test.tsx --coverage=false --maxWorkers=1`: **134/134 passed** (70 existing + 64 new) in 12.5 s.
   - `npx eslint src/AppShell.idleClock.test.tsx`: exit 0.
   - `npx tsc -p tsconfig.json --noEmit` (apps/web): exit 0.
-- **Value, stated honestly.** This is additive breadth (timeouts 1–240 min, event and clock combinations), not a new bug. I checked a mutant that changed `now.wall - activity.wall >= timeoutMs` to `>` (`apps/web/src/AppShell.tsx:213`): it fails 2 of the schedules, and it also fails 10 existing deterministic tests in the same files.
+- **Value, stated honestly.** This is additive breadth (timeouts 1–240 min, event and clock combinations), not a new bug. I checked a mutant that changed `now.wall - activity.wall >= timeoutMs` to `>` (`apps/web/src/AppShell.tsx:213`), running `AppShell.idleClock.test.tsx` and `lib/session.idleLock.test.ts` together. It fails 2 of the 64 schedules, but it also fails 15 existing deterministic test executions (14 distinct titles; 17 failed / 138 passed in total). Main already catches that mutant without C1.
 - **Conflicts.** None with main: the block applies cleanly at `b890a766`. No active open PR or PRIMARY/SECONDARY claim touches this file. Only the giant old-stack PRs #372, #383, #587 and #609 list it, as inherited content.
 - **Port recipe.**
   1. Copy lines 503-535 of `git show 4b077d2b:apps/web/src/AppShell.idleClock.test.tsx` (the `const schedules = fc.sample(...)` block and its `it.each`).
@@ -87,7 +87,7 @@ Late addition after the snapshot: `automation/20261127/bug/browser-digest-deadli
   - the request the wallet rejects equals the previewed JSON;
   - exactly one request is sent, and the rejection message is kept.
 - **Why it is authorised.** It covers external wallet disclosure, one of the protected mechanisms named in the AGENTS.md owner clarification.
-- **Not on main.** `git ls-tree -r origin/main` has no such blob or file. Main's only unit-level Permit-disclosure assertion is `apps/web/src/views/Pay.test.tsx:844` (methods equal `['eth_requestAccounts','eth_signTypedData_v4']`).
+- **Not on main.** `git ls-tree -r origin/main` has no such blob or file. Main's nearest coverage is unit level only, for example `apps/web/src/views/Pay.test.tsx:844` (disclosed methods equal `['eth_requestAccounts','eth_signTypedData_v4']`) and `apps/web/src/lib/walletDisclosure.test.ts:41` (Permit typed-data JSON). Main has no browser-level case with manual approval and wallet rejection.
 - **Owner.** **Open PR #632** (`automation/20261124T2237Z/qa/disclosure-firefox-reflow`, draft, last push 2026-11-24 22:37 -0700). Record row #589 E pins it there. `docs/GHOSTPAY_CONSOLIDATION_TRACKER.md` (P14 F3 section) says: "Its quiet timestamp does not release ownership." It therefore needs explicit reconciliation with #632's owner.
 - **Effort and risk (inferred, not run).** The spec depends on helpers that main does not have:
   - `walletFixture.ts` / `injectWallet`, `approveWalletDisclosure` and the `rejectMethod` / `rejectedRequest` wallet controls are all absent on main.
@@ -112,7 +112,7 @@ Non-ancestors come first (58), then ancestors (110). "Ahead / Δpaths" is commit
 | Branch | Head | Committer date | PR | Ahead / Δpaths | Classification | Evidence | Owner |
 |---|---|---|---|---|---|---|---|
 | `integration/ghostpay-autonomous-ledger-20261121-5ceb` | `56380dd7` | 2026-11-27 19:05:12 -0700 | #380 open (draft) | 64 / 87 | Owned, docs only | 64 commits, all consolidation-ledger docs (docs/consolidation, master ledger); no product delta | #380 open; hourly checkpoints, last push 2026-11-28 02:05Z (active) |
-| `codex/beta-control-tooltips` | `e9b14cf2` | 2026-11-27 18:38:44 -0700 | #766 open | 2 / 57 | Owned, unique, in progress | 2 commits on b890a766: ControlTips + 187 keys/locale, presentation wrappers in 30+ lean views (57 files) | #766 open (Codex), pushed 2026-11-28 01:38Z; registry observed_external |
+| `codex/beta-control-tooltips` | `e9b14cf2` | 2026-11-27 18:38:44 -0700 | #766 open | 2 / 57 | Owned, unique, in progress | 2 commits on b890a766: ControlTips component, +187 catalog lines per locale, presentation wrappers in 30+ lean views (57 files) | #766 open (Codex), pushed 2026-11-28 01:38Z; registry observed_external |
 | `audit/nov27-hosted-erc20-verification` | `5b60776e` | 2026-11-27 18:08:38 -0700 | #764 open (draft, base #762) | 29 / 58 | Owned, unique, in progress | stacks on #762; adds ERC-20 browser workflow + nov27-w5-qualification.yml pinning #665 harness db6f3da6 | #764 open, pushed 2026-11-28 01:08Z |
 | `fix/stress-runner-volume-crash` | `3e633f55` | 2026-11-27 18:03:48 -0700 | #765 open (draft) | 2 / 9 | Owned, unique, in progress | scripts/stress/* replay runner + redaction + node test (9 files) | #765 open, pushed 2026-11-28 01:03Z |
 | `audit/nov27-six-finding-integration` | `96784ca1` | 2026-11-27 18:02:24 -0700 | #762 open | 25 / 48 | Owned, unique, in progress | contains #742 head 2b4826e0 (ancestor) + Pages origin/archive, idle, late-payment, export-inventory audit fixes (48 files) | #762 open, pushed 2026-11-28 01:02Z; ACTIVE_WORK claims audit/nov27-{pages,late,inventory,idle,origin}-87060 |
