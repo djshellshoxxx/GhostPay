@@ -240,7 +240,8 @@ describe('native sweep reviewed balance', () => {
     } } };
     const result = await directSweep(input);
     const maximumGas = 21_000n * 2_000_000_000n;
-    expect(chainBalance).toBeGreaterThan(BALANCE); expect(balanceReads).toBe(1);
+    // Read at review, and before signing only to refuse a smaller balance: the larger one changes nothing signed.
+    expect(chainBalance).toBeGreaterThan(BALANCE); expect(balanceReads).toBe(2);
     assertEip1559Transaction(raw);
     expect(parseTransaction(raw).value).toBe(BALANCE - maximumGas);
     expect(result.sent).toBe(BALANCE - maximumGas); expect(result.maxGasCost).toBe(maximumGas);

@@ -11,7 +11,7 @@ import { ManifestBanner } from '../components/ManifestBanner';
 import { verifyManifestForFlow } from '../lib/manifest';
 import { UserFacingError, displayMessage, captureUserMessage, type DisplayMessage } from '../lib/errors';
 import { formatUnits } from '../lib/format';
-import { checkDestination, directSweep, DirectSweepOutcomeUnknownError, getSweepQuote, isUnresolvedAttempt, readBalance, reconcileSweepLock, relayedSweep, sweepPermitRefusalKey, sweepPermitSuggestsDirect, RELAYED_EXPIRY_MARGIN_SECONDS, type DirectSweepResult, type RelayedOrderRef, type SweepLock, type SweepQuoteView, type SweepTarget } from '../lib/sweep';
+import { checkDestination, DIRECT_SWEEP_REVIEW_TTL_SECONDS, DirectSweepOutcomeUnknownError, getSweepQuote, isUnresolvedAttempt, readBalance, reconcileSweepLock, relayedSweep, reviewDirectSweep, signReviewedDirectSweep, sweepPermitRefusalKey, sweepPermitSuggestsDirect, RELAYED_EXPIRY_MARGIN_SECONDS, type DirectSweepResult, type DirectSweepReview, type RelayedOrderRef, type SweepLock, type SweepQuoteView, type SweepTarget } from '../lib/sweep';
 import { RelayerRefusedError } from '../lib/relayerClient';
 import { authorizeEncryptedVault, readEncryptedVault } from '../lib/keyVault';
 import { captureSessionGuard, captureSessionVersionGuard, getSessionBackup, subscribeSessionBackup } from '../lib/session';
@@ -25,6 +25,18 @@ import type { MessageKey } from '../i18n/catalog';
 
 /** The saved RPCs and scan privacy settings, as stored. Another tab can change them while this page is open. */
 const savedRoute = (): string => JSON.stringify([loadSettings().rpcUrls, loadScanPrivacy(browserStorage())]);
+
+/** Direct-sweep errors after which the shown review can no longer be signed and must be computed again. */
+const REVIEW_DISCARDING_ERRORS: ReadonlySet<string> = new Set(['error.sweep.directReviewExpired', 'error.sweep.directReviewOutdated', 'sweep.reviewChanged']);
+
+/** A computed direct sweep the user is looking at, bound to the review context it was computed in. */
+interface DirectReviewState {
+  readonly review: DirectSweepReview;
+  readonly balanceId: number;
+  readonly quoteId: number;
+  /** A same-nonce replacement of the recorded lock whose handoff outcome is unknown. */
+  readonly resign: boolean;
+}
 
 const ATTEMPT_TITLES: Partial<Record<string, MessageKey>> = {
   'unknown-after-handoff': 'sweep.attempt.unknown',
@@ -71,6 +83,8 @@ function SweepPanel(): ReactNode {
   const [balanceNoRpc, setBalanceNoRpc] = useState(false);
   const quoteOperation = useRef(0);
   const [quote, setQuote] = useState<SweepQuoteView | undefined>(undefined);
+  // G07-D2: the in-page key signs without a wallet prompt, so a direct sweep is computed and shown before it is signed.
+  const [directReview, setDirectReview] = useState<DirectReviewState | undefined>(undefined);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<DisplayMessage | undefined>(undefined);
   const [hash, setHash] = useState<string | undefined>(undefined);
@@ -124,6 +138,7 @@ function SweepPanel(): ReactNode {
     setBalanceAsked(false);
     setBalanceNoRpc(false);
     setQuote(undefined);
+    setDirectReview(undefined);
   }), []);
 
   const meta = sel?.match.metadata;
@@ -152,6 +167,7 @@ function SweepPanel(): ReactNode {
 
   useEffect(() => {
     setQuote(undefined);
+    setDirectReview(undefined);
     return () => { quoteOperation.current += 1; };
   }, [quoteScope]);
 
@@ -186,6 +202,7 @@ function SweepPanel(): ReactNode {
   };
   const loaded = manifest?.status === 'loaded' ? manifest.manifest : undefined;
   const relayerOk = tokenCfg?.permit === true && app.settings.relayerUrl !== '';
+  const nativeSymbol = findChain(chainId)?.nativeSymbol ?? '';
   const nowSec = (): number => Math.floor(services.nowMs() / 1000);
 
   const onReadBalance = (): void => {
@@ -336,20 +353,12 @@ function SweepPanel(): ReactNode {
     });
   };
 
-  const onDirect = (): void => {
-    if (signingLocked) return;
-    sweepDirectly(false);
-  };
-
-  const onResign = (): void => {
-    if (resignNonce === undefined) return;
-    sweepDirectly(true);
-  };
-
-  /** `resign`: sign a replacement for the direct sweep whose handoff outcome is unknown, with exactly its nonce. */
-  const sweepDirectly = (resign: boolean): void => {
+  /** Computes the direct sweep (or a same-nonce replacement) and shows it; nothing is signed until it is confirmed. */
+  const onReviewDirect = (resign: boolean): void => {
+    if (resign ? resignNonce === undefined : signingLocked) return;
     const balanceId = balanceOperation.current;
     const quoteId = quoteOperation.current;
+    setDirectReview(undefined);
     void guard(async (assertCurrent) => {
       const assertReviewCurrent = (): void => {
         assertCurrent();
@@ -366,33 +375,79 @@ function SweepPanel(): ReactNode {
       assertReviewCurrent();
       if (loaded === undefined || rpc === undefined || balance === undefined) throw new Error('state');
       const dest = checkDestination(destination, target.owner, loaded);
-      let replaces: (SweepLock & { readonly nonce: number }) | undefined;
-      if (resign) replaces = resignableLock();
+      let replaceNonce: number | undefined;
+      if (resign) replaceNonce = resignableLock().nonce;
       else assertNoUnresolvedAttempt();
-      // The lock is persisted before handoff; on an uncertain outcome it simply stays as begun (unknown-after-handoff).
-      // A replacement takes over the recorded lock only by compare-and-swap and only with the same nonce, and the lock
-      // as recorded keeps the replaced hashes.
-      const handoff: { lock?: SweepLock } = {};
-      let res: DirectSweepResult;
+      const review = await reviewDirectSweep({
+        target, manifest: loaded, destination: dest, amount: balance, rpc, nowSeconds: nowSec(), assertReviewCurrent,
+        ...(replaceNonce === undefined ? {} : { replaceNonce }),
+      });
+      assertReviewCurrent();
+      setDirectReview({ review, balanceId, quoteId, resign });
+    });
+  };
+
+  /** Signs exactly the reviewed transaction. A replacement takes over only the lock it was reviewed against. */
+  const onSignReviewed = (): void => {
+    const shown = directReview;
+    if (shown === undefined) return;
+    if (shown.resign ? resignNonce === undefined : signingLocked) return;
+    const { review, balanceId, quoteId, resign } = shown;
+    void guard(async (assertCurrent) => {
+      const assertReviewCurrent = (): void => {
+        assertCurrent();
+        assertRouteCurrent();
+        if (balanceOperation.current !== balanceId || quoteOperation.current !== quoteId || currentQuoteScope.current !== quoteScope) {
+          throw new UserFacingError({ key: 'sweep.reviewChanged' });
+        }
+      };
       try {
-        res = await directSweep({
-          target, manifest: loaded, destination: dest, amount: balance, rpc, assertReviewCurrent,
-          ...(replaces === undefined ? {} : { replaceNonce: replaces.nonce }),
-          onBeforeHandoff: (a) => {
-            assertReviewCurrent();
-            handoff.lock = beginSweepAttempt(a, replaces);
-            rememberDestination(dest);
-          },
-        });
+        assertReviewCurrent();
+        setDryRunSkipped(false);
+        const rpc = await app.getRpc(chainId);
+        assertReviewCurrent();
+        await verified(rpc);
+        assertReviewCurrent();
+        if (loaded === undefined || rpc === undefined) throw new Error('state');
+        const dest = checkDestination(destination, target.owner, loaded);
+        if (dest !== review.destination) throw new UserFacingError({ key: 'sweep.reviewChanged' });
+        let replaces: (SweepLock & { readonly nonce: number }) | undefined;
+        if (resign) {
+          replaces = resignableLock();
+          if (replaces.nonce !== review.replaceNonce) throw new UserFacingError({ key: 'sweep.reviewChanged' });
+        } else {
+          assertNoUnresolvedAttempt();
+        }
+        // The lock is persisted before handoff; on an uncertain outcome it simply stays as begun (unknown-after-handoff).
+        // A replacement takes over the recorded lock only by compare-and-swap and only with the same nonce, and the lock
+        // as recorded keeps the replaced hashes.
+        const handoff: { lock?: SweepLock } = {};
+        let res: DirectSweepResult;
+        try {
+          res = await signReviewedDirectSweep(review, {
+            target, manifest: loaded, rpc, nowSeconds: nowSec(), assertReviewCurrent,
+            onBeforeHandoff: (a) => {
+              assertReviewCurrent();
+              handoff.lock = beginSweepAttempt(a, replaces);
+              // One review, one signed transaction: once it is handed off, it cannot be signed again.
+              setDirectReview(undefined);
+              rememberDestination(dest);
+            },
+          });
+        } catch (e) {
+          // The transaction may be on the network with its dry run skipped: that warning applies here too (B-R6).
+          if (e instanceof DirectSweepOutcomeUnknownError) setDryRunSkipped(e.simulation === 'unavailable');
+          throw e;
+        }
+        if (handoff.lock !== undefined) resolveSweepAttempt(handoff.lock, { ...handoff.lock, status: res.attempt.status });
+        setDryRunSkipped(res.simulation === 'unavailable');
+        app.announce(latestT.current('sweep.announceBroadcast'));
+        return true;
       } catch (e) {
-        // The transaction may be on the network with its dry run skipped: that warning applies here too (B-R6).
-        if (e instanceof DirectSweepOutcomeUnknownError) setDryRunSkipped(e.simulation === 'unavailable');
+        const message = captureUserMessage(e);
+        if (typeof message !== 'string' && REVIEW_DISCARDING_ERRORS.has(message.key)) setDirectReview(undefined);
         throw e;
       }
-      if (handoff.lock !== undefined) resolveSweepAttempt(handoff.lock, { ...handoff.lock, status: res.attempt.status });
-      setDryRunSkipped(res.simulation === 'unavailable');
-      app.announce(latestT.current('sweep.announceBroadcast'));
-      return true;
     });
   };
 
@@ -439,6 +494,21 @@ function SweepPanel(): ReactNode {
       }
     })();
   };
+
+  const renderDirectReview = ({ review, resign }: DirectReviewState): ReactNode => (
+    <div className="panel" role="group" aria-labelledby="sw-review-h">
+      <h3 id="sw-review-h">{t('sweep.direct.reviewTitle')}</h3>
+      <p>{t('sweep.direct.sends', { amount: `${formatUnits(review.sent, decimals)} ${symbol}` })} <Mono>{review.destination}</Mono></p>
+      <p>{t('sweep.direct.maxGas', { fee: `${formatUnits(review.maxGasCost, 18)} ${nativeSymbol}`, gas: review.unsigned.gas.toString(), price: formatUnits(review.unsigned.maxFeePerGas, 9) })}</p>
+      {review.feeReserve > 0n && <p>{t('sweep.direct.l1Reserve', { reserve: `${formatUnits(review.feeReserve, 18)} ${nativeSymbol}` })}</p>}
+      <p>{review.asset === 'native'
+        ? t('sweep.direct.leftoverNative', { kept: `${formatUnits(review.maxGasCost + review.feeReserve, 18)} ${nativeSymbol}` })
+        : t('sweep.direct.feeFromNative', { asset: symbol })}</p>
+      {review.simulation === 'unavailable' && <Notice kind="warn">{t('sweep.direct.reviewDryRunUnavailable')}</Notice>}
+      <p>{t('sweep.direct.validFor', { minutes: String(DIRECT_SWEEP_REVIEW_TTL_SECONDS / 60) })}</p>
+      <button type="button" className="btn btn-primary" onClick={onSignReviewed} disabled={busy || (resign ? resignNonce === undefined : signingLocked)}>{t(resign ? 'sweep.direct.signResign' : 'sweep.signDirect')}</button>
+    </div>
+  );
 
   const cancelVaultCheck = (): void => {
     authEpoch.current += 1;
@@ -524,7 +594,11 @@ function SweepPanel(): ReactNode {
             )}
           </>
         ) : (
-          <button type="button" className="btn btn-primary" onClick={onDirect} disabled={busy || signingLocked || balance === undefined || balance === 0n}>{t('sweep.signDirect')}</button>
+          <>
+            {tokenAddr !== 'native' && <Notice kind="warn" title={t('sweep.gasFunding.title')}>{t('sweep.gasFunding.body')}</Notice>}
+            <button type="button" className="btn" onClick={() => { onReviewDirect(false); }} disabled={busy || signingLocked || balance === undefined || balance === 0n}>{t('sweep.direct.review')}</button>
+            {directReview !== undefined && !directReview.resign && !signingLocked && renderDirectReview(directReview)}
+          </>
         )}
       </div>
 
@@ -564,7 +638,8 @@ function SweepPanel(): ReactNode {
               <br />
               {t('sweep.resign.hint', { nonce: String(resignNonce) })}
               <br />
-              <button type="button" className="btn" onClick={onResign} disabled={busy || balance === undefined || balance === 0n}>{t('sweep.resign.button')}</button>
+              <button type="button" className="btn" onClick={() => { onReviewDirect(true); }} disabled={busy || balance === undefined || balance === 0n}>{t('sweep.resign.button')}</button>
+              {directReview?.resign === true && renderDirectReview(directReview)}
             </>
           )}
           {checkNote !== undefined && <><br />{displayMessage(checkNote, t)}</>}
@@ -581,4 +656,5 @@ function SweepPanel(): ReactNode {
   );
 }
 
+// i18n-use: sweep.direct.review sweep.direct.reviewTitle sweep.direct.sends sweep.direct.maxGas sweep.direct.l1Reserve sweep.direct.leftoverNative sweep.direct.feeFromNative sweep.direct.validFor sweep.direct.reviewDryRunUnavailable sweep.direct.signResign sweep.gasFunding.title sweep.gasFunding.body
 // i18n-use: sweep.announceBroadcast sweep.announceRelayer sweep.asset sweep.attempt.executed sweep.attempt.expired sweep.attempt.expiredBody sweep.attempt.included sweep.attempt.refused sweep.attempt.refusedBody sweep.attempt.relayerHashUnverified sweep.attempt.replaced sweep.attempt.replacedBody sweep.attempt.reverted sweep.attempt.unknown sweep.attempt.unknownDirect sweep.attempt.unknownRelayed sweep.balanceOnChain sweep.balanceRead.button sweep.balanceNotRead sweep.balanceRead.noRpc sweep.balanceRead.note sweep.balanceRead.warning sweep.balanceUnknown sweep.cancelVault sweep.chain sweep.checkExplorer sweep.checkStatus sweep.choosePayment sweep.copyHash sweep.destination.label sweep.dryRunUnavailable sweep.feeLegend sweep.getQuote sweep.goToScan sweep.importQr sweep.journalBroken.body sweep.journalBroken.title sweep.keysGone sweep.modeDirect sweep.modeRelayer sweep.noManifest sweep.note.checkFailed sweep.note.lockChanged sweep.note.noRpc sweep.note.pendingDirect sweep.note.pendingRelayed sweep.note.rpcForgot sweep.oneTimeAddress sweep.payerFollow.body sweep.payerFollow.title sweep.paymentsDisabledChain sweep.pendingBlocksSigning sweep.permit.directFallback sweep.permit.withFallback sweep.relayerFee sweep.relayerNeeds sweep.reviewChanged sweep.routeChanged sweep.resign.button sweep.resign.hint sweep.resign.limit sweep.resign.nothingPending sweep.signDirect sweep.signRelayer sweep.submitted sweep.title sweep.tokenFallback sweep.tokenNotAllowed sweep.txHash sweep.vaultCancelled sweep.vaultCancelledKeys sweep.vaultChecking sweep.vaultError sweep.vaultPass.hint sweep.vaultPass.label sweep.working sweep.youReceive

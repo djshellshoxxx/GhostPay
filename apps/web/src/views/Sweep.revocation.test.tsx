@@ -23,6 +23,7 @@ const DESTINATION = '0x6666666666666666666666666666666666666666';
 const HASH = `0x${'34'.repeat(32)}` as const;
 const READ = 'Read balance from the Settings RPC';
 const DIRECT = 'Sign and broadcast directly';
+const REVIEW_DIRECT = 'Review the direct sweep';
 const CHOOSE = 'Choose a payment to sweep from Scan and receive.';
 const PASS = 'Vault passphrase (required for each sweep action)';
 const match = { chainId: CHAIN, stealthAddress: OWNER, metadata: { kind: 'erc20', token: TOKEN }, announcement: {} } as unknown as ScanMatch;
@@ -75,7 +76,16 @@ async function ready(): Promise<void> {
   await screen.findByText('5 USDC');
   fireEvent.change(screen.getByLabelText(/^Destination address/), { target: { value: DESTINATION } });
   fireEvent.click(screen.getByLabelText(/^Directly/));
-  await waitFor(() => { expect(screen.getByRole<HTMLButtonElement>('button', { name: DIRECT }).disabled).toBe(false); });
+  await waitFor(() => { expect(screen.getByRole<HTMLButtonElement>('button', { name: REVIEW_DIRECT }).disabled).toBe(false); });
+}
+
+/** A computed direct sweep, as the view receives it from `reviewDirectSweep`. */
+function reviewed(input: Omit<sweepLib.DirectSweepInput, 'onBeforeHandoff'>): sweepLib.DirectSweepReview {
+  return {
+    chainId: CHAIN, owner: OWNER, destination: input.destination, asset: TOKEN, sent: input.amount, maxGasCost: 1n,
+    feeReserve: 0n, nativeBalance: 10n ** 15n, simulation: 'ok', reviewedAt: 1_800_000_000,
+    unsigned: { type: 'eip1559', chainId: CHAIN, nonce: 7, maxFeePerGas: 1n, maxPriorityFeePerGas: 1n, gas: 60_000n, to: TOKEN, value: 0n, data: '0x' },
+  };
 }
 
 describe('Sweep presentation revocation and retained outcomes', () => {
@@ -84,7 +94,8 @@ describe('Sweep presentation revocation and retained outcomes', () => {
     vi.spyOn(keyVault, 'readEncryptedVault').mockResolvedValue('opaque encrypted vault record');
     const original = beginSweepAttempt({ chainId: CHAIN, owner: OWNER, nonce: 7, expectedHash: HASH, status: 'unknown-after-handoff' });
     const journal = sessionStorage.getItem(SWEEP_JOURNAL_KEY);
-    const direct = vi.spyOn(sweepLib, 'directSweep');
+    const direct = vi.spyOn(sweepLib, 'signReviewedDirectSweep');
+    const review = vi.spyOn(sweepLib, 'reviewDirectSweep');
     const m = mount();
     const password = await screen.findByLabelText<HTMLInputElement>(PASS);
     const destination = screen.getByLabelText<HTMLInputElement>(/^Destination address/);
@@ -102,18 +113,20 @@ describe('Sweep presentation revocation and retained outcomes', () => {
     expect(document.body.textContent).not.toContain(HASH);
     expect(screen.queryByDisplayValue(DESTINATION)).toBeNull();
     expect(screen.queryByRole('button', { name: DIRECT })).toBeNull();
+    expect(screen.queryByRole('button', { name: REVIEW_DIRECT })).toBeNull();
     expect(getSweepAttempt(CHAIN, OWNER)).toEqual(original);
     expect(sessionStorage.getItem(SWEEP_JOURNAL_KEY)).toBe(journal);
     expect(m.createRpc).not.toHaveBeenCalled();
     expect(m.request).not.toHaveBeenCalled();
     expect(m.fetchFn).not.toHaveBeenCalled();
     expect(direct).not.toHaveBeenCalled();
+    expect(review).not.toHaveBeenCalled();
 
     // Recovery requires an explicit new selection and does not silently discard the signing lock.
     fireEvent.click(screen.getByRole('button', { name: 'Open recorded payment' }));
     expect(screen.getByText(HASH)).toBeTruthy();
     fireEvent.click(screen.getByLabelText(/^Directly/));
-    expect(screen.getByRole<HTMLButtonElement>('button', { name: DIRECT }).disabled).toBe(true);
+    expect(screen.getByRole<HTMLButtonElement>('button', { name: REVIEW_DIRECT }).disabled).toBe(true);
     expect(await screen.findByLabelText<HTMLInputElement>(PASS)).toHaveProperty('value', '');
     expect(screen.getByLabelText<HTMLInputElement>(/^Destination address/).value).toBe('');
     expect(m.createRpc).not.toHaveBeenCalled();
@@ -122,7 +135,8 @@ describe('Sweep presentation revocation and retained outcomes', () => {
 
   it('does not disclose the old address when a pending RPC factory resolves after the selection is revoked', async () => {
     const gate = deferred<void>();
-    const direct = vi.spyOn(sweepLib, 'directSweep');
+    const direct = vi.spyOn(sweepLib, 'signReviewedDirectSweep');
+    const review = vi.spyOn(sweepLib, 'reviewDirectSweep');
     const m = mount(gate.promise);
     fireEvent.click(screen.getByRole('button', { name: READ }));
     expect(m.createRpc).toHaveBeenCalledOnce();
@@ -134,6 +148,7 @@ describe('Sweep presentation revocation and retained outcomes', () => {
     expect(m.request).not.toHaveBeenCalled();
     expect(m.fetchFn).not.toHaveBeenCalled();
     expect(direct).not.toHaveBeenCalled();
+    expect(review).not.toHaveBeenCalled();
     expect(getSweepAttempt(CHAIN, OWNER)).toBeUndefined();
   });
 
@@ -143,13 +158,15 @@ describe('Sweep presentation revocation and retained outcomes', () => {
       chainId: CHAIN, owner: OWNER, nonce: 7, destination: DESTINATION, asset: TOKEN,
       amount: 5_000_000n, expectedHash: HASH, status: 'unknown-after-handoff',
     };
-    const direct = vi.spyOn(sweepLib, 'directSweep').mockImplementation((input) => {
+    vi.spyOn(sweepLib, 'reviewDirectSweep').mockImplementation((input) => Promise.resolve(reviewed(input)));
+    const direct = vi.spyOn(sweepLib, 'signReviewedDirectSweep').mockImplementation((_review, input) => {
       input.onBeforeHandoff?.(attempted);
       return result.promise;
     });
     const m = mount();
     await ready();
-    fireEvent.click(screen.getByRole('button', { name: DIRECT }));
+    fireEvent.click(screen.getByRole('button', { name: REVIEW_DIRECT }));
+    fireEvent.click(await screen.findByRole('button', { name: DIRECT }));
     await waitFor(() => { expect(direct).toHaveBeenCalledOnce(); });
     expect(getSweepAttempt(CHAIN, OWNER)).toMatchObject({ expectedHash: HASH, status: 'unknown-after-handoff' });
     const readCalls = m.request.mock.calls.length;
@@ -176,8 +193,9 @@ describe('Sweep presentation revocation and retained outcomes', () => {
     await screen.findByText('5 USDC');
     fireEvent.change(screen.getByLabelText(/^Destination address/), { target: { value: DESTINATION } });
     fireEvent.click(screen.getByLabelText(/^Directly/));
-    expect(screen.getByRole<HTMLButtonElement>('button', { name: DIRECT }).disabled).toBe(true);
-    fireEvent.click(screen.getByRole('button', { name: DIRECT }));
+    expect(screen.getByRole<HTMLButtonElement>('button', { name: REVIEW_DIRECT }).disabled).toBe(true);
+    fireEvent.click(screen.getByRole('button', { name: REVIEW_DIRECT }));
+    expect(screen.queryByRole('button', { name: DIRECT })).toBeNull();
     expect(direct).toHaveBeenCalledOnce();
     expect(getSweepAttempt(CHAIN, OWNER)).toMatchObject({ expectedHash: HASH, nonce: 7, status });
   });

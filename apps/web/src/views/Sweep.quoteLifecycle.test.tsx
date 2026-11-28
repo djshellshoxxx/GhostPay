@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 import type { RpcClient } from '@ghostpay/chain-adapters';
 import { act, cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi, type MockInstance } from 'vitest';
 import { notifyAppLock } from '../lib/appLock';
 import * as keyVault from '../lib/keyVault';
 import { MemoryKeyVaultStore, setKeyVaultStoreForTests } from '../lib/keyVault';
@@ -26,7 +26,9 @@ const READ = 'Read balance from the Settings RPC';
 const QUOTE = 'Get relayer quote';
 const SIGN = 'Sign and submit to relayer';
 const DIRECT = 'Sign and broadcast directly';
-const RESIGN = 'Sign a replacement with the same nonce';
+const RESIGN = 'Sign and broadcast the replacement';
+const REVIEW_DIRECT = 'Review the direct sweep';
+const REVIEW_RESIGN = 'Review a replacement with the same nonce';
 const HASH = '0x' + '34'.repeat(32);
 const ORIGINAL_DIRECT_LOCK: sweepLib.SweepLock = {
   chainId: CHAIN, owner: OWNER, nonce: 7, expectedHash: `0x${'12'.repeat(32)}`,
@@ -324,27 +326,42 @@ describe('Sweep relayed signing context', () => {
   });
 });
 
-function directAttempt(input: sweepLib.DirectSweepInput): sweepLib.DirectSweepAttempt {
+/** A computed direct sweep as `reviewDirectSweep` returns it; the view only shows and forwards it. */
+function syntheticReview(input: Omit<sweepLib.DirectSweepInput, 'onBeforeHandoff'>): sweepLib.DirectSweepReview {
   return {
-    chainId: input.target.chainId, owner: input.target.owner, nonce: input.replaceNonce ?? 7,
-    destination: input.destination, asset: input.target.token, amount: input.amount,
+    chainId: input.target.chainId, owner: input.target.owner, destination: input.destination, asset: input.target.token,
+    sent: input.amount, maxGasCost: 1n, feeReserve: 0n, nativeBalance: 10n ** 15n,
+    ...(input.replaceNonce === undefined ? {} : { replaceNonce: input.replaceNonce }),
+    unsigned: { type: 'eip1559', chainId: input.target.chainId, nonce: input.replaceNonce ?? 7, maxFeePerGas: 1n, maxPriorityFeePerGas: 1n, gas: 60_000n, to: TOKEN, value: 0n, data: '0x' },
+    simulation: 'ok', reviewedAt: 1_800_000_000,
+  };
+}
+
+function directAttempt(review: sweepLib.DirectSweepReview, input: sweepLib.SignReviewedDirectSweepInput): sweepLib.DirectSweepAttempt {
+  return {
+    chainId: input.target.chainId, owner: input.target.owner, nonce: review.replaceNonce ?? 7,
+    destination: review.destination, asset: input.target.token, amount: review.sent,
     expectedHash: HASH as `0x${string}`, status: 'unknown-after-handoff',
   };
 }
 
-function directResult(input: sweepLib.DirectSweepInput): sweepLib.DirectSweepResult {
+function directResult(review: sweepLib.DirectSweepReview, input: sweepLib.SignReviewedDirectSweepInput): sweepLib.DirectSweepResult {
   return {
-    hash: HASH as `0x${string}`, sent: input.amount, maxGasCost: 1n,
-    attempt: { ...directAttempt(input), status: 'submitted' }, simulation: 'ok',
+    hash: HASH as `0x${string}`, sent: review.sent, maxGasCost: 1n,
+    attempt: { ...directAttempt(review, input), status: 'submitted' }, simulation: 'ok',
   };
 }
 
-async function reviewedDirect(m: ReturnType<typeof mount>, resign: boolean): Promise<void> {
+/** Opens the direct (or same-nonce replacement) review and waits until its signature can be requested. */
+async function reviewedDirect(m: ReturnType<typeof mount>, resign: boolean): Promise<MockInstance<typeof sweepLib.reviewDirectSweep>> {
   await ready(m);
   fireEvent.click(screen.getByLabelText(/^Directly/));
   if (resign) act(() => { beginSweepAttempt(ORIGINAL_DIRECT_LOCK); });
   await settle();
-  expect(screen.getByRole<HTMLButtonElement>('button', { name: resign ? RESIGN : DIRECT }).disabled).toBe(false);
+  const reviewed = vi.spyOn(sweepLib, 'reviewDirectSweep').mockImplementation((input) => Promise.resolve(syntheticReview(input)));
+  fireEvent.click(screen.getByRole('button', { name: resign ? REVIEW_RESIGN : REVIEW_DIRECT }));
+  await waitFor(() => { expect(screen.getByRole<HTMLButtonElement>('button', { name: resign ? RESIGN : DIRECT }).disabled).toBe(false); });
+  return reviewed;
 }
 
 describe.each(['direct', 'same-nonce replacement'] as const)('Sweep %s signing context', (flow) => {
@@ -353,16 +370,23 @@ describe.each(['direct', 'same-nonce replacement'] as const)('Sweep %s signing c
 
   it('submits an unchanged review and retains the original replacement hash', async () => {
     const m = mount();
-    await reviewedDirect(m, resign);
-    const submitted = vi.spyOn(sweepLib, 'directSweep').mockImplementation((input) => {
-      input.onBeforeHandoff?.(directAttempt(input));
-      return Promise.resolve(directResult(input));
+    const reviewed = await reviewedDirect(m, resign);
+    expect(reviewed).toHaveBeenCalledTimes(1);
+    expect(reviewed.mock.calls[0]![0]).toMatchObject({ destination: DESTINATION, amount: 5_000_000n });
+    expect(reviewed.mock.calls[0]![0].replaceNonce).toBe(resign ? 7 : undefined);
+    const submitted = vi.spyOn(sweepLib, 'signReviewedDirectSweep').mockImplementation((review, input) => {
+      input.onBeforeHandoff?.(directAttempt(review, input));
+      return Promise.resolve(directResult(review, input));
     });
     fireEvent.click(screen.getByRole('button', { name: action }));
     await waitFor(() => { expect(getSweepAttempt(CHAIN, OWNER)?.status).toBe('submitted'); });
     expect(submitted).toHaveBeenCalledTimes(1);
-    expect(submitted.mock.calls[0]![0]).toMatchObject({ destination: DESTINATION, amount: 5_000_000n });
+    // Exactly the review that was shown is signed.
+    expect(submitted.mock.calls[0]![0]).toBe(await reviewed.mock.results[0]!.value);
+    expect(submitted.mock.calls[0]![0]).toMatchObject({ destination: DESTINATION, sent: 5_000_000n });
     expect(submitted.mock.calls[0]![0].replaceNonce).toBe(resign ? 7 : undefined);
+    // One review, one signature: the review is gone once its transaction was handed off.
+    expect(screen.queryByRole('button', { name: action })).toBeNull();
     expect(getSweepAttempt(CHAIN, OWNER)).toMatchObject({ nonce: 7, expectedHash: HASH, status: 'submitted' });
     expect(getSweepAttempt(CHAIN, OWNER)?.otherHashes).toEqual(resign ? [...ORIGINAL_DIRECT_LOCK.otherHashes!, ORIGINAL_DIRECT_LOCK.expectedHash] : undefined);
     expect(m.requests).toEqual([]);
@@ -380,7 +404,7 @@ describe.each(['direct', 'same-nonce replacement'] as const)('Sweep %s signing c
     const rpcGate = deferred<void>();
     if (stage === 'vault') vi.spyOn(keyVault, 'authorizeEncryptedVault').mockReturnValue(vaultGate.promise);
     else m.holdRpc(rpcGate.promise);
-    const submitted = vi.spyOn(sweepLib, 'directSweep').mockImplementation((input) => Promise.resolve(directResult(input)));
+    const submitted = vi.spyOn(sweepLib, 'signReviewedDirectSweep').mockImplementation((review, input) => Promise.resolve(directResult(review, input)));
     const priorCalls = m.rpcCalls();
     fireEvent.click(screen.getByRole('button', { name: action }));
     if (stage === 'vault') await waitFor(() => { expect(keyVault.authorizeEncryptedVault).toHaveBeenCalledTimes(1); });
@@ -401,11 +425,11 @@ describe.each(['direct', 'same-nonce replacement'] as const)('Sweep %s signing c
     const originalJournal = window.sessionStorage.getItem(SWEEP_JOURNAL_KEY);
     const gate = deferred<void>();
     const dispatched = vi.fn();
-    const submitted = vi.spyOn(sweepLib, 'directSweep').mockImplementation(async (input) => {
+    const submitted = vi.spyOn(sweepLib, 'signReviewedDirectSweep').mockImplementation(async (review, input) => {
       await gate.promise;
-      input.onBeforeHandoff?.(directAttempt(input));
+      input.onBeforeHandoff?.(directAttempt(review, input));
       dispatched();
-      return directResult(input);
+      return directResult(review, input);
     });
     fireEvent.click(screen.getByRole('button', { name: action }));
     await waitFor(() => { expect(submitted).toHaveBeenCalledTimes(1); });
@@ -422,18 +446,18 @@ describe.each(['direct', 'same-nonce replacement'] as const)('Sweep %s signing c
     const m = mount();
     await reviewedDirect(m, resign);
     const response = deferred<sweepLib.DirectSweepResult>();
-    const submitted = vi.spyOn(sweepLib, 'directSweep').mockImplementation((input) => {
-      input.onBeforeHandoff?.(directAttempt(input));
+    const submitted = vi.spyOn(sweepLib, 'signReviewedDirectSweep').mockImplementation((review, input) => {
+      input.onBeforeHandoff?.(directAttempt(review, input));
       return response.promise;
     });
     fireEvent.click(screen.getByRole('button', { name: action }));
     await waitFor(() => { expect(getSweepAttempt(CHAIN, OWNER)?.expectedHash).toBe(HASH); });
     expect(getSweepAttempt(CHAIN, OWNER)?.status).toBe('unknown-after-handoff');
     changeDestination(OTHER_DESTINATION);
-    const input = submitted.mock.calls[0]![0];
+    const [review, input] = submitted.mock.calls[0]!;
     await act(async () => {
-      if (outcome === 'submitted') response.resolve(directResult(input));
-      else response.reject(new sweepLib.DirectSweepOutcomeUnknownError('synthetic interrupted response', directAttempt(input), 'unavailable'));
+      if (outcome === 'submitted') response.resolve(directResult(review, input));
+      else response.reject(new sweepLib.DirectSweepOutcomeUnknownError('synthetic interrupted response', directAttempt(review, input), 'unavailable'));
       await Promise.resolve();
     });
     await settle();
@@ -565,7 +589,7 @@ describe.each(REPLACED)('Sweep after another tab replaced %s', (_name, patch) =>
   it.each([false, true])('signs no direct sweep (replacement: %s)', async (resign) => {
     const m = mount();
     await reviewedDirect(m, resign);
-    const submitted = vi.spyOn(sweepLib, 'directSweep');
+    const submitted = vi.spyOn(sweepLib, 'signReviewedDirectSweep');
     const reads = m.rpcCalls();
     otherTabSaves(m, patch);
     fireEvent.click(screen.getByRole('button', { name: resign ? RESIGN : DIRECT }));
@@ -577,10 +601,10 @@ describe.each(REPLACED)('Sweep after another tab replaced %s', (_name, patch) =>
   it('hands off no direct sweep when the change lands while signing', async () => {
     const m = mount();
     await reviewedDirect(m, false);
-    vi.spyOn(sweepLib, 'directSweep').mockImplementation((input) => {
+    vi.spyOn(sweepLib, 'signReviewedDirectSweep').mockImplementation((review, input) => {
       otherTabSaves(m, patch);
-      input.onBeforeHandoff?.(directAttempt(input));
-      return Promise.resolve(directResult(input));
+      input.onBeforeHandoff?.(directAttempt(review, input));
+      return Promise.resolve(directResult(review, input));
     });
     fireEvent.click(screen.getByRole('button', { name: DIRECT }));
     expect((await screen.findByRole('alert')).textContent).toMatch(REFUSED);

@@ -19,6 +19,8 @@ const DEST = '0x6666666666666666666666666666666666666666' as Address;
 const PAYER = '0x7777777777777777777777777777777777777777' as Address;
 const FEE_TO = FAKE_FEE_RECIPIENT as Address;
 const NOW = 1_800_000_000;
+/** One second past the direct sweep review window, for a review made at NOW. */
+const DIRECT_TTL_PLUS_ONE = NOW + sweepModule.DIRECT_SWEEP_REVIEW_TTL_SECONDS + 1;
 const manifest = fakeManifest(84532);
 
 let target: SweepTarget & { token: Address };
@@ -646,9 +648,9 @@ describe('L2-F2: a native direct sweep keeps back every fee the chain charges', 
     expect(tx.gas).toBe(gas);
     expect(tx.value).toBe(BALANCE - gas * MAX_FEE);
     expect(rpc.calls.find((c) => c.method === 'eth_estimateGas')?.params).toEqual([{ from: target.owner, to: DEST, value: `0x${(BALANCE - 21_000n * MAX_FEE).toString(16)}` }]);
-    expect(rpc.calls.filter((c) => c.method === 'eth_call').map((c) => c.params)).toEqual([
-      [{ from: target.owner, to: DEST, data: '0x', value: `0x${tx.value!.toString(16)}`, gas: `0x${gas.toString(16)}` }, 'latest'],
-    ]);
+    // The review and the signature each dry-run exactly the signed fields.
+    const dryRun = [{ from: target.owner, to: DEST, data: '0x', value: `0x${tx.value!.toString(16)}`, gas: `0x${gas.toString(16)}` }, 'latest'];
+    expect(rpc.calls.filter((c) => c.method === 'eth_call').map((c) => c.params)).toEqual([dryRun, dryRun]);
     expect(res.simulation).toBe('ok');
   });
 
@@ -692,7 +694,8 @@ describe('L2-F2: a native direct sweep keeps back every fee the chain charges', 
     const sepolia = chainRpc(11155111, { estimate: '0xc350', balance: 60_000n * MAX_FEE }, {});
     const usdc = '0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238' as Address;
     await directSweep({ target: { ...target, chainId: 11155111, token: usdc }, manifest: fakeManifest(11155111), destination: DEST, amount: 777n, rpc: sepolia });
-    expect(sepolia.calls.filter((c) => c.method === 'eth_call').map((c) => (c.params[0] as { to: string }).to)).toEqual([usdc]);
+    // Only the token's dry runs (at review and again before signing).
+    expect(sepolia.calls.filter((c) => c.method === 'eth_call').map((c) => (c.params[0] as { to: string }).to)).toEqual([usdc, usdc]);
   });
 
   it('R04-2: a gas buffer quoted at unchanged prices pays for the ERC-20 direct sweep on OP Stack, L1 data fee included', async () => {
@@ -826,7 +829,8 @@ describe('L2-F2: a native direct sweep keeps back every fee the chain charges', 
     const res = await directSweep({ target, manifest, destination: DEST, amount: 777n, rpc, replaceNonce: 7 });
     expect(parseTransaction(seen.raw!).nonce).toBe(7);
     expect(res.attempt).toMatchObject({ nonce: 7, status: 'submitted' });
-    expect(rpc.calls.filter((c) => c.method === 'eth_getTransactionCount').map((c) => c.params[1])).toEqual(['latest']);
+    // Checked at review and again before signing; the pending count is never read.
+    expect(rpc.calls.filter((c) => c.method === 'eth_getTransactionCount').map((c) => c.params[1])).toEqual(['latest', 'latest']);
   });
 
   it('refuses a re-sign once a transaction with that nonce is mined (a replacement could never be included)', async () => {
@@ -834,6 +838,132 @@ describe('L2-F2: a native direct sweep keeps back every fee the chain charges', 
     await expect(directSweep({ target, manifest, destination: DEST, amount: 777n, rpc, replaceNonce: 7 })).rejects.toThrow(/already on chain/);
     expect(sends(rpc)).toBe(0);
     await expect(directSweep({ target, manifest, destination: DEST, amount: 777n, rpc: chainRpc(84532, {}, {}), replaceNonce: -1 })).rejects.toThrow(/nonce/);
+  });
+
+  describe('G07-D2: the direct sweep is reviewed, then exactly the reviewed transaction is signed', () => {
+    const NOW_S = 1_800_000_000;
+    /** chainRpc with answers that a test can change between the review and the signature. */
+    const live = (chainId: number, net: Net & { gasPrice?: string }, seen: Seen) => {
+      const base = chainRpc(chainId, net, seen);
+      const request = (m: string, p: readonly unknown[]): Promise<unknown> => {
+        if (m !== 'eth_gasPrice' || net.gasPrice === undefined) return base.request(m, p);
+        base.calls.push({ method: m, params: p });
+        return Promise.resolve(net.gasPrice);
+      };
+      return { ...base, request };
+    };
+
+    it('reports the figures of the transaction it will sign and sends nothing while reviewing', async () => {
+      const seen: Seen = {};
+      const rpc = chainRpc(84532, { operatorFee: 5_000n }, seen);
+      const review = await sweepModule.reviewDirectSweep({ target: native(), manifest, destination: DEST, amount: BALANCE, rpc, nowSeconds: NOW_S });
+      expect(sends(rpc)).toBe(0);
+      expect(seen.raw).toBeUndefined();
+      const reserve = 2n * (L1_FEE + 5_000n);
+      expect(review).toMatchObject({ chainId: 84532, owner: target.owner, destination: DEST, asset: 'native', nativeBalance: BALANCE, feeReserve: reserve, maxGasCost: 21_000n * MAX_FEE, simulation: 'ok', reviewedAt: NOW_S });
+      expect(review.sent).toBe(BALANCE - 21_000n * MAX_FEE - reserve);
+      expect(Object.isFrozen(review) && Object.isFrozen(review.unsigned)).toBe(true);
+      const res = await sweepModule.signReviewedDirectSweep(review, { target: native(), manifest, rpc, nowSeconds: NOW_S + 60 });
+      const tx = parseTransaction(seen.raw!);
+      expect(tx).toMatchObject({ nonce: review.unsigned.nonce, gas: review.unsigned.gas, maxFeePerGas: review.unsigned.maxFeePerGas, maxPriorityFeePerGas: review.unsigned.maxPriorityFeePerGas, value: review.sent });
+      expect(tx.to?.toLowerCase()).toBe(DEST.toLowerCase());
+      expect(res).toMatchObject({ sent: review.sent, maxGasCost: review.maxGasCost, attempt: { status: 'submitted', amount: review.sent, nonce: 7 } });
+      expect(await recoverTransactionAddress({ serializedTransaction: seen.raw as never })).toBe(target.owner);
+    });
+
+    it('signs the reviewed fee fields even when the gas price has moved since the review', async () => {
+      const seen: Seen = {};
+      const net: Net & { gasPrice?: string } = {};
+      const rpc = live(11155111, net, seen);
+      const review = await sweepModule.reviewDirectSweep({ target: { ...native(), chainId: 11155111 }, manifest: fakeManifest(11155111), destination: DEST, amount: BALANCE, rpc, nowSeconds: NOW_S });
+      net.gasPrice = '0x77359400'; // 2 gwei now
+      await sweepModule.signReviewedDirectSweep(review, { target: { ...native(), chainId: 11155111 }, manifest: fakeManifest(11155111), rpc, nowSeconds: NOW_S + 1 });
+      expect(parseTransaction(seen.raw!).maxFeePerGas).toBe(MAX_FEE);
+      expect(parseTransaction(seen.raw!).value).toBe(review.sent);
+      // The gas price is read once, at review; signing recomputes nothing.
+      expect(rpc.calls.filter((c) => c.method === 'eth_gasPrice')).toHaveLength(1);
+    });
+
+    it.each([
+      ['older than the review window', DIRECT_TTL_PLUS_ONE, /too old to sign/],
+      ['from before the review (clock moved back)', NOW_S - 1, /too old to sign/],
+    ])('refuses a review %s before the key signs', async (_name, at, re) => {
+      const seen: Seen = {};
+      const rpc = chainRpc(84532, {}, seen);
+      const review = await sweepModule.reviewDirectSweep({ target, manifest, destination: DEST, amount: 777n, rpc, nowSeconds: NOW_S });
+      const before = rpc.calls.length;
+      await expect(sweepModule.signReviewedDirectSweep(review, { target, manifest, rpc, nowSeconds: at })).rejects.toThrow(re);
+      expect(rpc.calls.slice(before)).toEqual([]);
+      expect(seen.raw).toBeUndefined();
+    });
+
+    it('accepts a review exactly at the end of its window', async () => {
+      const seen: Seen = {};
+      const rpc = chainRpc(84532, {}, seen);
+      const review = await sweepModule.reviewDirectSweep({ target, manifest, destination: DEST, amount: 777n, rpc, nowSeconds: NOW_S });
+      await sweepModule.signReviewedDirectSweep(review, { target, manifest, rpc, nowSeconds: NOW_S + sweepModule.DIRECT_SWEEP_REVIEW_TTL_SECONDS });
+      expect(sends(rpc)).toBe(1);
+    });
+
+    it.each([
+      ['the pending nonce moved (another transaction from this address)', { pending: '0x8' }],
+      ['less native coin is left for the fee', { balance: BALANCE - 1n }],
+    ])('refuses before signing when %s since the review', async (_name, change) => {
+      const seen: Seen = {};
+      const net: { -readonly [K in keyof Net]: Net[K] } = {};
+      const rpc = chainRpc(84532, net, seen);
+      const review = await sweepModule.reviewDirectSweep({ target, manifest, destination: DEST, amount: 777n, rpc, nowSeconds: NOW_S });
+      Object.assign(net, change);
+      await expect(sweepModule.signReviewedDirectSweep(review, { target, manifest, rpc, nowSeconds: NOW_S + 5 })).rejects.toThrow(/changed since you reviewed this sweep/);
+      expect(sends(rpc)).toBe(0);
+    });
+
+    it('a new deposit after the review leaves the reviewed native transaction unchanged', async () => {
+      const seen: Seen = {};
+      const net: { -readonly [K in keyof Net]: Net[K] } = {};
+      const rpc = chainRpc(11155111, net, seen);
+      const t = { ...native(), chainId: 11155111 };
+      const review = await sweepModule.reviewDirectSweep({ target: t, manifest: fakeManifest(11155111), destination: DEST, amount: BALANCE, rpc, nowSeconds: NOW_S });
+      net.balance = BALANCE + 10n ** 15n;
+      await sweepModule.signReviewedDirectSweep(review, { target: t, manifest: fakeManifest(11155111), rpc, nowSeconds: NOW_S + 5 });
+      expect(parseTransaction(seen.raw!).value).toBe(review.sent);
+    });
+
+    it('dry-runs again before signing and refuses a transfer that would now revert', async () => {
+      const seen: Seen = {};
+      const net: { -readonly [K in keyof Net]: Net[K] } = {};
+      const rpc = chainRpc(84532, net, seen);
+      const review = await sweepModule.reviewDirectSweep({ target, manifest, destination: DEST, amount: 777n, rpc, nowSeconds: NOW_S });
+      net.dryRun = new Error('execution reverted');
+      await expect(sweepModule.signReviewedDirectSweep(review, { target, manifest, rpc, nowSeconds: NOW_S + 5 })).rejects.toThrow(/would revert/);
+      expect(sends(rpc)).toBe(0);
+    });
+
+    it('refuses a review for another payment, chain or asset', async () => {
+      const rpc = chainRpc(84532, {}, {});
+      const review = await sweepModule.reviewDirectSweep({ target, manifest, destination: DEST, amount: 777n, rpc, nowSeconds: NOW_S });
+      const other = '0x9999999999999999999999999999999999999999' as Address;
+      for (const wrong of [{ ...target, owner: other }, { ...target, chainId: 11155420 }, { ...target, token: 'native' as const }]) {
+        await expect(sweepModule.signReviewedDirectSweep(review, { target: wrong, manifest, rpc, nowSeconds: NOW_S + 1 })).rejects.toThrow(/review changed/);
+      }
+      expect(sends(rpc)).toBe(0);
+    });
+
+    it('re-checks a reviewed replacement nonce before signing it', async () => {
+      const net: { -readonly [K in keyof Net]: Net[K] } = { latest: '0x7' };
+      const rpc = chainRpc(84532, net, {});
+      const review = await sweepModule.reviewDirectSweep({ target, manifest, destination: DEST, amount: 777n, rpc, nowSeconds: NOW_S, replaceNonce: 7 });
+      expect(review).toMatchObject({ replaceNonce: 7, unsigned: { nonce: 7 } });
+      net.latest = '0x8';
+      await expect(sweepModule.signReviewedDirectSweep(review, { target, manifest, rpc, nowSeconds: NOW_S + 1 })).rejects.toThrow(/already on chain/);
+      expect(sends(rpc)).toBe(0);
+    });
+
+    it('reviewing proves key control before naming the destination to the RPC', async () => {
+      const rpc = chainRpc(84532, {}, {});
+      await expect(sweepModule.reviewDirectSweep({ target: { ...target, owner: '0x9999999999999999999999999999999999999999' }, manifest, destination: DEST, amount: 777n, rpc, nowSeconds: NOW_S })).rejects.toThrow(/does not control/);
+      expect(rpc.calls).toEqual([]);
+    });
   });
 
   it('L4-02: sweeps a deep-scan payment whose announced view tag is wrong', async () => {

@@ -36,6 +36,22 @@ const DEST = '0x6666666666666666666666666666666666666666';
 const NONCE_USED_SELECTOR = encodeFunctionData({ abi: ghostPaySweepRelayerAbi, functionName: 'nonceUsed', args: [DEST, 0n] }).slice(0, 10);
 const TOKEN = '0x036CbD53842c5426634e7929541eC2318f3dCF7e';
 const VAULT_PASS = 'violet comet maple lantern';
+const REVIEW_DIRECT = 'Review the direct sweep';
+const SIGN_DIRECT = 'Sign and broadcast directly';
+const REVIEW_RESIGN = 'Review a replacement with the same nonce';
+const SIGN_RESIGN = 'Sign and broadcast the replacement';
+
+/** G07-D2: computes the direct sweep, waits for its review, and signs exactly the reviewed transaction. */
+async function signDirectly(user: ReturnType<typeof userEvent.setup>, timeout = 1000): Promise<void> {
+  await user.click(screen.getByRole('button', { name: REVIEW_DIRECT }));
+  await user.click(await screen.findByRole('button', { name: SIGN_DIRECT }, { timeout }));
+}
+
+/** Reviews and signs a same-nonce replacement of the recorded direct lock. */
+async function resignDirectly(user: ReturnType<typeof userEvent.setup>): Promise<void> {
+  await user.click(screen.getByRole('button', { name: REVIEW_RESIGN }));
+  await user.click(await screen.findByRole('button', { name: SIGN_RESIGN }));
+}
 let vaultStore = new MemoryKeyVaultStore();
 
 interface RawSink {
@@ -208,15 +224,25 @@ describe('Sweep', () => {
     await screen.findByText('5 USDC');
     await user.click(await screen.findByLabelText(/Directly/));
     await user.type(screen.getByLabelText('Destination address (your own wallet)'), DEST);
-    await user.click(screen.getByRole('button', { name: 'Sign and broadcast directly' }));
+    await user.click(screen.getByRole('button', { name: REVIEW_DIRECT }));
     expect((await screen.findByRole('alert', {}, { timeout: 30_000 })).textContent).toMatch(/Wrong passphrase/);
     expect(raw.raw).toBeUndefined();
 
-    await user.type(screen.getByLabelText('Vault passphrase (required for each sweep action)'), VAULT_PASS);
-    await user.click(screen.getByRole('button', { name: 'Sign and broadcast directly' }));
+    // Computing the review needs the passphrase, and signing it needs the passphrase again.
+    const pass = (): HTMLInputElement => screen.getByLabelText<HTMLInputElement>('Vault passphrase (required for each sweep action)');
+    await user.type(pass(), VAULT_PASS);
+    await user.click(screen.getByRole('button', { name: REVIEW_DIRECT }));
+    const sign = await screen.findByRole('button', { name: SIGN_DIRECT }, { timeout: 30_000 });
+    expect(pass().value).toBe('');
+    await user.click(sign);
+    expect((await screen.findByRole('alert', {}, { timeout: 30_000 })).textContent).toMatch(/Wrong passphrase/);
+    expect(raw.raw).toBeUndefined();
+
+    await user.type(pass(), VAULT_PASS);
+    await user.click(screen.getByRole('button', { name: SIGN_DIRECT }));
     expect(await screen.findByText('Submitted', {}, { timeout: 30_000 })).toBeTruthy();
     expect(raw.raw).toMatch(/^0x02/);
-    expect(screen.getByLabelText<HTMLInputElement>('Vault passphrase (required for each sweep action)').value).toBe('');
+    expect(pass().value).toBe('');
   });
 
   it('shows the on-chain balance, the linkability notice, and sweeps directly with a verified signed transaction', async () => {
@@ -227,15 +253,15 @@ describe('Sweep', () => {
     expect(screen.getByText(/never shown or stored/)).toBeTruthy();
     await user.click(screen.getByLabelText(/Directly/));
     await user.type(screen.getByLabelText('Destination address (your own wallet)'), 'nope');
-    await user.click(screen.getByRole('button', { name: 'Sign and broadcast directly' }));
+    await user.click(screen.getByRole('button', { name: REVIEW_DIRECT }));
     expect((await screen.findByRole('alert')).textContent).toMatch(/valid destination/);
     await user.clear(screen.getByLabelText('Destination address (your own wallet)'));
     await user.type(screen.getByLabelText('Destination address (your own wallet)'), FAKE_ROUTER);
-    await user.click(screen.getByRole('button', { name: 'Sign and broadcast directly' }));
+    await user.click(screen.getByRole('button', { name: REVIEW_DIRECT }));
     expect((await screen.findByRole('alert')).textContent).toMatch(/GhostPay contract or the fee recipient/);
     await user.clear(screen.getByLabelText('Destination address (your own wallet)'));
     await user.type(screen.getByLabelText('Destination address (your own wallet)'), DEST);
-    await user.click(screen.getByRole('button', { name: 'Sign and broadcast directly' }));
+    await signDirectly(user);
     expect(await screen.findByText('Submitted')).toBeTruthy();
     expect(raw.raw).toMatch(/^0x02/);
     expect(screen.getByText(keccak256(raw.raw as `0x${string}`))).toBeTruthy();
@@ -265,7 +291,7 @@ describe('Sweep', () => {
     await user.type(destination, secondAddress.toLowerCase());
     expect(await screen.findByText(/another one-time address announced/)).toBeTruthy();
     await user.click(screen.getByLabelText(/Directly/));
-    await user.click(screen.getByRole('button', { name: 'Sign and broadcast directly' }));
+    await signDirectly(user);
     expect(await screen.findByText('Submitted')).toBeTruthy();
     expect(raw.raw).toMatch(/^0x02/);
   });
@@ -278,7 +304,7 @@ describe('Sweep', () => {
     for (const k of Object.keys(code)) code[k] = '0x00';
     await user.click(screen.getByLabelText(/Directly/));
     await user.type(screen.getByLabelText('Destination address (your own wallet)'), DEST);
-    await user.click(screen.getByRole('button', { name: 'Sign and broadcast directly' }));
+    await user.click(screen.getByRole('button', { name: REVIEW_DIRECT }));
     expect((await screen.findByRole('alert')).textContent).toMatch(/do not match the deployment manifest/);
     expect(raw.raw).toBeUndefined();
   });
@@ -293,8 +319,13 @@ describe('Sweep', () => {
     await screen.findByText('5 USDC');
     await user.click(screen.getByLabelText(/Directly/));
     await user.type(screen.getByLabelText('Destination address (your own wallet)'), DEST);
-    await user.click(screen.getByRole('button', { name: 'Sign and broadcast directly' }));
-    expect((await screen.findByRole('alert')).textContent).toMatch(/no native coin for gas/);
+    // G07-D1: the gas-funding linkage is explained before and in the refusal.
+    expect(screen.getByText('Funding gas can link your wallet to this payment')).toBeTruthy();
+    await user.click(screen.getByRole('button', { name: REVIEW_DIRECT }));
+    const alert = (await screen.findByRole('alert')).textContent ?? '';
+    expect(alert).toMatch(/no native coin for gas/);
+    expect(alert).toMatch(/Sending it from a wallet you use elsewhere publicly links that wallet to this payment/);
+    expect(screen.queryByRole('button', { name: SIGN_DIRECT })).toBeNull();
   });
 
   it('relayer path: shows the quoted fee and net, then signs and submits', async () => {
@@ -332,7 +363,7 @@ describe('Sweep', () => {
     expect(screen.getByText(/previously submitted a sweep to this destination/)).toBeTruthy();
     // The relayed transaction may still be pending: a fresh direct signature from the same address must not be offered.
     await user.click(screen.getByLabelText(/Directly/));
-    expect(screen.getByRole<HTMLButtonElement>('button', { name: 'Sign and broadcast directly' }).disabled).toBe(true);
+    expect(screen.getByRole<HTMLButtonElement>('button', { name: REVIEW_DIRECT }).disabled).toBe(true);
   });
 
   it('relayer path: refuses a fee above the published cap', async () => {
@@ -364,7 +395,7 @@ describe('Sweep', () => {
     expect(destination.isConnected).toBe(false);
     expect(screen.queryByDisplayValue(DEST)).toBeNull();
     expect(screen.queryByText('5 USDC')).toBeNull();
-    expect(screen.queryByRole('button', { name: 'Sign and broadcast directly' })).toBeNull();
+    expect(screen.queryByRole('button', { name: REVIEW_DIRECT })).toBeNull();
     expect(sink.calls).toEqual(reads);
     expect(sink.raws).toEqual([]);
     expect(JSON.parse(window.sessionStorage.getItem(SWEEP_JOURNAL_KEY) ?? '[]')).toEqual([]);
@@ -375,8 +406,8 @@ describe('Sweep', () => {
     const held = new Promise<string>((resolve) => { release = resolve; });
     let settled: () => void = () => undefined;
     const completed = new Promise<void>((resolve) => { settled = resolve; });
-    const original = sweepLib.directSweep;
-    const wrapper = vi.spyOn(sweepLib, 'directSweep').mockImplementation(async (...args: Parameters<typeof original>) => {
+    const original = sweepLib.reviewDirectSweep;
+    const wrapper = vi.spyOn(sweepLib, 'reviewDirectSweep').mockImplementation(async (...args: Parameters<typeof original>) => {
       try { return await original(...args); } finally { settled(); }
     });
     const raws: string[] = [];
@@ -386,7 +417,7 @@ describe('Sweep', () => {
       await screen.findByText('5 USDC');
       await user.click(screen.getByLabelText(/Directly/));
       await user.type(screen.getByLabelText('Destination address (your own wallet)'), DEST);
-      await user.click(screen.getByRole('button', { name: 'Sign and broadcast directly' }));
+      await user.click(screen.getByRole('button', { name: REVIEW_DIRECT }));
       await waitFor(() => { expect(sink.calls).toContain('eth_gasPrice'); });
       expect(raws).toHaveLength(0);
       expect(wrapper).toHaveBeenCalledTimes(1);
@@ -400,7 +431,7 @@ describe('Sweep', () => {
 
       expect(screen.getByText('Choose a payment to sweep from Scan and receive.')).toBeTruthy();
       expect(screen.queryByLabelText('Destination address (your own wallet)')).toBeNull();
-      expect(screen.queryByRole('button', { name: 'Sign and broadcast directly' })).toBeNull();
+      expect(screen.queryByRole('button', { name: REVIEW_DIRECT })).toBeNull();
       expect(sink.calls).toEqual(reads);
       expect(raws).toHaveLength(0);
       expect(sink.calls).not.toContain('eth_sendRawTransaction');
@@ -417,7 +448,7 @@ describe('Sweep', () => {
     const user = await toSweep({ balance: 0n });
     await waitFor(() => { expect(screen.getByText('0 USDC')).toBeTruthy(); });
     await user.click(screen.getByLabelText(/Directly/));
-    expect(screen.getByRole<HTMLButtonElement>('button', { name: 'Sign and broadcast directly' }).disabled).toBe(true);
+    expect(screen.getByRole<HTMLButtonElement>('button', { name: REVIEW_DIRECT }).disabled).toBe(true);
   });
   it('GP-SWEEP-OUTCOME-01: an uncertain broadcast shows the expected hash and keeps signing disarmed across navigation', async () => {
     (appState as unknown as { resetSweepAttemptsForTests?: () => void }).resetSweepAttemptsForTests?.();
@@ -427,7 +458,7 @@ describe('Sweep', () => {
     await user.click(screen.getByLabelText(/Directly/));
     await user.type(screen.getByLabelText('Destination address (your own wallet)'), DEST);
     const countOf = (m: string): number => (sink.calls ?? []).filter((c) => c === m).length;
-    await user.click(screen.getByRole('button', { name: 'Sign and broadcast directly' }));
+    await signDirectly(user);
     expect(await screen.findByText('Outcome unknown')).toBeTruthy();
     const expectedHash = keccak256(sink.raw as `0x${string}`);
     expect(screen.getByText(expectedHash)).toBeTruthy();
@@ -435,7 +466,7 @@ describe('Sweep', () => {
     const sends = countOf('eth_sendRawTransaction');
     const nonceReads = countOf('eth_getTransactionCount');
     expect(sends).toBe(1);
-    const sign = screen.getByRole<HTMLButtonElement>('button', { name: 'Sign and broadcast directly' });
+    const sign = screen.getByRole<HTMLButtonElement>('button', { name: REVIEW_DIRECT });
     expect(sign.disabled).toBe(true);
     await user.click(sign);
     expect(countOf('eth_sendRawTransaction')).toBe(sends);
@@ -450,7 +481,7 @@ describe('Sweep', () => {
     expect(screen.getByText('Outcome unknown')).toBeTruthy();
     expect(screen.getByText(expectedHash)).toBeTruthy();
     await user.type(screen.getByLabelText('Destination address (your own wallet)'), DEST);
-    const again = screen.getByRole<HTMLButtonElement>('button', { name: 'Sign and broadcast directly' });
+    const again = screen.getByRole<HTMLButtonElement>('button', { name: REVIEW_DIRECT });
     expect(again.disabled).toBe(true);
     await user.click(again);
     expect(countOf('eth_sendRawTransaction')).toBe(sends);
@@ -463,7 +494,7 @@ describe('Sweep', () => {
     await screen.findByText('5 USDC');
     await user.click(screen.getByLabelText(/Directly/));
     await user.type(screen.getByLabelText('Destination address (your own wallet)'), DEST);
-    await user.click(screen.getByRole('button', { name: 'Sign and broadcast directly' }));
+    await signDirectly(user);
     expect(await screen.findByText('Outcome unknown')).toBeTruthy();
     const expectedHash = keccak256(sink.raw as `0x${string}`);
     const sends = (sink.calls ?? []).filter((c) => c === 'eth_sendRawTransaction').length;
@@ -480,7 +511,7 @@ describe('Sweep', () => {
     expect(screen.getByText('Outcome unknown')).toBeTruthy();
     expect(screen.getByText(expectedHash)).toBeTruthy();
     await user.type(screen.getByLabelText('Destination address (your own wallet)'), DEST);
-    const again = screen.getByRole<HTMLButtonElement>('button', { name: 'Sign and broadcast directly' });
+    const again = screen.getByRole<HTMLButtonElement>('button', { name: REVIEW_DIRECT });
     expect(again.disabled).toBe(true);
     await user.click(again);
     expect((sink.calls ?? []).filter((c) => c === 'eth_sendRawTransaction').length).toBe(sends);
@@ -495,7 +526,7 @@ describe('Sweep', () => {
     await user.click(screen.getByLabelText(/Directly/));
     await user.type(screen.getByLabelText('Destination address (your own wallet)'), DEST);
     expect(screen.getByText('Signing disabled in this tab')).toBeTruthy();
-    const sign = screen.getByRole<HTMLButtonElement>('button', { name: 'Sign and broadcast directly' });
+    const sign = screen.getByRole<HTMLButtonElement>('button', { name: REVIEW_DIRECT });
     expect(sign.disabled).toBe(true);
     await user.click(sign);
     expect(sink.calls ?? []).not.toContain('eth_sendRawTransaction');
@@ -507,7 +538,7 @@ describe('Sweep', () => {
     await screen.findByText('5 USDC');
     await user.click(screen.getByLabelText(/Directly/));
     await user.type(screen.getByLabelText('Destination address (your own wallet)'), DEST);
-    await user.click(screen.getByRole('button', { name: 'Sign and broadcast directly' }));
+    await signDirectly(user);
     await waitFor(() => { expect(sink.calls).toContain('eth_sendRawTransaction'); });
     const expectedHash = keccak256(sink.raw as `0x${string}`);
     expect(window.sessionStorage.getItem(SWEEP_JOURNAL_KEY)).toContain(expectedHash);
@@ -523,13 +554,13 @@ describe('Sweep', () => {
     await user.click(screen.getByLabelText(/Directly/));
     expect(screen.getByText('Outcome unknown')).toBeTruthy();
     await user.type(screen.getByLabelText('Destination address (your own wallet)'), DEST);
-    expect(screen.getByRole<HTMLButtonElement>('button', { name: 'Sign and broadcast directly' }).disabled).toBe(true);
+    expect(screen.getByRole<HTMLButtonElement>('button', { name: REVIEW_DIRECT }).disabled).toBe(true);
 
     sink.receiptOk = true;
     await user.click(screen.getByRole('button', { name: 'Check status' }));
     expect(await screen.findByText('Included on chain')).toBeTruthy();
     expect(window.sessionStorage.getItem(SWEEP_JOURNAL_KEY)).toContain('"included"');
-    expect(screen.getByRole<HTMLButtonElement>('button', { name: 'Sign and broadcast directly' }).disabled).toBe(false);
+    expect(screen.getByRole<HTMLButtonElement>('button', { name: REVIEW_DIRECT }).disabled).toBe(false);
   });
 
   it('GP-SWEEP-OUTCOME-01: if the lock cannot be persisted before handoff, nothing is broadcast', async () => {
@@ -546,13 +577,13 @@ describe('Sweep', () => {
       original.call(this, k, v);
     };
     try {
-      await user.click(screen.getByRole('button', { name: 'Sign and broadcast directly' }));
+      await signDirectly(user);
       expect(await screen.findByText('Signing disabled in this tab')).toBeTruthy();
     } finally {
       Object.defineProperty(proto, 'setItem', descriptor);
     }
     expect(sink.calls ?? []).not.toContain('eth_sendRawTransaction');
-    expect(screen.getByRole<HTMLButtonElement>('button', { name: 'Sign and broadcast directly' }).disabled).toBe(true);
+    expect(screen.getByRole<HTMLButtonElement>('button', { name: REVIEW_DIRECT }).disabled).toBe(true);
   });
 
   describe('L2-F2: native sweeps on OP Stack, and unjamming a lock by a same-nonce replacement', () => {
@@ -560,18 +591,17 @@ describe('Sweep', () => {
       await user.click(screen.getByLabelText(/Directly/));
       await user.type(screen.getByLabelText('Destination address (your own wallet)'), DEST);
     };
-    const RESIGN = 'Sign a replacement with the same nonce';
 
     it('a native payment on Base Sepolia is swept with the L1 data fee kept back, so the node accepts it', async () => {
       const sink: RawSink = { calls: [], estimate: '0x5208', l1Fee: 3_000_000_000_000n };
       const user = await toSweep({ nativePayment: true, raw: sink });
       expect(await screen.findByText('0.1 ETH')).toBeTruthy();
       await fill(user);
-      await user.click(screen.getByRole('button', { name: 'Sign and broadcast directly' }));
+      await signDirectly(user);
       expect(await screen.findByText('Submitted')).toBeTruthy();
       const tx = parseTransaction(sink.raw as `0x${string}`);
       expect(tx.value).toBe(10n ** 17n - 21_000n * 2_000_000_000n - 2n * 3_000_000_000_000n);
-      expect(screen.getByRole<HTMLButtonElement>('button', { name: 'Sign and broadcast directly' }).disabled).toBe(true);
+      expect(screen.getByRole<HTMLButtonElement>('button', { name: REVIEW_DIRECT }).disabled).toBe(true);
     });
 
     it('B-R3: an ERC-20 sweep whose native coin covers the gas but not the L1 data fee is refused before signing, so no lock jams', async () => {
@@ -579,12 +609,12 @@ describe('Sweep', () => {
       const user = await toSweep({ raw: sink, native: 60_000n * 2_000_000_000n + 1n });
       await screen.findByText('5 USDC');
       await fill(user);
-      await user.click(screen.getByRole('button', { name: 'Sign and broadcast directly' }));
+      await user.click(screen.getByRole('button', { name: REVIEW_DIRECT }));
       expect((await screen.findByRole('alert')).textContent).toMatch(/not hold enough native coin for the network fee, including the L1 data fee/);
       expect(sink.raws).toHaveLength(0);
       expect(screen.queryByText('Outcome unknown')).toBeNull();
       expect(window.sessionStorage.getItem(SWEEP_JOURNAL_KEY)).toBeNull();
-      expect(screen.getByRole<HTMLButtonElement>('button', { name: 'Sign and broadcast directly' }).disabled).toBe(false);
+      expect(screen.getByRole<HTMLButtonElement>('button', { name: REVIEW_DIRECT }).disabled).toBe(false);
     });
 
     it('a sweep the node rejected keeps its lock; a replacement with the same nonce takes it over and can resolve it', async () => {
@@ -592,14 +622,14 @@ describe('Sweep', () => {
       const user = await toSweep({ raw: sink });
       await screen.findByText('5 USDC');
       await fill(user);
-      await user.click(screen.getByRole('button', { name: 'Sign and broadcast directly' }));
+      await signDirectly(user);
       expect(await screen.findByText('Outcome unknown')).toBeTruthy();
       const first = keccak256(sink.raws?.[0] as `0x${string}`);
-      expect(screen.getByRole<HTMLButtonElement>('button', { name: 'Sign and broadcast directly' }).disabled).toBe(true);
+      expect(screen.getByRole<HTMLButtonElement>('button', { name: REVIEW_DIRECT }).disabled).toBe(true);
       expect(screen.getByText(/so at most one of them can ever be included/)).toBeTruthy();
 
       sink.gasPrice = '0x77359400'; // the fee moved meanwhile, so the replacement differs from the first transaction
-      await user.click(screen.getByRole('button', { name: RESIGN }));
+      await resignDirectly(user);
       expect((await screen.findAllByText('Submitted')).length).toBeGreaterThan(0);
       expect(sink.raws).toHaveLength(2);
       const second = keccak256(sink.raws?.[1] as `0x${string}`);
@@ -609,14 +639,14 @@ describe('Sweep', () => {
       expect(JSON.parse(window.sessionStorage.getItem(SWEEP_JOURNAL_KEY) ?? '')).toMatchObject([{ expectedHash: second, otherHashes: [first], status: 'submitted' }]);
       expect(screen.getByText(second)).toBeTruthy();
       // The node accepted the replacement: no further same-nonce re-sign is offered.
-      expect(screen.queryByRole('button', { name: RESIGN })).toBeNull();
+      expect(screen.queryByRole('button', { name: REVIEW_RESIGN })).toBeNull();
       // Still unresolved: a new sweep (another nonce) stays disarmed until the replacement's receipt is seen.
-      expect(screen.getByRole<HTMLButtonElement>('button', { name: 'Sign and broadcast directly' }).disabled).toBe(true);
+      expect(screen.getByRole<HTMLButtonElement>('button', { name: REVIEW_DIRECT }).disabled).toBe(true);
       sink.receiptOk = true;
       await user.click(screen.getByRole('button', { name: 'Check status' }));
       expect(await screen.findByText('Included on chain')).toBeTruthy();
-      expect(screen.queryByRole('button', { name: RESIGN })).toBeNull();
-      expect(screen.getByRole<HTMLButtonElement>('button', { name: 'Sign and broadcast directly' }).disabled).toBe(false);
+      expect(screen.queryByRole('button', { name: REVIEW_RESIGN })).toBeNull();
+      expect(screen.getByRole<HTMLButtonElement>('button', { name: REVIEW_DIRECT }).disabled).toBe(false);
     });
 
     it('refuses replacement at the journal hash limit before signing, including after reload', async () => {
@@ -624,18 +654,18 @@ describe('Sweep', () => {
       const user = await toSweep({ raw: sink });
       await screen.findByText('5 USDC');
       await fill(user);
-      await user.click(screen.getByRole('button', { name: 'Sign and broadcast directly' }));
+      await signDirectly(user);
       await screen.findByText('Outcome unknown');
       const lock = (JSON.parse(window.sessionStorage.getItem(SWEEP_JOURNAL_KEY) ?? '[]') as import('../lib/sweep').SweepLock[])[0]!;
       act(() => { appState.recordSweepAttempt({ ...lock, otherHashes: [1, 2, 3].map((n) => `0x${n.toString(16).padStart(64, '0')}` as const) }); });
-      expect(screen.queryByRole('button', { name: RESIGN })).toBeNull();
+      expect(screen.queryByRole('button', { name: REVIEW_RESIGN })).toBeNull();
       expect(screen.getByText(/Replacement limit reached/)).toBeTruthy();
       // A submitted-at-cap lock can become uncertain again, but still cannot gain another hash slot.
       sink.pendingAbsent = true;
       act(() => { appState.recordSweepAttempt({ ...appState.getSweepAttempt(lock.chainId, lock.owner)!, status: 'submitted' }); });
       await user.click(screen.getByRole('button', { name: 'Check status' }));
       expect(await screen.findByText(/The configured RPC no longer reports/)).toBeTruthy();
-      expect(screen.queryByRole('button', { name: RESIGN })).toBeNull();
+      expect(screen.queryByRole('button', { name: REVIEW_RESIGN })).toBeNull();
       appState.resetSweepAttemptsForTests({ keepStorage: true });
       const nav = within(screen.getByRole('navigation', { name: 'Main' }));
       await user.click(nav.getByRole('button', { name: 'Scan and receive' }));
@@ -643,8 +673,8 @@ describe('Sweep', () => {
       await user.click(screen.getByRole('button', { name: 'Read balance from the Settings RPC' }));
       await screen.findByText('5 USDC');
       await user.click(screen.getByLabelText(/Directly/));
-      expect(screen.queryByRole('button', { name: RESIGN })).toBeNull();
-      expect(screen.getByRole<HTMLButtonElement>('button', { name: 'Sign and broadcast directly' }).disabled).toBe(true);
+      expect(screen.queryByRole('button', { name: REVIEW_RESIGN })).toBeNull();
+      expect(screen.getByRole<HTMLButtonElement>('button', { name: REVIEW_DIRECT }).disabled).toBe(true);
       expect(sink.raws).toHaveLength(1);
     });
 
@@ -653,14 +683,14 @@ describe('Sweep', () => {
       const user = await toSweep({ raw: sink });
       await screen.findByText('5 USDC');
       await fill(user);
-      await user.click(screen.getByRole('button', { name: 'Sign and broadcast directly' }));
+      await signDirectly(user);
       await screen.findByText('Submitted');
       await user.click(screen.getByRole('button', { name: 'Check status' }));
       expect(await screen.findByText('Outcome unknown')).toBeTruthy();
       expect(screen.getByText(/does not prove they were dropped/)).toBeTruthy();
-      expect(screen.getByRole<HTMLButtonElement>('button', { name: 'Sign and broadcast directly' }).disabled).toBe(true);
+      expect(screen.getByRole<HTMLButtonElement>('button', { name: REVIEW_DIRECT }).disabled).toBe(true);
       sink.gasPrice = '0x77359400';
-      await user.click(screen.getByRole('button', { name: RESIGN }));
+      await resignDirectly(user);
       await waitFor(() => { expect(sink.raws).toHaveLength(2); });
       expect(parseTransaction(sink.raws![1] as `0x${string}`).nonce).toBe(parseTransaction(sink.raws![0] as `0x${string}`).nonce);
       // Even after recovery, the earlier transaction can still be the one mined.
@@ -674,7 +704,7 @@ describe('Sweep', () => {
       const user = await toSweep({ raw: sink });
       await screen.findByText('5 USDC');
       await fill(user);
-      await user.click(screen.getByRole('button', { name: 'Sign and broadcast directly' }));
+      await signDirectly(user);
       await screen.findByText('Outcome unknown');
       // The funds may have moved: the destination was remembered at handoff, not only after a confirmed broadcast.
       expect(screen.getByText(/previously submitted a sweep to this destination/)).toBeTruthy();
@@ -682,7 +712,7 @@ describe('Sweep', () => {
       await user.click(screen.getByRole('button', { name: 'Check status' }));
       expect(await screen.findByText(/outcome is still unknown/)).toBeTruthy();
       expect(screen.queryByText(/No receipt found/)).toBeNull();
-      expect(screen.getByRole<HTMLButtonElement>('button', { name: 'Sign and broadcast directly' }).disabled).toBe(true);
+      expect(screen.getByRole<HTMLButtonElement>('button', { name: REVIEW_DIRECT }).disabled).toBe(true);
     });
 
     it('B-R7: the unknown-outcome notice of a direct lock agrees with the same-nonce replacement it offers', async () => {
@@ -690,12 +720,12 @@ describe('Sweep', () => {
       const user = await toSweep({ raw: sink });
       await screen.findByText('5 USDC');
       await fill(user);
-      await user.click(screen.getByRole('button', { name: 'Sign and broadcast directly' }));
+      await signDirectly(user);
       expect(await screen.findByText('Outcome unknown')).toBeTruthy();
       expect(screen.getByText(/so a new sweep is disabled/)).toBeTruthy();
       expect(screen.queryByText(/signing a new one is disabled/i)).toBeNull();
-      expect(screen.getByRole('button', { name: RESIGN })).toBeTruthy();
-      expect(screen.getByRole<HTMLButtonElement>('button', { name: 'Sign and broadcast directly' }).disabled).toBe(true);
+      expect(screen.getByRole('button', { name: REVIEW_RESIGN })).toBeTruthy();
+      expect(screen.getByRole<HTMLButtonElement>('button', { name: REVIEW_DIRECT }).disabled).toBe(true);
     });
 
     // #286 item 5: the error alert is spoken aloud, so it names no transaction hash. The expected hash stays on screen in
@@ -705,7 +735,7 @@ describe('Sweep', () => {
       const user = await toSweep({ raw: sink });
       await screen.findByText('5 USDC');
       await fill(user);
-      await user.click(screen.getByRole('button', { name: 'Sign and broadcast directly' }));
+      await signDirectly(user);
       expect(await screen.findByText('Outcome unknown')).toBeTruthy();
       const expected = keccak256(sink.raws?.[0] as `0x${string}`);
       const alerts = screen.getAllByRole('alert');
@@ -722,10 +752,10 @@ describe('Sweep', () => {
       const user = await toSweep({ raw: sink });
       await screen.findByText('5 USDC');
       await fill(user);
-      await user.click(screen.getByRole('button', { name: 'Sign and broadcast directly' }));
+      await signDirectly(user);
       expect(await screen.findByText('Outcome unknown')).toBeTruthy();
       sink.gasPrice = '0x77359400';
-      await user.click(screen.getByRole('button', { name: RESIGN }));
+      await resignDirectly(user);
       await waitFor(() => { expect(sink.raws).toHaveLength(2); });
       const second = keccak256(sink.raws?.[1] as `0x${string}`);
       expect(JSON.parse(window.sessionStorage.getItem(SWEEP_JOURNAL_KEY) ?? '')).toMatchObject([{ expectedHash: second, otherHashes: [keccak256(sink.raws?.[0] as `0x${string}`)], status: 'unknown-after-handoff' }]);
@@ -739,7 +769,7 @@ describe('Sweep', () => {
       await user.click(screen.getByLabelText(/Directly/));
       expect(screen.getByText('Outcome unknown')).toBeTruthy();
       expect(screen.getByText(second)).toBeTruthy();
-      expect(screen.getByRole<HTMLButtonElement>('button', { name: 'Sign and broadcast directly' }).disabled).toBe(true);
+      expect(screen.getByRole<HTMLButtonElement>('button', { name: REVIEW_DIRECT }).disabled).toBe(true);
     });
 
     it('if the replacement lock cannot be persisted, nothing is broadcast and signing is disarmed', async () => {
@@ -747,7 +777,7 @@ describe('Sweep', () => {
       const user = await toSweep({ raw: sink });
       await screen.findByText('5 USDC');
       await fill(user);
-      await user.click(screen.getByRole('button', { name: 'Sign and broadcast directly' }));
+      await signDirectly(user);
       expect(await screen.findByText('Outcome unknown')).toBeTruthy();
       const proto = Object.getPrototypeOf(window.sessionStorage) as Storage;
       const descriptor = Object.getOwnPropertyDescriptor(proto, 'setItem')!;
@@ -757,13 +787,13 @@ describe('Sweep', () => {
         original.call(this, k, v);
       };
       try {
-        await user.click(screen.getByRole('button', { name: RESIGN }));
+        await resignDirectly(user);
         expect(await screen.findByText('Signing disabled in this tab')).toBeTruthy();
       } finally {
         Object.defineProperty(proto, 'setItem', descriptor);
       }
       expect(sink.raws).toHaveLength(1);
-      expect(screen.queryByRole('button', { name: RESIGN })).toBeNull();
+      expect(screen.queryByRole('button', { name: REVIEW_RESIGN })).toBeNull();
     });
 
     it('B-R5: a direct sweep the node accepted (submitted) offers no same-nonce re-sign', async () => {
@@ -771,11 +801,11 @@ describe('Sweep', () => {
       const user = await toSweep({ raw: sink });
       await screen.findByText('5 USDC');
       await fill(user);
-      await user.click(screen.getByRole('button', { name: 'Sign and broadcast directly' }));
+      await signDirectly(user);
       expect((await screen.findAllByText('Submitted')).length).toBeGreaterThan(0);
       expect(screen.getByRole('button', { name: 'Check status' })).toBeTruthy();
-      expect(screen.queryByRole('button', { name: RESIGN })).toBeNull();
-      expect(screen.getByRole<HTMLButtonElement>('button', { name: 'Sign and broadcast directly' }).disabled).toBe(true);
+      expect(screen.queryByRole('button', { name: REVIEW_RESIGN })).toBeNull();
+      expect(screen.getByRole<HTMLButtonElement>('button', { name: REVIEW_DIRECT }).disabled).toBe(true);
     });
 
     it('B-R5: when the first transaction reached the network after all and is mined, the re-signed lock resolves as included', async () => {
@@ -784,14 +814,14 @@ describe('Sweep', () => {
       const user = await toSweep({ raw: sink });
       await screen.findByText('5 USDC');
       await fill(user);
-      await user.click(screen.getByRole('button', { name: 'Sign and broadcast directly' }));
+      await signDirectly(user);
       expect(await screen.findByText('Outcome unknown')).toBeTruthy();
       const first = keccak256(sink.raws?.[0] as `0x${string}`);
       // The replacement pays 5 % more, so the node refuses it as underpriced; its outcome is unknown again.
       sink.sendFail = false;
       sink.failSends = 1;
       sink.gasPrice = '0x3e95ba80';
-      await user.click(screen.getByRole('button', { name: RESIGN }));
+      await resignDirectly(user);
       await waitFor(() => { expect(sink.raws).toHaveLength(2); });
       const second = keccak256(sink.raws?.[1] as `0x${string}`);
       expect(await screen.findByText(second)).toBeTruthy();
@@ -803,7 +833,7 @@ describe('Sweep', () => {
       expect(screen.getByText(first)).toBeTruthy();
       expect(screen.queryByText(second)).toBeNull();
       expect(JSON.parse(window.sessionStorage.getItem(SWEEP_JOURNAL_KEY) ?? '')).toMatchObject([{ expectedHash: first, otherHashes: [second], status: 'included' }]);
-      expect(screen.getByRole<HTMLButtonElement>('button', { name: 'Sign and broadcast directly' }).disabled).toBe(false);
+      expect(screen.getByRole<HTMLButtonElement>('button', { name: REVIEW_DIRECT }).disabled).toBe(false);
     });
 
     it('Check status resolves the lock as replaced once its nonce is final without its own receipt', async () => {
@@ -811,7 +841,7 @@ describe('Sweep', () => {
       const user = await toSweep({ raw: sink });
       await screen.findByText('5 USDC');
       await fill(user);
-      await user.click(screen.getByRole('button', { name: 'Sign and broadcast directly' }));
+      await signDirectly(user);
       expect(await screen.findByText('Outcome unknown')).toBeTruthy();
       await user.click(screen.getByRole('button', { name: 'Check status' }));
       expect(await screen.findByText(/No receipt found for this hash yet/)).toBeTruthy();
@@ -820,7 +850,7 @@ describe('Sweep', () => {
       expect(await screen.findByText('Replaced on chain')).toBeTruthy();
       expect(screen.getByText(/can never be included/)).toBeTruthy();
       expect(window.sessionStorage.getItem(SWEEP_JOURNAL_KEY)).toContain('"replaced"');
-      expect(screen.getByRole<HTMLButtonElement>('button', { name: 'Sign and broadcast directly' }).disabled).toBe(false);
+      expect(screen.getByRole<HTMLButtonElement>('button', { name: REVIEW_DIRECT }).disabled).toBe(false);
     });
 
     it('a relayed order lock offers no direct replacement', async () => {
@@ -835,7 +865,7 @@ describe('Sweep', () => {
       await screen.findByText(/Relayer fee: 0\.025 USDC/);
       await user.click(screen.getByRole('button', { name: 'Sign and submit to relayer' }));
       expect(await screen.findByText('Outcome unknown')).toBeTruthy();
-      expect(screen.queryByRole('button', { name: RESIGN })).toBeNull();
+      expect(screen.queryByRole('button', { name: REVIEW_RESIGN })).toBeNull();
     });
   });
 
@@ -845,7 +875,7 @@ describe('Sweep', () => {
     await screen.findByText('5 USDC');
     await user.click(screen.getByLabelText(/Directly/));
     await user.type(screen.getByLabelText('Destination address (your own wallet)'), DEST);
-    await user.click(screen.getByRole('button', { name: 'Sign and broadcast directly' }));
+    await signDirectly(user);
     expect(await screen.findByText('Submitted')).toBeTruthy();
     expect(screen.getByText(/could not dry-run this sweep/)).toBeTruthy();
   });
@@ -856,7 +886,7 @@ describe('Sweep', () => {
     await screen.findByText('5 USDC');
     await user.click(screen.getByLabelText(/Directly/));
     await user.type(screen.getByLabelText('Destination address (your own wallet)'), DEST);
-    await user.click(screen.getByRole('button', { name: 'Sign and broadcast directly' }));
+    await signDirectly(user);
     expect(await screen.findByText('Outcome unknown')).toBeTruthy();
     expect(screen.getByText(/could not dry-run this sweep/)).toBeTruthy();
   });
@@ -867,7 +897,7 @@ describe('Sweep', () => {
     await screen.findByText('5 USDC');
     await user.click(screen.getByLabelText(/Directly/));
     await user.type(screen.getByLabelText('Destination address (your own wallet)'), DEST);
-    await user.click(screen.getByRole('button', { name: 'Sign and broadcast directly' }));
+    await signDirectly(user);
     expect(await screen.findByText('Outcome unknown')).toBeTruthy();
     expect(sink.calls).toContain('eth_sendRawTransaction');
     expect(screen.queryByText(/could not dry-run this sweep/)).toBeNull();
@@ -879,7 +909,7 @@ describe('Sweep', () => {
     await screen.findByText('5 USDC');
     await user.click(screen.getByLabelText(/Directly/));
     await user.type(screen.getByLabelText('Destination address (your own wallet)'), DEST);
-    await user.click(screen.getByRole('button', { name: 'Sign and broadcast directly' }));
+    await signDirectly(user);
     expect(await screen.findByText('Submitted')).toBeTruthy();
     expect(sink.raw).toMatch(/^0x02/);
   });
@@ -901,7 +931,7 @@ describe('Sweep', () => {
     }
     const directDisabled = async (user: ReturnType<typeof userEvent.setup>): Promise<boolean> => {
       await user.click(screen.getByLabelText(/Directly/));
-      return screen.getByRole<HTMLButtonElement>('button', { name: 'Sign and broadcast directly' }).disabled;
+      return screen.getByRole<HTMLButtonElement>('button', { name: REVIEW_DIRECT }).disabled;
     };
 
     it('an unreachable relayer keeps signing disarmed across a reload until the order is past deadline + margin', async () => {
@@ -926,13 +956,13 @@ describe('Sweep', () => {
       sink.blockTimestamp = DEADLINE + 600;
       await user.click(screen.getByRole('button', { name: 'Check status' }));
       expect(await screen.findByText(/no finalized block is far enough past its deadline/)).toBeTruthy();
-      expect(screen.getByRole<HTMLButtonElement>('button', { name: 'Sign and broadcast directly' }).disabled).toBe(true);
+      expect(screen.getByRole<HTMLButtonElement>('button', { name: REVIEW_DIRECT }).disabled).toBe(true);
 
       sink.blockTimestamp = DEADLINE + 601;
       await user.click(screen.getByRole('button', { name: 'Check status' }));
       expect(await screen.findByText('Order expired unused')).toBeTruthy();
       expect(window.sessionStorage.getItem(SWEEP_JOURNAL_KEY)).toContain('"expired"');
-      expect(screen.getByRole<HTMLButtonElement>('button', { name: 'Sign and broadcast directly' }).disabled).toBe(false);
+      expect(screen.getByRole<HTMLButtonElement>('button', { name: REVIEW_DIRECT }).disabled).toBe(false);
     });
 
     it('a used order nonce resolves the lock as executed', async () => {
@@ -943,12 +973,12 @@ describe('Sweep', () => {
       // Without a finalized block the check fails honestly instead of claiming "not executed".
       await user.click(screen.getByRole('button', { name: 'Check status' }));
       expect(await screen.findByText(/Could not check the order on chain/)).toBeTruthy();
-      expect(screen.getByRole<HTMLButtonElement>('button', { name: 'Sign and broadcast directly' }).disabled).toBe(true);
+      expect(screen.getByRole<HTMLButtonElement>('button', { name: REVIEW_DIRECT }).disabled).toBe(true);
       sink.blockTimestamp = 1_800_000_010;
       sink.nonceUsed = true;
       await user.click(screen.getByRole('button', { name: 'Check status' }));
       expect(await screen.findByText('Order executed on chain')).toBeTruthy();
-      expect(screen.getByRole<HTMLButtonElement>('button', { name: 'Sign and broadcast directly' }).disabled).toBe(false);
+      expect(screen.getByRole<HTMLButtonElement>('button', { name: REVIEW_DIRECT }).disabled).toBe(false);
     });
 
     it.each([
@@ -1009,7 +1039,7 @@ describe('Sweep', () => {
       const before = (sink.calls ?? []).length;
       await user.click(screen.getByRole('button', { name: 'Check status' }));
       expect(await screen.findByText('Order executed on chain')).toBeTruthy();
-      expect(screen.getByRole<HTMLButtonElement>('button', { name: 'Sign and broadcast directly' }).disabled).toBe(false);
+      expect(screen.getByRole<HTMLButtonElement>('button', { name: REVIEW_DIRECT }).disabled).toBe(false);
       expect((sink.calls ?? []).slice(before)).not.toContain('eth_getTransactionReceipt');
     });
 
@@ -1068,11 +1098,14 @@ describe('L1-02: the vault step-up belongs to the loaded keys', () => {
     expect(screen.getByLabelText('Vault passphrase (required for each sweep action)')).toBeTruthy();
     await user.click(screen.getByLabelText(/Directly/));
     await user.type(screen.getByLabelText('Destination address (your own wallet)'), DEST);
-    await user.click(screen.getByRole('button', { name: 'Sign and broadcast directly' }));
+    await user.click(screen.getByRole('button', { name: REVIEW_DIRECT }));
     expect((await screen.findByRole('alert', {}, { timeout: 30_000 })).textContent).toMatch(/Wrong passphrase/);
     expect(raw.raw).toBeUndefined();
     await user.type(screen.getByLabelText('Vault passphrase (required for each sweep action)'), VAULT_PASS);
-    await user.click(screen.getByRole('button', { name: 'Sign and broadcast directly' }));
+    await user.click(screen.getByRole('button', { name: REVIEW_DIRECT }));
+    const sign = await screen.findByRole('button', { name: SIGN_DIRECT }, { timeout: 30_000 });
+    await user.type(screen.getByLabelText('Vault passphrase (required for each sweep action)'), VAULT_PASS);
+    await user.click(sign);
     expect(await screen.findByText('Submitted', {}, { timeout: 30_000 })).toBeTruthy();
     expect(raw.raw).toMatch(/^0x02/);
   });
