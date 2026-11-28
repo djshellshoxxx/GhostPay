@@ -1,0 +1,77 @@
+{
+  "schema": "ghostpay-checkpoint-published-files/1",
+  "files": [
+    {
+      "path": "CENSUS_RECOVERY.md",
+      "bytes": 4147,
+      "sha256": "e53cb60baac52216554ef028af1efdbcd6d5586f0e82d2fe4f1062520f619ee2",
+      "gitBlob": "ea1f7c234910f05a2002ce8baa6c2e779c6579e3"
+    },
+    {
+      "path": "EVIDENCE_MANIFEST.json",
+      "bytes": 9649,
+      "sha256": "111bdf33390af8985fcbfbbd3187e6b2eca2aec2e73bb63a0c60b2c3c6cb85bf",
+      "gitBlob": "32639c83128e315feb875bddcf040b1f7b9738aa"
+    },
+    {
+      "path": "INDEPENDENT_REVIEW.md",
+      "bytes": 4602,
+      "sha256": "e769c30fd248736b30a9557eb1fb42321a30bd6290c8b38082a86215751d2a82",
+      "gitBlob": "df8d817908caf1a8a022c4298d50f24678403ff1"
+    },
+    {
+      "path": "OWNERSHIP.md",
+      "bytes": 1222,
+      "sha256": "a1a19ee2cf3f080374cff04750e342fdf3099a2faa311f4290d62a0e021e13f3",
+      "gitBlob": "f64b9422484a19f90ee6ce4d2cd124a5303e0dc4"
+    },
+    {
+      "path": "PRIOR_REPORTED_FINAL_ANALYSIS.json",
+      "bytes": 3103,
+      "sha256": "326a40a77f133ebec200b41417ca893874a049b4cf70bf33e4f3f384cb4875e8",
+      "gitBlob": "a6a97951b070a667eb9054797c1f5e75033f4282"
+    },
+    {
+      "path": "QUALIFICATION_RECOVERY.md",
+      "bytes": 1183,
+      "sha256": "490771b7487c3a0e50550b1d998f13ddce0b26d7f7d32f586f76971d5101b7b1",
+      "gitBlob": "a9472f421a22efeaa620eaa6f25a7174ee5dd47c"
+    },
+    {
+      "path": "README.md",
+      "bytes": 19578,
+      "sha256": "5e91923456f61ab546982e363ca96d998b85db5c696b51b67e6471bc9e1155b7",
+      "gitBlob": "4ab1ffc58e2be9da579297fc42738c89b8b1aec6"
+    },
+    {
+      "path": "REVIEW_RECOVERY.md",
+      "bytes": 3846,
+      "sha256": "9cef9f3b99492e8eb733f1b9ec371d44f06fa6869d332813623e178458d8bb24",
+      "gitBlob": "2a1fe36ab58bb567890c44cd63d7694d02b009d2"
+    },
+    {
+      "path": "REVIEW_RESPONSE.md",
+      "bytes": 1187,
+      "sha256": "5372989e00d8ad29aa7f9752f6c27ac66483a13b7455c68f2d6c6f15e0c1b372",
+      "gitBlob": "9fcf50e54a9b1eb82a2d4d0f0efb5a738dd8e088"
+    },
+    {
+      "path": "branches-872-recovered.json",
+      "bytes": 250120,
+      "sha256": "515e8da004d8deb72766779e9acc6393dfcfdab1ebabe94a6392ec0e502eaa23",
+      "gitBlob": "5cdd916068697dd67a35981ccb362169b74d5ceb"
+    },
+    {
+      "path": "census-cache-recovery.tar.xz",
+      "bytes": 952472,
+      "sha256": "bc3169c822382648d61212abe17498b21a9f69a5833c1ac0ba8e79660e5d94c5",
+      "gitBlob": "7d9b13d7499c9cb5637f0fade560dd2c80c95edf"
+    },
+    {
+      "path": "qualification-evidence.tar.xz",
+      "bytes": 54556,
+      "sha256": "af3789faaffdb6395586948bdff27595f786ce4d5c9e94996d717343537fa5b8",
+      "gitBlob": "e3e053750965523c62eebf95d8699a6363686c87"
+    }
+  ]
+}

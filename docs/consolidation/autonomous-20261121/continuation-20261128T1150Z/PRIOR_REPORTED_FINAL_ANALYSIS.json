@@ -1,0 +1,73 @@
+{
+  "evidence_status": "Reported analytical conclusions preserved from the prior agent completion and subsequent parent messages. The final per-ref ledger and final source comparison bytes were not recovered; this object is not a reconstructed snapshot or proof.",
+  "main_sha_reported": "0934ea094cb1db90293b74d2d1e9d9324e09a883",
+  "reported_freeze_time": "2026-11-28T11:34:03.341404+00:00",
+  "reported_final_ref_collection_completion": "2026-11-28T11:10:02.167890+00:00",
+  "reported_final_pr_collection_completion": "2026-11-28T11:09:55.714874+00:00",
+  "reported_final_counts": {
+    "refs": 876,
+    "distinct_heads": 837,
+    "open_prs": 162,
+    "ancestor_refs": 498,
+    "divergent_refs": 367,
+    "ahead_with_zero_behind": 8,
+    "unrelated_refs": 3,
+    "nonancestor_refs": 378,
+    "missing_branch_head_objects": 0
+  },
+  "reported_nonancestor_partition": {
+    "established_source_dispositions": 309,
+    "open_pr_source_associations": 33,
+    "source_ancestors_of_open_pr": 21,
+    "residual_source_review": 15
+  },
+  "equivalence_revalidation_refs": {
+    "count": 10,
+    "already_inside_established_309": true
+  },
+  "global_unresolved_behavior_count": null,
+  "confirmed_unique_unowned_merge_ready_fixes": 0,
+  "reported_remaining_limit": "Fifteen residual source-review rows and ten established equivalence dispositions requiring current revalidation are separate review obligations, not a global feature or behavioral obligation count.",
+  "reported_delta": {
+    "new_refs": 4,
+    "advanced_refs": 4,
+    "deleted_refs": 0,
+    "all_advanced_fast_forward": true,
+    "new_prs": [
+      779,
+      780,
+      781,
+      782
+    ],
+    "no_longer_open_prs": [
+      355,
+      569
+    ]
+  },
+  "reported_races_and_limits": [
+    "PR #779 metadata was at 954ccf5d030c3f37deadba15707b1a6086c0dcfe while its branch had advanced to 3abf5528af087b18177c996cceca8c5ed94e41d0. Fresh exact-head qualification is required.",
+    "PR #753 branch was 6bb0d3de76d863470d66040f184b7f961072f0df; prior 1af4e9539839fdf8d82caa7b342da63c17293e66 qualification was historical.",
+    "The historical receipt test blob aab9cb5ca382b5df8f08858e452c8b6d5f20106f was recovered by the core reviewer before loss; the final proof bytes were not recovered here. Do not reintroduce an access blocker solely from older prefetch notes."
+  ],
+  "missing_original_artifacts": [
+    "branch-dispositions-complete.json",
+    "branch-comparison-refreshed.json",
+    "semantic-dispositions-refreshed.json",
+    "refs-refresh.tsv",
+    "open-pr-refresh.json",
+    "fresh-ref-comparisons-20261128T1110Z.json",
+    "semantic-source-comparison.json.xz",
+    "fresh-source-comparison.json.xz",
+    "SEMANTIC_REPORT.md",
+    "PUBLISH_MANIFEST.json",
+    "SHA256SUMS.json",
+    "AUTOMATION_RESIDUALS.json",
+    "CORE_RESIDUALS.json",
+    "LUCID_RESIDUAL.json"
+  ],
+  "reported_original_source_comparison_digest": {
+    "uncompressed_bytes": 28361932,
+    "sha256": "57db63ee456b06927d0d059a73b4e84fcdba6e3daa70a4def943504000c9c01e",
+    "status": "Digest retained in prior completion summary; data bytes not recovered"
+  }
+}
