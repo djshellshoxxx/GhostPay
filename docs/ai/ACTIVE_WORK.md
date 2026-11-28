@@ -5409,3 +5409,12 @@ respective owners. Use disposable fixtures and record only sanitized results.
 ## November 27 audit — approved Pages payment origin
 
 Worker Codex origin, branch `audit/nov27-origin-87060`, base `b890a76603b924829fdbe2b4fb2c5626f0cf4e36`. Own the Pages build origin, lean manifest and wallet gates, smoke origin checks, corresponding workflow arguments, docs and regressions. Preserve the signed manifest, on-chain read-back, shared-testnet decision and explicit local fixture. Acceptance requires zero wallet requests on origin mismatch, working approved-origin payment and manifest-free demo, and an independent post-deployment origin check. Coordinate workflow hunks with the deployment archive worker.
+
+
+---
+
+# BUG-only: bound browser self-check digest wait — 2026-11-27 Pacific
+
+Worker: GhostPay bug-repair rounds; branch `automation/20261127/bug/browser-digest-deadline`; base `b890a76603b924829fdbe2b4fb2c5626f0cf4e36`. All 152 open PR changed-file inventories inspected and no overlap with `apps/web/src/lib/browserChecks.ts` or `apps/web/src/lib/browserChecks.test.ts`; older #703/#719 self-check claims are merged. Own only those two files, this additive claim and `docs/handoffs/BROWSER_DIGEST_DEADLINE_20261127.md`.
+
+A synthetic pending digest prevents all browser self-check results, including storage diagnostics, from resolving. Reproduced against hash-matched original source (two failing scenarios, five passing controls). Acceptance: a digest that does not settle within the existing five-second probe phase budget is failed, not passed or unavailable; later settlement cannot relabel the outcome; storage diagnostics still proceed and remove their probe; normal digest success, incorrect digest, rejection, thrown error and absence remain unchanged. Preserve IndexedDB phase deadlines, no change to actual cryptography/signing, wallets, payments, data formats, dependencies, deployment, privacy activation or stopped products. Native repository and browser qualification and independent review required before any merge. No integration lock held.

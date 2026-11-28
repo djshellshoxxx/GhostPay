@@ -34,8 +34,8 @@ const EXPECTED_ABC_SHA256 = 'ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb41
 const PROBE_VALUE = 'ghostpay-capability-probe';
 const IDB_STORE = 'probe';
 const IDB_RECORD = 'probe';
-/** Upper bound for each of the open/round-trip and delete phases; a browser database that never answers fails. */
-const IDB_TIMEOUT_MS = 5_000;
+/** Upper bound for the digest and each IndexedDB phase; a capability that never answers fails. */
+const PROBE_TIMEOUT_MS = 5_000;
 const PROBE_PREFIX = '__ghostpay_capability_';
 
 /**
@@ -129,7 +129,7 @@ function checkStorage(storage: ProbeStorage | undefined, key: string): BrowserCh
 
 function withDeadline<T>(work: Promise<T>, fallback: T): Promise<T> {
   let timer: ReturnType<typeof setTimeout> | undefined;
-  const deadline = new Promise<T>((resolve) => { timer = setTimeout(() => { resolve(fallback); }, IDB_TIMEOUT_MS); });
+  const deadline = new Promise<T>((resolve) => { timer = setTimeout(() => { resolve(fallback); }, PROBE_TIMEOUT_MS); });
   return Promise.race([work, deadline]).finally(() => { clearTimeout(timer); });
 }
 
@@ -204,7 +204,7 @@ async function checkIndexedDb(factory: ProbeIndexedDb | undefined, name: string)
 
 export async function runBrowserChecks(env: BrowserCheckEnvironment): Promise<readonly BrowserCheck[]> {
   const secure: BrowserCheckStatus = env.secureContext === undefined ? 'unavailable' : env.secureContext ? 'pass' : 'fail';
-  const digest = await checkDigest(env.digest);
+  const digest = await withDeadline(checkDigest(env.digest), 'fail');
   // Without a random probe name, writing could collide with another tab's probe, so neither storage probe runs.
   const storage = env.probeKey === undefined ? 'unavailable' : checkStorage(env.storage, env.probeKey);
   const indexedDb = env.probeKey === undefined ? 'unavailable' : await checkIndexedDb(env.indexedDb, env.probeKey);

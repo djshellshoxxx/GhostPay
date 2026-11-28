@@ -177,6 +177,42 @@ describe('local-only browser capability checks', () => {
     }
   });
 
+  it('fails a digest that never answers within the probe deadline and continues to check storage', async () => {
+    vi.useFakeTimers();
+    const { store, storage } = temporaryStorage();
+    let result: readonly BrowserCheck[] | undefined;
+    const pending = runBrowserChecks({
+      secureContext: true, digest: () => new Promise<ArrayBuffer>(() => {}), storage, probeKey: 'probe',
+    }).then((checks) => { result = checks; });
+    await vi.advanceTimersByTimeAsync(4_999);
+    expect(result).toBeUndefined();
+    await vi.advanceTimersByTimeAsync(1);
+    expect(result).toEqual([
+      { id: 'secure', status: 'pass' },
+      { id: 'digest', status: 'fail' },
+      { id: 'storage', status: 'pass' },
+      { id: 'indexeddb', status: 'unavailable' },
+    ]);
+    await pending;
+    expect(store.size).toBe(0);
+  });
+
+  it('does not relabel a timed-out digest after a late correct answer', async () => {
+    const correct = await validDigest(new TextEncoder().encode('abc').buffer);
+    vi.useFakeTimers();
+    let complete: ((value: ArrayBuffer) => void) | undefined;
+    let result: readonly BrowserCheck[] | undefined;
+    const pending = runBrowserChecks({
+      digest: () => new Promise<ArrayBuffer>((resolve) => { complete = resolve; }),
+    }).then((checks) => { result = checks; });
+    await vi.advanceTimersByTimeAsync(5_000);
+    expect(result?.find((check) => check.id === 'digest')?.status).toBe('fail');
+    await pending;
+    complete?.(correct);
+    await vi.advanceTimersByTimeAsync(1);
+    expect(result?.find((check) => check.id === 'digest')?.status).toBe('fail');
+  });
+
   it('fails when storage silently loses its write and removes the temporary probe', async () => {
     const { store, storage } = temporaryStorage();
     const checks = await runBrowserChecks({
