@@ -141,6 +141,17 @@ Explicit rules were applied before the mechanical ones. They cover the owner's 2
   - **#372 reclassified C (archival composition).** 499 commits on its base. #677/#679/#708 re-cut parts of it; it is not
     "superseded" as a whole.
   - Still waiting: #591, #604 → #717 (now in consolidation stack 2, #728).
+- **Rec 2, closed out 2026-11-27 22:15 UTC (main `fd5e5911`):**
+  - #717 reached main through #728 (`3dba277e`).
+  - Coordinator `newghostpay-e3` closed #591 and #604 at 12:59 UTC. Its note maps each of their four donor-only test cases
+    to a successor test on main.
+  - The one payment-safety mapping was re-checked in source: `apps/web/src/lib/payExec.ts:388` gates on
+    `verification !== 'verified'` before reading the receipt status. An unreadable transaction is therefore `unconfirmed`
+    for a `0x0` receipt as well as a success receipt.
+  - Rec 2 now has no donor waiting on a successor.
+  - Still open with donor-only test cases listed on the PR:
+    - #569 and #355, carried by #742 (open);
+    - #300 and #254, not yet owned.
 - **Rec 3, adopted:** the 59 historical C compositions are archival. Recover from them only on a concrete gap. They stay open for the owner to close in bulk if wanted.
 
 Recommendations as originally proposed:
