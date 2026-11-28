@@ -4,31 +4,31 @@ AI-assisted record. **Not an audit, not a release authorization.** Nothing was d
 testnets and local anvil only. Scope follows [STOP_WORK_20261125](../ai/STOP_WORK_20261125.md): the ten stopped products
 stay dormant and are not counted as outstanding.
 
-## Candidate
+## Candidate and what reached `main`
 
-Branch `nodata/beautiful-heisenberg-25ikdy` (PR #751, draft), exact head in the PR description. It was first composed from
-`main` `3f7fcd0a` plus the open heads of #724, #728, #742, #744 and #665 and has since absorbed every `main` movement
-(latest merged: `main` `3dba277e`). **It is a qualification candidate, not a merge request.** Integration stays with the
-integration-lock holder; this record does not take the lock.
+This record started as a qualification candidate (branch `nodata/beautiful-heisenberg-25ikdy`, PR #751, closed without
+merging on 2026-11-27 because the useful parts were ported). The candidate was first composed from `main` `3f7fcd0a` plus the
+open heads of #724, #728, #742, #744 and #665, and absorbed every `main` movement after that. The owner then asked for any
+unmerged work to be merged; the final state, checked against `main` `0934ea09` (2026-11-28 UTC), is:
 
-State at `main` `3dba277e` (2026-11-27 UTC):
-
-| Source | State | Notes |
+| Source | State on `main` `0934ea09` | Notes |
 |---|---|---|
-| #745, #747, #749, #750 | on `main` | P14 labels, caught-up gating, closure |
-| #744 (audit fixes), #752 | on `main` | the candidate dropped its own copy of the embed fix in favour of `main`'s (identical logic, `60ce3508`) |
-| #724 train (#724, #732, #726, #713, #715) | on `main` (`13430d25`) | includes the lean-build exclusion of workspace `src/future` and `dist/future` |
-| #728 stack (#696 cover lookups, #717 offline drafts, audit F2/F3/F7) | on `main` | per the coordinator's note it carries this candidate's Phase C repairs, the review fix `298e56f7`, FUZZ-D1, GUARD-1 and the draft, offline, scan and paging fuzz suites; the diff against `main` shows none of them as unique |
-| #742 (LATE-L1 replay, #569/#355 dispositions) | **open**, carried in this candidate at `28d369cc` | CI 41/0 on its own head |
-| #665 (W5 independent verifier) | **open**, carried in this candidate at `db6f3da6` | `verification/**` only; about 15 MB of generated `run.json` evidence |
-| New: ERC-20 end-to-end qualification | **unique to this candidate** | 5 anvil vitest files, 2 test utilities, 1 `node:test`, handoff |
-| New: Phase A fuzz, remaining suites | **unique to this candidate** | reconcile, invoice-link, sweep-destination and vault-replay (the last needs #742) |
+| #745, #747, #749, #750 | merged | P14 labels, caught-up gating, closure |
+| #744 (audit fixes), #752 | merged | the candidate's own embed fix was dropped in favour of `main`'s identical `60ce3508` |
+| #724 train (#724, #732, #726, #713, #715) | merged (`13430d25`) | includes the lean-build exclusion of workspace `src/future` and `dist/future` |
+| #728 stack (#696 cover lookups, #717 offline drafts, audit F2/F3/F7) | merged | carries this work's Phase C repairs, the commit-boundary review fix `298e56f7`, FUZZ-D1, GUARD-1 and the draft, offline, scan and paging fuzz suites |
+| #754 | merged (`1894b4bb`) | the coordinator's port of this work's test-only suites: ERC-20 anvil suites and utilities, ERC-20 recovery test, reconcile, invoice-link and sweep-destination fuzz |
+| #742 (LATE-L1 replay, masking dispositions) | merged (2026-11-28 07:00Z) | its own copy of `reconciliationVault.replay.fuzz.test.ts` (repaired test model) replaced this work's version |
+| #665 (W5 independent verifier) | merged with this record | `verification/**` only, about 15 MB of generated `run.json` evidence; its branch was 160+ commits behind `main` |
+| This handoff record | merged with this record | |
 
-Merge conflicts across all merges: only `docs/ai/ACTIVE_WORK.md` (every PR prepends at line 0; resolved by keeping both
-sides) and, once, `Pay.offline.fuzz.test.tsx` (took `main`'s newer copy `79312691`).
+Merge conflicts across all merges were limited to `docs/ai/ACTIVE_WORK.md` (every PR prepends at line 0; resolved by keeping
+both sides) and two test files where `main` held a newer copy (`Pay.offline.fuzz.test.tsx`,
+`reconciliationVault.replay.fuzz.test.ts`); `main`'s copy was kept in both cases.
 
-The coordinator (`newghostpay-e3`) offered to review or port the test-only files with authorship preserved; see the reply on
-PR #751 for the file list and dependencies.
+Merging #665 carries its findings, not fixes: F3 (a linked replacement reported included but with its receipt withheld shows
+"another tx used the nonce") is unverified on current `main`. The harness is not run by ordinary CI; its 54 self-tests pass
+locally (`node --test verification/independent-beta/harness/selftest.test.mjs`, 54/54).
 
 ## Completion ledger
 
@@ -38,18 +38,18 @@ PR #751 for the file list and dependencies.
 | #745 P14 F2 light-source labels, #747 caught-up requires primary-head coverage | **Merged** (`3c9fc0ab`, `6b323a99`) | Fuzz: `caughtUp` only true past the primary head with no lag, limit or backlog |
 | #696 cover lookups, #717 offline checkout and drafts | **Merged** (#728, with this candidate's Phase C repairs) | `ts-test (rest-2)` passed on every candidate run, supporting the slow-runner reading of #728's earlier red |
 | #724 train (#732, #726, #713, #715) | **Merged** (`13430d25`) | close `#732` and `#726` if still open: #724 carried their content |
-| #742 LATE-L1 replay | **Implemented, unmerged**, CI green | Product decision needed on a bound for the replay pin (D3) |
+| #742 LATE-L1 replay | **Merged** (2026-11-28) | Product decision still needed on a bound for the replay pin (FUZZ-D3); the fuzz suite characterises it |
 | #744 audit fixes | **Merged** (`a7f9abf8`) | F2/F3 hunks duplicate #728 and merged cleanly in this candidate |
-| #665 independent verifier | **Implemented, unmerged**, CI 31/0 | 160 commits behind main; its finding F3 (attemptStatus wording) is unverified on current main |
+| #665 independent verifier | **Merged with this record** | Verification only, not run by CI. Finding F3 (attemptStatus wording) is unverified on current `main` |
 | #715 release exclusion | **Merged** (in #724) | Candidate lean build: 382 modules, zero stopped-product or `FUTURE` modules |
-| ERC-20 payment and recovery | **Qualified on local anvil** (this work; suites not yet on `main`) | Gap: browser Playwright ERC-20 journey (no token at the allowlisted address on the devnet script) |
+| ERC-20 payment and recovery | **Merged** (#754) | Qualified on local anvil. Open: a browser Playwright ERC-20 journey (no token at the allowlisted address on the devnet script) |
 | P14 disclosure and scan evidence (#658, #696) | **Merged**: F1/F2 (#723, #745, #747) and #696 (#728) | No #658 PR is open. Treat as merged or closed; not re-verified here |
 | GP-PAGES-01, IDLE-M1, Mythril disposition | **Owner decisions**, open | Unchanged from `RELEASE_READINESS_20261126.md` |
 | Exact-SHA Pages-on-anvil, beta acceptance, Firefox/WebKit/Safari, devices, native a11y, Tor Browser, third-party wallets | **Not run** | Outstanding manual or hosted acceptance (see "Not run") |
 
-Estimated state: the automated core payment, scan, reconciliation and recovery work is merged and qualified. Remaining
-integration is #742 and #665, plus porting the unique test suites. The release gate is dominated by the owner decisions and
-manual passes. Rough completion of the automated scope: 95%; of the full release gate: about 70%.
+Estimated state: the automated core payment, scan, reconciliation and recovery work is merged and qualified. No in-scope
+code from this work remains unmerged. The release gate is dominated by the owner decisions and the manual passes. Rough
+completion of the automated scope: 98%; of the full release gate: about 70%.
 
 ## Results on the final candidate
 
@@ -172,7 +172,7 @@ worked here (the earlier readiness record could not reach the compiler host).
 
 ## Continuation prompts
 
-1. **Integrate (lock holder).** "Read AGENTS.md and docs/handoffs/COMPLETION_QUALIFICATION_20261127.md. Under the integration lock, merge #724, then #742, #728 (rerun `ts-test (rest-2)`; cherry-pick the Phase C repairs from branch `nodata/beautiful-heisenberg-25ikdy`: `invoiceDraft*`, `useInvoiceDraft*`, `session.ts`, locales, privacy docs), #744 (head `e20569ae`), #665. Keep both sides of `docs/ai/ACTIVE_WORK.md`. Fresh hosted CI on each exact composed head."
+1. **Other open PRs.** Not part of this work and not touched: #753, #764 (ERC-20 Pages and hosted verification), #769, #780, #781, #784 (scan consent, recovery, finality), #720 (a contract entry point, needs owner approval), #678 (P13, dormant), and the stopped or held products. Each needs its own exact-head CI and the integration lock.
 2. **Replay pin bound (needs product decision).** "Decide and implement a bound for FUZZ-D3 in `packages/ux-vault/src/reconciliation-portable.ts`; keep the `characterises the pin` test and flip it to the new bound."
 3. **Browser ERC-20 journey.** "Deploy a token at the allowlisted address in `scripts/beta/browser-devnet.sh` (devnet only), add `apps/web/e2e/erc20-*.spec.ts` for approve, pay, scan, receipt and sweep. No contract change."
 4. **Release gate.** "Run `BROWSER_DEVNET_MODE=pages bash scripts/beta/browser-devnet.sh` and `scripts/beta/acceptance.sh` on the release SHA; then manual Firefox, WebKit, mobile, assistive-technology, Tor Browser and third-party wallet passes; refresh `RELEASE_READINESS_*.md`."
