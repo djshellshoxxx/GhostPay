@@ -41,7 +41,7 @@ afterEach(() => {
 /** Runs a scan that finds one payment to freshly generated keys, with every eth_getCode the scan RPC answers recorded. */
 async function scanOnePayment(
   codeFor: (stealthAddress: string) => Record<string, string> = () => ({}),
-  paymentLookup?: RpcClient['request'],
+  exportCode?: (signal?: AbortSignal, address?: string) => Promise<unknown>,
 ): Promise<{ user: ReturnType<typeof userEvent.setup>; stealthAddress: string; codeQueries: string[] }> {
   const pub = generateSession();
   const store = new MemoryKeyVaultStore();
@@ -51,14 +51,17 @@ async function scanOnePayment(
   const mine = makeLog({ announcer: FAKE_ANNOUNCER, metaAddress: pub.metaAddress, block: 120, index: 0, caller: FAKE_ROUTER, amount: 2_500_000n });
   const scanRpc = withManifestChain(chainWithLogs(84532, 500, [mine.log]), { code: { ...FAKE_CODE, ...codeFor(mine.stealthAddress) } });
   const codeQueries: string[] = [];
-  const recorded: RpcClient = { ...scanRpc, request: (method, params, options) => {
-    if (method === 'eth_getCode') {
-      const address = String(params[0]).toLowerCase();
-      codeQueries.push(address);
-      if (address === mine.stealthAddress.toLowerCase() && paymentLookup !== undefined) return paymentLookup(method, params, options);
-    }
-    return scanRpc.request(method, params, options);
-  } };
+  const recorded: RpcClient = {
+    ...scanRpc,
+    request: (method, params, signal) => {
+      if (method === 'eth_getCode') {
+        const address = String(params[0]).toLowerCase();
+        codeQueries.push(address);
+        if (address === mine.stealthAddress.toLowerCase() && exportCode !== undefined) return exportCode(signal, address);
+      }
+      return scanRpc.request(method, params);
+    },
+  };
   const user = userEvent.setup();
   renderApp(makeServices({ loadManifest: loaded, createRpc: () => Promise.resolve(recorded), createScanWorker: () => new InlineWorker() }));
   await user.click(within(screen.getByRole('navigation', { name: 'Main' })).getByRole('button', { name: 'Scan and receive' }));
@@ -104,6 +107,28 @@ describe('Scan > Payment details (spec 18)', () => {
     expect(opened.header.payments[0]?.stealthAddress).toBe(stealthAddress);
   });
 
+  it('Cancel aborts the pending account read through the verified scan client', async () => {
+    let release!: (code: string) => void;
+    const waiting = new Promise<string>((resolve) => { release = resolve; });
+    const read = vi.fn<(signal?: AbortSignal) => Promise<string>>().mockReturnValue(waiting);
+    const { user, stealthAddress } = await scanOnePayment(undefined, read);
+    const row = screen.getByText(stealthAddress).closest('li') as HTMLElement;
+    await user.click(within(row).getByRole('button', { name: 'Payment details' }));
+    await user.type(within(row).getByLabelText('Passphrase of your encrypted vault'), VAULT_PASS);
+    await user.click(within(row).getByRole('button', { name: 'Prepare the private key download' }));
+    await user.click(within(row).getByRole('button', { name: 'Download the private key' }));
+    try {
+      await waitFor(() => { expect(read).toHaveBeenCalledOnce(); });
+      const signal = read.mock.calls[0]?.[0];
+      expect(signal?.aborted).toBe(false);
+      await user.click(within(row).getByRole('button', { name: 'Cancel' }));
+      expect(signal?.aborted).toBe(true);
+    } finally {
+      release('0x');
+    }
+    expect(downloads.files).toEqual([]);
+  });
+
   it.each(['single', 'archive'] as const)('cancels the actual %s export RPC retry before another lookup', async (mode) => {
     let lookups = 0;
     let resumeRetry: (() => void) | undefined;
@@ -116,8 +141,8 @@ describe('Scan > Payment details (spec 18)', () => {
       retries: 1, sleep: () => new Promise<void>((resolve) => { resumeRetry = resolve; }),
     });
     let completed: Promise<unknown> | undefined;
-    const { user, stealthAddress } = await scanOnePayment(undefined, (method, params, options) => {
-      completed = client.request(method, params, options);
+    const { user, stealthAddress } = await scanOnePayment(undefined, (signal, address) => {
+      completed = client.request('eth_getCode', [address, 'latest'], signal);
       return completed;
     });
     const panel = within(mode === 'single' ? screen.getByText(stealthAddress).closest('li')! : screen.getByTestId('payment-keys-archive'));

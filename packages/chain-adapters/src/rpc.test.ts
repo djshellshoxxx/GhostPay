@@ -63,9 +63,8 @@ describe('operation authority during RPC retries', () => {
       if (action === 'revoke') allowed = false;
       return Promise.resolve();
     } });
-    const pending = client.request('eth_getCode', ['0x' + '11'.repeat(20), 'latest'], {
-      signal: controller.signal,
-      beforeSend: () => { if (!allowed) throw new Error('permission changed'); },
+    const pending = client.request('eth_getCode', ['0x' + '11'.repeat(20), 'latest'], controller.signal, () => {
+      if (!allowed) throw new Error('permission changed');
     });
     if (action === 'continue') {
       await expect(pending).resolves.toBe('0x');
@@ -117,6 +116,27 @@ describe('createClient', () => {
     expect(n).toBe(3);
     expect(sleeps).toEqual([50, 100]);
   });
+  it('cancels during backoff before a reconnect or another account read and keeps a later request usable', async () => {
+    const controller = new AbortController();
+    const methods: string[] = [];
+    let unavailable = true;
+    const transport = fakeTransport((method) => {
+      methods.push(method);
+      if (method === 'eth_chainId') return '0xaa36a7';
+      if (unavailable) throw new RpcHttpError(503);
+      return '0x';
+    });
+    const client = await createClient(SEPOLIA, URL_OK, {
+      transport, ...opts, sleep: () => { controller.abort(); return Promise.resolve(); },
+    });
+    await expect(client.request('eth_getCode', ['fixture', 'latest'], controller.signal)).rejects.toThrow(/cancelled/);
+    await expect(client.request('eth_getCode', ['fixture', 'latest'], controller.signal)).rejects.toThrow(/cancelled/);
+    expect(methods).toEqual(['eth_chainId', 'eth_getCode']);
+    unavailable = false;
+    expect(await client.request('eth_getCode', ['fixture', 'latest'])).toBe('0x');
+    expect(methods).toEqual(['eth_chainId', 'eth_getCode', 'eth_chainId', 'eth_getCode']);
+  });
+
   it('bounds retries', async () => {
     let n = 0;
     const t: RpcTransport = { send: () => { n++; return Promise.reject(new RpcHttpError(500)); } };
@@ -327,6 +347,21 @@ describe('requestWithFallbackCheck', () => {
 });
 
 describe('fetchTransport (global fetch stubbed, no network)', () => {
+  it('propagates caller cancellation to a pending fetch', async () => {
+    const controller = new AbortController();
+    let inFlight: AbortSignal | null | undefined;
+    vi.stubGlobal('fetch', (_url: string, req: RequestInit) => {
+      inFlight = req.signal;
+      return new Promise<Response>((_resolve, reject) => {
+        req.signal?.addEventListener('abort', () => { reject(new Error('aborted')); }, { once: true });
+      });
+    });
+    const pending = fetchTransport.send(URL_OK, '{}', { timeoutMs: 30_000, maxBytes: 128, signal: controller.signal });
+    expect(inFlight?.aborted).toBe(false);
+    controller.abort();
+    expect(inFlight?.aborted).toBe(true);
+    await expect(pending).rejects.toMatchObject({ code: 'RPC_FAILURE' });
+  });
   afterEach(() => { vi.unstubAllGlobals(); });
   const stream = (chunks: string[]): ReadableStream<Uint8Array> =>
     new ReadableStream({ start(c) { for (const s of chunks) c.enqueue(new TextEncoder().encode(s)); c.close(); } });
@@ -448,6 +483,17 @@ describe('createReconciledClient', () => {
     const r = createReconciledClient(a, b, { sleep: (ms) => { slept.push(ms); return Promise.resolve(); }, retryDelayMs: 7 });
     await expect(r.request('eth_getCode', ['0x0', 'latest'])).rejects.toThrow(/providers disagree/);
     expect(slept).toEqual([7]);
+  });
+  it('does not repeat either account read after cancellation during provider disagreement', async () => {
+    const a = await mkNode({ eth_getCode: '0x' });
+    const b = await mkNode({ eth_getCode: '0x6001' });
+    const first = vi.spyOn(a, 'request');
+    const second = vi.spyOn(b, 'request');
+    const controller = new AbortController();
+    const client = createReconciledClient(a, b, { sleep: () => { controller.abort(); return Promise.resolve(); } });
+    await expect(client.request('eth_getCode', ['fixture', 'latest'], controller.signal)).rejects.toThrow(/cancelled/);
+    expect(first).toHaveBeenCalledExactlyOnceWith('eth_getCode', ['fixture', 'latest'], controller.signal);
+    expect(second).toHaveBeenCalledExactlyOnceWith('eth_getCode', ['fixture', 'latest'], controller.signal);
   });
   it('tolerates a one-block tip race (agrees on the re-try)', async () => {
     const a = await mkNode({ eth_getCode: '0x6001' });

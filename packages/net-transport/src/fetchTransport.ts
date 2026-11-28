@@ -46,18 +46,15 @@ export function createFetchTransport(o: FetchTransportOptions = {}): RpcTranspor
       if (f === undefined) throw new NetTransportError('UNSUPPORTED_ENV', 'no fetch implementation available');
       const ctl = new AbortController();
       const failure = new ChainAdapterError('RPC_FAILURE', 'transport error or timeout');
-      if (init.signal?.aborted) throw failure;
+      if (init.signal?.aborted === true) throw failure;
+      const abort = (): void => { ctl.abort(); };
+      init.signal?.addEventListener('abort', abort, { once: true });
       let responseError: ChainAdapterError | RpcHttpError | undefined;
       let reader: ReadableStreamDefaultReader<Uint8Array> | undefined;
       let timer: ReturnType<typeof setTimeout> | undefined;
-      let cancel: () => void;
       const deadline = new Promise<never>((_resolve, reject) => {
-        cancel = () => {
-          ctl.abort();
-          reject(failure);
-        };
-        init.signal?.addEventListener('abort', cancel, { once: true });
-        timer = setTimeout(cancel, init.timeoutMs);
+        ctl.signal.addEventListener('abort', () => { reject(failure); }, { once: true });
+        timer = setTimeout(abort, init.timeoutMs);
       });
       const read = async (): Promise<string> => {
         const res = await f(checked, {
@@ -120,8 +117,8 @@ export function createFetchTransport(o: FetchTransportOptions = {}): RpcTranspor
         if (responseError !== undefined && e === responseError) throw e;
         throw failure;
       } finally {
-        init.signal?.removeEventListener('abort', cancel!);
         clearTimeout(timer);
+        init.signal?.removeEventListener('abort', abort);
         ctl.abort();
         if (reader !== undefined) {
           cancelQuietly(reader);
